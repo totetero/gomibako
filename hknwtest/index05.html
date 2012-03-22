@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="Engine3d.js"></script>
+<script type="text/javascript" src="Controller.js"></script>
+<script type="text/javascript" src="Character.js"></script>
+<script type="text/javascript" src="Map.js"></script>
+<script type="text/javascript">
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// グローバル変数
+var e3d = new Engine3d();
+var map = new ScrollMap();
+var ctrl = new Controller();
+var actionManager = new ActionManager();
+var effectManager = new EffectManager()
+var character = new BillballCharacter();
+var shadow = new Shadow();
+var player = new Object();
+var enemy = new Object();
+
+// テクスチャ
+var mapTexture;
+var ctrlTexture;
+var playerTexture;
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+window.onload = function(){
+	// 初期化
+	var canvas = document.getElementById("screen");
+	e3d.init(canvas);
+	ctrl.init(e3d, canvas);
+	character.init(e3d);
+	shadow.init(e3d);
+	actionManager.init(player);
+	effectManager.init();
+	
+	// キャラクタの初期化
+	player.x = 2;
+	player.y = 4;
+	player.z = 0;
+	player.rotate = Math.PI / 180 * 180;
+	player.action = 0;
+	enemy.x = -1;
+	enemy.y = 4;
+	enemy.z = 0;
+	enemy.rotate = Math.PI / 180 * 0;
+	enemy.action = 0;
+	player.draw = enemy.draw = function(texture, mat){
+		e3d.bindTex(texture, 0);
+		character.draw(e3d, mat, ctrl, this.rotate, this.action, this.x, this.y, this.z, 1.5);
+		shadow.draw(e3d, mat, this.x, this.y, 0, 0.6);
+	}
+	
+	mapTexture = e3d.loadTexture("mapchip.png");
+	ctrlTexture = e3d.loadTexture("ctrl.png");
+	playerTexture = e3d.loadTexture("player.png");
+	
+	map.init(e3d, [[
+		[ 2, 2, 2, 2, 2, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2,],
+		[ 2, 2, 2, 2, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2,],
+		[ 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 4, 4, 2, 2,],
+		[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2,],
+		[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 2,],
+		[ 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 2,],
+		[ 4, 4, 4, 2, 2, 2, 2, 2, 4, 4, 4, 2, 2, 2, 2, 4,],
+		[ 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 2, 2, 2, 4, 4, 4,],
+	],[
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+	],]);
+	
+	ctrl.roth = Math.PI / 180 *  30;
+	ctrl.distance = 10;
+	
+	// 描画処理を毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// メインループ
+function redrawScene(){
+	// 計算
+	actionManager.calc();
+	effectManager.calc();
+	var centerx = (player.x + enemy.x) / 2;
+	var centery = 4;
+	ctrl.distance = Math.abs(player.x - enemy.x) + 4;
+	
+	// ----------------------------------------------------------------
+	// 3D描画
+	e3d.clear();
+	e3d.setDepthMode(true);
+	e3d.setAlphaMode(0);
+	// カメラ
+	var mat = new Matrix();
+	ctrl.createWorldMatrix(mat, centerx, centery, 0);
+	// マップ
+	e3d.bindTex(mapTexture, 1);
+	map.draw(e3d, mat, centerx);
+	// キャラクター
+	player.draw(playerTexture, mat);
+	enemy.draw(playerTexture, mat);
+	// エフェクト
+	effectManager.draw();
+	
+	// ----------------------------------------------------------------
+	// 2D描画
+	e3d.setDepthMode(false);
+	mat.ortho(0, 0, ctrl.w, ctrl.h);
+	// コントローラ
+	e3d.bindTex(ctrlTexture, 0);
+	ctrl.draw(e3d, mat);
+	
+	// ----------------------------------------------------------------
+	// ページに反映させる
+	e3d.flush();
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// アクション管理クラス
+function ActionManager(){
+	var that = this;
+	var action = 0;
+	var actList = new Array();
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(player){
+		this.add_player(player, enemy);
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(){
+		// アクションが終了していたらリストから取り除く
+		if(action < 0){
+			actList.shift();
+			action = 0;
+		}
+		// リストにアクションが存在したら実行する
+		if(actList.length > 0){
+			actList[0].calc();
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// アクション追加 テスト
+	this.add_test = function(){
+		var act = new Object();
+		act.calc = function(){
+			action = -1;
+		}
+		actList.push(act);
+	}
+	
+	// ----------------------------------------------------------------
+	// アクション追加 テスト用プレイヤー操作
+	this.add_control = function(player, enemy){
+		var act = new Object();
+		act.calc = function(){
+			player.action++;
+			// 方向の計算
+			if     (ctrl.krt && ctrl.kup){player.rotate = Math.PI * 1.74 + ctrl.rotv;}
+			else if(ctrl.klt && ctrl.kup){player.rotate = Math.PI * 1.26 + ctrl.rotv;}
+			else if(ctrl.klt && ctrl.kdn){player.rotate = Math.PI * 0.74 + ctrl.rotv;}
+			else if(ctrl.krt && ctrl.kdn){player.rotate = Math.PI * 0.26 + ctrl.rotv;}
+			else if(ctrl.krt){player.rotate = Math.PI * 0.00 + ctrl.rotv;}
+			else if(ctrl.kup){player.rotate = Math.PI * 1.50 + ctrl.rotv;}
+			else if(ctrl.klt){player.rotate = Math.PI * 1.00 + ctrl.rotv;}
+			else if(ctrl.kdn){player.rotate = Math.PI * 0.50 + ctrl.rotv;}
+			else{player.action = 0;}
+			// 水平軸方向速度の計算
+			if(player.action > 0){
+				var speed = 3 / 30;
+				player.x += speed * Math.cos(player.rotate);
+				player.y += speed * Math.sin(player.rotate);
+				if(player.x - enemy.x >  11){player.x = enemy.x + 11;}
+				if(player.x - enemy.x < -11){player.x = enemy.x - 11;}
+				if(player.y < 1){player.y = 1;}
+				if(player.y > 7){player.y = 7;}
+			}
+			// ボタンを押したらアクション終了
+			if(ctrl.k_z){
+				action = -1;
+				that.add_move(player, enemy, 1);
+				that.add_enemy(enemy, player);
+			}else if(ctrl.k_x){
+				action = -1;
+				that.add_move(player, enemy, -1);
+				that.add_enemy(enemy, player);
+			}
+		}
+		actList.push(act);
+	}
+	
+	// ----------------------------------------------------------------
+	// アクション追加 プレイヤー操作待ち
+	this.add_player = function(player, enemy){
+		var act = new Object();
+		act.calc = function(){
+			that.add_control(player, enemy);
+			action = -1;
+		}
+		actList.push(act);
+	}
+	
+	// ----------------------------------------------------------------
+	// アクション追加 敵キャラ操作待ち
+	this.add_enemy = function(enemy, player){
+		var act = new Object();
+		act.calc = function(){
+			var x = enemy.x - player.x;
+			var y = enemy.y - player.y;
+			that.add_move(enemy, player, (x * x + y * y > 4) ? 0.5 : -0.5);
+			that.add_player(player, enemy);
+			action = -1;
+		}
+		actList.push(act);
+	}
+	
+	// ----------------------------------------------------------------
+	// アクション追加 対象方向へ移動
+	this.add_move = function(obj0, obj1, move){
+		var act = new Object();
+		var zs = new Array();
+		var step = 6;
+		var vx, vy;
+		for(var i = 0; i < step; i++){zs[i] = -0.3 * 4 / (step * step) * (i + 1) * (i + 1 - step);}
+		act.calc = function(){
+			// 初期化
+			if(action == 0){
+				obj0.rotate = Math.atan2(obj1.y - obj0.y, obj1.x - obj0.x);
+				var speed = move / step;
+				vx = speed * Math.cos(obj0.rotate);
+				vy = speed * Math.sin(obj0.rotate);
+				obj0.action = 1;
+			}
+			// 処理
+			if(action < zs.length){
+				obj0.x += vx;
+				obj0.y += vy;
+				obj0.z = zs[action++];
+			}else{
+				action = -1;
+				obj0.action = 0;
+			}
+		}
+		actList.push(act);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// エフェクト管理クラス
+function EffectManager(){
+	var that = this;
+	var effList = new Array();
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(){
+		this.add_test();
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(){
+		for(var i = 0; i < effList.length; i++){
+			// エフェクトを実行する
+			effList[i].calc();
+			// エフェクトが終了したらリストから取り除く
+			if(!effList[i].exist){
+				effList.splice(i,1);
+			}
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(e3d, mat){
+		for(var i = 0; i < effList.length; i++){
+			effList[i].draw(e3d, mat);
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// エフェクト追加 テスト
+	this.add_test = function(){
+		var eff = new Object();
+		eff.exist = true;
+		eff.calc = function(){
+			eff.exist = false;
+		}
+		eff.draw = function(e3d, mat){
+		}
+		effList.push(eff);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// スクロールマップクラス
+function ScrollMap(){
+	var maps = new Array();
+	var size = 13;
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(e3d, map){
+		var mx = map[0][0].length;
+		var my = map[0].length;
+		var mz = map.length;
+		for(var m = 0; m < mx; m++){
+			// マップ分割
+			var tmpmap = new Array();
+			for(var i = 0; i < mz; i++){
+				tmpmap[i] = new Array();
+				for(var j = 0; j < my; j++){
+					tmpmap[i][j] = new Array();
+					for(var k = 0; k < size; k++){
+						tmpmap[i][j][k] = map[i][j][(k + m + mx - Math.floor(size / 2)) % mx];
+					}
+				}
+			}
+			// 分割マップ登録
+			maps[m] = new Map();
+			maps[m].init(e3d, tmpmap);
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	var tmpmat = new Matrix();
+	this.draw = function(e3d, mat, centerx){
+		// 行列作成
+		var x = Math.floor(centerx);
+		tmpmat.copy(mat);
+		tmpmat.mulTranslate(x - Math.floor(size / 2), -1, 0);
+		// 描画
+		while(x < 0){x += maps.length;}
+		x %= maps.length;
+		maps[x].draw(e3d, tmpmat);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+</script>
+</head><body>
+<!-- キャンバス -->
+<canvas id='screen' width='320' height='320'></canvas><br>
+</body></html>
+

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="Engine3d.js"></script>
+<script type="text/javascript" src="Controller.js"></script>
+<script type="text/javascript" src="Character.js"></script>
+<script type="text/javascript" src="Map.js"></script>
+<script type="text/javascript">
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// グローバル変数
+var e3d = new Engine3d();
+var map = new Map();
+var ctrl = new Controller();
+var character = new BillballCharacter();
+var shadow = new Shadow();
+var player = new Player();
+
+// テクスチャ
+var mapTexture;
+var ctrlTexture;
+var playerTexture;
+
+// アナグリフ式立体表示
+var Anaglyph = function(w, h){
+	var gl = e3d.gl;
+	this.pixelsr = new Uint8Array(w * h * 4);
+	this.pixelsl = new Uint8Array(w * h * 4);
+	
+	var canvas = document.createElement('canvas');
+	var ctx = canvas.getContext('2d');
+	canvas.width = w;
+	canvas.height = h;
+	var imdata = ctx.createImageData(canvas.width, canvas.height);
+	
+	var canvas2 = document.createElement('canvas');
+	var ctx2 = canvas2.getContext('2d');
+	canvas2.width = canvas2.height = 256;
+	
+	var vert = new Array();
+	var clor = new Array();
+	var texc = new Array();
+	var face = new Array();
+	vert.push(w, 0, 0.0);
+	vert.push(0, 0, 0.0);
+	vert.push(0, h, 0.0);
+	vert.push(w, h, 0.0);
+	texc.push(1.0, 1.0);
+	texc.push(0.0, 1.0);
+	texc.push(0.0, 0.0);
+	texc.push(1.0, 0.0);
+	clor.push(1.0, 1.0, 1.0);
+	clor.push(1.0, 1.0, 1.0);
+	clor.push(1.0, 1.0, 1.0);
+	clor.push(1.0, 1.0, 1.0);
+	face.push(0, 1, 2);
+	face.push(0, 2, 3);
+	// VBOとIBOを作成し、データを転送
+	var vertBuffer = e3d.createVBO(vert);
+	var clorBuffer = e3d.createVBO(clor);
+	var texcBuffer = e3d.createVBO(texc);
+	var faceBuffer = e3d.createIBO(face);
+	var texture = gl.createTexture();
+	
+	this.draw = function(mat){
+		for (var i = 0; i < this.pixelsr.length; i += 4) {
+			var grayr = Math.floor(this.pixelsr[i + 0] * 0.298912 + this.pixelsr[i + 1] * 0.586611 + this.pixelsr[i + 2] * 0.114478);
+			var grayl = Math.floor(this.pixelsl[i + 0] * 0.298912 + this.pixelsl[i + 1] * 0.586611 + this.pixelsl[i + 2] * 0.114478);
+			imdata.data[i + 0] = grayl;
+			imdata.data[i + 1] = grayr;
+			imdata.data[i + 2] = 255;
+			imdata.data[i + 3] = 255;
+		}
+		
+		ctx.putImageData(imdata, 0, 0);
+		ctx2.drawImage(canvas, 0, 0, canvas2.width, canvas2.height);
+		e3d.createTexture(canvas2, texture);
+		
+		e3d.setMatrix(mat);
+		e3d.bindTex(texture, 0);
+		e3d.bindBuf(vertBuffer, clorBuffer, texcBuffer, faceBuffer);
+		e3d.draw(0, 6);
+	}
+}
+
+// フレームバッファ管理クラス
+var FramebufferManager = function(w, h){
+	var gl = e3d.gl;
+	
+	var framebuffer = gl.createFramebuffer();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+	var renderbuffer = gl.createRenderbuffer();
+	gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+	gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA4, w, h);
+	gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, renderbuffer);
+	var renderbuffer = gl.createRenderbuffer();
+	gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+	gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
+	gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+	gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+	gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	
+	this.bind = function(){
+		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+		e3d.clear();
+	}
+	
+	this.draw = function(pixels){
+		gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	}
+}
+
+var framebuffer;
+var anaglyph;
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+window.onload = function(){
+	// 初期化
+	var canvas = document.getElementById("screen");
+	e3d.init(canvas);
+	ctrl.init(e3d, canvas);
+	character.init(e3d);
+	shadow.init(e3d);
+	
+	framebuffer = new FramebufferManager(canvas.width, canvas.height);
+	anaglyph = new Anaglyph(canvas.width, canvas.height);
+	
+	mapTexture = e3d.loadTexture("mapchip.png");
+	ctrlTexture = e3d.loadTexture("ctrl.png");
+	playerTexture = e3d.loadTexture("player.png");
+	
+	map.init(e3d, [[
+		[ 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4],
+	],[
+		[ 0,  0,  0, 10, 10],
+		[ 0, 13,  0,  0, 10],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+	],[
+		[ 0, 14,  0,  0, 10],
+		[14, 13, 14,  0,  0],
+		[ 0, 14,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+	],[
+		[ 0, 14,  0,  0,  0],
+		[14, 13, 14,  0,  0],
+		[ 0, 14,  0,  0,  0],
+		[ 0,  0,  0, 17,  0],
+		[ 0,  0,  0,  0,  0],
+	],[
+		[ 0,  0,  0,  0,  0],
+		[ 0, 14,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+	],[
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0],
+	]]);
+	
+	ctrl.roth = Math.PI / 180 *  30;
+	ctrl.distance = 10;
+	
+	// 描画処理を毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// メインループ
+function redrawScene(){
+	// 計算
+	player.calc();
+	
+	// ----------------------------------------------------------------
+	// 3D描画
+	e3d.clear();
+	e3d.setDepthMode(true);
+	e3d.setAlphaMode(0);
+	var mat = new Matrix();
+	var draw = function(hoge, extend_rotate){
+		// カメラ
+		mat.frustum(0.1 * hoge, 0.1, 0.1, 100);
+		mat.mulTranslate(0, 0, -ctrl.distance);
+		mat.mulRotX(ctrl.roth);
+		mat.mulRotY(ctrl.rotv + extend_rotate);
+		mat.mulTranslate(-player.x, -player.z, -player.y);
+		// マップ
+		e3d.bindTex(mapTexture, 1);
+		map.draw(e3d, mat);
+		// キャラクター
+		e3d.bindTex(playerTexture, 0);
+		player.draw(character, e3d, mat);
+		shadow.draw(e3d, mat, player.x, player.y, player.z - player.altitude, player.hsize);
+	}
+	
+	// 視差
+	var extend_rotate = (Math.PI / 180) * (10 / 2);
+	switch(1){
+		case 0:
+			draw(1, 0);
+			break;
+		case 1:
+			// -------- 左側の画像 --------
+			e3d.gl.viewport(0, 0, 160, 320);
+			draw(0.5, extend_rotate);
+			// -------- 右側の画像 --------
+			e3d.gl.viewport(160, 0, 160, 320);
+			draw(0.5, -extend_rotate);
+			// 元に戻す
+			e3d.gl.viewport(0, 0, 320, 320);
+			break;
+		case 2:
+			// -------- 左側の画像 --------
+			framebuffer.bind();
+			draw(1, extend_rotate);
+			framebuffer.draw(anaglyph.pixelsl);
+			// -------- 右側の画像 --------
+			framebuffer.bind();
+			draw(1, -extend_rotate);
+			framebuffer.draw(anaglyph.pixelsr);
+			// 画像を描画
+			mat.ortho(0, 0, ctrl.w, ctrl.h);
+			anaglyph.draw(mat);
+			break;
+	}
+	
+	// ----------------------------------------------------------------
+	// 2D描画
+	e3d.setDepthMode(false);
+	mat.ortho(0, 0, ctrl.w, ctrl.h);
+	// コントローラ
+	e3d.bindTex(ctrlTexture, 0);
+	ctrl.draw(e3d, mat);
+	
+	// ----------------------------------------------------------------
+	// ページに反映させる
+	e3d.flush();
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// プレイヤークラス
+function Player(){
+	this.action = 0;
+	this.rotate = Math.PI / 180 *  90;
+	// あたり判定用キャラクタサイズ
+	this.hsize = 0.6;
+	this.vsize = 1.0;
+	// キャラクタ画像倍率
+	this.size = 1.5;
+	// 位置
+	this.x = 2.5;
+	this.y = 2.5; 
+	this.z = 1;
+	// 速度
+	this.vx = 0;
+	this.vy = 0; 
+	this.vz = 0;
+	// 地面との距離
+	this.altitude = 0;
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(){
+		this.action++;
+		// 方向の計算
+		if     (ctrl.krt && ctrl.kup){this.rotate = Math.PI * 1.74 + ctrl.rotv;}
+		else if(ctrl.klt && ctrl.kup){this.rotate = Math.PI * 1.26 + ctrl.rotv;}
+		else if(ctrl.klt && ctrl.kdn){this.rotate = Math.PI * 0.74 + ctrl.rotv;}
+		else if(ctrl.krt && ctrl.kdn){this.rotate = Math.PI * 0.26 + ctrl.rotv;}
+		else if(ctrl.krt){this.rotate = Math.PI * 0.00 + ctrl.rotv;}
+		else if(ctrl.kup){this.rotate = Math.PI * 1.50 + ctrl.rotv;}
+		else if(ctrl.klt){this.rotate = Math.PI * 1.00 + ctrl.rotv;}
+		else if(ctrl.kdn){this.rotate = Math.PI * 0.50 + ctrl.rotv;}
+		else{this.action = 0;}
+		// 水平軸方向速度の計算
+		if(this.action > 0){
+			var speed = 3 / 30;
+			this.vx = speed * Math.cos(this.rotate);
+			this.vy = speed * Math.sin(this.rotate);
+		}else{
+			this.vx = 0;
+			this.vy = 0;
+		}
+		// 垂直軸方向速度の計算
+		if(this.altitude > 0.1){
+			// 地面との距離がある場合は空中
+			this.action = 1;
+			this.vz -= 1.2 / 30;
+			if(ctrl.k_z && this.vz < 0){
+			// 多段ジャンプ
+				this.vz = 15 / 30;
+			}
+		}else if(ctrl.k_z){
+			// ジャンプ
+			this.vz = 15 / 30;
+		}else if(ctrl.k_x){
+			this.action = 1;
+			this.vx = 0;
+			this.vy = 0;
+		}
+		// あたり判定
+		map.collision(this);
+		// 位置の計算
+		this.x += this.vx;
+		this.y += this.vy;
+		this.z += this.vz;
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(character, e3d, mat, extend_rotate){
+		character.draw(e3d, mat, ctrl, this.rotate, this.action, this.x, this.y, this.z, this.size, extend_rotate);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+</script>
+</head><body>
+<!-- キャンバス -->
+<canvas id='screen' width='320' height='320'></canvas><br>
+</body></html>
+
