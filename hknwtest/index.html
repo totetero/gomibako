@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
 <script type="text/javascript" src="Engine3d.js"></script>
 <script type="text/javascript" src="Controller.js"></script>
 <script type="text/javascript" src="Character.js"></script>
@@ -32,6 +33,7 @@ window.onload = function(){
 	// 初期化
 	var canvas = document.getElementById("screen");
 	e3d.init(canvas);
+	e3d.initTemplate();
 	ctrl.init(e3d, canvas);
 	character.init(e3d);
 	shadow.init(e3d);
@@ -97,26 +99,31 @@ function redrawScene(){
 	// ----------------------------------------------------------------
 	// 3D描画
 	e3d.clear();
-	e3d.setDepthMode(true);
-	e3d.setAlphaMode(0);
+	e3d.setMode(0);
 	// カメラ
-	var mat = new Matrix();
-	ctrl.createWorldMatrix(mat, player.x, player.y, player.z);
-	// マップ
-	e3d.bindTex(mapTexture, 1);
-	map.draw(e3d, mat);
+	mat4.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100, e3d.worldmat);
+	mat4.translate(e3d.worldmat, [0, 0, -ctrl.distance]);
+	mat4.rotateX(e3d.worldmat, ctrl.roth);
+	mat4.rotateY(e3d.worldmat, ctrl.rotv);
+	mat4.translate(e3d.worldmat, [-player.x, -player.z, -player.y]);
+	
 	// キャラクター
 	e3d.bindTex(playerTexture, 0);
-	player.draw(character, e3d, mat);
-	shadow.draw(e3d, mat, player.x, player.y, player.z - player.altitude, player.hsize);
+	player.draw(character, e3d, e3d.worldmat);
+	shadow.draw(e3d, e3d.worldmat, player.x, player.y, player.z - player.altitude, player.hsize);
+	
+	// マップ
+	e3d.setMode(3);
+	e3d.bindTex(mapTexture, 1);
+	map.draw(e3d, e3d.worldmat);
 	
 	// ----------------------------------------------------------------
 	// 2D描画
-	e3d.setDepthMode(false);
-	mat.ortho(0, 0, ctrl.w, ctrl.h);
+	e3d.setMode(1);
+	mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
 	// コントローラ
 	e3d.bindTex(ctrlTexture, 0);
-	ctrl.draw(e3d, mat);
+	ctrl.draw(e3d, e3d.worldmat);
 	
 	// ----------------------------------------------------------------
 	// ページに反映させる

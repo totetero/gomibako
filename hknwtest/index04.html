@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
 <script type="text/javascript" src="Engine3d.js"></script>
 <script type="text/javascript" src="Controller.js"></script>
 <script type="text/javascript" src="Character.js"></script>
-<script type="text/javascript" src="Sphia.js"></script>
+<script type="text/javascript" src="Sphere.js"></script>
 <script type="text/javascript">
 
 // ----------------------------------------------------------------
@@ -13,14 +14,10 @@
 
 // グローバル変数
 var e3d = new Engine3d();
-var sphia = new Sphia();
+var sphere = new Sphere();
 var ctrl = new Controller();
 var character = new BillballCharacter();
 var player = new Player();
-var pmat = new Matrix();
-var wmat = new Matrix();
-var mat1 = new Matrix();
-var mat2 = new Matrix();
 
 // テクスチャ
 var ctrlTexture;
@@ -34,14 +31,13 @@ window.onload = function(){
 	// 初期化
 	var canvas = document.getElementById("screen");
 	e3d.init(canvas);
+	e3d.initTemplate();
 	ctrl.init(e3d, canvas);
-	sphia.init(e3d);
+	sphere.init(e3d);
 	character.init(e3d);
 	player.init();
 	ctrlTexture = e3d.loadTexture("ctrl.png");
 	playerTexture = e3d.loadTexture("player.png");
-	
-	pmat.frustum(0.1, 0.1, 0.1, 100);
 	
 	// 初期視点設定
 	ctrl.rotv = 0;
@@ -61,36 +57,36 @@ window.onload = function(){
 // メインループ
 function redrawScene(){
 	// 計算
-	player.calc(mat1);
+	player.calc(e3d.tmpmat1);
 	
 	// ----------------------------------------------------------------
 	// 3D描画
 	e3d.clear();
-	e3d.setDepthMode(true);
-	e3d.setAlphaMode(0);
+	e3d.setMode(0);
 	// カメラ
-	mat2.identity();
-	mat2.mulTranslate(0, -1, -0.65 * ctrl.distance);
-	mat2.mulTranslate(0, player.height, 0);
-	mat2.mulRotX(ctrl.roth);
-	mat2.mulTranslate(0, -player.height, 0);
-	mat2.mulRotY(ctrl.rotv);
-	wmat.mul(mat1, mat2);
-	mat1.mul(wmat, pmat);
+	mat4.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100, e3d.worldmat);
+	mat4.translate(e3d.worldmat, [0, -1, -0.65 * ctrl.distance]);
+	mat4.translate(e3d.worldmat, [0, player.height, 0]);
+	mat4.rotateX(e3d.worldmat, ctrl.roth);
+	mat4.translate(e3d.worldmat, [0, -player.height, 0]);
+	mat4.rotateY(e3d.worldmat, ctrl.rotv);
+	mat4.multiply(e3d.worldmat, e3d.tmpmat1);
+	
 	// キャラクター
 	e3d.bindTex(playerTexture, 0);
-	player.draw(character, e3d, wmat, pmat);
+	player.draw(character, e3d, e3d.worldmat);
+	
 	// マップ
-	sphia.draw(e3d, mat1);
+	e3d.setMode(4);
+	sphere.draw(e3d, e3d.worldmat);
 	
 	// ----------------------------------------------------------------
 	// 2D描画
-	e3d.setDepthMode(false);
-	e3d.setAlphaMode(0);
-	mat1.ortho(0, 0, ctrl.w, ctrl.h);
+	e3d.setMode(1);
+	mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
 	// コントローラ
 	e3d.bindTex(ctrlTexture, 0);
-	ctrl.draw(e3d, mat1);
+	ctrl.draw(e3d, e3d.worldmat);
 	
 	// ----------------------------------------------------------------
 	// ページに反映させる
@@ -103,8 +99,8 @@ function redrawScene(){
 
 // プレイヤークラス
 function Player(){
-	var rq = new Quaternion();
-	var rmat = new Matrix();
+	var rq = quat4.create();
+	var rmat = mat4.create();
 	var action = 0;
 	var rotate = 0;
 	var speed = 0.005;
@@ -112,16 +108,15 @@ function Player(){
 	
 	// 初期化
 	this.init = function(){
-		for(var i = 0; i < 10; i++){
+		for(var i = 0; i < 32; i++){
 			// 位置を決める
-			var mat = new Matrix();
 			var theta = Math.random() * Math.PI * 2;
 			var phi = Math.random() * Math.PI;
-			rq.identity();
-			rq.mulRot(phi, 0, 0, 1);
-			rq.mulRot(theta, 0, 1, 0);
-			mat.qRotate(rq);
-			this.height = sphia.getHeight(mat);
+			quat4.set([0, 0, 0, 1], rq);
+			quat4.rotate(rq, phi, [0, 0, 1]);
+			quat4.rotate(rq, theta, [0, 1, 0]);
+			quat4.toMat4(rq, e3d.tmpmat1);
+			this.height = sphere.getHeight(e3d.tmpmat1);
 			// 水上っぽいならやり直し
 			if(this.height > 1){break;}
 		}
@@ -134,35 +129,59 @@ function Player(){
 		// キー入力による回転
 		var c = Math.cos(ctrl.rotv);
 		var s = Math.sin(ctrl.rotv);
-		if     (ctrl.krt && ctrl.kup){rq.mulRot(speed,  c - s, 0,  s + c); rotate = Math.PI * 1.74 + ctrl.rotv;}
-		else if(ctrl.klt && ctrl.kup){rq.mulRot(speed,  c + s, 0,  s - c); rotate = Math.PI * 1.26 + ctrl.rotv;}
-		else if(ctrl.klt && ctrl.kdn){rq.mulRot(speed, -c + s, 0, -s - c); rotate = Math.PI * 0.74 + ctrl.rotv;}
-		else if(ctrl.krt && ctrl.kdn){rq.mulRot(speed, -c - s, 0, -s + c); rotate = Math.PI * 0.26 + ctrl.rotv;}
-		else if(ctrl.krt){rq.mulRot(speed, -s, 0,  c); rotate = Math.PI * 0.0 + ctrl.rotv;}
-		else if(ctrl.kup){rq.mulRot(speed,  c, 0,  s); rotate = Math.PI * 1.5 + ctrl.rotv;}
-		else if(ctrl.klt){rq.mulRot(speed,  s, 0, -c); rotate = Math.PI * 1.0 + ctrl.rotv;}
-		else if(ctrl.kdn){rq.mulRot(speed, -c, 0, -s); rotate = Math.PI * 0.5 + ctrl.rotv;}
+		if     (ctrl.krt && ctrl.kup){quat4.rotate(rq, speed, [-c + s, 0, -s - c]); rotate = Math.PI * 1.74 + ctrl.rotv;}
+		else if(ctrl.klt && ctrl.kup){quat4.rotate(rq, speed, [-c - s, 0, -s + c]); rotate = Math.PI * 1.26 + ctrl.rotv;}
+		else if(ctrl.klt && ctrl.kdn){quat4.rotate(rq, speed, [ c - s, 0,  s + c]); rotate = Math.PI * 0.74 + ctrl.rotv;}
+		else if(ctrl.krt && ctrl.kdn){quat4.rotate(rq, speed, [ c + s, 0,  s - c]); rotate = Math.PI * 0.26 + ctrl.rotv;}
+		else if(ctrl.krt){quat4.rotate(rq, speed, [ s, 0, -c]); rotate = Math.PI * 0.0 + ctrl.rotv;}
+		else if(ctrl.kup){quat4.rotate(rq, speed, [-c, 0, -s]); rotate = Math.PI * 1.5 + ctrl.rotv;}
+		else if(ctrl.klt){quat4.rotate(rq, speed, [-s, 0,  c]); rotate = Math.PI * 1.0 + ctrl.rotv;}
+		else if(ctrl.kdn){quat4.rotate(rq, speed, [ c, 0,  s]); rotate = Math.PI * 0.5 + ctrl.rotv;}
 		else{action = 0;}
-		// 引数の行列に回転を反映
-		mat.qRotate(rq);
+		// 四元数からワールド行列を作成
+		quat4.toMat4(rq, mat);
 		// 逆行列を計算して自身の位置行列とする
-		rmat.inverse(mat);
+		mat4.inverse(mat, rmat);
 		
 		// 高さ獲得と速度の調整
-		var new_height = sphia.getHeight(mat);
-		//if(new_height < 0.97){new_height = 0.97;}
+		var new_height = sphere.getHeight(mat);
+		if(new_height < 0.97){new_height = 0.97;}
 		speed = Math.max(0.005 - Math.abs(new_height - this.height), 0);
 		this.height = new_height;
 	}
 	
 	// ----------------------------------------------------------------
 	// 描画
-	var tmpmat1 = new Matrix();
-	var tmpmat2 = new Matrix();
-	this.draw = function(character, e3d, wmat, pmat){
-		tmpmat1.mul(rmat, wmat);
-		tmpmat2.mul(tmpmat1, pmat);
-		character.draw(e3d, tmpmat2, ctrl, rotate, action, 0, 0, this.height, 0.08);
+	this.draw = function(character, e3d, mat){
+		mat4.multiply(mat, rmat, e3d.tmpmat1);
+		if(this.height <= 0.97){
+			var drawParts = character.createDrawFunc(e3d, e3d.tmpmat1, ctrl, rotate, 0, 0, this.height, 0.08);
+			// 泳ぎ状態
+			switch(Math.floor(action / 6) % 2){
+				case 0:
+					drawParts(character.texBufStruct_head,  0.50,  0.08,  0.00, 0.45, 0, 0);
+					drawParts(character.texBufStruct_body,  0.50, -0.02,  0.00, 0.27, 0, 0);
+					drawParts(character.texBufStruct_foot2, 0.25, -0.09, -0.10, 0.10, 0, 0);
+					drawParts(character.texBufStruct_foot2, 0.25, -0.12,  0.10, 0.15, 0, 0);
+					drawParts(character.texBufStruct_hand,  0.25,  0.02, -0.20, 0.25, 0, 0);
+					drawParts(character.texBufStruct_hand,  0.25, -0.02,  0.20, 0.25, 0, 0);
+					drawParts(character.texBufStruct_hairr, 0.50,  0.03,  0.20, 0.43, 0, 0);
+					drawParts(character.texBufStruct_hairl, 0.50,  0.03, -0.20, 0.43, 0, 0);
+					drawParts(character.texBufStruct_tail,  0.50, -0.12,  0.00, 0.40, 0, 0);break;
+				case 1:
+					drawParts(character.texBufStruct_head,  0.50,  0.08,  0.00, 0.45 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_body,  0.50, -0.02,  0.00, 0.27 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_foot2, 0.25, -0.12, -0.10, 0.15 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_foot2, 0.25, -0.09,  0.10, 0.10 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_hand,  0.25,  0.02, -0.20, 0.25 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_hand,  0.25, -0.02,  0.20, 0.25 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_hairr, 0.50,  0.03,  0.20, 0.43 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_hairl, 0.50,  0.03, -0.20, 0.43 + 0.03, 0, 0);
+					drawParts(character.texBufStruct_tail,  0.50, -0.12,  0.00, 0.40 + 0.03, 0, 0);break;
+			}
+		}else{
+			character.draw(e3d, e3d.tmpmat1, ctrl, rotate, action, 0, 0, this.height, 0.08);
+		}
 	}
 }
 

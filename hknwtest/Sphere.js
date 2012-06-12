@@ -4,15 +4,12 @@
 // Copyright (c) 2011-2012 totetero
 // 
 
-function Sphia(){
+function Sphere(){
 	this.vertBuffer_gnd;
 	this.vertBuffer_sea;
 	this.clorBuffer_gnd;
 	this.clorBuffer_sea;
-	this.texcBuffer;
 	this.faceBuffer;
-	this.texture_gnd;
-	this.texture_sea;
 	this.faceNum;
 	
 	this.map;
@@ -123,7 +120,6 @@ function Sphia(){
 		var verts = new Array();
 		var clorg = new Array();
 		var clors = new Array();
-		var texc = new Array();
 		var face = new Array();
 		
 		this.map_size = 64;
@@ -158,20 +154,19 @@ function Sphia(){
 					
 					// 地面の色付け
 					var c = (n - 0.90);
-					if(n > 1.15){clorg.push(c * 4, c * 4, c * 4);}
-					else if(n > 1.10){clorg.push(c * 2, c * 2.5, c * 2);}
-					else if(n > 0.98){clorg.push(c * 2, c * 3, c * 2);}
-					else{clorg.push(c * 5, c * 5, c * 5);}
+					if(n > 1.15){clorg.push(c * 4, c * 4, c * 4, 1);}
+					else if(n > 1.10){clorg.push(c * 2, c * 2.5, c * 2, 1);}
+					else if(n > 0.98){clorg.push(c * 2, c * 3, c * 2, 1);}
+					else{clorg.push(c * 5, c * 5, c * 5, 1);}
 					// 海面の色
-					if(n > 0.98){clors.push(0.5, 0.5, 1);}
-					else{clors.push(0, 0, 1);}
+					if(n > 0.98){clors.push(0.5, 0.5, 1, 0.8);}
+					else{clors.push(0, 0, 1, 0.8);}
 					
 					// 頂点登録
 					var rs = Math.sqrt(x * x + y * y + z * z);
 					var rg = rs / n;
 					vertg.push(x / rg, y / rg, z / rg);
 					verts.push(x / rs, y / rs, z / rs);
-					texc.push(0, 0);
 				}
 			}
 			// インデックスデータを生成
@@ -190,34 +185,22 @@ function Sphia(){
 		this.vertBuffer_sea = e3d.createVBO(verts);
 		this.clorBuffer_gnd = e3d.createVBO(clorg);
 		this.clorBuffer_sea = e3d.createVBO(clors);
-		this.texcBuffer = e3d.createVBO(texc);
 		this.faceBuffer = e3d.createIBO(face);
-		
-		// テクスチャ作成(白)
-		var canvas = document.createElement("canvas");
-		canvas.width = canvas.height = 1;
-		var g = canvas.getContext("2d");
-		g.fillStyle = "rgba(255, 255, 255, 0.8)";
-		g.fillRect(0, 0, 1, 1);
-		this.texture_sea = e3d.createTexture(canvas);
-		g.fillStyle = "rgba(255, 255, 255, 1)";
-		g.fillRect(0, 0, 1, 1);
-		this.texture_gnd = e3d.createTexture(canvas);
 	}
 	
 	// ----------------------------------------------------------------
 	// 描画
 	this.draw = function(e3d, mat){
 		e3d.setMatrix(mat);
-		e3d.setAlphaMode(0);
-		e3d.bindTex(sphia.texture_gnd);
-		e3d.bindBuf(this.vertBuffer_gnd, this.clorBuffer_gnd, this.texcBuffer, this.faceBuffer);
+		e3d.bindFaceBuf(this.faceBuffer);
+		// 大地の描画
+		e3d.bindVertBuf(this.vertBuffer_gnd);
+		e3d.bindClor4Buf(this.clorBuffer_gnd);
 		e3d.draw(0, this.faceNum);
-		e3d.setAlphaMode(1);
-		e3d.bindTex(sphia.texture_sea);
-		e3d.bindBuf(this.vertBuffer_sea, this.clorBuffer_sea, this.texcBuffer, this.faceBuffer);
+		// 海の描画
+		e3d.bindVertBuf(this.vertBuffer_sea);
+		e3d.bindClor4Buf(this.clorBuffer_sea);
 		e3d.draw(0, this.faceNum);
-		e3d.setAlphaMode(0);
 	}
 	
 	// ----------------------------------------------------------------
@@ -225,9 +208,12 @@ function Sphia(){
 	this.getHeight = function(mat){
 		var side, xside, yside, zside, x, y;
 		// y軸方向単位ベクトルと回転行列を掛け合わせた結果から各軸中心回転角を求める
-		var rx = Math.atan2(mat._32, mat._22) / Math.PI * 180;
-		var ry = Math.atan2(mat._12, mat._32) / Math.PI * 180;
-		var rz = Math.atan2(mat._22, mat._12) / Math.PI * 180;
+		var rx = Math.atan2(mat[9], mat[5]) / Math.PI * 180;
+		var ry = Math.atan2(mat[1], mat[9]) / Math.PI * 180;
+		var rz = Math.atan2(mat[5], mat[1]) / Math.PI * 180;
+		//var rx = Math.atan2(mat._32, mat._22) / Math.PI * 180;
+		//var ry = Math.atan2(mat._12, mat._32) / Math.PI * 180;
+		//var rz = Math.atan2(mat._22, mat._12) / Math.PI * 180;
 		if(rx < -135){rx += 360;}
 		if(ry < -135){ry += 360;}
 		if(rz < -135){rz += 360;}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
 <script type="text/javascript" src="Engine3d.js"></script>
 <script type="text/javascript" src="Controller.js"></script>
 <script type="text/javascript" src="Character.js"></script>
@@ -41,28 +42,18 @@ var Anaglyph = function(w, h){
 	canvas2.width = canvas2.height = 256;
 	
 	var vert = new Array();
-	var clor = new Array();
 	var texc = new Array();
-	var face = new Array();
-	vert.push(w, 0, 0.0);
-	vert.push(0, 0, 0.0);
-	vert.push(0, h, 0.0);
 	vert.push(w, h, 0.0);
+	vert.push(0, h, 0.0);
+	vert.push(0, 0, 0.0);
+	vert.push(w, 0, 0.0);
 	texc.push(1.0, 1.0);
 	texc.push(0.0, 1.0);
 	texc.push(0.0, 0.0);
 	texc.push(1.0, 0.0);
-	clor.push(1.0, 1.0, 1.0);
-	clor.push(1.0, 1.0, 1.0);
-	clor.push(1.0, 1.0, 1.0);
-	clor.push(1.0, 1.0, 1.0);
-	face.push(0, 1, 2);
-	face.push(0, 2, 3);
 	// VBOとIBOを作成し、データを転送
 	var vertBuffer = e3d.createVBO(vert);
-	var clorBuffer = e3d.createVBO(clor);
 	var texcBuffer = e3d.createVBO(texc);
-	var faceBuffer = e3d.createIBO(face);
 	var texture = gl.createTexture();
 	
 	this.draw = function(mat){
@@ -81,8 +72,9 @@ var Anaglyph = function(w, h){
 		
 		e3d.setMatrix(mat);
 		e3d.bindTex(texture, 0);
-		e3d.bindBuf(vertBuffer, clorBuffer, texcBuffer, faceBuffer);
-		e3d.draw(0, 6);
+		e3d.bindVertBuf(vertBuffer);
+		e3d.bindTexcBuf(texcBuffer);
+		e3d.drawTetra();
 	}
 }
 
@@ -125,6 +117,7 @@ window.onload = function(){
 	// 初期化
 	var canvas = document.getElementById("screen");
 	e3d.init(canvas);
+	e3d.initTemplate();
 	ctrl.init(e3d, canvas);
 	character.init(e3d);
 	shadow.init(e3d);
@@ -193,28 +186,28 @@ function redrawScene(){
 	// ----------------------------------------------------------------
 	// 3D描画
 	e3d.clear();
-	e3d.setDepthMode(true);
-	e3d.setAlphaMode(0);
-	var mat = new Matrix();
+	e3d.setMode(0);
 	var draw = function(hoge, extend_rotate){
 		// カメラ
-		mat.frustum(0.1 * hoge, 0.1, 0.1, 100);
-		mat.mulTranslate(0, 0, -ctrl.distance);
-		mat.mulRotX(ctrl.roth);
-		mat.mulRotY(ctrl.rotv + extend_rotate);
-		mat.mulTranslate(-player.x, -player.z, -player.y);
-		// マップ
-		e3d.bindTex(mapTexture, 1);
-		map.draw(e3d, mat);
+		mat4.frustum(-0.05 * hoge, 0.05 * hoge, -0.05, 0.05, 0.1, 100, e3d.worldmat);
+		mat4.translate(e3d.worldmat, [0, 0, -ctrl.distance]);
+		mat4.rotateX(e3d.worldmat, ctrl.roth);
+		mat4.rotateY(e3d.worldmat, ctrl.rotv + extend_rotate);
+		mat4.translate(e3d.worldmat, [-player.x, -player.z, -player.y]);
 		// キャラクター
 		e3d.bindTex(playerTexture, 0);
-		player.draw(character, e3d, mat);
-		shadow.draw(e3d, mat, player.x, player.y, player.z - player.altitude, player.hsize);
+		player.draw(character, e3d, e3d.worldmat);
+		shadow.draw(e3d, e3d.worldmat, player.x, player.y, player.z - player.altitude, player.hsize);
+		
+		// マップ
+		e3d.setMode(3);
+		e3d.bindTex(mapTexture, 1);
+		map.draw(e3d, e3d.worldmat);
 	}
 	
 	// 視差
 	var extend_rotate = (Math.PI / 180) * (10 / 2);
-	switch(1){
+	switch(2){
 		case 0:
 			draw(1, 0);
 			break;
@@ -238,18 +231,18 @@ function redrawScene(){
 			draw(1, -extend_rotate);
 			framebuffer.draw(anaglyph.pixelsr);
 			// 画像を描画
-			mat.ortho(0, 0, ctrl.w, ctrl.h);
-			anaglyph.draw(mat);
+			mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
+			anaglyph.draw(e3d.worldmat);
 			break;
 	}
 	
 	// ----------------------------------------------------------------
 	// 2D描画
-	e3d.setDepthMode(false);
-	mat.ortho(0, 0, ctrl.w, ctrl.h);
+	e3d.setMode(1);
+	mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
 	// コントローラ
 	e3d.bindTex(ctrlTexture, 0);
-	ctrl.draw(e3d, mat);
+	ctrl.draw(e3d, e3d.worldmat);
 	
 	// ----------------------------------------------------------------
 	// ページに反映させる

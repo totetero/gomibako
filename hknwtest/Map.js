@@ -175,86 +175,11 @@ function Map(){
 		// 行列作成
 		e3d.setMatrix(mat);
 		// 描画
-		e3d.bindBuf(this.vertBuffer, this.clorBuffer, this.texcBuffer, this.faceBuffer);
+		e3d.bindVertBuf(this.vertBuffer);
+		e3d.bindClor3Buf(this.clorBuffer);
+		e3d.bindTexcBuf(this.texcBuffer);
+		e3d.bindFaceBuf(this.faceBuffer);
 		e3d.draw(0, this.faceNum);
-		// 逆行列
-		invmat.inverse(mat);
-	}
-	
-	// ----------------------------------------------------------------
-	// マウス座標と逆行列からマップチップ選択
-	var invmat = new Matrix();
-	this.select = function(ctrl, selectType){
-		var mx = 2 * ctrl.mousex / ctrl.w - 1;
-		var my = 1 - 2 * ctrl.mousey / ctrl.h;
-		var xyw1 = invmat._11 * mx + invmat._21 * my + invmat._41;
-		var xyw2 = invmat._12 * mx + invmat._22 * my + invmat._42;
-		var xyw3 = invmat._13 * mx + invmat._23 * my + invmat._43;
-		var xyw4 = invmat._14 * mx + invmat._24 * my + invmat._44;
-		var tempDepth = 1;
-		var tempx1 = -1, tempx2 = -1;
-		var tempy1 = -1, tempy2 = -1;
-		var tempz1 = -1, tempz2 = -1;
-		
-		// マウス座標とx軸平面の交点
-		for(var x = 0; x <= this.x; x++){
-			var depth = -(xyw1 - xyw4 * x) / (invmat._31 - invmat._34 * x);
-			var w = xyw4 + invmat._34 * depth;
-			var y = Math.floor((xyw2 + invmat._32 * depth) / w);
-			var z = Math.floor((xyw3 + invmat._33 * depth) / w);
-			if(depth < tempDepth && (this.isMapChipVisible(x, z, y) ^ this.isMapChipVisible(x - 1, z, y))){
-				tempx1 = x; tempx2 = x - 1;
-				tempy1 = y; tempy2 = y;
-				tempz1 = z; tempz2 = z;
-				tempDepth = depth;
-			}
-		}
-		
-		// マウス座標とy軸平面の交点
-		for(var y = 0; y <= this.z; y++){
-			var depth = -(xyw2 - xyw4 * y) / (invmat._32 - invmat._34 * y);
-			var w = xyw4 + invmat._34 * depth;
-			var x = Math.floor((xyw1 + invmat._31 * depth) / w);
-			var z = Math.floor((xyw3 + invmat._33 * depth) / w);
-			if(depth < tempDepth && (this.isMapChipVisible(x, z, y) ^ this.isMapChipVisible(x, z, y - 1))){
-				tempx1 = x; tempx2 = x;
-				tempy1 = y; tempy2 = y - 1;
-				tempz1 = z; tempz2 = z;
-				tempDepth = depth;
-			}
-		}
-		
-		// マウス座標とz軸平面の交点
-		for(var z = 0; z <= this.y; z++){
-			var depth = -(xyw3 - xyw4 * z) / (invmat._33 - invmat._34 * z);
-			var w = xyw4 + invmat._34 * depth;
-			var x = Math.floor((xyw1 + invmat._31 * depth) / w);
-			var y = Math.floor((xyw2 + invmat._32 * depth) / w);
-			if(depth < tempDepth && (this.isMapChipVisible(x, z, y) ^ this.isMapChipVisible(x, z - 1, y))){
-				tempx1 = x; tempx2 = x;
-				tempy1 = y; tempy2 = y;
-				tempz1 = z; tempz2 = z - 1;
-				tempDepth = depth;
-			}
-		}
-		
-		// selectTypeによって選択するマップチップが変わる 0は置き換え用 1は設置用
-		// 選択結果はctrlに入れておく
-		if(this.isMapChipVisible(tempx1, tempz1, tempy1) ^ selectType != 0){
-			ctrl.selectedx = tempx1;
-			ctrl.selectedy = tempy1;
-			ctrl.selectedz = tempz1;
-		}else{
-			ctrl.selectedx = tempx2;
-			ctrl.selectedy = tempy2;
-			ctrl.selectedz = tempz2;
-		}
-		
-		if(this.getMapChip(ctrl.selectedx, ctrl.selectedy, ctrl.selectedz) < 0){
-			ctrl.selectedx = -1;
-			ctrl.selectedy = -1;
-			ctrl.selectedz = -1;
-		}
 	}
 	
 	// ----------------------------------------------------------------
@@ -322,43 +247,6 @@ function Map(){
 		return false;
 	}
 	
-	// 地面までの距離
-	this.getHeight = function(character){
-		var h_length = 2 + Math.floor(character.hsize);
-		
-		// x軸を等分割してmap上の点を得る
-		var dx = new Array(h_length);
-		var temp0 = character.x + character.vx + character.hsize / 2;
-		var temp1 = character.x + character.vx - character.hsize / 2;
-		for(var i = 0; i < h_length; i++){
-			dx[i] = Math.floor(temp0 + (temp1 - temp0) * i / (h_length - 1));
-		}
-		// y軸を等分割してmap上の点を得る
-		var dy = new Array(h_length);
-		var temp0 = character.y + character.vy + character.hsize / 2;
-		var temp1 = character.y + character.vy - character.hsize / 2;
-		for(var i = 0; i < h_length; i++){
-			dy[i] = Math.floor(temp0 + (temp1 - temp0) * i / (h_length - 1));
-		}
-		
-		// キャラクタ下方向で最も近い地面の高さを調べる
-		var k0 = Math.floor(character.z + character.vz);
-		var ground = 0;
-		for(var i = 0; i < dx.length; i++){
-			for(var j = 0; j < dy.length; j++){
-				for(var k = k0; k > 0; k--){
-					if(this.isMapChipHit(dx[i], dy[j], k - 1) && ground < k){
-						ground = k;
-					}
-				}
-			}
-		}
-		
-		// 地面までの距離を返す
-		character.altitude = character.z + character.vz - ground - 0.01;
-		return character.altitude;
-	}
-	
 	// mapとの衝突処理 衝突していた場合はキャラクタの位置と速度が変更される
 	// 引数であるcharacterに必要なフィールド
 	//  x, y, z 位置
@@ -370,6 +258,7 @@ function Map(){
 		var v1x, v1y, v1z;
 		var vx, vy;
 		
+		// ---------------- 水平軸方向の衝突判定 ----------------
 		// x軸方向で最初に衝突するマップチップ境界
 		if(character.vx > 0){
 			vx = Math.abs(Math.floor(character.x + character.hsize / 2 + 1) - (character.x + character.hsize / 2));
@@ -446,6 +335,7 @@ function Map(){
 			}
 		}
 		
+		// ---------------- 垂直軸方向の衝突判定 ----------------
 		// z軸方向で最初に衝突するマップチップ境界
 		if(character.vz > 0){
 			v1z = Math.floor(character.z + character.vsize + 1) - (character.z + character.vsize) - 0.01;
@@ -463,8 +353,39 @@ function Map(){
 			}
 		}
 		
-		// 最後に地面までの距離を返す
-		return this.getHeight(character);
+		// ---------------- 地面までの距離測定 ----------------
+		var h_length = 2 + Math.floor(character.hsize);
+		
+		// x軸を等分割してmap上の点を得る
+		var dx = new Array(h_length);
+		var temp0 = character.x + character.vx + character.hsize / 2;
+		var temp1 = character.x + character.vx - character.hsize / 2;
+		for(var i = 0; i < h_length; i++){
+			dx[i] = Math.floor(temp0 + (temp1 - temp0) * i / (h_length - 1));
+		}
+		// y軸を等分割してmap上の点を得る
+		var dy = new Array(h_length);
+		var temp0 = character.y + character.vy + character.hsize / 2;
+		var temp1 = character.y + character.vy - character.hsize / 2;
+		for(var i = 0; i < h_length; i++){
+			dy[i] = Math.floor(temp0 + (temp1 - temp0) * i / (h_length - 1));
+		}
+		
+		// キャラクタ下方向で最も近い地面の高さを調べる
+		var ground = 0;
+		var k0 = Math.floor(character.z + character.vz);
+		for(var i = 0; i < dx.length; i++){
+			for(var j = 0; j < dy.length; j++){
+				for(var k = k0; k > 0; k--){
+					if(this.isMapChipHit(dx[i], dy[j], k - 1) && ground < k){
+						ground = k;
+					}
+				}
+			}
+		}
+		
+		// 地面までの距離を返す
+		return character.altitude = character.z + character.vz - ground - 0.01;
 	}
 }
 

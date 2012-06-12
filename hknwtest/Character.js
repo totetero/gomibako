@@ -1,31 +1,10 @@
 // ビルボードによるキャラクタ表示クラス
 function BillboardCharacter(){
-	this.vertBuffer;
-	this.clorBuffer;
-	this.faceBuffer;
 	this.texcBufferList;
 	
 	// ----------------------------------------------------------------
 	// 初期化
 	this.init = function(e3d){
-		var vert = new Array();
-		var clor = new Array();
-		var face = new Array();
-		vert.push( 0.5, 1.0, 0.0);
-		vert.push(-0.5, 1.0, 0.0);
-		vert.push(-0.5, 0.0, 0.0);
-		vert.push( 0.5, 0.0, 0.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		face.push(0, 1, 2);
-		face.push(0, 2, 3);
-		// VBOとIBOを作成し、データを転送
-		this.vertBuffer = e3d.createVBO(vert);
-		this.clorBuffer = e3d.createVBO(clor);
-		this.faceBuffer = e3d.createIBO(face);
-		
 		// テクスチャバッファリスト
 		this.texcBufferList = new Array();
 		for(var i = 0; i < 4; i++){
@@ -47,7 +26,6 @@ function BillboardCharacter(){
 	
 	// ----------------------------------------------------------------
 	// 描画
-	var tmpmat = new Matrix();
 	this.draw = function(e3d, mat, ctrl, rotate, action, x, y, z, size){
 		// 歩行アクション
 		var index = 0;
@@ -67,14 +45,16 @@ function BillboardCharacter(){
 		else if(rotate < 225){index += 1;}
 		else{index += 2;}
 		// 行列作成
-		tmpmat.copy(mat);
-		tmpmat.mulTranslate(x, z, y);
-		tmpmat.mulRotY(-ctrl.rotv);
-		tmpmat.mulScale(size, size, size);
-		e3d.setMatrix(tmpmat);
+		mat4.set(mat, e3d.tmpmat1);
+		mat4.translate(e3d.tmpmat1, [x, z, y]);
+		mat4.rotateY(e3d.tmpmat1, -ctrl.rotv);
+		mat4.scale(e3d.tmpmat1, [size, size, size]);
+		mat4.translate(e3d.tmpmat1, [0, 0.5, 0]);
+		e3d.setMatrix(e3d.tmpmat1);
 		// 描画
-		e3d.bindBuf(this.vertBuffer, this.clorBuffer, this.texcBufferList[index], this.faceBuffer);
-		e3d.draw(0, 6);
+		e3d.bindVertBuf(e3d.tetraVertBuffer);
+		e3d.bindTexcBuf(this.texcBufferList[index]);
+		e3d.drawTetra();
 	}
 }
 
@@ -84,95 +64,59 @@ function BillboardCharacter(){
 
 // ビルボードでできたボールの組み合わせによるキャラクタ表示クラス
 function BillballCharacter(){
-	this.vertBuffer;
-	this.clorBuffer;
-	this.faceBuffer;
-	this.texBufStruct_head;
-	this.texBufStruct_body;
-	this.texBufStruct_foot1;
-	this.texBufStruct_foot2;
-	this.texBufStruct_hand;
-	this.texBufStruct_hairr;
-	this.texBufStruct_hairl;
-	this.texBufStruct_tail;
-	
 	// ----------------------------------------------------------------
-	// 初期化
-	this.init = function(e3d){
-		var vert = new Array();
-		var clor = new Array();
-		var face = new Array();
-		vert.push( 0.5,  0.5, 0.0);
-		vert.push(-0.5,  0.5, 0.0);
-		vert.push(-0.5, -0.5, 0.0);
-		vert.push( 0.5, -0.5, 0.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		face.push(0, 1, 2);
-		face.push(0, 2, 3);
-		// VBOとIBOを作成し、データを転送
-		this.vertBuffer = e3d.createVBO(vert);
-		this.clorBuffer = e3d.createVBO(clor);
-		this.faceBuffer = e3d.createIBO(face);
-		
-		// テクスチャバッファ構造体
-		var texuv = function(u0, v0, uw, vh){
-			var texc = new Array();
-			var u1 = u0 + uw;
-			var v1 = v0 + vh;
-			texc.push(u1, v0);
-			texc.push(u0, v0);
-			texc.push(u0, v1);
-			texc.push(u1, v1);
-			// VBOを作成し、データを転送
-			var texcBuffer = e3d.createVBO(texc);
-			this.getbuf = function(){return texcBuffer;}
-		}
-		// テクスチャバッファリスト構造体
-		var texuvList = function(u0, v0, uw, vh, swap){
-			var texcBufferList = new Array();
-			for(var i = 0; i < 12; i++){
-				var texc = new Array();
-				var iw = (i % 4);
-				var ih =  Math.floor(i / 4)
-				if(swap){iw = (4 - iw) % 4;}
-				var u1 = u0 + uw * iw;
-				var v1 = v0 + vh * ih;
-				var u2 = u1 + uw;
-				var v2 = v1 + vh;
-				if(swap){var tmp = u1; u1 = u2; u2 = tmp;}
-				texc.push(u2, v1);
-				texc.push(u1, v1);
-				texc.push(u1, v2);
-				texc.push(u2, v2);
-				// VBOを作成し、データを転送
-				texcBufferList[i] = e3d.createVBO(texc);
-			}
-			this.getbuf = function(h, v){return texcBufferList[h * 4 + v];}
-		}
-		// 各パーツのテクスチャバッファリスト
-		this.texBufStruct_head = new texuvList(0.0, 0.000, 0.125, 0.125, 0);
-		this.texBufStruct_body = new texuvList(0.0, 0.375, 0.125, 0.125, 0);
-		this.texBufStruct_foot1 = new texuvList(0.00, 0.75, 0.0625, 0.0625, 0);
-		this.texBufStruct_foot2 = new texuvList(0.25, 0.75, 0.0625, 0.0625, 0);
-		this.texBufStruct_hand = new texuv(0, 0.9375, 0.0625, 0.0625);
-		this.texBufStruct_hairr = new texuvList(0.5, 0.000, 0.125, 0.125, 0);
-		this.texBufStruct_hairl = new texuvList(0.5, 0.000, 0.125, 0.125, 1);
-		this.texBufStruct_tail = new texuvList(0.5, 0.375, 0.125, 0.125, 0);
+	// ユーティリティ
+	
+	// テクスチャバッファ構造体作成
+	this.createTexuv = function(e3d, u0, v0, uw, vh){
+		var texc = new Array();
+		var u1 = u0 + uw;
+		var v1 = v0 + vh;
+		texc.push(u1, v0);
+		texc.push(u0, v0);
+		texc.push(u0, v1);
+		texc.push(u1, v1);
+		// VBOを作成し構造体に保存
+		var texStruct = new Object();
+		texStruct.texcBuffer = e3d.createVBO(texc);
+		texStruct.getbuf = function(){return this.texcBuffer;}
+		return texStruct;
 	}
 	
-	// ----------------------------------------------------------------
-	// 描画
-	var tmpmat1 = new Matrix();
-	var tmpmat2 = new Matrix();
-	this.draw = function(e3d, mat, ctrl, rotate, action, x, y, z, size){
+	// テクスチャバッファリスト構造体作成
+	this.createTexuvList = function(e3d, u0, v0, uw, vh, swap){
+		var texStruct = new Object();
+		texStruct.texcBufferList = new Array();
+		for(var i = 0; i < 12; i++){
+			var texc = new Array();
+			var iw = (i % 4);
+			var ih =  Math.floor(i / 4)
+			if(swap){iw = (4 - iw) % 4;}
+			var u1 = u0 + uw * iw;
+			var v1 = v0 + vh * ih;
+			var u2 = u1 + uw;
+			var v2 = v1 + vh;
+			if(swap){var tmp = u1; u1 = u2; u2 = tmp;}
+			texc.push(u2, v1);
+			texc.push(u1, v1);
+			texc.push(u1, v2);
+			texc.push(u2, v2);
+			// VBOを作成し構造体に保存
+			texStruct.texcBufferList[i] = e3d.createVBO(texc);
+		}
+		texStruct.getbuf = function(h, v){return this.texcBufferList[h * 4 + v];}
+		return texStruct;
+	}
+	
+	// 描画関数作成
+	this.createDrawFunc = function(e3d, mat, ctrl, rotate, x, y, z, size){
 		// 行列作成
-		tmpmat1.copy(mat);
-		tmpmat1.mulTranslate(x, z, y);
-		tmpmat1.mulRotY(-rotate);
-		tmpmat1.mulScale(size, size, size);
+		mat4.set(mat, e3d.tmpmat1);
+		mat4.translate(e3d.tmpmat1, [x, z, y]);
+		mat4.rotateY(e3d.tmpmat1, -rotate);
+		mat4.scale(e3d.tmpmat1, [size, size, size]);
+		// 頂点バッファ
+		e3d.bindVertBuf(e3d.tetraVertBuffer);
 		
 		// テクスチャ水平軸角度フレーム
 		var angleh = 180 / Math.PI * ctrl.roth;
@@ -182,28 +126,47 @@ function BillballCharacter(){
 		while(anglev > 360){anglev -= 360;} while(anglev <= 0){anglev += 360;}
 		if(anglev < 90){anglev = 1;}else if(anglev <= 180){anglev = 2;}else if(anglev < 270){anglev = 3;}else{anglev = 0;}
 		
-		// 描画関数
-		var drawParts = function(texBufStruct, size, x, y, z, rot, transposed){
-			tmpmat2.copy(tmpmat1);
-			tmpmat2.mulTranslate(x, z, y);
-			tmpmat2.mulRotY(-ctrl.rotv + rotate);
-			tmpmat2.mulRotX(-ctrl.roth);
+		// 描画関数作成
+		return function(texBufStruct, size, x, y, z, rot, transposed){
+			mat4.set(e3d.tmpmat1, e3d.tmpmat2);
+			mat4.translate(e3d.tmpmat2, [x, z, y]);
+			mat4.rotateY(e3d.tmpmat2, -ctrl.rotv + rotate);
+			mat4.rotateX(e3d.tmpmat2, -ctrl.roth);
 			if(!transposed){
 				var temph = angleh;
 				var tempv = (anglev + rot) % 4;
-				tmpmat2.mulScale(size, size, size);
+				mat4.scale(e3d.tmpmat2, [size, size, size]);
 			}else{
 				// 上下回転逆さ状態
 				var temph = 2 - angleh;
 				var tempv = (4 - anglev + rot) % 4;
-				tmpmat2.mulScale(-size, -size, size);
+				mat4.scale(e3d.tmpmat2, [-size, -size, size]);
 			}
-			e3d.setMatrix(tmpmat2);
+			e3d.setMatrix(e3d.tmpmat2);
 			e3d.bindTexcBuf(texBufStruct.getbuf(temph, tempv));
-			e3d.draw(0, 6);
+			e3d.drawTetra();
 		}
-		// 描画
-		e3d.bindBuf(this.vertBuffer, this.clorBuffer, null, this.faceBuffer);
+	}
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(e3d){
+		// 各パーツのテクスチャバッファリスト
+		this.texBufStruct_head  = this.createTexuvList(e3d, 0.0, 0.000, 0.125, 0.125, 0);
+		this.texBufStruct_body  = this.createTexuvList(e3d, 0.0, 0.375, 0.125, 0.125, 0);
+		this.texBufStruct_foot1 = this.createTexuvList(e3d, 0.00, 0.75, 0.0625, 0.0625, 0);
+		this.texBufStruct_foot2 = this.createTexuvList(e3d, 0.25, 0.75, 0.0625, 0.0625, 0);
+		this.texBufStruct_hand  = this.createTexuv(e3d, 0, 0.9375, 0.0625, 0.0625);
+		this.texBufStruct_hairr = this.createTexuvList(e3d, 0.5, 0.000, 0.125, 0.125, 0);
+		this.texBufStruct_hairl = this.createTexuvList(e3d, 0.5, 0.000, 0.125, 0.125, 1);
+		this.texBufStruct_tail  = this.createTexuvList(e3d, 0.5, 0.375, 0.125, 0.125, 0);
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(e3d, mat, ctrl, rotate, action, x, y, z, size){
+		// 描画関数作成
+		var drawParts = this.createDrawFunc(e3d, mat, ctrl, rotate, x, y, z, size);
 		
 		if(action > 0){
 			// 走る
@@ -269,39 +232,20 @@ function BillballCharacter(){
 // ----------------------------------------------------------------
 
 // 影クラス
-function Shadow(texFile){
+function Shadow(){
 	this.vertBuffer;
-	this.clorBuffer;
-	this.texcBuffer;
-	this.faceBuffer;
 	this.texture;
 	
 	// ----------------------------------------------------------------
 	// 初期化
 	this.init = function(e3d){
 		var vert = new Array();
-		var clor = new Array();
-		var texc = new Array();
-		var face = new Array();
 		vert.push(-0.5, 0.05,  0.5);
 		vert.push( 0.5, 0.05,  0.5);
 		vert.push( 0.5, 0.05, -0.5);
 		vert.push(-0.5, 0.05, -0.5);
-		texc.push(1.0, 0.0);
-		texc.push(0.0, 0.0);
-		texc.push(0.0, 1.0);
-		texc.push(1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		face.push(0, 1, 2);
-		face.push(0, 2, 3);
-		// VBOとIBOを作成し、データを転送
+		// VBOを作成し、データを転送
 		this.vertBuffer = e3d.createVBO(vert);
-		this.clorBuffer = e3d.createVBO(clor);
-		this.texcBuffer = e3d.createVBO(texc);
-		this.faceBuffer = e3d.createIBO(face);
 		
 		// 影画像作成
 		var canvas = document.createElement("canvas");
@@ -315,17 +259,17 @@ function Shadow(texFile){
 	
 	// ----------------------------------------------------------------
 	// 描画
-	var tmpmat = new Matrix();
 	this.draw = function(e3d, mat, x, y, z, size){
 		// 行列作成
-		tmpmat.copy(mat);
-		tmpmat.mulTranslate(x, z, y);
-		tmpmat.mulScale(size, 1, size);
-		e3d.setMatrix(tmpmat);
+		mat4.set(mat, e3d.tmpmat1);
+		mat4.translate(e3d.tmpmat1, [x, z, y]);
+		mat4.scale(e3d.tmpmat1, [size, 1, size]);
+		e3d.setMatrix(e3d.tmpmat1);
 		// 描画
 		e3d.bindTex(this.texture, 0);
-		e3d.bindBuf(this.vertBuffer, this.clorBuffer, this.texcBuffer, this.faceBuffer);
-		e3d.draw(0, 6);
+		e3d.bindVertBuf(this.vertBuffer);
+		e3d.bindTexcBuf(e3d.tetraTexcBuffer);
+		e3d.drawTetra();
 	}
 }
 

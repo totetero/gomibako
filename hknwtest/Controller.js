@@ -30,12 +30,13 @@ function Controller(){
 	// コントローラーの初期化 イベント登録
 	var that = this;
 	var vertBuffer;
-	var clorBuffer;
 	var texcBuffer;
 	var faceBuffer;
+	// タッチ操作か確認
+	var isTouch = ('ontouchstart' in window);
 	
 	// バッファに画像の情報を登録
-	var pushBuffer = function(vert, texc, clor, face, w, h, tx, ty, vx, vy){
+	var pushBuffer = function(vert, texc, face, w, h, tx, ty, vx, vy){
 		var vx0 = vx;
 		var vy0 = vy;
 		var vx1 = vx + w;
@@ -45,14 +46,10 @@ function Controller(){
 		var tx1 = (tx + w) / 256;
 		var ty1 = (ty + h) / 128;
 		var index = vert.length / 3;
-		vert.push(vx1, vy0, 0.0);
-		vert.push(vx0, vy0, 0.0);
-		vert.push(vx0, vy1, 0.0);
 		vert.push(vx1, vy1, 0.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
-		clor.push(1.0, 1.0, 1.0);
+		vert.push(vx0, vy1, 0.0);
+		vert.push(vx0, vy0, 0.0);
+		vert.push(vx1, vy0, 0.0);
 		texc.push(tx1, ty0);
 		texc.push(tx0, ty0);
 		texc.push(tx0, ty1);
@@ -68,40 +65,41 @@ function Controller(){
 		
 		var vert = new Array();
 		var texc = new Array();
-		var clor = new Array();
 		var face = new Array();
 		// 矢印キー
-		pushBuffer(vert, texc, clor, face, 40, 48,   0,  0, 10 + 36, this.h - 122 +  0);
-		pushBuffer(vert, texc, clor, face, 40, 48,  88,  0, 10 + 36, this.h - 122 +  0);
-		pushBuffer(vert, texc, clor, face, 40, 48,  48, 40, 10 + 36, this.h - 122 + 64);
-		pushBuffer(vert, texc, clor, face, 40, 48, 136, 40, 10 + 36, this.h - 122 + 64);
-		pushBuffer(vert, texc, clor, face, 48, 40,  40,  0, 10 + 64, this.h - 122 + 36);
-		pushBuffer(vert, texc, clor, face, 48, 40, 128,  0, 10 + 64, this.h - 122 + 36);
-		pushBuffer(vert, texc, clor, face, 48, 40,   0, 48, 10 +  0, this.h - 122 + 36);
-		pushBuffer(vert, texc, clor, face, 48, 40,  88, 48, 10 +  0, this.h - 122 + 36);
+		pushBuffer(vert, texc, face, 40, 48,   0,  0, 10 + 36, 10 + 64);
+		pushBuffer(vert, texc, face, 40, 48,  88,  0, 10 + 36, 10 + 64);
+		pushBuffer(vert, texc, face, 40, 48,  48, 40, 10 + 36, 10 +  0);
+		pushBuffer(vert, texc, face, 40, 48, 136, 40, 10 + 36, 10 +  0);
+		pushBuffer(vert, texc, face, 48, 40,  40,  0, 10 + 64, 10 + 36);
+		pushBuffer(vert, texc, face, 48, 40, 128,  0, 10 + 64, 10 + 36);
+		pushBuffer(vert, texc, face, 48, 40,   0, 48, 10 +  0, 10 + 36);
+		pushBuffer(vert, texc, face, 48, 40,  88, 48, 10 +  0, 10 + 36);
 		// ZXボタン
-		pushBuffer(vert, texc, clor, face, 64, 64, 176,  0, this.w - 138, this.h -  84);
-		pushBuffer(vert, texc, clor, face, 64, 64, 176, 64, this.w - 138, this.h -  84);
-		pushBuffer(vert, texc, clor, face, 64, 64, 176,  0, this.w -  74, this.h - 116);
-		pushBuffer(vert, texc, clor, face, 64, 64, 176, 64, this.w -  74, this.h - 116);
-		pushBuffer(vert, texc, clor, face, 24, 24, 128, 88, this.w - 118, this.h -  64);
-		pushBuffer(vert, texc, clor, face, 24, 24, 152, 88, this.w -  54, this.h -  96);
+		pushBuffer(vert, texc, face, 64, 64, 176,  0, this.w - 138, 20 +  0);
+		pushBuffer(vert, texc, face, 64, 64, 176, 64, this.w - 138, 20 +  0);
+		pushBuffer(vert, texc, face, 64, 64, 176,  0, this.w -  74, 20 + 32);
+		pushBuffer(vert, texc, face, 64, 64, 176, 64, this.w -  74, 20 + 32);
+		pushBuffer(vert, texc, face, 24, 24, 128, 88, this.w - 118, 40 +  0);
+		pushBuffer(vert, texc, face, 24, 24, 152, 88, this.w -  54, 40 + 32);
 		// スペースボタン
-		pushBuffer(vert, texc, clor, face, 128, 16, 0,  88, this.w / 2 - 64, this.h - 16);
-		pushBuffer(vert, texc, clor, face, 128, 16, 0, 104, this.w / 2 - 64, this.h - 16);
+		pushBuffer(vert, texc, face, 128, 16, 0,  88, this.w / 2 - 64, 0);
+		pushBuffer(vert, texc, face, 128, 16, 0, 104, this.w / 2 - 64, 0);
 		// VBOとIBOを作成し、データを転送
 		vertBuffer = e3d.createVBO(vert);
-		clorBuffer = e3d.createVBO(clor);
 		texcBuffer = e3d.createVBO(texc);
 		faceBuffer = e3d.createIBO(face);
 		
-		canvas.addEventListener("mousedown", mdnEvent, true);
-		canvas.addEventListener("mousemove", mmvEvent, true);
-		canvas.addEventListener("mouseup", mupEvent, true);
-		canvas.addEventListener("mouseout", mupEvent, true);
-		canvas.addEventListener("touchstart", mdnEvent, true);
-		canvas.addEventListener("touchmove", mmvEvent, true);
-		canvas.addEventListener("touchend", mupEvent, true);
+		if(isTouch){
+			canvas.addEventListener("touchstart", mdnEvent, true);
+			canvas.addEventListener("touchmove", mmvEvent, true);
+			canvas.addEventListener("touchend", mupEvent, true);
+		}else{
+			canvas.addEventListener("mousedown", mdnEvent, true);
+			canvas.addEventListener("mousemove", mmvEvent, true);
+			canvas.addEventListener("mouseup", mupEvent, true);
+			canvas.addEventListener("mouseout", mupEvent, true);
+		}
 		document.addEventListener("keydown", kdnEvent, true);
 		document.addEventListener("keyup", kupEvent, true);
 	}
@@ -110,7 +108,9 @@ function Controller(){
 	// コントローラーの描画
 	this.draw = function(e3d, mat){
 		e3d.setMatrix(mat);
-		e3d.bindBuf(vertBuffer, clorBuffer, texcBuffer, faceBuffer);
+		e3d.bindVertBuf(vertBuffer);
+		e3d.bindTexcBuf(texcBuffer);
+		e3d.bindFaceBuf(faceBuffer);
 		if(!this.kup){e3d.draw( 0, 6);}else{e3d.draw( 6, 6);}
 		if(!this.kdn){e3d.draw(12, 6);}else{e3d.draw(18, 6);}
 		if(!this.krt){e3d.draw(24, 6);}else{e3d.draw(30, 6);}
@@ -118,16 +118,6 @@ function Controller(){
 		if(!this.k_z){e3d.draw(48, 6);}else{e3d.draw(54, 6);} e3d.draw(72, 6);
 		if(!this.k_x){e3d.draw(60, 6);}else{e3d.draw(66, 6);} e3d.draw(78, 6);
 		if(!this.k_s){e3d.draw(84, 6);}else{e3d.draw(90, 6);}
-	}
-	
-	// ----------------------------------------------------------------
-	// 引数の座標を中心とするワールド行列を作成する
-	this.createWorldMatrix = function(mat, x, y, z){
-		mat.frustum(0.1, 0.1, 0.1, 100);
-		mat.mulTranslate(0, 0, -this.distance);
-		mat.mulRotX(this.roth);
-		mat.mulRotY(this.rotv);
-		mat.mulTranslate(-x, -z, -y);
 	}
 	
 	// ----------------------------------------------------------------
@@ -188,6 +178,10 @@ function Controller(){
 	
 	// マウスを押す
 	var mdnEvent = function(e){
+		// 座標を獲得する
+		var rect = e.target.getBoundingClientRect();
+		that.mousex = (isTouch ? e.changedTouches[0].clientX : e.clientX) - rect.left;
+		that.mousey = (isTouch ? e.changedTouches[0].clientY : e.clientY) - rect.top;
 		// コントローラークリックの確認
 		btnEvent();
 		if(mouseMode != 1){rotEvent0();}
@@ -199,8 +193,8 @@ function Controller(){
 	var mmvEvent = function(e){
 		// 座標を獲得する
 		var rect = e.target.getBoundingClientRect();
-		that.mousex = e.clientX - rect.left;
-		that.mousey = e.clientY - rect.top;
+		that.mousex = (isTouch ? e.changedTouches[0].clientX : e.clientX) - rect.left;
+		that.mousey = (isTouch ? e.changedTouches[0].clientY : e.clientY) - rect.top;
 		// マウス移動イベント
 		if(mouseMode == 1){btnEvent();}
 		else if(mouseMode == 2){rotEvent1();}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html><head>
 <meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
 <script type="text/javascript" src="Engine3d.js"></script>
 <script type="text/javascript" src="Controller.js"></script>
 <script type="text/javascript" src="Character.js"></script>
@@ -33,6 +34,7 @@ window.onload = function(){
 	// 初期化
 	var canvas = document.getElementById("screen");
 	e3d.init(canvas);
+	e3d.initTemplate();
 	ctrl.init(e3d, canvas);
 	character.init(e3d);
 	shadow.init(e3d);
@@ -102,32 +104,35 @@ function redrawScene(){
 	// ----------------------------------------------------------------
 	// 3D描画
 	e3d.clear();
-	e3d.setDepthMode(true);
-	e3d.setAlphaMode(0);
+	e3d.setMode(0);
 	// カメラ
-	var mat = new Matrix();
-	ctrl.createWorldMatrix(mat, player.x, player.y, player.z);
-	// マップ
-	e3d.bindTex(mapTexture, 1);
-	map.draw(e3d, mat);
+	mat4.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100, e3d.worldmat);
+	mat4.translate(e3d.worldmat, [0, 0, -ctrl.distance]);
+	mat4.rotateX(e3d.worldmat, ctrl.roth);
+	mat4.rotateY(e3d.worldmat, ctrl.rotv);
+	mat4.translate(e3d.worldmat, [-player.x, -player.z, -player.y]);
+	
 	// キャラクター
 	e3d.bindTex(playerTexture, 0);
-	player.draw(character, e3d, mat);
-	shadow.draw(e3d, mat, player.x, player.y, player.z - player.altitude, player.hsize);
+	player.draw(character, e3d, e3d.worldmat);
+	shadow.draw(e3d, e3d.worldmat, player.x, player.y, player.z - player.altitude, player.hsize);
+	
+	// マップ
+	e3d.setMode(3);
+	e3d.bindTex(mapTexture, 1);
+	map.draw(e3d, e3d.worldmat);
 	
 	// エフェクト
-	e3d.setAlphaMode(2);
-	e3d.bindTex(effect.texture, 0);
-	effect.draw(e3d, mat, ctrl, player.x, player.y, player.z + 1, player.hsize);
+	e3d.setMode(2);
+	effect.draw(e3d, e3d.worldmat, ctrl, player.x, player.y, player.z + 1, player.hsize);
 	
 	// ----------------------------------------------------------------
 	// 2D描画
-	e3d.setDepthMode(false);
-	e3d.setAlphaMode(0);
-	mat.ortho(0, 0, ctrl.w, ctrl.h);
+	e3d.setMode(1);
+	mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
 	// コントローラ
 	e3d.bindTex(ctrlTexture, 0);
-	ctrl.draw(e3d, mat);
+	ctrl.draw(e3d, e3d.worldmat);
 	
 	// ----------------------------------------------------------------
 	// ページに反映させる
@@ -219,61 +224,32 @@ function Player(){
 
 // エフェクトクラス
 function Effect(){
-	this.vertBuffer;
-	this.clorBuffer;
-	this.texcBuffer;
-	this.faceBuffer;
-	this.texture;
-	
+	this.textureList;
 	this.effectList;
 	
 	// ----------------------------------------------------------------
 	// 初期化
 	this.init = function(){
-		var vert = new Array();
-		var clor = new Array();
-		var texc = new Array();
-		var face = new Array();
-		var pushbuf = function(r, g, b){
-			var index = vert.length / 3;
-			vert.push( 0.5,  0.5, 0.0);
-			vert.push(-0.5,  0.5, 0.0);
-			vert.push(-0.5, -0.5, 0.0);
-			vert.push( 0.5, -0.5, 0.0);
-			texc.push(1.0, 0.0);
-			texc.push(0.0, 0.0);
-			texc.push(0.0, 1.0);
-			texc.push(1.0, 1.0);
-			clor.push(r, g, b);
-			clor.push(r, g, b);
-			clor.push(r, g, b);
-			clor.push(r, g, b);
-			face.push(index + 0, index + 1, index + 2);
-			face.push(index + 0, index + 2, index + 3);
-		}
-		pushbuf(1.0, 1.0, 1.0);
-		pushbuf(1.0, 0.0, 0.0);
-		pushbuf(0.0, 1.0, 0.0);
-		pushbuf(0.0, 0.0, 1.0);
-		pushbuf(0.0, 1.0, 1.0);
-		pushbuf(1.0, 0.0, 1.0);
-		pushbuf(1.0, 1.0, 0.0);
-		// VBOとIBOを作成し、データを転送
-		this.vertBuffer = e3d.createVBO(vert);
-		this.clorBuffer = e3d.createVBO(clor);
-		this.texcBuffer = e3d.createVBO(texc);
-		this.faceBuffer = e3d.createIBO(face);
-		
 		// 画像作成
-		var canvas = document.createElement("canvas");
-		canvas.width = canvas.height = 32;
-		var g = canvas.getContext("2d");
-		var grd = g.createRadialGradient(16, 16, 0, 16, 16, 15);
-		grd.addColorStop(0, "#ffffff");
-		grd.addColorStop(1, "#000000");
-		g.fillStyle = grd;
-		g.fillRect(0, 0, 32, 32);
-		this.texture = e3d.createTexture(canvas);
+		this.textureList = new Array();
+		var makeTex = function(color){
+			var canvas = document.createElement("canvas");
+			canvas.width = canvas.height = 32;
+			var g = canvas.getContext("2d");
+			var grd = g.createRadialGradient(16, 16, 0, 16, 16, 15);
+			grd.addColorStop(0, color);
+			grd.addColorStop(1, "#000000");
+			g.fillStyle = grd;
+			g.fillRect(0, 0, 32, 32);
+			return e3d.createTexture(canvas);
+		} 
+		this.textureList[0] = makeTex("#fff");
+		this.textureList[1] = makeTex("#0ff");
+		this.textureList[2] = makeTex("#f0f");
+		this.textureList[3] = makeTex("#ff0");
+		this.textureList[4] = makeTex("#f00");
+		this.textureList[5] = makeTex("#0f0");
+		this.textureList[6] = makeTex("#00f");
 		
 		// エフェクトリスト作成
 		this.effectList = new Array();
@@ -283,7 +259,7 @@ function Effect(){
 			this.effectList[i].py = Math.random() * 7 - 1;
 			this.effectList[i].pz = Math.random() * 10;
 			this.effectList[i].vz = Math.random() * -0.03 - 0.01;
-			this.effectList[i].type = Math.floor(Math.random() * 7);
+			this.effectList[i].type = Math.floor(Math.random() * this.textureList.length);
 			this.effectList[i].size = Math.random() * 1.5 + 0.5;
 		}
 	}
@@ -303,18 +279,19 @@ function Effect(){
 	
 	// ----------------------------------------------------------------
 	// 描画
-	var tmpmat = new Matrix();
 	this.draw0 = function(e3d, mat, ctrl, type, x, y, z, size){
 		// 行列作成
-		tmpmat.copy(mat);
-		tmpmat.mulTranslate(x, z, y);
-		tmpmat.mulRotY(-ctrl.rotv);
-		tmpmat.mulRotX(-ctrl.roth);
-		tmpmat.mulScale(size, size, 1);
-		e3d.setMatrix(tmpmat);
+		mat4.set(mat, e3d.tmpmat1);
+		mat4.translate(e3d.tmpmat1, [x, z, y]);
+		mat4.rotateY(e3d.tmpmat1, -ctrl.rotv);
+		mat4.rotateX(e3d.tmpmat1, -ctrl.roth);
+		mat4.scale(e3d.tmpmat1, [size, size, 1]);
+		e3d.setMatrix(e3d.tmpmat1);
 		// 描画
-		e3d.bindBuf(this.vertBuffer, this.clorBuffer, this.texcBuffer, this.faceBuffer);
-		e3d.draw(6 * type, 6);
+		e3d.bindTex(this.textureList[type], 0);
+		e3d.bindVertBuf(e3d.tetraVertBuffer);
+		e3d.bindTexcBuf(e3d.tetraTexcBuffer);
+		e3d.drawTetra();
 	}
 	this.draw = function(e3d, mat, ctrl){
 		for(var i = 0; i < this.effectList.length; i++){
