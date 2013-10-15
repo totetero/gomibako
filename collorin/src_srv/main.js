@@ -6,6 +6,9 @@ var MongoStore = require("connect-mongo")(express);
 // サーバ設定
 var app = express();
 app.configure(function(){
+	app.use(express.logger("dev"));
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
 	app.use(express.cookieParser());
 	app.use(express.session({
 		secret: "topsecret",
@@ -21,15 +24,17 @@ app.configure(function(){
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
+	app.use(express.static(__dirname + "/../public"));
+	app.use(app.router);
+	app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
 });
 
 // データベース接続
 mongoose.connect("mongodb://localhost/test");
 
-// ログイン認証系API
-require("./login").init(app);
 // 各ページ設定
-require("./pages").init(app);
+require("./pages/auth").init(app);
+require("./pages/top").init(app);
 
 app.listen(10080);
 console.log("Server running at http://127.0.0.1:10080/");

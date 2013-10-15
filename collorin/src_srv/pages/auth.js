@@ -1,8 +1,8 @@
 var passport = require("passport");
-var TwitterStrategy = require('passport-twitter').Strategy;
+var TwitterStrategy = require("passport-twitter").Strategy;
 
 // データベースモデル
-var UserModel = require("./model").UserModel;
+var UserModel = require("../models/user").UserModel;
 
 // Passport sessionのセットアップ
 passport.serializeUser(function(user, done){done(null, user._id);});
@@ -15,12 +15,6 @@ passport.use(new TwitterStrategy({
 		callbackURL: "http://127.0.0.1:10080/auth/twitter/callback"
 	},
 	function(token, tokenSecret, profile, done){
-		// ログイン成功
-		passport.session.oauth = {};
-		passport.session.oauth.access_token = token;
-		passport.session.userinfo = {};
-		passport.session.userinfo.id = profile.id;
-		// データベース確認
 		UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err, user){
 			if(err){return done(err);}
 			if(user){
@@ -42,6 +36,16 @@ passport.use(new TwitterStrategy({
 	}
 ));
 
+// ログイン確認関数
+exports.loginCheck = function(req, res, next){
+	if(req.isAuthenticated()){
+		next();
+	}else{
+		res.redirect("/login.html");
+	}
+};
+
+// ページ設定
 exports.init = function(app){
 	// twitterでのログイン
 	app.get("/auth/twitter", passport.authenticate("twitter"));
