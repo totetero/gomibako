@@ -5,7 +5,14 @@
 		<title>ログイン画面</title>
 	</head>
 	<body>
-		<a href="/auth/twitter">twitterでログイン</a>
+		<a href="/auth/twitter">twitterでログイン</a><br>
+		<br>
+		<form action="/auth/local" method="post">
+			ローカルログイン(テスト用)<br>
+			ユーザ名: <input type="text" name="user" value="test01" placeholder="ユーザー名"/><br>
+			パスワード: <input type="password" name="password" value="test" placeholder="パスワード"/><br>
+			<input type="submit" value="ログイン" />
+		</form>
 	</body>
 </html>
 

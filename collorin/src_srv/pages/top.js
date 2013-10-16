@@ -4,7 +4,7 @@ var UserModel = require("../models/user").UserModel;
 exports.init = function(app){
 	// トップページ
 	app.get("/", function(req, res){
-		res.send("name = " + req.user.uname + " count = " + req.user.count);
+		res.send("name = " + req.user.uname + " count = " + req.user.count + "<br><a href='/logout'>ログアウト</a>");
 	});
 }
 
