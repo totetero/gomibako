@@ -3,34 +3,30 @@ var passport = require("passport");
 var mongoose = require("mongoose");
 var MongoStore = require("connect-mongo")(express);
 
+// データベース接続
+mongoose.connect("mongodb://localhost/totetest");
+
 // サーバ設定
 var app = express();
 app.configure(function(){
+	app.set("views", __dirname + "/../src_cli");
+	app.set("view engine", "ejs");
 	app.use(express.logger("dev"));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(express.cookieParser());
 	app.use(express.session({
-		secret: "topsecret",
-		store: new MongoStore({
-			db: "totetest",
-			host: "127.0.0.1",
-			clear_interval: 60 * 60
-		}),
-		cookie: {
-			httpOnly: false,
-			maxAge: new Date(Date.now() + 60 * 60 * 1000)
-		}
+		secret: "totalbeat",
+		store: new MongoStore({db: mongoose.connections[0].db}),
+		cookie: {httpOnly: false, maxAge: 60 * 60 * 1000}
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.use(express.static(__dirname + "/../public"));
 	app.use(app.router);
+	app.use(express.static(__dirname + "/../public"));
 	app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
+	app.use(function(req, res){res.status(404).render("404.ejs");});
 });
-
-// データベース接続
-mongoose.connect("mongodb://localhost/test");
 
 // 各ページ設定
 require("./pages/auth").init(app);

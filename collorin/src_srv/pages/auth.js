@@ -36,20 +36,33 @@ passport.use(new TwitterStrategy({
 	}
 ));
 
-// ログイン確認関数
-exports.loginCheck = function(req, res, next){
-	if(req.isAuthenticated()){
-		next();
-	}else{
-		res.redirect("/login.html");
-	}
-};
-
 // ページ設定
 exports.init = function(app){
 	// twitterでのログイン
 	app.get("/auth/twitter", passport.authenticate("twitter"));
 	// twitterでのログインから戻ってきたとき
 	app.get("/auth/twitter/callback", passport.authenticate("twitter", {successRedirect: "/", failureRedirect: "/"}));
+
+	// ログインを促す画面
+	app.get("/login", function(req, res){
+		res.render("login.ejs");
+	});
+
+	// ログインチェック処理
+	app.all("*", function(req, res, next){
+		if(req.isAuthenticated()){
+			next();
+		}else if(req.url.indexOf("/login") == 0){
+			next();
+		}else{
+			res.redirect("/login")
+		}
+	});
+
+	// ログアウト処理
+	app.get("/logout", function(req, res){
+		req.logout();
+		res.render("logout.ejs");
+	});
 };
 
