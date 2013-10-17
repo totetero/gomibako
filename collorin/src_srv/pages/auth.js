@@ -1,6 +1,7 @@
 var passport = require("passport");
 var LocalStrategy = require("passport-local").Strategy;
 var TwitterStrategy = require("passport-twitter").Strategy;
+var crypto = require("crypto");
 
 // データベースモデル
 var UserModel = require("../models/user").UserModel;
@@ -9,48 +10,45 @@ var UserModel = require("../models/user").UserModel;
 passport.serializeUser(function(user, done){done(null, user._id);});
 passport.deserializeUser(function(id, done){UserModel.findById(id, function(err, user){done(err, user);});});
 
-// ハッシュ値 TODO 確認
-var crypto = require("crypto");
-var secretKey = "some_random_secret";
+// ハッシュ値
 var getHash = function(target){
-	var sha = crypto.createHmac("sha256", secretKey);
-	sha.update(target);
-	return sha.digest("hex");
+	var hmac = crypto.createHmac("sha256", "testSecretKey");
+	return hmac.update(target).digest("hex");
 };
-
-// TODO 非同期処理 process.nextTick(function(){});
 
 // ローカル用設定
 passport.use(new LocalStrategy(
 	{usernameField: "user", passwordField: "password"},
 	function(name, pass, done){
-		UserModel.findOne({domain: "local", uname: name}, function(err, user){
-			if(err){return done(err);}
-			if(user){
-				if(getHash(pass) == user.uid){
-					// 認証成功 データベース更新
-					user.count++;
-					user.save();
-					return done(null, user);
+		process.nextTick(function(){
+			UserModel.findOne({domain: "local", uname: name}, function(err, user){
+				if(err){return done(err);}
+				if(user){
+					if(getHash(pass) == user.uid){
+						// 認証成功 データベース更新
+						user.count++;
+						user.save();
+						return done(null, user);
+					}else{
+						return done(null, false, {message: "パスワードが間違っています。"});
+					}
 				}else{
-					return done(null, false, {message: "パスワードが間違っています。"});
+					var testFlag = (name == "test01" || name == "test02" || name == "test03");
+					if(testFlag){
+						// テストユーザーのデータベース登録
+						user = new UserModel();
+						user.domain = "local";
+						user.uid = getHash(pass);
+						user.uname = name;
+						user.imgurl = "";
+						user.count = 1;
+						user.save();
+						return done(null, user);
+					}else{
+						return done(null, false, {message: "ユーザーが見つかりませんでした。"});
+					}
 				}
-			}else{
-				var testFlag = (name == "test01" || name == "test02" || name == "test03");
-				if(testFlag){
-					// テストユーザーのデータベース登録
-					user = new UserModel();
-					user.domain = "local";
-					user.uid = getHash(pass);
-					user.uname = name;
-					user.imgurl = "";
-					user.count = 1;
-					user.save();
-					return done(null, user);
-				}else{
-					return done(null, false, {message: "ユーザーが見つかりませんでした。"});
-				}
-			}
+			});
 		});
 	}
 ));
@@ -62,23 +60,25 @@ passport.use(new TwitterStrategy({
 		callbackURL: "http://127.0.0.1:10080/auth/twitter/callback"
 	},
 	function(token, tokenSecret, profile, done){
-		UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err, user){
-			if(err){return done(err);}
-			if(user){
-				// データベース更新
-				user.count++;
-				user.save();
-			}else{
-				// データベース登録
-				user = new UserModel();
-				user.domain = "twitter.com";
-				user.uid = profile.id;
-				user.uname = profile.username;
-				user.imgurl = profile._json.profile_image_url;
-				user.count = 1;
-				user.save();
-			}
-			return done(null, user);
+		process.nextTick(function(){
+			UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err, user){
+				if(err){return done(err);}
+				if(user){
+					// データベース更新
+					user.count++;
+					user.save();
+				}else{
+					// データベース登録
+					user = new UserModel();
+					user.domain = "twitter.com";
+					user.uid = profile.id;
+					user.uname = profile.username;
+					user.imgurl = profile._json.profile_image_url;
+					user.count = 1;
+					user.save();
+				}
+				return done(null, user);
+			});
 		});
 	}
 ));
@@ -89,7 +89,7 @@ exports.init = function(app){
 	app.post("/auth/local", passport.authenticate("local", {successRedirect: "/", failureRedirect: "/auth/local/fail"}));
 	// ローカルログイン失敗
 	app.get("/auth/local/fail", function(req, res){res.send("ログイン失敗<br><a href='/'>戻る</a>");});
-	
+
 	// twitterでのログイン
 	app.get("/auth/twitter", passport.authenticate("twitter"));
 	// twitterでのログインから戻ってきたとき
