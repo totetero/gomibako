@@ -30,6 +30,7 @@ app.configure(function(){
 
 // 各ページ設定
 require("./pages/auth").init(app);
+require("./pages/game").init(app);
 require("./pages/top").init(app);
 require("./pages/mypage").init(app);
 require("./pages/stage").init(app);

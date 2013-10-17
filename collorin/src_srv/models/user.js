@@ -5,7 +5,8 @@ var UserSchema = new mongoose.Schema({
 	uid: String,
 	uname: String,
 	imgurl: String,
-	count : Number
+	count: Number,
+	gamestat: Boolean
 });
 mongoose.model('User', UserSchema);
 exports.UserModel = mongoose.model('User');

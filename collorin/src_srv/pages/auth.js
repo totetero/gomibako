@@ -86,9 +86,9 @@ passport.use(new TwitterStrategy({
 // ページ設定
 exports.init = function(app){
 	// ローカルログイン
-	app.post("/auth/local", passport.authenticate("local", {successRedirect: "/", failureRedirect: "/auth/local/fail"}));
-	// ローカルログイン失敗
-	app.get("/auth/local/fail", function(req, res){res.send("ログイン失敗<br><a href='/'>戻る</a>");});
+	app.post("/auth/local", passport.authenticate("local", {successRedirect: "/", failureRedirect: "/auth/fail"}));
+	// ログイン失敗
+	app.get("/auth/fail", function(req, res){res.send("ログイン失敗<br><a href='/'>戻る</a>");});
 
 	// twitterでのログイン
 	app.get("/auth/twitter", passport.authenticate("twitter"));
@@ -107,7 +107,7 @@ exports.init = function(app){
 		}else if(req.url.indexOf("/login") == 0){
 			next();
 		}else{
-			res.redirect("/login")
+			res.redirect("/login");
 		}
 	});
 
