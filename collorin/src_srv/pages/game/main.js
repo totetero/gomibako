@@ -23,22 +23,23 @@ exports.isPlay = function(user){
 // ゲーム情報
 exports.getdat = function(user, callback){
 	var jdat = {};
-	var imgs = [];
+	var imgs = {};
 
-	imgs.push({tag: "player", dir: "./src_cli/game/img/player.png"});
-	imgs.push({tag: "player2", dir: "./src_cli/game/img/player.png"});
+	imgs["player"] = "./src_cli/game/img/player.png";
+	imgs["player2"] = "./src_cli/game/img/player.png";
 
 	// 画像ロード
 	jdat.imgs = {};
-	var count = imgs.length;
-	for(var i = 0; i < imgs.length; i++){
-		(function(imgs){
-			fs.readFile(imgs.dir, function (err, data){
-				jdat.imgs[imgs.tag] = "data:image/png;base64," + new Buffer(data).toString("base64");
+	var count = 0;
+	for(var i in imgs){count++;}
+	for(var i in imgs){
+		(function(tag){
+			fs.readFile(imgs[i], function (err, data){
+				jdat.imgs[tag] = "data:image/png;base64," + new Buffer(data).toString("base64");
 				// すべての画像ロードが終わったらコールバック
 				if(--count == 0){callback(JSON.stringify(jdat));}
 			});
-		})(imgs[i]);
+		})(i);
 	}
 };
 
