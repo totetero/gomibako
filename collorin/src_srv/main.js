@@ -22,6 +22,7 @@ app.configure(function(){
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
+	app.use(express.compress());
 	app.use(app.router);
 	app.use(express.static(__dirname + "/../public"));
 	app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
@@ -30,7 +31,7 @@ app.configure(function(){
 
 // 各ページ設定
 require("./pages/auth").init(app);
-require("./pages/game").init(app);
+require("./pages/game/index").init(app);
 require("./pages/top").init(app);
 require("./pages/mypage").init(app);
 require("./pages/stage").init(app);
