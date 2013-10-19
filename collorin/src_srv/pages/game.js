@@ -68,6 +68,8 @@ exports.init = function(app){
 	app.all("*", function(req, res, next){
 		if(!req.user || req.user.gamestat != 1){
 			next();
+		}else if(req.url == "/jsx/game.js"){
+			next();
 		}else if(req.url.indexOf("/sound") == 0){
 			next();
 		}else{
