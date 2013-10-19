@@ -3,7 +3,7 @@ JSX = $(DIR)/node_modules/jsx/bin/jsx
 MIN = $(DIR)/node_modules/uglify-js/bin/uglifyjs
 JSX_DST = $(DIR)/public/jsx
 
-dafault: srv
+dafault: game srv
 
 game:
 	cd $(DIR)/src_cli/game/src ; $(JSX) --output $(JSX_DST)/game.js Main.jsx

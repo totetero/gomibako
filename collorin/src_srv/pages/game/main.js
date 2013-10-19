@@ -23,11 +23,23 @@ exports.isPlay = function(user){
 // ゲーム情報
 exports.getdat = function(user, callback){
 	var jdat = {};
+	var imgs = [];
+
+	imgs.push({tag: "player", dir: "./src_cli/game/img/player.png"});
+	imgs.push({tag: "player2", dir: "./src_cli/game/img/player.png"});
+
+	// 画像ロード
 	jdat.imgs = {};
-	fs.readFile("./src_cli/game/img/player.png", function (err, data){
-		jdat.imgs.player = "data:image/png;base64," + new Buffer(data).toString("base64");
-		callback(JSON.stringify(jdat));
-	});
+	var count = imgs.length;
+	for(var i = 0; i < imgs.length; i++){
+		(function(imgs){
+			fs.readFile(imgs.dir, function (err, data){
+				jdat.imgs[imgs.tag] = "data:image/png;base64," + new Buffer(data).toString("base64");
+				// すべての画像ロードが終わったらコールバック
+				if(--count == 0){callback(JSON.stringify(jdat));}
+			});
+		})(imgs[i]);
+	}
 };
 
 /*
