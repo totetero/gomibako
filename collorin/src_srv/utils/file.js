@@ -11,19 +11,25 @@ exports.file2json = function(jdat, js, css, imgs, callback){
 	for(var i in imgs){count++;}
 	// ジャバスクリプトロード
 	for(var i = 0; i < js.length; i++){
-		fs.readFile(js[i], "utf-8", function (err, data){
-			jdat.load.js.push(data);
-			// すべてのロードが終わったらコールバック
-			if(--count == 0){callback();}
-		});
+		(function(index){
+			jdat.load.js[index] = null;
+			fs.readFile(js[i], "utf-8", function (err, data){
+				jdat.load.js[index] = data;
+				// すべてのロードが終わったらコールバック
+				if(--count == 0){callback();}
+			});
+		})(i);
 	}
 	// スタイルシートロード
 	for(var i = 0; i < css.length; i++){
-		fs.readFile(css[i], "utf-8", function (err, data){
-			jdat.load.css.push(data);
-			// すべてのロードが終わったらコールバック
-			if(--count == 0){callback();}
-		});
+		(function(index){
+			jdat.load.css[index] = null;
+			fs.readFile(css[i], "utf-8", function (err, data){
+				jdat.load.css[index] = data;
+				// すべてのロードが終わったらコールバック
+				if(--count == 0){callback();}
+			});
+		})(i);
 	}
 	// 画像ロード
 	for(var i in imgs){

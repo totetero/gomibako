@@ -18,7 +18,7 @@ app.configure(function(){
 	app.use(express.session({
 		secret: "totalbeat",
 		store: new MongoStore({db: mongoose.connections[0].db}),
-		cookie: {httpOnly: false, maxAge: 60 * 60 * 1000}
+		cookie: {httpOnly: false, maxAge: 30 * 24 * 60 * 60 * 1000}
 	}));
 	app.use(passport.initialize());
 	app.use(passport.session());

@@ -59,7 +59,7 @@ exports.init = function(app){
 			next();
 		}else{
 			if(req.url == "/game/hoge"){
-				res.render("game/index.ejs");
+				res.render("common/index.ejs", {title: "すごろく", daturl: "/getdat"});
 			}else{
 				res.redirect("/game/hoge"); // TODO 正しいステージ名をDBから抜き出してつける
 			}
@@ -69,7 +69,7 @@ exports.init = function(app){
 	// ゲーム開始命令
 	app.get("/game/:stage", function(req, res){
 		game.init(req.user, req.params.stage);
-		res.render("game/index.ejs");
+		res.render("common/index.ejs", {title: "すごろく", daturl: "/getdat"});
 	});
 };
 

@@ -1,5 +1,5 @@
 // ファイル操作
-var file = require("./file");
+var file = require("../../utils/file");
 
 // データベースモデル
 var UserModel = require("../../models/user").UserModel;
