@@ -22,6 +22,8 @@ class Main{
 			// メインループ開始
 			Ctrl.init();
 			Main.mainloop();
+			// ローディング表記除去
+			dom.document.body.removeChild(dom.document.getElementById("loading"));
 		});
 	}
 

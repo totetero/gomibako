@@ -7,6 +7,22 @@
 		<title><%=title %></title>
 		<script type="text/javascript">
 			window.onload = function(){
+				// ローディング表記
+				var action = 0;
+				var loadingFunc = function(){
+					var div = document.getElementById("loadingStr");
+					if(div){
+						switch(action++ % 4){
+							case 0: div.innerHTML = "loading"; break;
+							case 1: div.innerHTML = "loading."; break;
+							case 2: div.innerHTML = "loading.."; break;
+							case 3: div.innerHTML = "loading..."; break;
+						}
+						setTimeout(loadingFunc, 333);
+					}
+				}
+				loadingFunc();
+
 				// データのロード
 				var xhr = new XMLHttpRequest();
 				xhr.open('GET', "<%=daturl %>");
@@ -27,13 +43,18 @@
 						var script = document.createElement("script");
 						script.type = "text/javascript";
 						script.innerHTML = js[i];
-						document.body.appendChild(script);
+						document.head.appendChild(script);
 					}
 				});
 				xhr.send();
 			}
 		</script>
 	</head>
-	<body></body>
+	<body>
+		<div id="loading" style="position:absolute;width:100%;height:100%;z-index:9999;background-color:black;">
+			<div id="loadingStr" style="color:white;margin:10px;">
+			</div>
+		</div>
+	</body>
 </html>
 
