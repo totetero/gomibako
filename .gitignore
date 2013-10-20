@@ -1,6 +1,6 @@
 node_modules
 
-public/jsx
+src_cli/game/jsx
 
 .DS_Store
 *.swp

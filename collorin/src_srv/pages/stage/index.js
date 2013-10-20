@@ -1,5 +1,5 @@
 // データベースモデル
-var UserModel = require("../models/user").UserModel;
+var UserModel = require("../../models/user").UserModel;
 
 exports.init = function(app){
 	// ステージ選択ページ

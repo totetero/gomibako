@@ -55,8 +55,6 @@ exports.init = function(app){
 	app.all("*", function(req, res, next){
 		if(!req.user || !game.isPlay(req.user)){
 			next();
-		}else if(req.url == "/jsx/game.js"){
-			next();
 		}else if(req.url.indexOf("/sound") == 0){
 			next();
 		}else{
@@ -74,3 +72,4 @@ exports.init = function(app){
 		res.render("game/index.ejs");
 	});
 };
+

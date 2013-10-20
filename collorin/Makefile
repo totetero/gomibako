@@ -1,15 +1,15 @@
 DIR = $(shell pwd)
 JSX = $(DIR)/node_modules/jsx/bin/jsx
 MIN = $(DIR)/node_modules/uglify-js/bin/uglifyjs
-JSX_DST = $(DIR)/public/jsx
+GAME_DST = $(DIR)/src_cli/game/jsx
 
 dafault: game srv
 
 game:
-	cd $(DIR)/src_cli/game/src ; $(JSX) --output $(JSX_DST)/game.js Main.jsx
+	cd $(DIR)/src_cli/game/src ; $(JSX) --output $(GAME_DST)/game.js Main.jsx
 
 min:
-	$(MIN) -c -o $(JSX_DST)/game.min.js $(JSX_DST)/game.js
+	$(MIN) -c -o $(GAME_DST)/game.min.js $(GAME_DST)/game.js
 
 srv:
 	node $(DIR)/src_srv/main.js

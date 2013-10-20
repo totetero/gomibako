@@ -4,7 +4,7 @@ var TwitterStrategy = require("passport-twitter").Strategy;
 var crypto = require("crypto");
 
 // データベースモデル
-var UserModel = require("../models/user").UserModel;
+var UserModel = require("../../models/user").UserModel;
 
 // Passport sessionのセットアップ
 passport.serializeUser(function(user, done){done(null, user._id);});

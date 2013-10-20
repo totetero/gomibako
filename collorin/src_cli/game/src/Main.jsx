@@ -1,5 +1,8 @@
+import 'js.jsx';
 import 'js/web.jsx';
 import 'timer.jsx';
+
+import 'Ctrl.jsx';
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -11,21 +14,23 @@ class Main{
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', "/getdat");
-		xhr.addEventListener("load", function(e : Event){
-			var jdat = JSON.parse(xhr.responseText);
-			// 画像準備
-			Main.imgs = {} : Map.<HTMLImageElement>;
-			Main.regImg(jdat["imgs"] as Map.<string>, function(){
-				// テスト
-				var canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
-				var context = canvas.getContext("2d") as CanvasRenderingContext2D;
-				dom.document.body.appendChild(canvas);
-				context.drawImage(Main.imgs["player"], 0, 0);
-			});
+		var jdat = js.global["jdat"] as variant;
+		// 画像準備
+		Main.imgs = {} : Map.<HTMLImageElement>;
+		Main.regImg(jdat["load"]["imgs"] as Map.<string>, function(){
+			// メインループ開始
+			Ctrl.init();
+			Main.mainloop();
 		});
-		xhr.send();
+		log js.global["jdat"];
+	}
+
+	// ----------------------------------------------------------------
+	// mainloop関数
+	static function mainloop() : void{
+		Ctrl.calc();
+		Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
+		Timer.setTimeout(Main.mainloop, 33);
 	}
 
 	// ----------------------------------------------------------------
