@@ -36,6 +36,6 @@ exports.getdat = function(user, callback){
 
 	file.file2json(jdat, js, css, imgs, function(){
 		callback(JSON.stringify(jdat));
-	})
+	});
 };
 

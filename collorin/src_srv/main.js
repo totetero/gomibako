@@ -35,6 +35,7 @@ require("./pages/game/index").init(app);
 require("./pages/top/index").init(app);
 require("./pages/mypage/index").init(app);
 require("./pages/stage/index").init(app);
+require("./pages/chat/index").init(app);
 
 app.listen(10080);
 console.log("Server running at http://127.0.0.1:10080/");

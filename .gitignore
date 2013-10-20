@@ -1,7 +1,10 @@
 node_modules
 
 src_cli/game/jsx/*.js
-src_cli/game/jsx/*.min.js
+src_cli/chat/jsx/*.js
+
+*.min.js
+*.min.css
 
 .DS_Store
 *.swp
