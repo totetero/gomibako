@@ -3,6 +3,7 @@ import 'js/web.jsx';
 import 'timer.jsx';
 
 import 'Ctrl.jsx';
+import 'Character.jsx';
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -11,6 +12,9 @@ import 'Ctrl.jsx';
 // メインクラス
 class Main{
 	static var imgs : Map.<HTMLImageElement>;
+	static var clist : DrawUnit[];
+	static var player : DrawPlayer;
+
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
@@ -19,8 +23,11 @@ class Main{
 		Main.imgs = {} : Map.<HTMLImageElement>;
 		Main.regImg(jdat["load"]["imgs"] as Map.<string>, function(){
 			delete jdat["load"]["imgs"];
-			// メインループ開始
+			// 初期化
 			Ctrl.init();
+			Main.clist = new DrawUnit[];
+			Main.clist.push(Main.player = new DrawPlayer(Main.imgs["player"]));
+			// メインループ開始
 			Main.mainloop();
 			// ローディング表記除去
 			dom.document.body.removeChild(dom.document.getElementById("loading"));
@@ -41,6 +48,16 @@ class Main{
 		Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
 		//Ctrl.context.drawImage(this.canvas, -x, -y);
 		Ctrl.context.restore();
+
+		// プレイヤー描画準備
+		var x = 0;
+		var y = 0;
+		var z = 0;
+		var r = Math.PI / 180 * 90;
+		Main.player.preDraw(x, y, z, r, 1.2);
+		Main.player.setPose(0);
+		// キャラクター描画
+		DrawUnit.drawList(Main.clist);
 
 		Timer.setTimeout(Main.mainloop, 33);
 	}
