@@ -53,10 +53,9 @@ class Main{
 		Ctrl.calc();
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 
-		// カメラ位置
+		// カメラ位置を操作プレイヤーに会わせる
 		var x = Main.player[0].x0;
 		var y = Main.player[0].y0;
-
 
 		// タッチ
 		if(Main.mdn != Ctrl.mdn){
@@ -69,11 +68,15 @@ class Main{
 				var y0 = (Ctrl.my - Ctrl.canvas.height * 0.5) / (Ctrl.scale * Ctrl.sinh);
 				Main.field.mx = (x0 *  c + y0 * s) + x;
 				Main.field.my = (x0 * -s + y0 * c) + y;
+
+				// テスト 操作プレイヤーの台詞
+				Main.player[0].balloon.setText("なのです！", -1);
 			}
 		}
-		// プレイヤー計算
+		// 操作プレイヤーの移動先設定
 		Main.player[0].x1 = Main.field.mx;
 		Main.player[0].y1 = Main.field.my;
+		// プレイヤー計算
 		for(var i = 0; i < Main.player.length; i++){Main.player[i].calc();}
 
 		// フィールド描画
@@ -172,7 +175,8 @@ class Field{
 
 // プレイヤークラス
 class Player{
-	var drawCharacter : DrawPlayer;
+	var character : DrawPlayer;
+	var balloon : DrawBalloon;
 	var x0 : number;
 	var y0 : number;
 	var x1 : number;
@@ -183,8 +187,10 @@ class Player{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(x : number, y : number){
-		this.drawCharacter = new DrawPlayer(Main.imgs["player"]);
-		Main.clist.push(this.drawCharacter);
+		this.character = new DrawPlayer(Main.imgs["player"]);
+		this.balloon = new DrawBalloon();
+		Main.clist.push(this.character);
+		Main.clist.push(this.balloon);
 
 		this.x0 = this.x1 = x;
 		this.y0 = this.y1 = y;
@@ -217,8 +223,9 @@ class Player{
 	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(x : number, y : number) : void{
-		this.drawCharacter.preDraw(this.x0 - x, this.y0 - y, 0, this.r, 1.2);
-		this.drawCharacter.setPose(this.action);
+		this.character.preDraw(this.x0 - x, this.y0 - y, 0, this.r, 1.2);
+		this.character.setPose(this.action);
+		this.balloon.preDraw(this.x0 - x, this.y0 - y, 30, 1.2);
 	}
 }
 

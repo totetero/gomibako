@@ -253,3 +253,99 @@ class DrawPlayer extends DrawCharacter{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
+
+// 吹き出しクラス
+class DrawBalloon extends DrawUnit{
+	var canvas : HTMLCanvasElement = null;
+	var context : CanvasRenderingContext2D;
+	var drx : number;
+	var dry : number;
+	var drScale : number;
+	var action : int;
+	var time : int;
+
+	// ----------------------------------------------------------------
+	// 文字列設定
+	function setText(txt : string, time : int) : void{
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+		var size = 24;
+		this.context.font = size as string + "px 'monospace'";
+		var measure = this.context.measureText(txt);
+
+		this.context.fillStyle = "rgba(255, 255, 255, 0.8)";
+		var w = measure.width + 20;
+		var h = size + 20;
+		var l = (this.canvas.width - w) * 0.5;
+		var t = this.canvas.height - h - 15;
+		var r = 10;
+		this.context.beginPath();
+		this.context.arc(l +     r, t +     r, r, -Math.PI, -0.5 * Math.PI, false);
+		this.context.arc(l + w - r, t +     r, r, -0.5 * Math.PI, 0, false);
+		this.context.arc(l + w - r, t + h - r, r, 0, 0.5 * Math.PI, false);
+		this.context.lineTo(this.canvas.width * 0.5 + 8, this.canvas.height - 15);
+		this.context.lineTo(this.canvas.width * 0.5 + 0, this.canvas.height );
+		this.context.lineTo(this.canvas.width * 0.5 - 8, this.canvas.height - 15);
+		this.context.arc(l +     r, t + h - r, r, 0.5 * Math.PI, Math.PI, false);
+		this.context.closePath();
+		this.context.stroke();
+		this.context.fill();
+
+		this.context.fillStyle = "black";
+		this.context.fillText(txt, this.canvas.width * 0.5, this.canvas.height - size * 0.5 - 10 - 15);
+
+		this.action = 0;
+		this.time = time;
+	}
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(){
+		this.canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+		this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+		this.canvas.width = 512;
+		this.canvas.height = 64;
+		this.context.textAlign = "center";
+		this.context.textBaseline = "middle";
+		this.action = 0;
+		this.time = 0;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	function preDraw(x : number, y : number, z : number, s : number) : void{
+		if(this.action++ < this.time || this.time < 0){
+			this.visible = true;
+			// 位置
+			this.drx = Ctrl.scale * (x * Ctrl.cosv - y * Ctrl.sinv);
+			var y0 = Ctrl.scale * (x * Ctrl.sinv + y * Ctrl.cosv);
+			var z0 = Ctrl.scale * z;
+			this.drScale = Ctrl.scale * s;
+			var z1 = z0;
+			this.dry = y0 * Ctrl.sinh - z1 * Ctrl.cosh;
+			this.drz = y0 * Ctrl.cosh + z0 * Ctrl.sinh;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		var psx = (this.canvas.width * 0.5 * this.drScale) as int;
+		var psy = (this.canvas.height * 0.5 * this.drScale) as int;
+
+		if(this.action < 10){
+			var size = 0.2 * Math.sin(Math.PI * 2 * this.action / 10);
+			psx *= 1 + size;
+			psy *= 1 - size;
+		}
+		
+		var px = (this.drx - psx * 0.5 + Ctrl.canvas.width * 0.5) as int;
+		var py = (this.dry - psy * 1.0 + Ctrl.canvas.height * 0.5) as int;
+		Ctrl.context.drawImage(this.canvas, px, py, psx, psy);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
