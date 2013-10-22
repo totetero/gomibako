@@ -16,6 +16,8 @@ class Main{
 	static var player : Player[];
 	static var clist : DrawUnit[];
 
+	static var mdn : boolean = false;
+
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
@@ -40,7 +42,9 @@ class Main{
 		Main.field = new Field();
 		Main.clist = new DrawUnit[];
 		Main.player = new Player[];
-		Main.player.push(new Player());
+		Main.player.push(new Player(300, 200));
+		Main.field.mx = Main.player[0].x0;
+		Main.field.my = Main.player[0].y0;
 	}
 
 	// ----------------------------------------------------------------
@@ -49,14 +53,34 @@ class Main{
 		Ctrl.calc();
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 
-		var x = 100;
-		var y = 100;
+		// カメラ位置
+		var x = Main.player[0].x0;
+		var y = Main.player[0].y0;
+
+
+		// タッチ
+		if(Main.mdn != Ctrl.mdn){
+			Main.mdn = Ctrl.mdn;
+			if(!Ctrl.mdn && !Ctrl.mmv){
+				// フィールドにおけるタッチ座標位置の計算
+				var c = Math.cos(Ctrl.rotv);
+				var s = Math.sin(Ctrl.rotv);
+				var x0 = (Ctrl.mx - Ctrl.canvas.width * 0.5) / Ctrl.scale;
+				var y0 = (Ctrl.my - Ctrl.canvas.height * 0.5) / (Ctrl.scale * Ctrl.sinh);
+				Main.field.mx = (x0 *  c + y0 * s) + x;
+				Main.field.my = (x0 * -s + y0 * c) + y;
+			}
+		}
+		// プレイヤー計算
+		Main.player[0].x1 = Main.field.mx;
+		Main.player[0].y1 = Main.field.my;
+		for(var i = 0; i < Main.player.length; i++){Main.player[i].calc();}
 
 		// フィールド描画
 		Main.field.draw(x, y);
 		// プレイヤー描画準備
 		for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(x, y);}
-		// キャラクター描画
+		// プレイヤー描画
 		DrawUnit.drawList(Main.clist);
 
 		// ループ
@@ -88,6 +112,10 @@ class Main{
 class Field{
 	var canvas : HTMLCanvasElement;
 	var context : CanvasRenderingContext2D;
+	// タッチ座標位置
+	var mdn : boolean = false;
+	var mx : int = 0;
+	var my : int = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -130,20 +158,12 @@ class Field{
 		Ctrl.context.translate(-x, -y);
 		Ctrl.context.drawImage(this.canvas, 0, 0);
 
-		if(Ctrl.mdn){
-			// マウス座標から座標の獲得
-			var c = Math.cos(Ctrl.rotv);
-			var s = Math.sin(Ctrl.rotv);
-			var x0 = (Ctrl.mx - Ctrl.canvas.width * 0.5) / Ctrl.scale;
-			var y0 = (Ctrl.my - Ctrl.canvas.height * 0.5) / (Ctrl.scale * Ctrl.sinh);
-			var mx = (x0 *  c + y0 * s) + x;
-			var my = (x0 * -s + y0 * c) + y;
-			// タッチ座標位置描画
-			Ctrl.context.fillStyle = "rgba(0, 0, 0, 0.5)";
-			Ctrl.context.beginPath();
-			Ctrl.context.arc(mx, my, 6, 0, Math.PI*2, false);
-			Ctrl.context.fill();
-		}
+		// タッチ座標位置描画
+		Ctrl.context.fillStyle = "rgba(0, 0, 0, 0.5)";
+		Ctrl.context.beginPath();
+		Ctrl.context.arc(this.mx, this.my, 16, 0, Math.PI*2, false);
+		Ctrl.context.arc(this.mx, this.my, 12, 0, Math.PI*2, true);
+		Ctrl.context.fill();
 
 		// 描画終了
 		Ctrl.context.restore();
@@ -153,22 +173,52 @@ class Field{
 // プレイヤークラス
 class Player{
 	var drawCharacter : DrawPlayer;
-	var x = 100;
-	var y = 100;
-	var r = Math.PI / 180 * 90;
+	var x0 : number;
+	var y0 : number;
+	var x1 : number;
+	var y1 : number;
+	var r : number;
+	var action : int = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
+	function constructor(x : number, y : number){
 		this.drawCharacter = new DrawPlayer(Main.imgs["player"]);
 		Main.clist.push(this.drawCharacter);
+
+		this.x0 = this.x1 = x;
+		this.y0 = this.y1 = y;
+		this.r = Math.PI / 180 * 90;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	function calc() : void{
+		if(this.x1 != this.x0 || this.y1 != this.y0){
+			// 目的地に移動
+			var x = this.x1 - this.x0;
+			var y = this.y1 - this.y0;
+			var speed = 3.0;
+			if(x * x + y * y < speed * speed){
+				this.x0 = this.x1;
+				this.y0 = this.y1;
+			}else{
+				this.r = Math.atan2(y, x);
+				this.x0 += speed * Math.cos(this.r);
+				this.y0 += speed * Math.sin(this.r);
+			}
+			this.action++;
+		}else{
+			// 静止
+			this.action = 0;
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(x : number, y : number) : void{
-		this.drawCharacter.preDraw(this.x - x, this.y - y, 0, this.r, 1.2);
-		this.drawCharacter.setPose(0);
+		this.drawCharacter.preDraw(this.x0 - x, this.y0 - y, 0, this.r, 1.2);
+		this.drawCharacter.setPose(this.action);
 	}
 }
 
