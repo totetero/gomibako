@@ -34,7 +34,8 @@ exports.getdat = function(user, callback){
 	imgs["player"] = "./src_cli/game/img/player.png";
 	imgs["player2"] = "./src_cli/game/img/player.png";
 
-	file.file2json(jdat, js, css, imgs, function(){
+	file.file2json(js, css, imgs, function(data){
+		jdat.load = data;
 		callback(JSON.stringify(jdat));
 	});
 };

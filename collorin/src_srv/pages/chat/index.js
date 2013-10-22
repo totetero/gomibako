@@ -21,7 +21,8 @@ exports.init = function(app){
 		js.push("./src_cli/chat/js/init.js");
 		imgs["player"] = "./src_cli/game/img/player.png";
 
-		file.file2json(jdat, js, css, imgs, function(){
+		file.file2json(js, css, imgs, function(data){
+			jdat.load = data;
 			res.contentType('application/json');
 			res.send(JSON.stringify(jdat));
 		});

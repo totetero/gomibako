@@ -1,33 +1,33 @@
 var fs = require("fs");
 
 // ファイルを読み込んでjsonに書き出す
-exports.file2json = function(jdat, js, css, imgs, callback){
+exports.file2json = function(js, css, imgs, callback){
 	// ファイルロード
-	jdat.load = {};
-	if(js){jdat.load.js = [];}else{js = [];}
-	if(css){jdat.load.css = [];}else{css = [];}
-	if(imgs){jdat.load.imgs = {};}else{imgs = {};}
+	jdat = {};
+	if(js){jdat.js = [];}else{js = [];}
+	if(css){jdat.css = [];}else{css = [];}
+	if(imgs){jdat.imgs = {};}else{imgs = {};}
 	var count = js.length + css.length;
 	for(var i in imgs){count++;}
 	// ジャバスクリプトロード
 	for(var i = 0; i < js.length; i++){
 		(function(index){
-			jdat.load.js[index] = null;
+			jdat.js[index] = null;
 			fs.readFile(js[i], "utf-8", function (err, data){
-				jdat.load.js[index] = data;
+				jdat.js[index] = data;
 				// すべてのロードが終わったらコールバック
-				if(--count == 0){callback();}
+				if(--count == 0){callback(jdat);}
 			});
 		})(i);
 	}
 	// スタイルシートロード
 	for(var i = 0; i < css.length; i++){
 		(function(index){
-			jdat.load.css[index] = null;
+			jdat.css[index] = null;
 			fs.readFile(css[i], "utf-8", function (err, data){
-				jdat.load.css[index] = data;
+				jdat.css[index] = data;
 				// すべてのロードが終わったらコールバック
-				if(--count == 0){callback();}
+				if(--count == 0){callback(jdat);}
 			});
 		})(i);
 	}
@@ -35,9 +35,9 @@ exports.file2json = function(jdat, js, css, imgs, callback){
 	for(var i in imgs){
 		(function(tag){
 			fs.readFile(imgs[i], function (err, data){
-				jdat.load.imgs[tag] = "data:image/png;base64," + new Buffer(data).toString("base64");
+				jdat.imgs[tag] = "data:image/png;base64," + new Buffer(data).toString("base64");
 				// すべてのロードが終わったらコールバック
-				if(--count == 0){callback();}
+				if(--count == 0){callback(jdat);}
 			});
 		})(i);
 	}

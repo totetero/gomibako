@@ -27,4 +27,5 @@ setup:
 	npm install express ejs
 	npm install mongoose connect-mongo
 	npm install passport passport-local passport-twitter
+	npm install socket.io socket.io-client
 

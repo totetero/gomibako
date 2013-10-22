@@ -76,8 +76,8 @@ class Ctrl{
 		Ctrl.scale = 1;
 		Ctrl.rotv = Math.PI / 180 * 0;
 		Ctrl.roth = Math.PI / 180 * 30;
-		Ctrl.rothMin = Math.PI / 180 * 10;
-		Ctrl.rothMax = Math.PI / 180 * 90;
+		Ctrl.rothMin = Math.PI / 180 * 30;
+		Ctrl.rothMax = Math.PI / 180 * 30;
 		Ctrl.sinv = Math.sin(Ctrl.rotv);
 		Ctrl.cosv = Math.cos(Ctrl.rotv);
 		Ctrl.sinh = Math.sin(Ctrl.roth);
