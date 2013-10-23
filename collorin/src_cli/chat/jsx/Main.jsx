@@ -24,8 +24,8 @@ class Main{
 		var jdat = js.global["jdat"] as variant;
 		// 画像準備
 		Main.imgs = {} : Map.<HTMLImageElement>;
-		Main.regImg(jdat["load"]["imgs"] as Map.<string>, function(){
-			delete jdat["load"]["imgs"];
+		Main.regImg(jdat["imgs"] as Map.<string>, function(){
+			delete jdat["imgs"];
 			// 初期化
 			Ctrl.init();
 			Main.init();

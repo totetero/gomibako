@@ -1,13 +1,20 @@
 // ゲーム本体
 var game = require("./main");
 
+// ゲームページ描画
+var gameRender = function(req, res){
+	game.getsdat(function(data){
+		res.render("common/index.ejs", {title: "すごろく", daturl: "/getdat", jdat: data});
+	});
+}
+
 exports.init = function(app){
 	// ゲーム中 ゲーム情報を返す
 	app.get("/getdat", function(req, res, next){
 		if(!game.isPlay(req.user)){
 			next();
 		}else{
-			game.getdat(req.user, function(data){
+			game.getddat(req.user, function(data){
 				res.contentType('application/json');
 				res.send(data);
 			});
@@ -59,7 +66,7 @@ exports.init = function(app){
 			next();
 		}else{
 			if(req.url == "/game/hoge"){
-				res.render("common/index.ejs", {title: "すごろく", daturl: "/getdat"});
+				gameRender(req, res);
 			}else{
 				res.redirect("/game/hoge"); // TODO 正しいステージ名をDBから抜き出してつける
 			}
@@ -69,7 +76,7 @@ exports.init = function(app){
 	// ゲーム開始命令
 	app.get("/game/:stage", function(req, res){
 		game.init(req.user, req.params.stage);
-		res.render("common/index.ejs", {title: "すごろく", daturl: "/getdat"});
+		gameRender(req, res);
 	});
 };
 

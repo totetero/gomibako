@@ -23,26 +23,34 @@
 				}
 				loadingFunc();
 
-				// データのロード
+				// 静的データ
+				var jdat = <%-jdat %>;
+				var daturl = "<%=daturl %>";
+
+				// 動的データのロード
 				var xhr = new XMLHttpRequest();
-				xhr.open('GET', "<%=daturl %>");
+				xhr.open('GET', daturl);
 				xhr.addEventListener("load", function(e){
-					// データのロード完了
+					// 動的データのロード完了
 					window.jdat = JSON.parse(xhr.responseText);
-					var js = window.jdat.load.js; delete window.jdat.load.js;
-					var css = window.jdat.load.css; delete window.jdat.load.css;
+					// 画像データを一つの連想配列にまとめる 動的データ優先
+					for(var i in jdat.imgs){
+						if(!window.jdat.imgs.hasOwnProperty(i)){
+							window.jdat.imgs[i] = jdat.imgs[i];
+						}
+					}
 					// スタイルシート設定
 					var style = document.createElement("style");
 					style.type = "text/css";
 					document.head.appendChild(style);
-					for(var i = 0; i < css.length; i++){
-						style.sheet.insertRule(css[i], style.sheet.cssRules.length);
+					for(var i = 0; i < jdat.css.length; i++){
+						style.sheet.insertRule(jdat.css[i], style.sheet.cssRules.length);
 					}
 					// ジャバスクリプト設定
-					for(var i = 0; i < js.length; i++){
+					for(var i = 0; i < jdat.js.length; i++){
 						var script = document.createElement("script");
 						script.type = "text/javascript";
-						script.innerHTML = js[i];
+						script.innerHTML = jdat.js[i];
 						document.head.appendChild(script);
 					}
 				});

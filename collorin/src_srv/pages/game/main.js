@@ -21,8 +21,8 @@ exports.isPlay = function(user){
 	return (user.gamestat == 1);
 };
 
-// ゲーム情報
-exports.getdat = function(user, callback){
+// ゲーム静的情報
+exports.getsdat = function(callback){
 	var jdat = {};
 	var js = [];
 	var css = [];
@@ -32,10 +32,26 @@ exports.getdat = function(user, callback){
 	js.push("./src_cli/game/js/init.js");
 	css.push("./src_cli/game/css/test.css");
 	imgs["player"] = "./src_cli/game/img/player.png";
-	imgs["player2"] = "./src_cli/game/img/player.png";
+	imgs["player1"] = "./src_cli/game/img/player.png";
 
 	file.file2json(js, css, imgs, function(data){
-		jdat.load = data;
+		jdat.js = data.js;
+		jdat.css = data.css;
+		jdat.imgs = data.imgs;
+		callback(JSON.stringify(jdat));
+	});
+};
+
+// ゲーム動的情報
+exports.getddat = function(user, callback){
+	var jdat = {};
+	var imgs = {};
+
+	imgs["player"] = "./src_cli/game/img/player.png";
+	imgs["player2"] = "./src_cli/game/img/player.png";
+
+	file.file2json(null, null, imgs, function(data){
+		jdat.imgs = data.imgs;
 		callback(JSON.stringify(jdat));
 	});
 };
