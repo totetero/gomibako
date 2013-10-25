@@ -3,6 +3,7 @@ import 'js/web.jsx';
 import 'timer.jsx';
 
 import 'Ctrl.jsx';
+import 'Socket.jsx';
 import 'Character.jsx';
 
 // ----------------------------------------------------------------
@@ -28,6 +29,7 @@ class Main{
 			delete jdat["imgs"];
 			// 初期化
 			Ctrl.init();
+			Socket.init();
 			Main.init();
 			// メインループ開始
 			Main.mainloop();

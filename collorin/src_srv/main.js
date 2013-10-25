@@ -1,3 +1,4 @@
+var http = require("http");
 var express = require("express");
 var passport = require("passport");
 var mongoose = require("mongoose");
@@ -8,6 +9,7 @@ mongoose.connect("mongodb://localhost/totetest");
 
 // サーバ設定
 var app = express();
+var srv = http.createServer(app);
 app.configure(function(){
 	app.set("views", __dirname + "/../src_cli");
 	app.set("view engine", "ejs");
@@ -36,7 +38,8 @@ require("./pages/top/index").init(app);
 require("./pages/mypage/index").init(app);
 require("./pages/stage/index").init(app);
 require("./pages/chat/index").init(app);
+require("./pages/chat/socket").init(srv);
 
-app.listen(10080);
+srv.listen(10080);
 console.log("Server running at http://127.0.0.1:10080/");
 
