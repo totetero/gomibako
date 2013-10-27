@@ -29,7 +29,7 @@ class Main{
 			delete jdat["imgs"];
 			// 初期化
 			Ctrl.init();
-			Socket.init();
+			Socket.init("太郎");
 			Main.init();
 			// メインループ開始
 			Main.mainloop();
@@ -44,47 +44,87 @@ class Main{
 		Main.field = new Field();
 		Main.clist = new DrawUnit[];
 		Main.player = new Player[];
-		Main.player.push(new Player(300, 200));
-		Main.field.mx = Main.player[0].x0;
-		Main.field.my = Main.player[0].y0;
+		//Main.player.push(new Player(300, 200));
+		//Main.field.mx = Main.player[0].x0;
+		//Main.field.my = Main.player[0].y0;
 	}
 
 	// ----------------------------------------------------------------
 	// メインループ
 	static function mainloop() : void{
-		Ctrl.calc();
-		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		// カメラ位置
+		var cx = 0;
+		var cy = 0;
 
-		// カメラ位置を操作プレイヤーに会わせる
-		var x = Main.player[0].x0;
-		var y = Main.player[0].y0;
+		// コントローラ計算
+		Ctrl.calc();
+
+		// キャラ追加確認
+		for(var id in Socket.users){
+			var exist = false;
+			for(var i = 0; i < Main.player.length; i++){if(Main.player[i].id == id){exist = true;}}
+			if(!exist){
+				// キャラ追加
+				var pdat = Socket.users[id];
+				Main.player.push(new Player(id, pdat.dstx, pdat.dsty));
+				if(id == Socket.playerId){
+					// 追加されたのが操作プレイヤーの場合はフィールド移動先マーカーの設定
+					Main.field.mx = pdat.dstx;
+					Main.field.my = pdat.dsty;
+				}
+			}
+		}
+		// キャラ情報確認
+		for(var i = 0; i < Main.player.length; i++){
+			var player = Main.player[i];
+			var pdat = Socket.users[player.id];
+			if(pdat){
+				player.x1 = pdat.dstx;
+				player.y1 = pdat.dsty;
+				if(player.serif != pdat.serif){
+					// 台詞更新
+					player.serif = pdat.serif;
+					player.balloon.setText(player.serif, -1);
+				}
+				if(player.id == Socket.playerId){
+					// カメラ位置を操作プレイヤーに合わせる
+					cx = player.x0;
+					cy = player.y0;
+				}
+			}else{
+				// 切断によるキャラ削除
+				player.character.exist = false;
+				player.balloon.exist = false;
+				Main.player.splice(i--,1);
+			}
+		}
 
 		// タッチ
 		if(Main.mdn != Ctrl.mdn){
 			Main.mdn = Ctrl.mdn;
 			if(!Ctrl.mdn && !Ctrl.mmv){
-				// フィールドにおけるタッチ座標位置の計算
+				// フィールドにおけるタッチ座標位置の計算とフィールド移動先マーカーの設定
 				var c = Math.cos(Ctrl.rotv);
 				var s = Math.sin(Ctrl.rotv);
 				var x0 = (Ctrl.mx - Ctrl.canvas.width * 0.5) / Ctrl.scale;
 				var y0 = (Ctrl.my - Ctrl.canvas.height * 0.5) / (Ctrl.scale * Ctrl.sinh);
-				Main.field.mx = (x0 *  c + y0 * s) + x;
-				Main.field.my = (x0 * -s + y0 * c) + y;
-
-				// テスト 操作プレイヤーの台詞
-				Main.player[0].balloon.setText("なのです！", -1);
+				Main.field.mx = (x0 *  c + y0 * s) + cx;
+				Main.field.my = (x0 * -s + y0 * c) + cy;
+				// タッチ座標を移動情報として送信
+				Socket.sendDst(Main.field.mx, Main.field.my);
+				Socket.sendStr("おういお");
 			}
 		}
-		// 操作プレイヤーの移動先設定
-		Main.player[0].x1 = Main.field.mx;
-		Main.player[0].y1 = Main.field.my;
-		// プレイヤー計算
+
+		// キャラ計算
 		for(var i = 0; i < Main.player.length; i++){Main.player[i].calc();}
 
+		// 描画開始
+		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 		// フィールド描画
-		Main.field.draw(x, y);
+		Main.field.draw(cx, cy);
 		// プレイヤー描画準備
-		for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(x, y);}
+		for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(cx, cy);}
 		// プレイヤー描画
 		DrawUnit.drawList(Main.clist);
 
@@ -179,24 +219,29 @@ class Field{
 class Player{
 	var character : DrawPlayer;
 	var balloon : DrawBalloon;
+	var id : string;
 	var x0 : number;
 	var y0 : number;
 	var x1 : number;
 	var y1 : number;
 	var r : number;
-	var action : int = 0;
+	var action : int;
+	var serif : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(x : number, y : number){
+	function constructor(id : string, x : number, y : number){
 		this.character = new DrawPlayer(Main.imgs["player"]);
 		this.balloon = new DrawBalloon();
 		Main.clist.push(this.character);
 		Main.clist.push(this.balloon);
 
+		this.id = id;
 		this.x0 = this.x1 = x;
 		this.y0 = this.y1 = y;
 		this.r = Math.PI / 180 * 90;
+		this.action = 0;
+		this.serif = "";
 	}
 
 	// ----------------------------------------------------------------
