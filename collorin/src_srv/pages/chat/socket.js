@@ -5,23 +5,7 @@ var io = null;
 // データベースモデル
 var UserModel = require("../../models/user").UserModel;
 
-exports.init = function(srv){
-	io = socketio.listen(srv);
-	io.enable("browser client minification");
-
-	io.configure(function(){
-		io.set("authorization", function(handshakeData, callback){
-			if(handshakeData.headers.cookie){
-				var cookie = handshakeData.headers.cookie;
-				//console.log(handshakeData);
-				console.log("認証成功DAYO!!");
-				callback(null, true);
-			}else{
-				callback("Cookie が見つかりませんでした", false);
-			}
-		});
-	});
-
+exports.init = function(io){
 	var users = {}
 
 	io.sockets.on("connection", function(client){
