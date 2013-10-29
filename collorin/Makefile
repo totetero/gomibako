@@ -1,4 +1,8 @@
-DIR = $(shell pwd)
+ifeq ($(OS),Windows_NT)
+	DIR = $(shell cygpath -m `pwd`)
+else
+	DIR = $(shell pwd)
+endif
 JSX = $(DIR)/node_modules/jsx/bin/jsx
 MIN = $(DIR)/node_modules/uglify-js/bin/uglifyjs
 GAME_JSX = $(DIR)/src_cli/game/jsx
