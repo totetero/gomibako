@@ -1,13 +1,37 @@
 var http = require("http");
 var socketio = require("socket.io");
-var io = null;
+var connect = require("express/node_modules/connect")
+var cookiemod = require("express/node_modules/cookie");
 
 // データベースモデル
 var UserModel = require("../../models/user").UserModel;
 
-exports.init = function(io){
+exports.init = function(app, srv){
+	var io = socketio.listen(srv);
 	var users = {}
 
+	// -------------------------------- socket.io設定
+	io.configure(function(){
+		io.enable("browser client minification");
+		io.set("authorization", function(handshakeData, callback){
+			var cookie = cookiemod.parse(decodeURIComponent(handshakeData.headers.cookie))
+			var cookie = connect.utils.parseSignedCookies(cookie, app.get('secretKey'));
+			console.log(cookie);
+			// 難航中
+			// http://www.pxsta.net/blog/?p=3568
+
+			if(handshakeData.headers.cookie){
+				var cookie = handshakeData.headers.cookie;
+				//console.log(handshakeData);
+				console.log("認証成功DAYO!!");
+				callback(null, true);
+			}else{
+				callback("Cookie が見つかりませんでした", false);
+			}
+		});
+	});
+
+	// -------------------------------- socket.io接続
 	io.sockets.on("connection", function(client){
 		//console.log("接続", client.handshake);
 
