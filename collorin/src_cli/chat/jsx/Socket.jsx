@@ -13,7 +13,7 @@ native __fake__ class _socketio{
 	function on(command : string, f : function(id : string, x : number, y : number):void) : void;
 	function on(command : string, f : function(id : string, serif : string):void) : void;
 	function on(command : string, f : function(id : string):void) : void;
-	function emit(command : string, test : int) : void;
+	function emit(command : string, cookie : string, room : string) : void;
 	function emit(command : string, x : number, y : number) : void;
 	function emit(command : string, str : string) : void;
 }
@@ -33,7 +33,7 @@ class Socket{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	static function init(name : string) : void{
+	static function init() : void{
 		Socket.connect = false;
 		Socket.playerId = "";
 		Socket.users = {} : Map.<SocketUserData>;
@@ -47,7 +47,7 @@ class Socket{
 			// 接続
 			Socket.socket.on("connect", function(){
 				Socket.connect = true;
-				Socket.socket.emit("entry", name);
+				Socket.socket.emit("entry", dom.document.cookie, "room0");
 				log "サーバに接続したよ";
 			});
 

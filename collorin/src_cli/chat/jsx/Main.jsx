@@ -29,7 +29,7 @@ class Main{
 			delete jdat["imgs"];
 			// 初期化
 			Ctrl.init();
-			Socket.init("太郎");
+			Socket.init();
 			Main.init();
 			// メインループ開始
 			Main.mainloop();

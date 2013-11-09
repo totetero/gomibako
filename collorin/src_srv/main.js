@@ -12,15 +12,15 @@ var mongoStore = new MongoStore({db: mongoose.connections[0].db});
 var app = express();
 var srv = http.Server(app);
 app.configure(function(){
-	app.set("secretKey", "mySecret");
+	app.set("secretKey", "totalbeat");
 	app.set("views", __dirname + "/../src_cli");
 	app.set("view engine", "ejs");
 	app.use(express.logger("dev"));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	app.use(express.cookieParser(app.get("secretKey")));
+	app.use(express.cookieParser());
 	app.use(express.session({
-		secret: "totalbeat",
+		secret: app.get("secretKey"),
 		store: mongoStore,
 		cookie: {httpOnly: false, maxAge: 30 * 24 * 60 * 60 * 1000}
 	}));
@@ -41,7 +41,7 @@ require("./pages/mypage/index").init(app);
 require("./pages/stage/index").init(app);
 require("./pages/chat/index").init(app);
 // socket.io設定
-require("./pages/chat/socket").init(app, srv);
+require("./pages/chat/socket").init(app, srv, mongoStore);
 
 srv.listen(10080);
 console.log("Server running at http://127.0.0.1:10080/");
