@@ -5,18 +5,23 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 		<style type="text/css">body{margin: 0;}</style>
 		<title><%=title %></title>
+		<script type="text/text" id="jdat"><%-jdat %></script>
+		<script type="text/text" id="daturl"><%=daturl %></script>
 		<script type="text/javascript">
 			window.onload = function(){
 				// ローディング表記
 				var action = 0;
+				var loadingStrDiv = document.createElement("div");
+				loadingStrDiv.style.color = "white";
+				loadingStrDiv.style.margin = "10px";
+				document.getElementById("loading").appendChild(loadingStrDiv);
 				var loadingFunc = function(){
-					var div = document.getElementById("loadingStr");
-					if(div){
+					if(document.getElementById("loading")){
 						switch(action++ % 4){
-							case 0: div.innerHTML = "loading"; break;
-							case 1: div.innerHTML = "loading."; break;
-							case 2: div.innerHTML = "loading.."; break;
-							case 3: div.innerHTML = "loading..."; break;
+							case 0: loadingStrDiv.innerHTML = "loading"; break;
+							case 1: loadingStrDiv.innerHTML = "loading."; break;
+							case 2: loadingStrDiv.innerHTML = "loading.."; break;
+							case 3: loadingStrDiv.innerHTML = "loading..."; break;
 						}
 						setTimeout(loadingFunc, 333);
 					}
@@ -24,8 +29,8 @@
 				loadingFunc();
 
 				// 静的データ
-				var jdat = <%-jdat %>;
-				var daturl = "<%=daturl %>";
+				var jdat = JSON.parse(document.getElementById("jdat").innerHTML);
+				var daturl = document.getElementById("daturl").innerHTML;
 
 				// 動的データのロード
 				var xhr = new XMLHttpRequest();
@@ -59,10 +64,7 @@
 		</script>
 	</head>
 	<body>
-		<div id="loading" style="position:absolute;width:100%;height:100%;z-index:9999;background-color:black;">
-			<div id="loadingStr" style="color:white;margin:10px;">
-			</div>
-		</div>
+		<div id="loading" style="position:absolute;width:100%;height:100%;z-index:9999;background-color:black;"></div>
 	</body>
 </html>
 
