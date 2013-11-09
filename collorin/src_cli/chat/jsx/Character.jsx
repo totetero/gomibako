@@ -269,33 +269,35 @@ class DrawBalloon extends DrawUnit{
 	function setText(txt : string, time : int) : void{
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-		var size = 24;
-		this.context.font = size as string + "px 'monospace'";
-		var measure = this.context.measureText(txt);
+		if(txt.length > 0){
+			var size = 24;
+			this.context.font = size as string + "px 'monospace'";
+			var measure = this.context.measureText(txt);
 
-		this.context.fillStyle = "rgba(255, 255, 255, 0.8)";
-		var w = measure.width + 20;
-		var h = size + 20;
-		var l = (this.canvas.width - w) * 0.5;
-		var t = this.canvas.height - h - 15;
-		var r = 10;
-		this.context.beginPath();
-		this.context.arc(l +     r, t +     r, r, -Math.PI, -0.5 * Math.PI, false);
-		this.context.arc(l + w - r, t +     r, r, -0.5 * Math.PI, 0, false);
-		this.context.arc(l + w - r, t + h - r, r, 0, 0.5 * Math.PI, false);
-		this.context.lineTo(this.canvas.width * 0.5 + 8, this.canvas.height - 15);
-		this.context.lineTo(this.canvas.width * 0.5 + 0, this.canvas.height );
-		this.context.lineTo(this.canvas.width * 0.5 - 8, this.canvas.height - 15);
-		this.context.arc(l +     r, t + h - r, r, 0.5 * Math.PI, Math.PI, false);
-		this.context.closePath();
-		this.context.stroke();
-		this.context.fill();
+			this.context.fillStyle = "rgba(255, 255, 255, 0.8)";
+			var w = measure.width + 20;
+			var h = size + 20;
+			var l = (this.canvas.width - w) * 0.5;
+			var t = this.canvas.height - h - 15;
+			var r = 10;
+			this.context.beginPath();
+			this.context.arc(l +     r, t +     r, r, -Math.PI, -0.5 * Math.PI, false);
+			this.context.arc(l + w - r, t +     r, r, -0.5 * Math.PI, 0, false);
+			this.context.arc(l + w - r, t + h - r, r, 0, 0.5 * Math.PI, false);
+			this.context.lineTo(this.canvas.width * 0.5 + 8, this.canvas.height - 15);
+			this.context.lineTo(this.canvas.width * 0.5 + 0, this.canvas.height );
+			this.context.lineTo(this.canvas.width * 0.5 - 8, this.canvas.height - 15);
+			this.context.arc(l +     r, t + h - r, r, 0.5 * Math.PI, Math.PI, false);
+			this.context.closePath();
+			this.context.stroke();
+			this.context.fill();
 
-		this.context.fillStyle = "black";
-		this.context.fillText(txt, this.canvas.width * 0.5, this.canvas.height - size * 0.5 - 10 - 15);
+			this.context.fillStyle = "black";
+			this.context.fillText(txt, this.canvas.width * 0.5, this.canvas.height - size * 0.5 - 10 - 15);
 
-		this.action = 0;
-		this.time = time;
+			this.action = 0;
+			this.time = time;
+		}
 	}
 
 	// ----------------------------------------------------------------

@@ -17,7 +17,16 @@ class Main{
 	static var player : Player[];
 	static var clist : DrawUnit[];
 
+	// タッチ情報
 	static var mdn : boolean = false;
+	// カメラ情報
+	static var camerax : number;
+	static var cameray : number;
+	// 選択マーカー情報
+	static var markerIdx : int;
+	static var markerx : number;
+	static var markery : number;
+	static var markerDiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// main関数
@@ -44,37 +53,46 @@ class Main{
 		Main.field = new Field();
 		Main.clist = new DrawUnit[];
 		Main.player = new Player[];
-		//Main.player.push(new Player(300, 200));
-		//Main.field.mx = Main.player[0].x0;
-		//Main.field.my = Main.player[0].y0;
+
+		// 選択マーカーDOM作成
+		Main.markerDiv = dom.document.createElement("div") as HTMLDivElement;
+		Main.markerDiv.style.position = "absolute";
+		Main.markerDiv.style.left = "10px";
+		Main.markerDiv.style.bottom = "10px";
+		dom.document.body.appendChild(Main.markerDiv);
+		Main.markerIdx = -1;
 	}
 
 	// ----------------------------------------------------------------
 	// メインループ
 	static function mainloop() : void{
-		// カメラ位置
-		var cx = 0;
-		var cy = 0;
-
-		// コントローラ計算
 		Ctrl.calc();
+		Main.calc();
+		Main.draw();
+		// ループ
+		Timer.setTimeout(Main.mainloop, 33);
+	}
 
-		// キャラ追加確認
+	// ----------------------------------------------------------------
+	// 計算
+	static function calc() : void{
+		// ソケット処理 キャラ追加確認
 		for(var id in Socket.users){
 			var exist = false;
 			for(var i = 0; i < Main.player.length; i++){if(Main.player[i].id == id){exist = true;}}
 			if(!exist){
 				// キャラ追加
 				var pdat = Socket.users[id];
-				Main.player.push(new Player(id, pdat.dstx, pdat.dsty));
+				Main.player.push(new Player(id, pdat.name, pdat.dstx, pdat.dsty));
 				if(id == Socket.playerId){
-					// 追加されたのが操作プレイヤーの場合はフィールド移動先マーカーの設定
-					Main.field.mx = pdat.dstx;
-					Main.field.my = pdat.dsty;
+					// 追加されたのが操作プレイヤーの場合は選択マーカーの設定
+					Main.markerx = pdat.dstx;
+					Main.markery = pdat.dsty;
 				}
 			}
 		}
-		// キャラ情報確認
+
+		// ソケット処理 キャラ情報確認
 		for(var i = 0; i < Main.player.length; i++){
 			var player = Main.player[i];
 			var pdat = Socket.users[player.id];
@@ -86,11 +104,6 @@ class Main{
 					player.serif = pdat.serif;
 					player.balloon.setText(player.serif, -1);
 				}
-				if(player.id == Socket.playerId){
-					// カメラ位置を操作プレイヤーに合わせる
-					cx = player.x0;
-					cy = player.y0;
-				}
 			}else{
 				// 切断によるキャラ削除
 				player.character.exist = false;
@@ -99,37 +112,73 @@ class Main{
 			}
 		}
 
-		// タッチ
-		if(Main.mdn != Ctrl.mdn){
-			Main.mdn = Ctrl.mdn;
-			if(!Ctrl.mdn && !Ctrl.mmv){
-				// フィールドにおけるタッチ座標位置の計算とフィールド移動先マーカーの設定
-				var c = Math.cos(Ctrl.rotv);
-				var s = Math.sin(Ctrl.rotv);
-				var x0 = (Ctrl.mx - Ctrl.canvas.width * 0.5) / Ctrl.scale;
-				var y0 = (Ctrl.my - Ctrl.canvas.height * 0.5) / (Ctrl.scale * Ctrl.sinh);
-				Main.field.mx = (x0 *  c + y0 * s) + cx;
-				Main.field.my = (x0 * -s + y0 * c) + cy;
-				// タッチ座標を移動情報として送信
-				Socket.sendDst(Main.field.mx, Main.field.my);
-				Socket.sendStr("おういお");
+		// キャラ計算
+		for(var i = 0; i < Main.player.length; i++){
+			var player = Main.player[i];
+			Main.player[i].calc();
+			if(player.id == Socket.playerId){
+				// カメラ位置を操作プレイヤーに合わせる
+				Main.camerax = player.x0;
+				Main.cameray = player.y0;
+			}
+			if(Main.markerIdx == i){
+				// マークされていた場合は選択マーカー座標をキャラクターに合わせる
+				Main.markerx = player.x0;
+				Main.markery = player.y0;
 			}
 		}
 
-		// キャラ計算
-		for(var i = 0; i < Main.player.length; i++){Main.player[i].calc();}
+		// タッチ処理
+		if(Main.mdn != Ctrl.mdn){
+			Main.mdn = Ctrl.mdn;
+			if(!Ctrl.mdn && !Ctrl.mmv && (0 < Ctrl.mx && Ctrl.mx < Ctrl.canvas.width && 0 < Ctrl.my && Ctrl.my < Ctrl.canvas.height)){
+				var c = Math.cos(Ctrl.rotv);
+				var s = Math.sin(Ctrl.rotv);
+				
+				// キャラクター位置をタッチ座標系に変換してキャラクタータッチの確認
+				Main.markerIdx = -1;
+				for(var i = 0, depth = 0; i < Main.player.length; i++){
+					var player = Main.player[i];
+					if(player.id != Socket.playerId && (Main.markerIdx < 0 || depth < Main.player[i].character.drz)){
+						var x0 = player.x0 - Main.camerax;
+						var y0 = player.y0 - Main.cameray;
+						var x1 = Ctrl.canvas.width * 0.5 + (x0 * c + y0 * -s) * Ctrl.scale;
+						var y1 = Ctrl.canvas.height * 0.5 + (x0 * s + y0 *  c) * (Ctrl.scale * Ctrl.sinh);
+						if(x1 - 15 < Ctrl.mx && Ctrl.mx < x1 + 15 && y1 - 30 < Ctrl.my && Ctrl.my < y1 + 10){
+							Main.markerIdx = i;
+							depth = player.character.drz;
+						}
+					}
+				}
+				
+				if(Main.markerIdx < 0){
+					// フィールドにおけるタッチ座標位置の計算と選択マーカー設定
+					var x0 = (Ctrl.mx - Ctrl.canvas.width * 0.5) / Ctrl.scale;
+					var y0 = (Ctrl.my - Ctrl.canvas.height * 0.5) / (Ctrl.scale * Ctrl.sinh);
+					Main.markerx = (x0 *  c + y0 * s) + Main.camerax;
+					Main.markery = (x0 * -s + y0 * c) + Main.cameray;
+					Main.markerDiv.innerHTML = "";
+					// タッチ座標を移動情報として送信
+					Socket.sendDst(Main.markerx, Main.markery);
+				}else{
+					// タッチされたキャラクターの情報を得る
+					Main.markerDiv.innerHTML = Main.player[Main.markerIdx].name;
+				}
+			}
+		}
+	}
 
+	// ----------------------------------------------------------------
+	// 描画
+	static function draw() : void{
 		// 描画開始
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 		// フィールド描画
-		Main.field.draw(cx, cy);
+		Main.field.draw(Main.camerax, Main.cameray);
 		// プレイヤー描画準備
-		for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(cx, cy);}
+		for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(Main.camerax, Main.cameray);}
 		// プレイヤー描画
 		DrawUnit.drawList(Main.clist);
-
-		// ループ
-		Timer.setTimeout(Main.mainloop, 33);
 	}
 
 	// ----------------------------------------------------------------
@@ -157,10 +206,6 @@ class Main{
 class Field{
 	var canvas : HTMLCanvasElement;
 	var context : CanvasRenderingContext2D;
-	// タッチ座標位置
-	var mdn : boolean = false;
-	var mx : int = 0;
-	var my : int = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -203,11 +248,11 @@ class Field{
 		Ctrl.context.translate(-x, -y);
 		Ctrl.context.drawImage(this.canvas, 0, 0);
 
-		// タッチ座標位置描画
-		Ctrl.context.fillStyle = "rgba(0, 0, 0, 0.5)";
+		// 選択マーカー描画
+		Ctrl.context.fillStyle = (Main.markerIdx < 0) ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 0, 0, 0.5)";
 		Ctrl.context.beginPath();
-		Ctrl.context.arc(this.mx, this.my, 16, 0, Math.PI*2, false);
-		Ctrl.context.arc(this.mx, this.my, 12, 0, Math.PI*2, true);
+		Ctrl.context.arc(Main.markerx, Main.markery, 16, 0, Math.PI*2, false);
+		Ctrl.context.arc(Main.markerx, Main.markery, 12, 0, Math.PI*2, true);
 		Ctrl.context.fill();
 
 		// 描画終了
@@ -220,6 +265,7 @@ class Player{
 	var character : DrawPlayer;
 	var balloon : DrawBalloon;
 	var id : string;
+	var name : string;
 	var x0 : number;
 	var y0 : number;
 	var x1 : number;
@@ -230,13 +276,14 @@ class Player{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(id : string, x : number, y : number){
+	function constructor(id : string, name : string, x : number, y : number){
 		this.character = new DrawPlayer(Main.imgs["player"]);
 		this.balloon = new DrawBalloon();
 		Main.clist.push(this.character);
 		Main.clist.push(this.balloon);
 
 		this.id = id;
+		this.name = name;
 		this.x0 = this.x1 = x;
 		this.y0 = this.y1 = y;
 		this.r = Math.PI / 180 * 90;

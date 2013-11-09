@@ -38,6 +38,24 @@ class Socket{
 		Socket.playerId = "";
 		Socket.users = {} : Map.<SocketUserData>;
 
+		// 発言ボックスDOM作成
+		var nameDiv = dom.document.createElement("div") as HTMLDivElement;
+		var textarea = dom.document.createElement("input") as HTMLInputElement;
+		var button = dom.document.createElement("input") as HTMLInputElement;
+		var formDiv = dom.document.createElement("div") as HTMLDivElement;
+		nameDiv.style.display = "inline";
+		textarea.type = "text";
+		button.type = "button";
+		button.value = "準備中";
+		formDiv.style.position = "absolute";
+		formDiv.style.left = "10px";
+		formDiv.style.top = "10px";
+		formDiv.appendChild(nameDiv);
+		formDiv.appendChild(textarea);
+		formDiv.appendChild(button);
+		dom.document.body.appendChild(formDiv);
+
+		// 通信設定
 		var script = dom.document.createElement("script") as HTMLScriptElement;
 		script.type = "text/javascript";
 		script.src = "/socket.io/socket.io.js";
@@ -62,6 +80,14 @@ class Socket{
 				log "接続", users;
 				Socket.users = users;
 				Socket.playerId = id;
+				// 名前の表示
+				nameDiv.innerHTML = Socket.users[id].name;
+				// 発言ボタンの設定
+				button.value = "発言";
+				button.onclick = function(e : Event){
+					Socket.sendStr(textarea.value);
+					textarea.value = "";
+				};
 			});
 
 			// ユーザー新規接続
