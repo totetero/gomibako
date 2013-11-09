@@ -77,12 +77,13 @@ class Socket{
 
 			// ゲーム情報獲得
 			Socket.socket.on('entry', function(id : string, users : Map.<SocketUserData>){
-				log "接続", users;
+				log "接続";
+				for(var uid in users){log ((id == uid) ? "自分 " : "継続 ") + users[uid].name;}
+
 				Socket.users = users;
 				Socket.playerId = id;
-				// 名前の表示
-				nameDiv.innerHTML = Socket.users[id].name;
 				// 発言ボタンの設定
+				nameDiv.innerHTML = Socket.users[id].name;
 				button.value = "発言";
 				button.onclick = function(e : Event){
 					Socket.sendStr(textarea.value);
@@ -92,7 +93,8 @@ class Socket{
 
 			// ユーザー新規接続
 			Socket.socket.on('add', function(id : string, name : string, x : number, y : number){
-				log "新規 " + id + " " + name;
+				log "新規 " + name;
+				
 				var user = new SocketUserData();
 				user.name = name;
 				user.dstx = x;
@@ -114,6 +116,8 @@ class Socket{
 			Socket.socket.on('talk', function(id : string, serif : string){
 				var user = Socket.users[id];
 				if(user){
+					log "発言 " + user.name + ": " + serif;
+
 					user.serif = serif;
 				}
 			});
@@ -122,7 +126,8 @@ class Socket{
 			Socket.socket.on('kill', function(id : string){
 				var user = Socket.users[id];
 				if(user){
-					log "退出 " + id + " " + user.name;
+					log "退出 " + user.name;
+
 					delete Socket.users[id];
 				}
 			});
