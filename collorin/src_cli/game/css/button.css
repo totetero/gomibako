@@ -125,11 +125,11 @@
 .button div.zb{top: 2px;}
 .button div.xb{top: 38px;}
 .button div.cb{top: 74px;}
-.button div.vb{top: 110px;}
+.button div.sb{top: 110px;}
 .button div.zb::before{content: 'Z : サイコロ';}
 .button div.xb::before{content: 'X : アイテム';}
 .button div.cb::before{content: 'C : マップ';}
-.button div.vb::before{content: 'V : メニュー';}
+.button div.sb::before{content: 'Sp : メニュー';}
 
 
 /* -------------------------------- */

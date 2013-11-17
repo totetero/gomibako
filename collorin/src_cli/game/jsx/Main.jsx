@@ -27,6 +27,7 @@ class Main{
 			delete jdat["imgs"];
 			// 初期化
 			Ctrl.init();
+			Cbtn.init();
 			Main.init();
 			// メインループ開始
 			Main.mainloop();
@@ -49,6 +50,7 @@ class Main{
 	// ----------------------------------------------------------------
 	// 描画
 	static function draw() : void{
+		Cbtn.draw();
 		// 描画開始
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 		// 描画test
