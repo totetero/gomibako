@@ -39,10 +39,14 @@
 					// 動的データのロード完了
 					window.jdat = JSON.parse(xhr.responseText);
 					// 画像データを一つの連想配列にまとめる 動的データ優先
-					for(var i in jdat.imgs){
-						if(!window.jdat.imgs.hasOwnProperty(i)){
-							window.jdat.imgs[i] = jdat.imgs[i];
+					if(window.jdat.imgs){
+						for(var i in jdat.imgs){
+							if(!window.jdat.imgs.hasOwnProperty(i)){
+								window.jdat.imgs[i] = jdat.imgs[i];
+							}
 						}
+					}else if(jdat.imgs){
+						window.jdat.imgs = jdat.imgs;
 					}
 					// スタイルシート設定
 					for(var i = 0; i < jdat.css.length; i++){

@@ -66,14 +66,18 @@ class Main{
 	static function regImg(b64imgs : Map.<string>, callback : function():void) : void{
 		var count = 0;
 		for(var i in b64imgs){count++;}
-		for(var i in b64imgs){
-			var img = dom.createElement("img") as HTMLImageElement;
-			img.onload = function(e : Event){
-				// すべての登録が終わったらコールバック
-				if(--count == 0){callback();}
-			};
-			img.src = b64imgs[i];
-			Main.imgs[i] = img;
+		if(count > 0){
+			for(var i in b64imgs){
+				var img = dom.createElement("img") as HTMLImageElement;
+				img.onload = function(e : Event){
+					// すべての登録が終わったらコールバック
+					if(--count == 0){callback();}
+				};
+				img.src = b64imgs[i];
+				Main.imgs[i] = img;
+			}
+		}else{
+			callback();
 		}
 	}
 }
