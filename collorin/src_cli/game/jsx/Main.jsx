@@ -16,7 +16,6 @@ class Main{
 	// イベントリスト
 	static var slist : EventCartridge[];
 	static var plist : EventCartridge[];
-	static var dlist : EventCartridge[];
 
 	// ----------------------------------------------------------------
 	// main関数
@@ -41,12 +40,19 @@ class Main{
 	static function init() : void{
 		Main.slist = new EventCartridge[];
 		Main.plist = new EventCartridge[];
-		Main.dlist = new EventCartridge[];
-
-		// 描画test
-		Main.dlist.push(new ECfix(function(){
-			Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
+		
+		Main.slist.push(new ECone(function(){
+			log "test";
 		}));
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	static function draw() : void{
+		// 描画開始
+		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		// 描画test
+		Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
 	}
 
 	// ----------------------------------------------------------------
@@ -57,7 +63,7 @@ class Main{
 		EventCartridge.serialEvent(Main.slist);
 		EventCartridge.parallelEvent(Main.plist);
 		// 描画処理
-		EventCartridge.parallelEvent(Main.dlist);
+		Main.draw();
 		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);
 	}

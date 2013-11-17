@@ -45,11 +45,11 @@
 						}
 					}
 					// スタイルシート設定
-					var style = document.createElement("style");
-					style.type = "text/css";
-					document.head.appendChild(style);
 					for(var i = 0; i < jdat.css.length; i++){
-						style.sheet.insertRule(jdat.css[i], style.sheet.cssRules.length);
+						var style = document.createElement("style");
+						style.type = "text/css";
+						style.innerHTML = jdat.css[i];
+						document.head.appendChild(style);
 					}
 					// ジャバスクリプト設定
 					for(var i = 0; i < jdat.js.length; i++){

@@ -31,15 +31,12 @@ class Ctrl{
 		// ゲーム画面canvasの準備
 		Ctrl.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		Ctrl.context = Ctrl.canvas.getContext("2d") as CanvasRenderingContext2D;
-		Ctrl.canvas.style.position = "absolute";
+		Ctrl.canvas.className = "main";
 		Ctrl.canvas.width = 320;
 		Ctrl.canvas.height = 320;
 		// root divの準備
 		Ctrl.div = dom.document.createElement("div") as HTMLDivElement;
-		Ctrl.div.style.position = "absolute";
-		Ctrl.div.style.overflow = "hidden";
-		Ctrl.div.style.width = "100%";
-		Ctrl.div.style.height = "100%";
+		Ctrl.div.className = "root";
 		Ctrl.div.appendChild(Ctrl.canvas);
 		dom.document.body.appendChild(Ctrl.div);
 
@@ -54,9 +51,11 @@ class Ctrl{
 			Ctrl.div.addEventListener("mousedown", Ctrl.mdnfn, true);
 			Ctrl.div.addEventListener("mousemove", Ctrl.mmvfn, true);
 			Ctrl.div.addEventListener("mouseup", Ctrl.mupfn, true);
-			dom.document.addEventListener("keydown", Ctrl.kdnfn, true);
-			dom.document.addEventListener("keyup", Ctrl.kupfn, true);
+			dom.document.addEventListener("keydown", Cbtn.kdnfn, true);
+			dom.document.addEventListener("keyup", Cbtn.kupfn, true);
 		}
+
+		Cbtn.init();
 	}
 
 	// ----------------------------------------------------------------
@@ -92,6 +91,48 @@ class Ctrl{
 	static function mupfn(e : Event) : void{
 		// イベント処理
 		e.preventDefault();
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// ボタン用クラス
+class Cbtn{
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		var arrowDiv = dom.document.createElement("div") as HTMLDivElement;
+		var upDiv = dom.document.createElement("div") as HTMLDivElement;
+		var dnDiv = dom.document.createElement("div") as HTMLDivElement;
+		var rtDiv = dom.document.createElement("div") as HTMLDivElement;
+		var ltDiv = dom.document.createElement("div") as HTMLDivElement;
+		var buttonDiv = dom.document.createElement("div") as HTMLDivElement;
+		var zbDiv = dom.document.createElement("div") as HTMLDivElement;
+		var xbDiv = dom.document.createElement("div") as HTMLDivElement;
+		var cbDiv = dom.document.createElement("div") as HTMLDivElement;
+		var vbDiv = dom.document.createElement("div") as HTMLDivElement;
+		arrowDiv.className = "arrow";
+		upDiv.className = "up";
+		dnDiv.className = "dn";
+		rtDiv.className = "rt";
+		ltDiv.className = "lt";
+		buttonDiv.className = "button";
+		zbDiv.className = "zb";
+		xbDiv.className = "xb";
+		cbDiv.className = "cb";
+		vbDiv.className = "vb";
+		arrowDiv.appendChild(upDiv);
+		arrowDiv.appendChild(dnDiv);
+		arrowDiv.appendChild(rtDiv);
+		arrowDiv.appendChild(ltDiv);
+		buttonDiv.appendChild(zbDiv);
+		buttonDiv.appendChild(xbDiv);
+		buttonDiv.appendChild(cbDiv);
+		buttonDiv.appendChild(vbDiv);
+		dom.document.body.appendChild(arrowDiv);
+		dom.document.body.appendChild(buttonDiv);
 	}
 
 	// ----------------------------------------------------------------

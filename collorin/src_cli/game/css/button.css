@@ -1,0 +1,138 @@
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* --------  十字キー -------- */
+
+.arrow{
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	width: 144px;
+	height: 144px;
+}
+
+.arrow div{
+	position: absolute;
+	border: solid 2px white;
+}
+
+.arrow div.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.arrow div::before{
+	content: '';
+	position: absolute;
+	left: -1px;
+	top: -1px;
+	border: solid 2px black;
+}
+
+.arrow div.up{
+	left: 56px;
+	top: 18px;
+	width: 28px;
+	height: 38px;
+	border-radius: 8px 8px 15px 15px;
+}
+
+.arrow div.up::before{
+	width: 26px;
+	height: 36px;
+	border-radius: 8px 8px 15px 15px;
+}
+
+.arrow div.dn{
+	left: 56px;
+	bottom: 18px;
+	width: 28px;
+	height: 38px;
+	border-radius: 15px 15px 8px 8px;
+}
+
+.arrow div.dn::before{
+	width: 26px;
+	height: 36px;
+	border-radius: 15px 15px 8px 8px;
+}
+
+.arrow div.rt{
+	right: 18px;
+	top: 56px;
+	width: 38px;
+	height: 28px;
+	border-radius: 15px 8px 8px 15px;
+}
+
+.arrow div.rt::before{
+	width: 36px;
+	height: 26px;
+	border-radius: 15px 8px 8px 15px;
+}
+
+.arrow div.lt{
+	left: 18px;
+	top: 56px;
+	width: 38px;
+	height: 28px;
+	border-radius: 8px 15px 15px 8px;
+}
+
+.arrow div.lt::before{
+	width: 36px;
+	height: 26px;
+	border-radius: 8px 15px 15px 8px;
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* --------  ボタン -------- */
+
+.button{
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	width: 144px;
+	height: 144px;
+}
+
+.button div{
+	position: absolute;
+	left: 12px;
+	width: 116px;
+	height: 28px;
+	border: solid 2px white;
+	border-radius: 12px;
+}
+
+.button div.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.button div::before{
+	position: absolute;
+	left: -1px;
+	top: -1px;
+	width: 114px;
+	height: 26px;
+	line-height: 28px;
+	border: solid 2px black;
+	border-radius: 12px;
+	text-align: center;
+}
+
+.button div.zb{top: 2px;}
+.button div.xb{top: 38px;}
+.button div.cb{top: 74px;}
+.button div.vb{top: 110px;}
+.button div.zb::before{content: 'Z : サイコロ';}
+.button div.xb::before{content: 'X : アイテム';}
+.button div.cb::before{content: 'C : マップ';}
+.button div.vb::before{content: 'V : メニュー';}
+
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+

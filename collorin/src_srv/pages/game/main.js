@@ -30,7 +30,8 @@ exports.getsdat = function(callback){
 
 	js.push("./src_cli/game/jsx/game.js");
 	js.push("./src_cli/game/js/init.js");
-	css.push("./src_cli/game/css/test.css");
+	css.push("./src_cli/game/css/main.css");
+	css.push("./src_cli/game/css/button.css");
 	imgs["player"] = "./src_cli/game/img/player.png";
 	imgs["player1"] = "./src_cli/game/img/player.png";
 
