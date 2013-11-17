@@ -16,18 +16,18 @@ class Ctrl{
 	static var my : int = 0;
 	static var cx : int = 0;
 	static var cy : int = 0;
-
-	// 内部演算用 ゲーム画面用DOM
+	// ゲーム画面用DOM
 	static var div : HTMLDivElement;
 	static var canvas : HTMLCanvasElement;
 	static var context : CanvasRenderingContext2D;
-	// 内部演算用 ウインドウ状態
+	// ウインドウ状態
 	static var wl : int;
 	static var wt : int;
 	static var ww : int = 0;
 	static var wh : int = 0;
+
 	// 内部演算用 タッチ状態
-	static var mode : int = 0;
+	static var _mode : int = 0;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -99,7 +99,7 @@ class Ctrl{
 		if(Cbtn.btnchk()){
 			// ボタン押下開始
 			Cbtn.btnfn(false);
-			Ctrl.mode = 1;
+			Ctrl._mode = 1;
 		}
 		// 上位ノードイベントキャンセル
 		e.preventDefault();
@@ -109,9 +109,9 @@ class Ctrl{
 	// マウス移動
 	static function mmvfn(e : Event) : void{
 		// イベント処理
-		if(Ctrl.mode > 0){
+		if(Ctrl._mode > 0){
 			Ctrl.getmmv(e);
-			if(Ctrl.mode == 1){
+			if(Ctrl._mode == 1){
 				// ボタン押下処理
 				Cbtn.btnfn(false);
 			}
@@ -124,13 +124,13 @@ class Ctrl{
 	// マウスを離す
 	static function mupfn(e : Event) : void{
 		// イベント処理
-		if(Ctrl.mode > 0){
+		if(Ctrl._mode > 0){
 			Ctrl.getmmv(e);
-			if(Ctrl.mode == 1){
+			if(Ctrl._mode == 1){
 				// ボタン押下終了
 				Cbtn.btnfn(true);
 			}
-			Ctrl.mode = 0;
+			Ctrl._mode = 0;
 		}
 		// 上位ノードイベントキャンセル
 		e.preventDefault();
@@ -158,68 +158,68 @@ class Cbtn{
 	static var trigger_s : boolean;
 
 	// 内部演算用 ゲーム画面用DOM
-	static var arrowDiv : HTMLDivElement;
-	static var buttonDiv : HTMLDivElement;
-	static var upDiv : HTMLDivElement;
-	static var dnDiv : HTMLDivElement;
-	static var rtDiv : HTMLDivElement;
-	static var ltDiv : HTMLDivElement;
-	static var zbDiv : HTMLDivElement;
-	static var xbDiv : HTMLDivElement;
-	static var cbDiv : HTMLDivElement;
-	static var sbDiv : HTMLDivElement;
+	static var _arrowDiv : HTMLDivElement;
+	static var _buttonDiv : HTMLDivElement;
+	static var _upDiv : HTMLDivElement;
+	static var _dnDiv : HTMLDivElement;
+	static var _rtDiv : HTMLDivElement;
+	static var _ltDiv : HTMLDivElement;
+	static var _zbDiv : HTMLDivElement;
+	static var _xbDiv : HTMLDivElement;
+	static var _cbDiv : HTMLDivElement;
+	static var _sbDiv : HTMLDivElement;
 	// 内部演算用 キー状態
-	static var bkup : boolean = false;
-	static var bkdn : boolean = false;
-	static var bkrt : boolean = false;
-	static var bklt : boolean = false;
-	static var bk_z : boolean = false;
-	static var bk_x : boolean = false;
-	static var bk_c : boolean = false;
-	static var bk_s : boolean = false;
-	static var kkup : boolean = false;
-	static var kkdn : boolean = false;
-	static var kkrt : boolean = false;
-	static var kklt : boolean = false;
-	static var kk_z : boolean = false;
-	static var kk_x : boolean = false;
-	static var kk_c : boolean = false;
-	static var kk_s : boolean = false;
+	static var _bkup : boolean = false;
+	static var _bkdn : boolean = false;
+	static var _bkrt : boolean = false;
+	static var _bklt : boolean = false;
+	static var _bk_z : boolean = false;
+	static var _bk_x : boolean = false;
+	static var _bk_c : boolean = false;
+	static var _bk_s : boolean = false;
+	static var _kkup : boolean = false;
+	static var _kkdn : boolean = false;
+	static var _kkrt : boolean = false;
+	static var _kklt : boolean = false;
+	static var _kk_z : boolean = false;
+	static var _kk_x : boolean = false;
+	static var _kk_c : boolean = false;
+	static var _kk_s : boolean = false;
 
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
 		// DOM作成
-		Cbtn.arrowDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.buttonDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.upDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.dnDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.rtDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.ltDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.zbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.xbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.cbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.sbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn.arrowDiv.className = "arrow";
-		Cbtn.buttonDiv.className = "button";
-		Cbtn.upDiv.className = "up";
-		Cbtn.dnDiv.className = "dn";
-		Cbtn.rtDiv.className = "rt";
-		Cbtn.ltDiv.className = "lt";
-		Cbtn.zbDiv.className = "zb";
-		Cbtn.xbDiv.className = "xb";
-		Cbtn.cbDiv.className = "cb";
-		Cbtn.sbDiv.className = "sb";
-		Cbtn.arrowDiv.appendChild(Cbtn.upDiv);
-		Cbtn.arrowDiv.appendChild(Cbtn.dnDiv);
-		Cbtn.arrowDiv.appendChild(Cbtn.rtDiv);
-		Cbtn.arrowDiv.appendChild(Cbtn.ltDiv);
-		Cbtn.buttonDiv.appendChild(Cbtn.zbDiv);
-		Cbtn.buttonDiv.appendChild(Cbtn.xbDiv);
-		Cbtn.buttonDiv.appendChild(Cbtn.cbDiv);
-		Cbtn.buttonDiv.appendChild(Cbtn.sbDiv);
-		Ctrl.div.appendChild(Cbtn.arrowDiv);
-		Ctrl.div.appendChild(Cbtn.buttonDiv);
+		Cbtn._arrowDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._buttonDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._upDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._dnDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._rtDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._ltDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._zbDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._xbDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._cbDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._sbDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._arrowDiv.className = "arrow";
+		Cbtn._buttonDiv.className = "button";
+		Cbtn._upDiv.className = "up";
+		Cbtn._dnDiv.className = "dn";
+		Cbtn._rtDiv.className = "rt";
+		Cbtn._ltDiv.className = "lt";
+		Cbtn._zbDiv.className = "zb";
+		Cbtn._xbDiv.className = "xb";
+		Cbtn._cbDiv.className = "cb";
+		Cbtn._sbDiv.className = "sb";
+		Cbtn._arrowDiv.appendChild(Cbtn._upDiv);
+		Cbtn._arrowDiv.appendChild(Cbtn._dnDiv);
+		Cbtn._arrowDiv.appendChild(Cbtn._rtDiv);
+		Cbtn._arrowDiv.appendChild(Cbtn._ltDiv);
+		Cbtn._buttonDiv.appendChild(Cbtn._zbDiv);
+		Cbtn._buttonDiv.appendChild(Cbtn._xbDiv);
+		Cbtn._buttonDiv.appendChild(Cbtn._cbDiv);
+		Cbtn._buttonDiv.appendChild(Cbtn._sbDiv);
+		Ctrl.div.appendChild(Cbtn._arrowDiv);
+		Ctrl.div.appendChild(Cbtn._buttonDiv);
 	}
 
 	// ----------------------------------------------------------------
@@ -232,23 +232,23 @@ class Cbtn{
 	// 描画
 	static function draw() : void{
 		// キー状態確認
-		var kup = Cbtn.bkup || Cbtn.kkup;
-		var kdn = Cbtn.bkdn || Cbtn.kkdn;
-		var krt = Cbtn.bkrt || Cbtn.kkrt;
-		var klt = Cbtn.bklt || Cbtn.kklt;
-		var k_z = Cbtn.bk_z || Cbtn.kk_z;
-		var k_x = Cbtn.bk_x || Cbtn.kk_x;
-		var k_c = Cbtn.bk_c || Cbtn.kk_c;
-		var k_s = Cbtn.bk_s || Cbtn.kk_s;
+		var kup = Cbtn._bkup || Cbtn._kkup;
+		var kdn = Cbtn._bkdn || Cbtn._kkdn;
+		var krt = Cbtn._bkrt || Cbtn._kkrt;
+		var klt = Cbtn._bklt || Cbtn._kklt;
+		var k_z = Cbtn._bk_z || Cbtn._kk_z;
+		var k_x = Cbtn._bk_x || Cbtn._kk_x;
+		var k_c = Cbtn._bk_c || Cbtn._kk_c;
+		var k_s = Cbtn._bk_s || Cbtn._kk_s;
 		// キー状態描画
-		if(Cbtn.kup != kup){Cbtn.kup = kup; Cbtn.upDiv.className = Cbtn.kup ? "up hover" : "up";}
-		if(Cbtn.kdn != kdn){Cbtn.kdn = kdn; Cbtn.dnDiv.className = Cbtn.kdn ? "dn hover" : "dn";}
-		if(Cbtn.krt != krt){Cbtn.krt = krt; Cbtn.rtDiv.className = Cbtn.krt ? "rt hover" : "rt";}
-		if(Cbtn.klt != klt){Cbtn.klt = klt; Cbtn.ltDiv.className = Cbtn.klt ? "lt hover" : "lt";}
-		if(Cbtn.k_z != k_z){Cbtn.k_z = k_z; Cbtn.zbDiv.className = Cbtn.k_z ? "zb hover" : "zb";}
-		if(Cbtn.k_x != k_x){Cbtn.k_x = k_x; Cbtn.xbDiv.className = Cbtn.k_x ? "xb hover" : "xb";}
-		if(Cbtn.k_c != k_c){Cbtn.k_c = k_c; Cbtn.cbDiv.className = Cbtn.k_c ? "cb hover" : "cb";}
-		if(Cbtn.k_s != k_s){Cbtn.k_s = k_s; Cbtn.sbDiv.className = Cbtn.k_s ? "sb hover" : "sb";}
+		if(Cbtn.kup != kup){Cbtn.kup = kup; Cbtn._upDiv.className = Cbtn.kup ? "up hover" : "up";}
+		if(Cbtn.kdn != kdn){Cbtn.kdn = kdn; Cbtn._dnDiv.className = Cbtn.kdn ? "dn hover" : "dn";}
+		if(Cbtn.krt != krt){Cbtn.krt = krt; Cbtn._rtDiv.className = Cbtn.krt ? "rt hover" : "rt";}
+		if(Cbtn.klt != klt){Cbtn.klt = klt; Cbtn._ltDiv.className = Cbtn.klt ? "lt hover" : "lt";}
+		if(Cbtn.k_z != k_z){Cbtn.k_z = k_z; Cbtn._zbDiv.className = Cbtn.k_z ? "zb hover" : "zb";}
+		if(Cbtn.k_x != k_x){Cbtn.k_x = k_x; Cbtn._xbDiv.className = Cbtn.k_x ? "xb hover" : "xb";}
+		if(Cbtn.k_c != k_c){Cbtn.k_c = k_c; Cbtn._cbDiv.className = Cbtn.k_c ? "cb hover" : "cb";}
+		if(Cbtn.k_s != k_s){Cbtn.k_s = k_s; Cbtn._sbDiv.className = Cbtn.k_s ? "sb hover" : "sb";}
 	}
 
 	// ----------------------------------------------------------------
@@ -257,14 +257,14 @@ class Cbtn{
 		var getkey = true;
 		var ke = e as KeyboardEvent;
 		switch(ke.keyCode){
-			case 37: Cbtn.kklt = true; break;
-			case 38: Cbtn.kkup = true; break;
-			case 39: Cbtn.kkrt = true; break;
-			case 40: Cbtn.kkdn = true; break;
-			case 88: Cbtn.kk_x = true; break;
-			case 90: Cbtn.kk_z = true; break;
-			case 67: Cbtn.kk_c = true; break;
-			case 32: Cbtn.kk_s = true; break;
+			case 37: Cbtn._kklt = true; break;
+			case 38: Cbtn._kkup = true; break;
+			case 39: Cbtn._kkrt = true; break;
+			case 40: Cbtn._kkdn = true; break;
+			case 88: Cbtn._kk_x = true; break;
+			case 90: Cbtn._kk_z = true; break;
+			case 67: Cbtn._kk_c = true; break;
+			case 32: Cbtn._kk_s = true; break;
 			default: getkey = false;
 		}
 		// キーイベント終了
@@ -277,14 +277,14 @@ class Cbtn{
 		var getkey = true;
 		var ke = e as KeyboardEvent;
 		switch(ke.keyCode){
-			case 37: Cbtn.kklt = false; break;
-			case 38: Cbtn.kkup = false; break;
-			case 39: Cbtn.kkrt = false; break;
-			case 40: Cbtn.kkdn = false; break;
-			case 88: Cbtn.kk_x = false; Cbtn.trigger_x = true; break;
-			case 90: Cbtn.kk_z = false; Cbtn.trigger_z = true; break;
-			case 67: Cbtn.kk_c = false; Cbtn.trigger_c = true; break;
-			case 32: Cbtn.kk_s = false; Cbtn.trigger_s = true; break;
+			case 37: Cbtn._kklt = false; break;
+			case 38: Cbtn._kkup = false; break;
+			case 39: Cbtn._kkrt = false; break;
+			case 40: Cbtn._kkdn = false; break;
+			case 88: Cbtn._kk_x = false; Cbtn.trigger_x = true; break;
+			case 90: Cbtn._kk_z = false; Cbtn.trigger_z = true; break;
+			case 67: Cbtn._kk_c = false; Cbtn.trigger_c = true; break;
+			case 32: Cbtn._kk_s = false; Cbtn.trigger_s = true; break;
 			default: getkey = false;
 		}
 		// キーイベント終了
@@ -306,18 +306,18 @@ class Cbtn{
 	// ボタンを押す
 	static function btnfn(trigger : boolean) : void{
 		// 押下状態リセット
-		Cbtn.bkup = Cbtn.bkdn = Cbtn.bkrt = Cbtn.bklt = false;
-		Cbtn.bk_z = Cbtn.bk_x = Cbtn.bk_c = Cbtn.bk_s = false;
+		Cbtn._bkup = Cbtn._bkdn = Cbtn._bkrt = Cbtn._bklt = false;
+		Cbtn._bk_z = Cbtn._bk_x = Cbtn._bk_c = Cbtn._bk_s = false;
 
 		// 十字キー確認
 		if(!trigger){
 			var x = Ctrl.mx - 72;
 			var y = Ctrl.my - Ctrl.wh + 72;
 			if(x * x + y * y < 72 * 72){
-				if(y < 0 && x < y * y * 0.18 && x > y * y * -0.18){Cbtn.bkup = true;}
-				if(y > 0 && x < y * y * 0.18 && x > y * y * -0.18){Cbtn.bkdn = true;}
-				if(x > 0 && y < x * x * 0.18 && y > x * x * -0.18){Cbtn.bkrt = true;}
-				if(x < 0 && y < x * x * 0.18 && y > x * x * -0.18){Cbtn.bklt = true;}
+				if(y < 0 && x < y * y * 0.18 && x > y * y * -0.18){Cbtn._bkup = true;}
+				if(y > 0 && x < y * y * 0.18 && x > y * y * -0.18){Cbtn._bkdn = true;}
+				if(x > 0 && y < x * x * 0.18 && y > x * x * -0.18){Cbtn._bkrt = true;}
+				if(x < 0 && y < x * x * 0.18 && y > x * x * -0.18){Cbtn._bklt = true;}
 			}
 		}
 
@@ -325,10 +325,10 @@ class Cbtn{
 		var x = Ctrl.mx - Ctrl.ww + 144;
 		if(12 < x && x < 132){
 			var y = Ctrl.my - Ctrl.wh + 144;
-			if(  0 < y && y <  36){if(trigger){Cbtn.trigger_z = true;}else{Cbtn.bk_z = true;}}
-			if( 36 < y && y <  72){if(trigger){Cbtn.trigger_x = true;}else{Cbtn.bk_x = true;}}
-			if( 72 < y && y < 108){if(trigger){Cbtn.trigger_c = true;}else{Cbtn.bk_c = true;}}
-			if(108 < y && y < 144){if(trigger){Cbtn.trigger_s = true;}else{Cbtn.bk_s = true;}}
+			if(  0 < y && y <  36){if(trigger){Cbtn.trigger_z = true;}else{Cbtn._bk_z = true;}}
+			if( 36 < y && y <  72){if(trigger){Cbtn.trigger_x = true;}else{Cbtn._bk_x = true;}}
+			if( 72 < y && y < 108){if(trigger){Cbtn.trigger_c = true;}else{Cbtn._bk_c = true;}}
+			if(108 < y && y < 144){if(trigger){Cbtn.trigger_s = true;}else{Cbtn._bk_s = true;}}
 		}
 	}
 }

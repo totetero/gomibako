@@ -25,41 +25,41 @@ abstract class EventCartridge{
 
 // フレームウエイト
 class ECwait extends EventCartridge{
-	var wait : int;
+	var _wait : int;
 	// コンストラクタ
 	function constructor(wait : int){
-		this.wait = wait;
+		this._wait = wait;
 	}
 	// 計算
 	override function calc() : boolean{
-		return this.wait-- >= 0;
+		return this._wait-- >= 0;
 	}
 }
 
 // 1フレームイベント
 class ECone extends EventCartridge{
-	var func : function():void;
+	var _func : function():void;
 	// コンストラクタ
 	function constructor(func : function():void){
-		this.func = func;
+		this._func = func;
 	}
 	// 計算
 	override function calc() : boolean{
-		this.func();
+		this._func();
 		return false;
 	}
 }
 
 // 永続イベント
 class ECfix extends EventCartridge{
-	var func : function():void;
+	var _func : function():void;
 	// コンストラクタ
 	function constructor(func : function():void){
-		this.func = func;
+		this._func = func;
 	}
 	// 計算
 	override function calc() : boolean{
-		this.func();
+		this._func();
 		return true;
 	}
 }
