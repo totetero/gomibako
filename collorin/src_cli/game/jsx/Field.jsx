@@ -25,8 +25,8 @@ class Field{
 	var _size : int = 20;
 
 	// ----------------------------------------------------------------
-	// 初期化
-	function init() : void {
+	// コンストラクタ
+	function constructor(){
 		this._hex = [
 			new Hex(0, 3, 1),
 			new Hex(0, 4, 1),
