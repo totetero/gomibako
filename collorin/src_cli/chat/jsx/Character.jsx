@@ -169,6 +169,7 @@ class DrawPlayer extends DrawCharacter{
 	var parts_hair = new DrawCharacterParts( 0, 48, 16, false);
 	var parts_hail = new DrawCharacterParts( 0, 48, 16, true);
 	var parts_tail = new DrawCharacterParts( 0, 64, 16, false);
+	var parts_pony = new DrawCharacterParts( 0, 80, 16, false);
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -185,6 +186,7 @@ class DrawPlayer extends DrawCharacter{
 		this.duList.push(this.parts_hair);
 		this.duList.push(this.parts_hail);
 		this.duList.push(this.parts_tail);
+		this.duList.push(this.parts_pony);
 		for(var i = 0; i < this.duList.length; i++){(this.duList[i] as DrawCharacterParts).img = img;}
 	}
 
@@ -203,7 +205,8 @@ class DrawPlayer extends DrawCharacter{
 					this.setParts(this.parts_hndl,  0.10, -0.15, 0.25, 0);
 					this.setParts(this.parts_hair,  0.06,  0.20, 0.43, 1);
 					this.setParts(this.parts_hail,  0.06, -0.20, 0.43, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.36, 1);break;
+					this.setParts(this.parts_tail, -0.07,  0.00, 0.36, 1);
+					this.setParts(this.parts_pony, -0.04, -0.02, 0.53, 1);break;
 				case 1:
 					this.setParts(this.parts_head,  0.12,  0.00, 0.47, 1);
 					this.setParts(this.parts_body,  0.00,  0.00, 0.26, 1);
@@ -213,7 +216,8 @@ class DrawPlayer extends DrawCharacter{
 					this.setParts(this.parts_hndl,  0.05, -0.18, 0.25, 0);
 					this.setParts(this.parts_hair,  0.06,  0.20, 0.45, 1);
 					this.setParts(this.parts_hail,  0.06, -0.20, 0.45, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.38, 1);break;
+					this.setParts(this.parts_tail, -0.07,  0.00, 0.38, 1);
+					this.setParts(this.parts_pony, -0.04,  0.00, 0.55, 1);break;
 				case 2:
 					this.setParts(this.parts_head,  0.12,  0.00, 0.45, 1);
 					this.setParts(this.parts_body,  0.00,  0.00, 0.23, 1);
@@ -223,7 +227,8 @@ class DrawPlayer extends DrawCharacter{
 					this.setParts(this.parts_hndl, -0.10, -0.15, 0.25, 0);
 					this.setParts(this.parts_hair,  0.06,  0.20, 0.43, 1);
 					this.setParts(this.parts_hail,  0.06, -0.20, 0.43, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.36, 1);break;
+					this.setParts(this.parts_tail, -0.07,  0.00, 0.36, 1);
+					this.setParts(this.parts_pony, -0.04,  0.02, 0.53, 1);break;
 				case 3:
 					this.setParts(this.parts_head,  0.12,  0.00, 0.47, 1);
 					this.setParts(this.parts_body,  0.00,  0.00, 0.26, 1);
@@ -233,7 +238,8 @@ class DrawPlayer extends DrawCharacter{
 					this.setParts(this.parts_hndl, -0.05, -0.18, 0.25, 0);
 					this.setParts(this.parts_hair,  0.06,  0.20, 0.45, 1);
 					this.setParts(this.parts_hail,  0.06, -0.20, 0.45, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.38, 1);break;
+					this.setParts(this.parts_tail, -0.07,  0.00, 0.38, 1);
+					this.setParts(this.parts_pony, -0.04,  0.00, 0.55, 1);break;
 			}
 		}else{
 			// 静止
@@ -246,6 +252,7 @@ class DrawPlayer extends DrawCharacter{
 			this.setParts(this.parts_hair, -0.05,  0.20, 0.50, 1);
 			this.setParts(this.parts_hail, -0.05, -0.20, 0.50, 1);
 			this.setParts(this.parts_tail, -0.15,  0.00, 0.40, 1);
+			this.setParts(this.parts_pony, -0.16,  0.00, 0.60, 1);
 		}
 	}
 }
