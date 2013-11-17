@@ -3,6 +3,7 @@ import 'js/web.jsx';
 import 'timer.jsx';
 
 import 'Ctrl.jsx';
+import 'EventCartridge.jsx';
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -10,7 +11,13 @@ import 'Ctrl.jsx';
 
 // メインクラス
 class Main{
+	// 画像リスト
 	static var imgs : Map.<HTMLImageElement>;
+	// イベントリスト
+	static var slist : EventCartridge[];
+	static var plist : EventCartridge[];
+	static var dlist : EventCartridge[];
+
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
@@ -19,8 +26,10 @@ class Main{
 		Main.imgs = {} : Map.<HTMLImageElement>;
 		Main.regImg(jdat["imgs"] as Map.<string>, function(){
 			delete jdat["imgs"];
-			// メインループ開始
+			// 初期化
 			Ctrl.init();
+			Main.init();
+			// メインループ開始
 			Main.mainloop();
 			// ローディング表記除去
 			dom.document.body.removeChild(dom.document.getElementById("loading"));
@@ -28,10 +37,28 @@ class Main{
 	}
 
 	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		Main.slist = new EventCartridge[];
+		Main.plist = new EventCartridge[];
+		Main.dlist = new EventCartridge[];
+
+		// 描画test
+		Main.dlist.push(new ECfix(function(){
+			Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
+		}));
+	}
+
+	// ----------------------------------------------------------------
 	// mainloop関数
 	static function mainloop() : void{
 		Ctrl.calc();
-		Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
+		// イベント処理
+		EventCartridge.serialEvent(Main.slist);
+		EventCartridge.parallelEvent(Main.plist);
+		// 描画処理
+		EventCartridge.parallelEvent(Main.dlist);
+		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);
 	}
 
