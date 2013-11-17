@@ -74,7 +74,7 @@ class Ctrl{
 
 		// ゲーム画面キャンバス設定
 		Ctrl.scale = 1;
-		Ctrl.rotv = Math.PI / 180 * 0;
+		Ctrl.rotv = Math.PI / 180 * 45;
 		Ctrl.roth = Math.PI / 180 * 30;
 		Ctrl.rothMin = Math.PI / 180 * 30;
 		Ctrl.rothMax = Math.PI / 180 * 30;
@@ -93,8 +93,22 @@ class Ctrl{
 		if(Ctrl.ww != w || Ctrl.wh != h){
 			Ctrl.ww = w;
 			Ctrl.wh = h;
-			Ctrl.canvas.style.left = (Ctrl.wl = (w - Ctrl.canvas.width) * 0.5) + "px";
-			Ctrl.canvas.style.top = (Ctrl.wt = (h - Ctrl.canvas.height) * 0.5) + "px";
+			if(false){
+				// 固定サイズキャンバスモード
+				Ctrl.canvas.style.left = (Ctrl.wl = (w - Ctrl.canvas.width) * 0.5) + "px";
+				Ctrl.canvas.style.top = (Ctrl.wt = (h - Ctrl.canvas.height) * 0.5) + "px";
+			}else{
+				// 全画面キャンバスモード
+				Ctrl.div.removeChild(Ctrl.canvas);
+				Ctrl.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+				Ctrl.context = Ctrl.canvas.getContext("2d") as CanvasRenderingContext2D;
+				Ctrl.canvas.style.position = "absolute";
+				Ctrl.canvas.width = w;
+				Ctrl.canvas.height = h;
+				Ctrl.div.appendChild(Ctrl.canvas);
+				Ctrl.wl = 0;
+				Ctrl.wt = 0;
+			}
 		}
 	}
 

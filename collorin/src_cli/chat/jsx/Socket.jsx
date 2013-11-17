@@ -77,8 +77,7 @@ class Socket{
 
 			// ゲーム情報獲得
 			Socket.socket.on('entry', function(id : string, users : Map.<SocketUserData>){
-				log "接続";
-				for(var uid in users){log ((id == uid) ? "自分 " : "継続 ") + users[uid].name;}
+				for(var uid in users){log ((id == uid) ? "自分 " : "継続 ") + users[uid].name + ": " + users[uid].serif;}
 
 				Socket.users = users;
 				Socket.playerId = id;
@@ -86,14 +85,23 @@ class Socket{
 				nameDiv.innerHTML = Socket.users[id].name;
 				button.value = "発言";
 				button.onclick = function(e : Event){
-					Socket.sendStr(textarea.value);
+					if(textarea.value != Socket.users[Socket.playerId].serif){Socket.sendStr(textarea.value);}
 					textarea.value = "";
 				};
+				// Enter入力で発言
+				dom.document.addEventListener("keyup", function(e : Event){
+					if((e as KeyboardEvent).keyCode == 13 && textarea.value != ""){
+						if(textarea.value != Socket.users[Socket.playerId].serif){Socket.sendStr(textarea.value);}
+						textarea.value = "";
+					}else{
+						textarea.focus();
+					}
+				}, true);
 			});
 
 			// ユーザー新規接続
 			Socket.socket.on('add', function(id : string, name : string, x : number, y : number){
-				log "新規 " + name;
+				log "新規 " + name + ": ";
 				
 				var user = new SocketUserData();
 				user.name = name;
@@ -126,7 +134,7 @@ class Socket{
 			Socket.socket.on('kill', function(id : string){
 				var user = Socket.users[id];
 				if(user){
-					log "退出 " + user.name;
+					log "退出 " + user.name + ": ";
 
 					delete Socket.users[id];
 				}

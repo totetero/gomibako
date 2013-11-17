@@ -30,6 +30,8 @@ exports.init = function(app, srv, store){
 	// -------------------------------- socket.io接続
 	io.sockets.on("connection", function(client){
 		var uinfo = null;
+		var maxx = 510;
+		var maxy = 510;
 
 		// -------- ユーザー情報受信
 		client.on("entry", function(cookie, room){
@@ -45,8 +47,8 @@ exports.init = function(app, srv, store){
 					uinfo.id = client.id;
 					uinfo.name = user.uname;
 					uinfo.room = room;
-					uinfo.dstx = Math.floor(100 * Math.random() * 10) / 10;
-					uinfo.dsty = Math.floor(100 * Math.random() * 10) / 10;
+					uinfo.dstx = Math.floor(maxx * Math.random() * 10) / 10;
+					uinfo.dsty = Math.floor(maxy * Math.random() * 10) / 10;
 					uinfo.serif = "";
 					// 部屋作成
 					if(!users[uinfo.room]){users[uinfo.room] = {};}
@@ -62,6 +64,8 @@ exports.init = function(app, srv, store){
 		// -------- 目的地受信
 		client.on("dst", function(x, y){
 			if(!uinfo){return;}
+			if(x < 0){x = 0;}else if(x > maxx){x = maxx;}
+			if(y < 0){y = 0;}else if(y > maxy){y = maxy;}
 			uinfo.dstx = x;
 			uinfo.dsty = y;
 			io.sockets.to(uinfo.room).emit("move", uinfo.id, uinfo.dstx, uinfo.dsty);

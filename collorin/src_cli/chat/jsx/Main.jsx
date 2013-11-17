@@ -61,6 +61,14 @@ class Main{
 		Main.markerDiv.style.bottom = "10px";
 		dom.document.body.appendChild(Main.markerDiv);
 		Main.markerIdx = -1;
+
+		// 戻るリンクDOM作成
+		var backDiv = dom.document.createElement("div") as HTMLDivElement;
+		backDiv.style.position = "absolute";
+		backDiv.style.right = "10px";
+		backDiv.style.bottom = "10px";
+		backDiv.innerHTML = "<a href='/mypage'>マイページにもどる</a>";
+		dom.document.body.appendChild(backDiv);
 	}
 
 	// ----------------------------------------------------------------
@@ -173,12 +181,14 @@ class Main{
 	static function draw() : void{
 		// 描画開始
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
-		// フィールド描画
-		Main.field.draw(Main.camerax, Main.cameray);
-		// プレイヤー描画準備
-		for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(Main.camerax, Main.cameray);}
-		// プレイヤー描画
-		DrawUnit.drawList(Main.clist);
+		if(Socket.playerId != ""){
+			// フィールド描画
+			Main.field.draw(Main.camerax, Main.cameray);
+			// プレイヤー描画準備
+			for(var i = 0; i < Main.player.length; i++){Main.player[i].preDraw(Main.camerax, Main.cameray);}
+			// プレイヤー描画
+			DrawUnit.drawList(Main.clist);
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -286,7 +296,7 @@ class Player{
 		this.name = name;
 		this.x0 = this.x1 = x;
 		this.y0 = this.y1 = y;
-		this.r = Math.PI / 180 * 90;
+		this.r = Math.PI / 180 * 360 * Math.random();
 		this.action = 0;
 		this.serif = "";
 	}
