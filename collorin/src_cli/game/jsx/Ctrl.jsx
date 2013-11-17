@@ -14,8 +14,6 @@ class Ctrl{
 	static var mmv : boolean;
 	static var mx : int = 0;
 	static var my : int = 0;
-	static var cx : int = 0;
-	static var cy : int = 0;
 	// ゲーム画面用DOM
 	static var div : HTMLDivElement;
 	static var canvas : HTMLCanvasElement;
@@ -28,6 +26,8 @@ class Ctrl{
 
 	// 内部演算用 タッチ状態
 	static var _mode : int = 0;
+	static var _tempmx : int;
+	static var _tempmy : int;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -87,8 +87,6 @@ class Ctrl{
 			Ctrl.mx = me.clientX;
 			Ctrl.my = me.clientY;
 		}
-		Ctrl.cx = Ctrl.mx - Ctrl.wl;
-		Ctrl.cy = Ctrl.my - Ctrl.wt;
 	}
 
 	// ----------------------------------------------------------------
@@ -100,6 +98,13 @@ class Ctrl{
 			// ボタン押下開始
 			Cbtn.btnfn(false);
 			Ctrl._mode = 1;
+		}else{
+			// 画面押下開始
+			Ctrl.mdn = true;
+			Ctrl.mmv = false;
+			Ctrl._mode = 2;
+			Ctrl._tempmx = Ctrl.mx;
+			Ctrl._tempmy = Ctrl.my;
 		}
 		// 上位ノードイベントキャンセル
 		e.preventDefault();
@@ -114,6 +119,14 @@ class Ctrl{
 			if(Ctrl._mode == 1){
 				// ボタン押下処理
 				Cbtn.btnfn(false);
+			}else if(Ctrl._mode == 2){
+				// 画面押下処理
+				if(!Ctrl.mmv){
+					// 移動状態移行確認
+					var x = Ctrl._tempmx - Ctrl.mx;
+					var y = Ctrl._tempmy - Ctrl.my;
+					Ctrl.mmv = (x * x + y * y > 10);
+				}
 			}
 		}
 		// 上位ノードイベントキャンセル
@@ -129,6 +142,9 @@ class Ctrl{
 			if(Ctrl._mode == 1){
 				// ボタン押下終了
 				Cbtn.btnfn(true);
+			}else if(Ctrl._mode == 2){
+				// 画面押下終了
+				Ctrl.mdn = false;
 			}
 			Ctrl._mode = 0;
 		}
@@ -330,6 +346,109 @@ class Cbtn{
 			if( 72 < y && y < 108){if(trigger){Cbtn.trigger_c = true;}else{Cbtn._bk_c = true;}}
 			if(108 < y && y < 144){if(trigger){Cbtn.trigger_s = true;}else{Cbtn._bk_s = true;}}
 		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// キャンバス操作クラス
+
+class Ccvs{
+	// マウス状態 キャンバスとの相対位置
+	static var mdn : boolean;
+	static var mx : int;
+	static var my : int;
+	// ゲーム画面キャンバス フィールド位置
+	static var fx : number = 0;
+	static var fy : number = 0;
+	// ゲーム画面キャンバス プレイヤー位置
+	static var px : number = 0;
+	static var py : number = 0;
+	// ゲーム画面キャンバス 画面拡大
+	static var scale : number;
+	// ゲーム画面キャンバス 画面回転
+	static var rotv : number;
+	static var roth : number;
+	static var sinv : number;
+	static var cosv : number;
+	static var sinh : number;
+	static var cosh : number;
+
+	// 内部演算用 マウス移動量差分を求める変数
+	static var _tempmdn : boolean;
+	static var _tempmx : int = 0;
+	static var _tempmy : int = 0;
+
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		Ccvs.scale = 1;
+		Ccvs.rotv = Math.PI / 180 * 0;
+		Ccvs.roth = Math.PI / 180 * 30;
+		Ccvs.sinv = Math.sin(Ccvs.rotv);
+		Ccvs.cosv = Math.cos(Ccvs.rotv);
+		Ccvs.sinh = Math.sin(Ccvs.roth);
+		Ccvs.cosh = Math.cos(Ccvs.roth);
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	static function calc() : void{
+		Ccvs.mx = Ctrl.mx - Ctrl.wl;
+		Ccvs.my = Ctrl.my - Ctrl.wt;
+
+		// TODO マップモードか確認
+		var mapFlag = false;
+
+		// キャンバス内でクリック開始したかの確認
+		if(Ccvs._tempmdn != Ctrl.mdn){
+			Ccvs._tempmdn = Ctrl.mdn;
+			Ccvs.mdn = (Ccvs._tempmdn && 0 < Ccvs.mx && Ccvs.mx < Ctrl.canvas.width && 0 < Ccvs.my && Ccvs.my < Ctrl.canvas.height);
+		}
+
+		if(Ccvs.mdn && Ctrl.mmv){
+			// マウス移動中
+			if(mapFlag){
+				// マップモード時地図の水平移動
+				var x = Ccvs._tempmx - Ccvs.mx;
+				var y = Ccvs._tempmy - Ccvs.my;
+				Ccvs.fx += x *  Ccvs.cosv + y * Ccvs.sinv;
+				Ccvs.fy += x * -Ccvs.sinv + y * Ccvs.cosv;
+			}else{
+				// 舞台回転処理
+				var x0 = Ccvs._tempmx - Ctrl.canvas.width * 0.5;
+				var y0 = Ccvs._tempmy - Ctrl.canvas.height * 0.5;
+				var r0 = Math.sqrt(x0 * x0 + y0 * y0);
+				var x1 = Ccvs.mx - Ctrl.canvas.width * 0.5;
+				var y1 = Ccvs.my - Ctrl.canvas.height * 0.5;
+				var r1 = Math.sqrt(x1 * x1 + y1 * y1);
+				if(r0 > 20 && r1 > 20){
+					var cos = (x0 * x1 + y0 * y1) / (r0 * r1);
+					if(cos > 1){cos = 1;}else if(cos < -1){cos = -1;}
+					Ccvs.rotv += Math.acos(cos) * ((x0 * y1 - y0 * x1 > 0) ? 1 : -1);
+					Ccvs.sinv = Math.sin(Ccvs.rotv);
+					Ccvs.cosv = Math.cos(Ccvs.rotv);
+				}
+			}
+		}
+		Ccvs._tempmx = Ccvs.mx;
+		Ccvs._tempmy = Ccvs.my;
+
+		if(!mapFlag){
+			// 中心をプレイヤー位置に寄せる
+			Ccvs.fx += (Ccvs.px - Ccvs.fx) * 0.3;
+			Ccvs.fy += (Ccvs.py - Ccvs.fy) * 0.3;
+		}
+
+		// 水平角度
+		var roth = Math.PI / 180 * (mapFlag ? 90 : 30);
+		Ccvs.roth += (roth - Ccvs.roth) * 0.1;
+		Ccvs.sinh = Math.sin(Ccvs.roth);
+		Ccvs.cosh = Math.cos(Ccvs.roth);
+		// 拡大縮小
+		//var scale = mapFlag ? 0.8 : 2.5;
+		//Ccvs.scale += (scale - Ccvs.scale) * 0.1;
 	}
 }
 

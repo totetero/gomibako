@@ -4,6 +4,7 @@ import 'timer.jsx';
 
 import 'Ctrl.jsx';
 import 'EventCartridge.jsx';
+import 'Field.jsx';
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -28,7 +29,9 @@ class Main{
 			// 初期化
 			Ctrl.init();
 			Cbtn.init();
+			Ccvs.init();
 			Main.init();
+			Game.init();
 			// メインループ開始
 			Main.mainloop();
 			// ローディング表記除去
@@ -41,31 +44,19 @@ class Main{
 	static function init() : void{
 		Main.slist = new EventCartridge[];
 		Main.plist = new EventCartridge[];
-		
-		Main.slist.push(new ECone(function(){
-			log "test";
-		}));
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	static function draw() : void{
-		Cbtn.draw();
-		// 描画開始
-		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
-		// 描画test
-		Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
 	}
 
 	// ----------------------------------------------------------------
 	// mainloop関数
 	static function mainloop() : void{
 		Ctrl.calc();
+		Cbtn.calc();
+		Ccvs.calc();
 		// イベント処理
 		EventCartridge.serialEvent(Main.slist);
 		EventCartridge.parallelEvent(Main.plist);
 		// 描画処理
-		Main.draw();
+		Game.draw();
 		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);
 	}
@@ -84,6 +75,37 @@ class Main{
 			img.src = b64imgs[i];
 			Main.imgs[i] = img;
 		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+class Game{
+	static var field : Field;
+
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		(Game.field = new Field()).init();
+
+		Main.slist.push(new ECone(function(){
+			log "test";
+		}));
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	static function draw() : void{
+		Cbtn.draw();
+		// 描画開始
+		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		Ctrl.context.fillStyle = "pink";
+		Ctrl.context.fillRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		Game.field.draw(Ccvs.fx, Ccvs.fy);
+		// 描画test
+		Ctrl.context.drawImage(Main.imgs["player"], 0, 0);
 	}
 }
 
