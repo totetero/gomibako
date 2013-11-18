@@ -9,17 +9,18 @@ import "js/web.jsx";
 native __fake__ class _socketio{
 	function on(command : string, f : function():void) : void;
 	function on(command : string, f : function(id : string, users : Map.<SocketUserData>):void) : void;
-	function on(command : string, f : function(id : string, name : string, x : number, y : number):void) : void;
+	function on(command : string, f : function(id : string, name : string, imgname : string, x : number, y : number):void) : void;
 	function on(command : string, f : function(id : string, x : number, y : number):void) : void;
 	function on(command : string, f : function(id : string, serif : string):void) : void;
 	function on(command : string, f : function(id : string):void) : void;
-	function emit(command : string, cookie : string, room : string) : void;
+	function emit(command : string, cookie : string, room : string, imgname : string) : void;
 	function emit(command : string, x : number, y : number) : void;
 	function emit(command : string, str : string) : void;
 }
 
 class SocketUserData{
 	var name : string;
+	var imgname : string;
 	var dstx : number;
 	var dsty : number;
 	var serif : string;
@@ -65,7 +66,7 @@ class Socket{
 			// 接続
 			Socket.socket.on("connect", function(){
 				Socket.connect = true;
-				Socket.socket.emit("entry", dom.document.cookie, "room0");
+				Socket.socket.emit("entry", dom.document.cookie, "room0", js.global["jdat"]["imgname"] as string);
 				log "サーバに接続したよ";
 			});
 
@@ -100,11 +101,12 @@ class Socket{
 			});
 
 			// ユーザー新規接続
-			Socket.socket.on('add', function(id : string, name : string, x : number, y : number){
+			Socket.socket.on('add', function(id : string, name : string, imgname : string, x : number, y : number){
 				log "新規 " + name + ": ";
 				
 				var user = new SocketUserData();
 				user.name = name;
+				user.imgname = imgname;
 				user.dstx = x;
 				user.dsty = y;
 				user.serif = "";

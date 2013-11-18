@@ -34,7 +34,7 @@ exports.init = function(app, srv, store){
 		var maxy = 510;
 
 		// -------- ユーザー情報受信
-		client.on("entry", function(cookie, room){
+		client.on("entry", function(cookie, room, imgname){
 			// 認証
 			var cookie = cookiemod.parse(decodeURIComponent(cookie));
 			var sessionID = connect.utils.parseSignedCookie(cookie["connect.sid"], app.get("secretKey"));
@@ -47,6 +47,7 @@ exports.init = function(app, srv, store){
 					uinfo.id = client.id;
 					uinfo.name = user.uname;
 					uinfo.room = room;
+					uinfo.imgname = imgname;
 					uinfo.dstx = Math.floor(maxx * Math.random() * 10) / 10;
 					uinfo.dsty = Math.floor(maxy * Math.random() * 10) / 10;
 					uinfo.serif = "";
@@ -56,7 +57,7 @@ exports.init = function(app, srv, store){
 					client.join(uinfo.room);
 					// 情報送信
 					client.emit("entry", uinfo.id, users[uinfo.room])
-					client.broadcast.to(uinfo.room).emit("add", uinfo.id, uinfo.name, uinfo.dstx, uinfo.dsty);
+					client.broadcast.to(uinfo.room).emit("add", uinfo.id, uinfo.name, uinfo.imgname, uinfo.dstx, uinfo.dsty);
 				});
 			});
 		});

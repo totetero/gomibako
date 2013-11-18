@@ -91,7 +91,7 @@ class Main{
 			if(!exist){
 				// キャラ追加
 				var pdat = Socket.users[id];
-				Main.player.push(new Player(id, pdat.name, pdat.dstx, pdat.dsty));
+				Main.player.push(new Player(id, pdat.name, pdat.imgname, pdat.dstx, pdat.dsty));
 				if(id == Socket.playerId){
 					// 追加されたのが操作プレイヤーの場合は選択マーカーの設定
 					Main.markerx = pdat.dstx;
@@ -290,8 +290,10 @@ class Player{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(id : string, name : string, x : number, y : number){
-		this.character = new DrawPlayer(Main.imgs["player"]);
+	function constructor(id : string, name : string, imgname : string, x : number, y : number){
+		var img = Main.imgs[imgname];
+		if(!img){img = Main.imgs["player"];}
+		this.character = new DrawPlayer(img);
 		this.balloon = new DrawBalloon();
 		Main.clist.push(this.character);
 		Main.clist.push(this.balloon);
