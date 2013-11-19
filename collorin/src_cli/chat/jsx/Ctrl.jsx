@@ -93,7 +93,7 @@ class Ctrl{
 		if(Ctrl.ww != w || Ctrl.wh != h){
 			Ctrl.ww = w;
 			Ctrl.wh = h;
-			if(false){
+			if(true){
 				// 固定サイズキャンバスモード
 				Ctrl.canvas.style.left = (Ctrl.wl = (w - Ctrl.canvas.width) * 0.5) + "px";
 				Ctrl.canvas.style.top = (Ctrl.wt = (h - Ctrl.canvas.height) * 0.5) + "px";

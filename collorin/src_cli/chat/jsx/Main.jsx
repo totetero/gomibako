@@ -54,6 +54,9 @@ class Main{
 		Main.clist = new DrawUnit[];
 		Main.player = new Player[];
 
+		// 
+		dom.document.body.style.backgroundColor = "grey";
+
 		// 選択マーカーDOM作成
 		Main.markerDiv = dom.document.createElement("div") as HTMLDivElement;
 		Main.markerDiv.style.position = "absolute";
@@ -180,7 +183,9 @@ class Main{
 	// 描画
 	static function draw() : void{
 		// 描画開始
-		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		//Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		Ctrl.context.fillStyle = "white";
+		Ctrl.context.fillRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 		if(Socket.playerId != ""){
 			// フィールド描画
 			Main.field.draw(Main.camerax, Main.cameray);
