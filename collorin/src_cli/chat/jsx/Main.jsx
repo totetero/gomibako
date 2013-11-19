@@ -263,11 +263,11 @@ class Field{
 		Ctrl.context.drawImage(this.canvas, 0, 0);
 
 		// 選択マーカー描画
-		Ctrl.context.fillStyle = (Main.markerIdx < 0) ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 0, 0, 0.5)";
+		Ctrl.context.strokeStyle = (Main.markerIdx < 0) ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 0, 0, 0.5)";
+		Ctrl.context.lineWidth = 4;
 		Ctrl.context.beginPath();
-		Ctrl.context.arc(Main.markerx, Main.markery, 16, 0, Math.PI*2, false);
-		Ctrl.context.arc(Main.markerx, Main.markery, 12, 0, Math.PI*2, true);
-		Ctrl.context.fill();
+		Ctrl.context.arc(Main.markerx, Main.markery, 14, 0, Math.PI*2, false);
+		Ctrl.context.stroke();
 
 		// 描画終了
 		Ctrl.context.restore();

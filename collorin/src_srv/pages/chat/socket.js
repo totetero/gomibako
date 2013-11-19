@@ -81,12 +81,12 @@ exports.init = function(app, srv, store){
 			if(!uinfo1){return;}
 			if(uinfo1.heartbeatCounter++ < 3){
 				// 生存確認送信
-				client.emit("heartbeat");
+				client.volatile.emit("heartbeat");
 				setTimeout(heartbeatCheck, 1000);
 			}else{
 				// 切断
 				disconnect();
-                client.disconnect();
+				client.disconnect();
 			}
 		};
 		setTimeout(heartbeatCheck, 1000);
@@ -103,7 +103,7 @@ exports.init = function(app, srv, store){
 			if(y < 0){y = 0;}else if(y > maxy){y = maxy;}
 			uinfo2.dstx = x;
 			uinfo2.dsty = y;
-			io.sockets.volatile.to(uinfo1.room).emit("move", uinfo1.id, uinfo2.dstx, uinfo2.dsty);
+			io.sockets.to(uinfo1.room).emit("move", uinfo1.id, uinfo2.dstx, uinfo2.dsty);
 		});
 
 		// -------- 台詞受信
