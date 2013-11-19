@@ -13,6 +13,7 @@ native __fake__ class _socketio{
 	function on(command : string, f : function(id : string, x : number, y : number):void) : void;
 	function on(command : string, f : function(id : string, serif : string):void) : void;
 	function on(command : string, f : function(id : string):void) : void;
+	function emit(command : string) : void;
 	function emit(command : string, cookie : string, room : string, imgname : string) : void;
 	function emit(command : string, x : number, y : number) : void;
 	function emit(command : string, str : string) : void;
@@ -74,6 +75,11 @@ class Socket{
 			Socket.socket.on("disconnect", function(){
 				Socket.connect = false;
 				log "サーバが落ちたよ";
+			});
+
+			// ハートビート
+			Socket.socket.on("heartbeat", function(){
+				Socket.socket.emit("heartbeat");
 			});
 
 			// ゲーム情報獲得

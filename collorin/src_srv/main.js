@@ -4,6 +4,11 @@ var passport = require("passport");
 var mongoose = require("mongoose");
 var MongoStore = require("connect-mongo")(express);
 
+// エラーハンドリング
+//process.on('uncaughtException', function (exception) {
+//  console.log(exception);
+//});
+
 // データベース接続
 mongoose.connect("mongodb://localhost/totetest");
 var mongoStore = new MongoStore({db: mongoose.connections[0].db});
