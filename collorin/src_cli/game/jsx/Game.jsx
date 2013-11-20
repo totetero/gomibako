@@ -25,6 +25,16 @@ class Game{
 		Game.player = new Player();
 
 		Main.slist.push(new ECfix(function(){
+			// ボタン確認
+			if(Cbtn.trigger_z){
+				Cbtn.trigger_z = false;
+				Cbtn.setBtn(true, "Z : サイコロ", "X : アイテム", "C : マップ", "Sp : メニュー");
+			}
+			if(Cbtn.trigger_x){
+				Cbtn.trigger_x = false;
+				Cbtn.setBtn(false, "ボタン1", "ボタン2", "", "");
+			}
+
 			// プレイヤー計算
 			Game.player.calc();
 			Ccvs.px = Game.player.x;

@@ -201,6 +201,15 @@ class Cbtn{
 	static var _kk_x : boolean = false;
 	static var _kk_c : boolean = false;
 	static var _kk_s : boolean = false;
+	// 内部演算用 アニメーション
+	static var _actionMax : int = 8;
+	static var _actionArrow : int = 0;
+	static var _actionButton : int = 0;
+	static var _showArrow : boolean;
+	static var _strButtonz : string;
+	static var _strButtonx : string;
+	static var _strButtonc : string;
+	static var _strButtons : string;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -241,7 +250,18 @@ class Cbtn{
 	// ----------------------------------------------------------------
 	// 計算
 	static function calc() : void{
-		// 動き系の計算を入れる
+		// 十字キー入れ替えモーション
+		if(Cbtn._actionArrow != 0){
+			if(Cbtn._actionArrow++ > Cbtn._actionMax){
+				Cbtn._actionArrow = -Cbtn._actionMax;
+			}
+		}
+		// ボタン入れ替えモーション
+		if(Cbtn._actionButton != 0){
+			if(Cbtn._actionButton++ > Cbtn._actionMax){
+				Cbtn._actionButton = -Cbtn._actionMax;
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -265,6 +285,27 @@ class Cbtn{
 		if(Cbtn.k_x != k_x){Cbtn.k_x = k_x; Cbtn._xbDiv.className = Cbtn.k_x ? "xb hover" : "xb";}
 		if(Cbtn.k_c != k_c){Cbtn.k_c = k_c; Cbtn._cbDiv.className = Cbtn.k_c ? "cb hover" : "cb";}
 		if(Cbtn.k_s != k_s){Cbtn.k_s = k_s; Cbtn._sbDiv.className = Cbtn.k_s ? "sb hover" : "sb";}
+		// 十字キー入れ替えモーション
+		if(Cbtn._actionArrow + Cbtn._actionMax == 0){
+			Cbtn._arrowDiv.style.display = Cbtn._showArrow ? "block" : "none";
+		}else{
+			var num = Math.abs(Cbtn._actionArrow) / Cbtn._actionMax;
+			Cbtn._arrowDiv.style.left = (-144 * num * num) + "px";
+		}
+		// ボタン入れ替えモーション
+		if(Cbtn._actionButton + Cbtn._actionMax == 0){
+			Cbtn._zbDiv.style.display = (Cbtn._strButtonz != "") ? "block" : "none";
+			Cbtn._xbDiv.style.display = (Cbtn._strButtonx != "") ? "block" : "none";
+			Cbtn._cbDiv.style.display = (Cbtn._strButtonc != "") ? "block" : "none";
+			Cbtn._sbDiv.style.display = (Cbtn._strButtons != "") ? "block" : "none";
+			Cbtn._zbDiv.innerHTML = Cbtn._strButtonz;
+			Cbtn._xbDiv.innerHTML = Cbtn._strButtonx;
+			Cbtn._cbDiv.innerHTML = Cbtn._strButtonc;
+			Cbtn._sbDiv.innerHTML = Cbtn._strButtons;
+		}else{
+			var num = Math.abs(Cbtn._actionButton) / Cbtn._actionMax;
+			Cbtn._buttonDiv.style.right = (-144 * num * num) + "px";
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -345,6 +386,25 @@ class Cbtn{
 			if( 36 < y && y <  72){if(trigger){Cbtn.trigger_x = true;}else{Cbtn._bk_x = true;}}
 			if( 72 < y && y < 108){if(trigger){Cbtn.trigger_c = true;}else{Cbtn._bk_c = true;}}
 			if(108 < y && y < 144){if(trigger){Cbtn.trigger_s = true;}else{Cbtn._bk_s = true;}}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// ボタンの設定と入れ替えモーション開始
+	static function setBtn(arrow : boolean, btnz : string, btnx : string, btnc : string, btns : string) : void{
+		// 十字キー設定
+		if(Cbtn._showArrow != arrow){
+			Cbtn._actionArrow = (Cbtn._actionArrow == 0) ? 1 : Math.abs(Cbtn._actionArrow);
+			Cbtn._showArrow = arrow;
+		}
+
+		// ボタン設定
+		if(Cbtn._strButtonz != btnz || Cbtn._strButtonx != btnx || Cbtn._strButtonc != btnc || Cbtn._strButtons != btns){
+			Cbtn._actionButton = (Cbtn._actionButton == 0) ? 1 : Math.abs(Cbtn._actionButton);
+			Cbtn._strButtonz = btnz;
+			Cbtn._strButtonx = btnx;
+			Cbtn._strButtonc = btnc;
+			Cbtn._strButtons = btns;
 		}
 	}
 }

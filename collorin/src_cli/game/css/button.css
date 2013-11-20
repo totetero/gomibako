@@ -102,8 +102,10 @@
 	left: 12px;
 	width: 116px;
 	height: 28px;
+	line-height: 30px;
 	border: solid 2px white;
-	border-radius: 12px;
+	border-radius: 14px;
+	text-align: center;
 }
 
 .button div.hover{
@@ -111,26 +113,20 @@
 }
 
 .button div::before{
+	content: '';
 	position: absolute;
 	left: -1px;
 	top: -1px;
 	width: 114px;
 	height: 26px;
-	line-height: 28px;
 	border: solid 2px black;
 	border-radius: 12px;
-	text-align: center;
 }
 
 .button div.zb{top: 2px;}
 .button div.xb{top: 38px;}
 .button div.cb{top: 74px;}
 .button div.sb{top: 110px;}
-.button div.zb::before{content: 'Z : サイコロ';}
-.button div.xb::before{content: 'X : アイテム';}
-.button div.cb::before{content: 'C : マップ';}
-.button div.sb::before{content: 'Sp : メニュー';}
-
 
 /* -------------------------------- */
 /* -------------------------------- */

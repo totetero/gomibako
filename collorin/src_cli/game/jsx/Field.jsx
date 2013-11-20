@@ -90,7 +90,7 @@ class Field{
 					var cy = this.calcHexCoordy(i, j);
 					// 六角形
 					this._context.fillStyle = "white";
-					this.hexPath(cx, cy, this._context);
+					this.hexPath(this._context, cx, cy);
 					this._context.fill();
 					// 文字列
 					var sx = this._size * 0.86602540378;
@@ -112,7 +112,7 @@ class Field{
 			// 六角形
 			var cx = this.calcHexCoordx(this._hex[i].x, this._hex[i].y);
 			var cy = this.calcHexCoordy(this._hex[i].x, this._hex[i].y);
-			this.hexPath(cx, cy, this._context);
+			this.hexPath(this._context, cx, cy);
 			this._context.fill();
 			this._context.stroke();
 		}
@@ -151,7 +151,7 @@ class Field{
 				var cx = this.calcHexCoordx(hex.x, hex.y);
 				var cy = this.calcHexCoordy(hex.x, hex.y);
 				// タッチヘックス描画
-				this.hexPath(cx, cy, Ctrl.context);
+				this.hexPath(Ctrl.context, cx, cy);
 				Ctrl.context.fill();
 			}
 		}
@@ -167,7 +167,7 @@ class Field{
 
 	// ----------------------------------------------------------------
 	// ヘックス中心座標からヘックスパス作成
-	function hexPath(cx : number, cy : number, context : CanvasRenderingContext2D) : void{
+	function hexPath(context : CanvasRenderingContext2D, cx : number, cy : number) : void{
 		context.beginPath();
 		context.moveTo(cx + this._size * Math.sin(  0 / 180 * Math.PI), cy + this._size * Math.cos(  0 / 180 * Math.PI));
 		context.lineTo(cx + this._size * Math.sin( 60 / 180 * Math.PI), cy + this._size * Math.cos( 60 / 180 * Math.PI));
