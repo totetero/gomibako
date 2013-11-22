@@ -7,6 +7,7 @@ import 'Ctrl.jsx';
 import 'EventCartridge.jsx';
 import 'Field.jsx';
 import 'Character.jsx';
+import 'Dice.jsx';
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -16,6 +17,7 @@ class Game{
 	static var field : Field;
 	static var player : Player;
 	static var clist : DrawUnit[];
+	static var dice : Dice;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -23,6 +25,7 @@ class Game{
 		Game.field = new Field();
 		Game.clist = new DrawUnit[];
 		Game.player = new Player();
+		Game.dice = new Dice(Main.imgs["dice"]);
 
 		Main.slist.push(new ECfix(function(){
 			// ボタン確認
@@ -56,6 +59,8 @@ class Game{
 		Game.player.preDraw(Ccvs.fx, Ccvs.fy);
 		// キャラクター描画
 		DrawUnit.drawList(Game.clist);
+		// テスト
+		Game.dice.draw();
 	}
 }
 
