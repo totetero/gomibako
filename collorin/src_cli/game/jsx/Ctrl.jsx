@@ -235,6 +235,11 @@ class Cbtn{
 		Cbtn._xbDiv.className = "xb";
 		Cbtn._cbDiv.className = "cb";
 		Cbtn._sbDiv.className = "sb";
+		Cbtn._arrowDiv.style.display = "none";
+		Cbtn._zbDiv.style.display = "none";
+		Cbtn._xbDiv.style.display = "none";
+		Cbtn._cbDiv.style.display = "none";
+		Cbtn._sbDiv.style.display = "none";
 		Cbtn._arrowDiv.appendChild(Cbtn._upDiv);
 		Cbtn._arrowDiv.appendChild(Cbtn._dnDiv);
 		Cbtn._arrowDiv.appendChild(Cbtn._rtDiv);
@@ -318,10 +323,10 @@ class Cbtn{
 			case 38: Cbtn._kkup = true; break;
 			case 39: Cbtn._kkrt = true; break;
 			case 40: Cbtn._kkdn = true; break;
-			case 88: Cbtn._kk_x = true; break;
-			case 90: Cbtn._kk_z = true; break;
-			case 67: Cbtn._kk_c = true; break;
-			case 32: Cbtn._kk_s = true; break;
+			case 88: if(Cbtn._actionButton <= 0){Cbtn._kk_x = true;} break;
+			case 90: if(Cbtn._actionButton <= 0){Cbtn._kk_z = true;} break;
+			case 67: if(Cbtn._actionButton <= 0){Cbtn._kk_c = true;} break;
+			case 32: if(Cbtn._actionButton <= 0){Cbtn._kk_s = true;} break;
 			default: getkey = false;
 		}
 		// キーイベント終了
@@ -338,10 +343,10 @@ class Cbtn{
 			case 38: Cbtn._kkup = false; break;
 			case 39: Cbtn._kkrt = false; break;
 			case 40: Cbtn._kkdn = false; break;
-			case 88: Cbtn._kk_x = false; Cbtn.trigger_x = true; break;
-			case 90: Cbtn._kk_z = false; Cbtn.trigger_z = true; break;
-			case 67: Cbtn._kk_c = false; Cbtn.trigger_c = true; break;
-			case 32: Cbtn._kk_s = false; Cbtn.trigger_s = true; break;
+			case 88: Cbtn._kk_x = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_x = true;} break;
+			case 90: Cbtn._kk_z = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_z = true;} break;
+			case 67: Cbtn._kk_c = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_c = true;} break;
+			case 32: Cbtn._kk_s = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_s = true;} break;
 			default: getkey = false;
 		}
 		// キーイベント終了
@@ -380,7 +385,7 @@ class Cbtn{
 
 		// ボタン確認
 		var x = Ctrl.mx - Ctrl.ww + 144;
-		if(12 < x && x < 132){
+		if(12 < x && x < 132 && Cbtn._actionButton <= 0){
 			var y = Ctrl.my - Ctrl.wh + 144;
 			if(  0 < y && y <  36){if(trigger){Cbtn.trigger_z = true;}else{Cbtn._bk_z = true;}}
 			if( 36 < y && y <  72){if(trigger){Cbtn.trigger_x = true;}else{Cbtn._bk_x = true;}}
@@ -507,8 +512,8 @@ class Ccvs{
 		Ccvs.sinh = Math.sin(Ccvs.roth);
 		Ccvs.cosh = Math.cos(Ccvs.roth);
 		// 拡大縮小
-		//var scale = mapFlag ? 0.8 : 2.5;
-		//Ccvs.scale += (scale - Ccvs.scale) * 0.1;
+		var scale = mapFlag ? 0.8 : 2.5;
+		Ccvs.scale += (scale - Ccvs.scale) * 0.1;
 	}
 }
 

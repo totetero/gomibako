@@ -1,5 +1,6 @@
 import 'js/web.jsx';
 
+import 'Main.jsx';
 import 'Ctrl.jsx';
 import 'EventCartridge.jsx';
 
@@ -7,51 +8,62 @@ import 'EventCartridge.jsx';
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// さいころクラス
-class Dice{
-	var pos0 : number[][];
-	var pos1 : number[][];
-	var rotq = [0, 0, 0, 1];
+// さいころ管理クラス
+class ECdice extends EventCartridge{
+	var _dice : DrawDice;
+	var _mode : int = 0;
+	var _action : int = 0;
+	var _rotq : number[];
 
-	var size : number;
-	var x : number;
-	var y : number;
-	var h : number;
+	var _zfunc : function():void;
+	var _xfunc : function():void;
 
-	var img : HTMLImageElement;
-
-	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(img : HTMLImageElement){
-		this.img = img;
+	function constructor(num : int, zfunc : function():void, xfunc : function():void){
+		this._zfunc = zfunc;
+		this._xfunc = xfunc;
 
-		// サイコロ頂点を作成
-		var s = 0.2;
-		this.pos0 = [
-			[0, 0, 1 + s], [0, 1, 1 + s], [1, 1, 1 + s], [1, 0, 1 + s],
-			[0, 0, 0 - s], [1, 0, 0 - s], [1, 1, 0 - s], [0, 1, 0 - s],
-			[0, 1 + s, 0], [1, 1 + s, 0], [1, 1 + s, 1], [0, 1 + s, 1],
-			[0, 0 - s, 0], [0, 0 - s, 1], [1, 0 - s, 1], [1, 0 - s, 0],
-			[1 + s, 0, 0], [1 + s, 0, 1], [1 + s, 1, 1], [1 + s, 1, 0],
-			[0 - s, 0, 0], [0 - s, 1, 0], [0 - s, 1, 1], [0 - s, 0, 1]
-		];
-		// サイコロ頂点を原点中心の最大座標1に正規化する
-		for(var i = 0; i < this.pos0.length; i++){
-			for(var j = 0; j < this.pos0[i].length; j++){
-				this.pos0[i][j] = (this.pos0[i][j] - 0.5) / (1 + s);
-			}
+		this._dice = new DrawDice();
+		this._rotq = new number[];
+		// さいころ回転のクオータニオン
+		this._dice.setQuat(this._rotq, 1, 0, 0, -0.4);
+		// さいころの初期角度
+		this._dice.setQuat(this._dice.rotq, Math.random(), Math.random(), Math.random(), Math.random() * Math.PI * 2);
+	}
+
+	// 初期化
+	override function init() : void{
+		// ボタンの設定
+		Cbtn.setBtn(false, "Z : 投げる", "X : 戻る", "", "");
+		Cbtn.trigger_z = false;
+		Cbtn.trigger_x = false;
+	}
+
+	// 計算
+	override function calc() : boolean{
+		switch(this._mode){
+			case 0:
+				// 投げる待ち
+				this._dice.x = 80;
+				this._dice.y = 80;
+				this._dice.h = 0;
+				this._dice.multiQuat(this._dice.rotq, this._rotq, this._dice.rotq);
+				// ボタン確認
+				if(Cbtn.trigger_z){
+					// 投げるボタン
+					Cbtn.trigger_z = false;
+				}else if(Cbtn.trigger_x){
+					// キャンセルボタン
+					this._xfunc();
+					return false;
+				}
+
+				break;
 		}
-		// 座標変換後用の配列を作成
-		this.pos1 = new number[][];
-		for(var i = 0; i < this.pos0.length; i++){this.pos1[i] = new number[];}
-		// サイコロの大きさ
-		this.size = 30;
-		// サイコロの位置
-		this.x = 100;
-		this.y = 100;
-		this.h = 100;
-		// サイコロの初期角度
-		//this.setQuat(this.rotq, Math.random(), Math.random(), Math.random(), Math.random() * Math.PI * 2);
+		return true;
+	}
+
+	/*
 		switch((Math.random() * 6) as int + 1){
 			case 1: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  0.5); break;
 			case 2: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  1  ); break;
@@ -62,6 +74,59 @@ class Dice{
 		}
 		var q1 = new number[]; this.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
 		this.multiQuat(this.rotq, q1, this.rotq);
+	*/
+
+	// 描画
+	override function draw() : void{
+		// 描画の中心位置をキャンバス中心に設定
+		Ctrl.context.save();
+		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
+		// 描画
+		this._dice.draw();
+		// 描画の中心位置を戻す
+		Ctrl.context.restore();
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// さいころ描画クラス
+class DrawDice{
+	var _pos0 : number[][];
+	var _pos1 : number[][];
+	var _size : number;
+	
+	var x : number = 0;
+	var y : number = 0;
+	var h : number = 0;
+	var rotq = [1, 0, 0, 0];
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(){
+		// サイコロ頂点を作成
+		var s = 0.2;
+		this._pos0 = [
+			[0, 0, 1 + s], [0, 1, 1 + s], [1, 1, 1 + s], [1, 0, 1 + s],
+			[0, 0, 0 - s], [1, 0, 0 - s], [1, 1, 0 - s], [0, 1, 0 - s],
+			[0, 1 + s, 0], [1, 1 + s, 0], [1, 1 + s, 1], [0, 1 + s, 1],
+			[0, 0 - s, 0], [0, 0 - s, 1], [1, 0 - s, 1], [1, 0 - s, 0],
+			[1 + s, 0, 0], [1 + s, 0, 1], [1 + s, 1, 1], [1 + s, 1, 0],
+			[0 - s, 0, 0], [0 - s, 1, 0], [0 - s, 1, 1], [0 - s, 0, 1]
+		];
+		// サイコロ頂点を原点中心の最大座標1に正規化する
+		for(var i = 0; i < this._pos0.length; i++){
+			for(var j = 0; j < this._pos0[i].length; j++){
+				this._pos0[i][j] = (this._pos0[i][j] - 0.5) / (1 + s);
+			}
+		}
+		// 座標変換後用の配列を作成
+		this._pos1 = new number[][];
+		for(var i = 0; i < this._pos0.length; i++){this._pos1[i] = new number[];}
+		// サイコロの大きさ
+		this._size = 30;
 	}
 
 	// ----------------------------------------------------------------
@@ -94,12 +159,12 @@ class Dice{
 		this.setQuat(rq, 1, 0, 0, Ccvs.roth);
 		this.multiQuat(rq, rq, this.rotq);
 
-		var pos = this.pos1;
-		for(var i = 0; i < this.pos0.length; i++){
+		var pos = this._pos1;
+		for(var i = 0; i < this._pos0.length; i++){
 			// クォータニオン回転の適用
-			var x = this.pos0[i][0];
-			var y = this.pos0[i][1];
-			var z = this.pos0[i][2];
+			var x = this._pos0[i][0];
+			var y = this._pos0[i][1];
+			var z = this._pos0[i][2];
 			var ix =  rq[3] * x + rq[1] * z - rq[2] * y;
 			var iy =  rq[3] * y + rq[2] * x - rq[0] * z;
 			var iz =  rq[3] * z + rq[0] * y - rq[1] * x;
@@ -115,14 +180,14 @@ class Dice{
 		Ctrl.context.translate(this.x, this.y);
 		Ctrl.context.scale(1, Ccvs.sinh);
 		Ctrl.context.beginPath();
-		Ctrl.context.arc(0, 0, this.size * 0.75, 0, Math.PI*2, false);
+		Ctrl.context.arc(0, 0, this._size * 0.75, 0, Math.PI*2, false);
 		Ctrl.context.fill();
 		Ctrl.context.restore();
 
 		// さいころ描画
 		Ctrl.context.save();
-		Ctrl.context.translate(this.x, this.y - (this.h + this.size * 0.5) * Ccvs.cosh);
-		Ctrl.context.scale(this.size, this.size);
+		Ctrl.context.translate(this.x, this.y - (this.h + this._size * 0.5) * Ccvs.cosh);
+		Ctrl.context.scale(this._size, this._size);
 		for(var i = 0; i < 2; i++){
 			var lineFlag = (i == 0);
 			var type = lineFlag ? -1 : 0;
@@ -235,7 +300,7 @@ class Dice{
 				Ctrl.context.clip();
 				Ctrl.context.transform(t11, t21, t12, t22, t13, t23);
 				Ctrl.context.fill();
-				Ctrl.context.drawImage(this.img, uw0, vh0, uw1, vh1, uw0, vh0, uw1, vh1);
+				Ctrl.context.drawImage(Main.imgs["dice"], uw0, vh0, uw1, vh1, uw0, vh0, uw1, vh1);
 				Ctrl.context.restore();
 			}else{
 				// 辺と頂点の描画

@@ -80,8 +80,8 @@ class Field{
 		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
 		this._canvas.width = this._size * (this._gridxsize + (this._gridysize - 1) * 0.5) * 0.86602540378 * 2 * this._draft + this._marginx * 2;
 		this._canvas.height = this._size * (this._gridysize * 1.5 + 0.5) * this._draft + this._marginy * 2;
-		// 基準マス描画
-		if(true){
+		if(false){
+			// 基準マス描画
 			this._context.fillStyle = "yellow";
 			this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
 			for(var i = 0; i < this._gridxsize; i++){
@@ -125,6 +125,7 @@ class Field{
 		this._gridypos = y;
 		// 描画開始
 		Ctrl.context.save();
+		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
 		Ctrl.context.scale(Ccvs.scale, Ccvs.scale * Ccvs.sinh);
 		Ctrl.context.rotate(Ccvs.rotv);
 		Ctrl.context.translate(-this._gridxpos, -this._gridypos);

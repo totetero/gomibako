@@ -57,6 +57,7 @@ class Main{
 		EventCartridge.parallelEvent(Main.plist);
 		// 描画処理
 		Game.draw();
+		if(EventCartridge.serialCurrent != null){EventCartridge.serialCurrent.draw();}
 		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);
 	}

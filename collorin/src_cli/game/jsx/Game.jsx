@@ -17,7 +17,6 @@ class Game{
 	static var field : Field;
 	static var player : Player;
 	static var clist : DrawUnit[];
-	static var dice : Dice;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -25,24 +24,10 @@ class Game{
 		Game.field = new Field();
 		Game.clist = new DrawUnit[];
 		Game.player = new Player();
-		Game.dice = new Dice(Main.imgs["dice"]);
+		Ccvs.px = Ccvs.fx = Game.player.x;
+		Ccvs.py = Ccvs.fy = Game.player.y;
 
-		Main.slist.push(new ECfix(function(){
-			// ボタン確認
-			if(Cbtn.trigger_z){
-				Cbtn.trigger_z = false;
-				Cbtn.setBtn(true, "Z : サイコロ", "X : アイテム", "C : マップ", "Sp : メニュー");
-			}
-			if(Cbtn.trigger_x){
-				Cbtn.trigger_x = false;
-				Cbtn.setBtn(false, "ボタン1", "ボタン2", "", "");
-			}
-
-			// プレイヤー計算
-			Game.player.calc();
-			Ccvs.px = Game.player.x;
-			Ccvs.py = Game.player.y;
-		}));
+		Main.slist.push(new ECmain());
 	}
 
 	// ----------------------------------------------------------------
@@ -51,24 +36,51 @@ class Game{
 		Cbtn.draw();
 		// 描画開始
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
-		Ctrl.context.fillStyle = "pink";
-		Ctrl.context.fillRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
-
-		// 描画の中心位置をキャンバス中心に設定
-		Ctrl.context.save();
-		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
-
 		// フィールド描画
 		Game.field.draw(Ccvs.fx, Ccvs.fy);
 		// プレイヤー描画準備
 		Game.player.preDraw(Ccvs.fx, Ccvs.fy);
 		// キャラクター描画
 		DrawUnit.drawList(Game.clist);
-		// テスト
-		Game.dice.draw();
+	}
+}
 
-		// 描画の中心位置を戻す
-		Ctrl.context.restore();
+// メインイベントカートリッジ
+class ECmain extends EventCartridge{
+	// コンストラクタ
+	function constructor(){
+	}
+
+	// 初期化
+	override function init() : void{
+		// ボタンの設定
+		Cbtn.setBtn(true, "Z : サイコロ", "X : アイテム", "C : マップ", "Sp : メニュー");
+		Cbtn.trigger_z = false;
+		Cbtn.trigger_x = false;
+		Cbtn.trigger_c = false;
+		Cbtn.trigger_s = false;
+	}
+
+	// 計算
+	override function calc() : boolean{
+		// ボタン確認
+		if(Cbtn.trigger_z){
+			// さいころボタン
+			Main.slist.push(new ECdice(1, function():void{
+				// さいころ投げる時
+			}, function():void{
+				// さいころキャンセル時
+				Main.slist.push(new ECmain());
+			}));
+			return false;
+		}
+
+		// プレイヤー計算
+		Game.player.calc();
+		Ccvs.px = Game.player.x;
+		Ccvs.py = Game.player.y;
+
+		return true;
 	}
 }
 
@@ -89,6 +101,8 @@ class Player{
 	function constructor(){
 		this.character = new DrawPlayer(Main.imgs["player"]);
 		Game.clist.push(this.character);
+		this.x = 100;
+		this.y = 100;
 	}
 
 	// ----------------------------------------------------------------
