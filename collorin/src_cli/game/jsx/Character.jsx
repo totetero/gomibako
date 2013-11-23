@@ -134,9 +134,11 @@ class DrawCharacterParts extends DrawUnit{
 	// 描画
 	override function draw() : void{
 		var ps = (this.size * this.drScale) as int;
-		var px = (this.drx - ps * 0.5 + Ctrl.canvas.width * 0.5) as int;
-		var py = (this.dry - ps * 0.5 + Ctrl.canvas.height * 0.5) as int;
-		if(px + ps < 0 || px - ps > Ctrl.canvas.width || py + ps < 0 || py - ps > Ctrl.canvas.height){
+		var px = (this.drx - ps * 0.5) as int;
+		var py = (this.dry - ps * 0.5) as int;
+		var hw = Ctrl.canvas.width * 0.5;
+		var hh = Ctrl.canvas.height * 0.5;
+		if(px + ps < -hw || px - ps > hw || py + ps < -hh || py - ps > hh){
 		}else if(this.yswap || this.zswap){
 			var rx = px + ps * 0.5;
 			var ry = py + ps * 0.5;

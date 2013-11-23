@@ -53,6 +53,11 @@ class Game{
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 		Ctrl.context.fillStyle = "pink";
 		Ctrl.context.fillRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+
+		// 描画の中心位置をキャンバス中心に設定
+		Ctrl.context.save();
+		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
+
 		// フィールド描画
 		Game.field.draw(Ccvs.fx, Ccvs.fy);
 		// プレイヤー描画準備
@@ -61,6 +66,9 @@ class Game{
 		DrawUnit.drawList(Game.clist);
 		// テスト
 		Game.dice.draw();
+
+		// 描画の中心位置を戻す
+		Ctrl.context.restore();
 	}
 }
 

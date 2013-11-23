@@ -125,7 +125,6 @@ class Field{
 		this._gridypos = y;
 		// 描画開始
 		Ctrl.context.save();
-		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
 		Ctrl.context.scale(Ccvs.scale, Ccvs.scale * Ccvs.sinh);
 		Ctrl.context.rotate(Ccvs.rotv);
 		Ctrl.context.translate(-this._gridxpos, -this._gridypos);
