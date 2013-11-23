@@ -81,6 +81,22 @@ class Main{
 			callback();
 		}
 	}
+
+	// ----------------------------------------------------------------
+	// XMLhttpリクエスト送信
+	static function loadxhr(url : string, request : string, successFunc : function(:string):void, failureFunc : function():void) : void{
+		// リクエスト開始準備
+		var xhr = new XMLHttpRequest();
+		if(request != ""){xhr.open("POST", url, true);}else{xhr.open("GET", url, true);}
+		// リクエスト正常終了
+		xhr.addEventListener("load", function(e : Event) : void{successFunc(xhr.responseText);});
+		// リクエスト失敗
+		xhr.addEventListener("abort", function(e : Event) : void{log "abort"; failureFunc();});
+		xhr.addEventListener("error", function(e : Event) : void{log "error"; failureFunc();});
+		xhr.addEventListener("timeout", function(e : Event) : void{log "timeout"; failureFunc();});
+		// 通信開始
+		xhr.send(request);
+	}
 }
 
 // ----------------------------------------------------------------

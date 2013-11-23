@@ -15,7 +15,7 @@ exports.init = function(app){
 			next();
 		}else{
 			game.getddat(req.user, function(data){
-				res.contentType('application/json');
+				res.contentType("application/json");
 				res.send(data);
 			});
 		}
@@ -26,7 +26,9 @@ exports.init = function(app){
 		if(!game.isPlay(req.user)){
 			next();
 		}else{
-			res.send("さいころふった なんかjsonを返す");
+			// test
+			var pip = Math.floor(Math.random() * 6) + 1;
+			res.send(JSON.stringify({"pip": pip}));
 		}
 	});
 

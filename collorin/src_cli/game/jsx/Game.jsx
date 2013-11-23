@@ -66,8 +66,10 @@ class ECmain extends EventCartridge{
 		// ボタン確認
 		if(Cbtn.trigger_z){
 			// さいころボタン
-			Main.slist.push(new ECdice(1, function():void{
+			Main.slist.push(new ECdice(function(pip:int):void{
 				// さいころ投げる時
+				log pip;
+				Main.slist.push(new ECmain());
 			}, function():void{
 				// さいころキャンセル時
 				Main.slist.push(new ECmain());

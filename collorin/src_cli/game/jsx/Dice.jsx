@@ -10,29 +10,35 @@ import 'EventCartridge.jsx';
 
 // さいころ管理クラス
 class ECdice extends EventCartridge{
-	var _dice : DrawDice;
-	var _mode : int = 0;
-	var _action : int = 0;
-	var _rotq : number[];
-
-	var _zfunc : function():void;
+	var _zfunc : function(:int):void;
 	var _xfunc : function():void;
 
+	var _dice : DrawDice;
+	var _rotq1 : number[];
+	var _rotq2 : number[];
+	var _mode : int = 0;
+	var _action : int = 0;
+	var _pip : int = 0;
+
 	// コンストラクタ
-	function constructor(num : int, zfunc : function():void, xfunc : function():void){
+	function constructor(zfunc : function(:int):void, xfunc : function():void){
 		this._zfunc = zfunc;
 		this._xfunc = xfunc;
-
-		this._dice = new DrawDice();
-		this._rotq = new number[];
-		// さいころ回転のクオータニオン
-		this._dice.setQuat(this._rotq, 1, 0, 0, -0.4);
-		// さいころの初期角度
-		this._dice.setQuat(this._dice.rotq, Math.random(), Math.random(), Math.random(), Math.random() * Math.PI * 2);
 	}
 
 	// 初期化
 	override function init() : void{
+		// さいころ初期化
+		this._dice = new DrawDice();
+		this._dice.x = 80;
+		this._dice.y = 80;
+		this._dice.h = 0;
+		this._dice.setRandomQuat();
+		// さいころ回転のクオータニオン
+		this._rotq1 = new number[];
+		this._rotq2 = new number[];
+		this._dice.setQuat(this._rotq1, 1, 0, 0, -0.4);
+		this._dice.setQuat(this._rotq2, 1, 0, 0, 0.4 * 20);
 		// ボタンの設定
 		Cbtn.setBtn(false, "Z : 投げる", "X : 戻る", "", "");
 		Cbtn.trigger_z = false;
@@ -44,37 +50,99 @@ class ECdice extends EventCartridge{
 		switch(this._mode){
 			case 0:
 				// 投げる待ち
-				this._dice.x = 80;
-				this._dice.y = 80;
-				this._dice.h = 0;
-				this._dice.multiQuat(this._dice.rotq, this._rotq, this._dice.rotq);
+				this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
 				// ボタン確認
 				if(Cbtn.trigger_z){
 					// 投げるボタン
-					Cbtn.trigger_z = false;
+					this._mode = 1;
+					this._action = 0;
+					Cbtn.setBtn(false, "", "", "", "");
+					// 通信を行う
+					Main.loadxhr("/dice", "", function(resp:string):void{
+						this._pip = JSON.parse(resp)["pip"] as int;
+					}, function():void{
+						log "失敗";
+					});
 				}else if(Cbtn.trigger_x){
 					// キャンセルボタン
 					this._xfunc();
 					return false;
 				}
-
+				break;
+			case 1:
+				// 1回めジャンプ
+				if(this._action++ < 20){
+					this._dice.x -= 2.7;
+					this._dice.y -= 2.7;
+					this._dice.h = 200 * Math.sin(this._action / 20 * Math.PI);
+					this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
+				}else{
+					this._mode = 2;
+					this._action = 0;
+					this._dice.setRandomQuat();
+				}
+				break;
+			case 2:
+				// 2回めジャンプ
+				if(this._action++ < 20){
+					this._dice.x -= 2.7;
+					this._dice.y -= 2.7;
+					this._dice.h = 100 * Math.sin(this._action / 20 * Math.PI);
+					this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
+				}else{
+					this._mode = 3;
+					this._action = 0;
+					this._dice.setRandomQuat();
+				}
+				break;
+			case 3:
+				// 通信待機ジャンプ
+				if(this._action == 0 && this._pip > 0){
+					this._mode = 4;
+					this._action = 0;
+					switch(this._pip){
+						case 1: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  0.5); break;
+						case 2: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  1  ); break;
+						case 3: this._dice.setQuat(this._dice.rotq, 0, 0, 1, Math.PI * -0.5); break;
+						case 4: this._dice.setQuat(this._dice.rotq, 0, 0, 1, Math.PI *  0.5); break;
+						case 5: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  0  ); break;
+						case 6: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI * -0.5); break;
+					}
+					var q1 = new number[];
+					this._dice.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
+					this._dice.multiQuat(this._dice.rotq, q1, this._dice.rotq);
+					this._dice.multiQuat(this._dice.rotq, this._rotq2, this._dice.rotq);
+				}else if(this._action++ < 20){
+					this._dice.h = 100 * Math.sin(this._action / 20 * Math.PI);
+					this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
+				}else{
+					this._mode = 3;
+					this._action = 0;
+					this._dice.setRandomQuat();
+				}
+				break;
+			case 4:
+				// 最後のジャンプ
+				if(this._action++ < 20){
+					this._dice.x -= 2.7;
+					this._dice.y -= 2.7;
+					this._dice.h = 50 * Math.sin(this._action / 20 * Math.PI);
+					this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
+				}else{
+					this._mode = 5;
+					this._action = 0;
+				}
+				break;
+			case 5:
+				// 目を見せる
+				if(++this._action >= 20){
+					this._zfunc(this._pip);
+					return false;
+				}
 				break;
 		}
 		return true;
 	}
-
-	/*
-		switch((Math.random() * 6) as int + 1){
-			case 1: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  0.5); break;
-			case 2: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  1  ); break;
-			case 3: this.setQuat(this.rotq, 0, 0, 1, Math.PI * -0.5); break;
-			case 4: this.setQuat(this.rotq, 0, 0, 1, Math.PI *  0.5); break;
-			case 5: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  0  ); break;
-			case 6: this.setQuat(this.rotq, 1, 0, 0, Math.PI * -0.5); break;
-		}
-		var q1 = new number[]; this.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
-		this.multiQuat(this.rotq, q1, this.rotq);
-	*/
 
 	// 描画
 	override function draw() : void{
@@ -126,7 +194,7 @@ class DrawDice{
 		this._pos1 = new number[][];
 		for(var i = 0; i < this._pos0.length; i++){this._pos1[i] = new number[];}
 		// サイコロの大きさ
-		this._size = 30;
+		this._size = 40;
 	}
 
 	// ----------------------------------------------------------------
@@ -150,6 +218,12 @@ class DrawDice{
 		q0[1] = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
 		q0[2] = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
 		q0[3] = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+	}
+
+	// ----------------------------------------------------------------
+	// クオータニオン設定関数 ランダムな回転のクオータニオンを設定する
+	function setRandomQuat() : void{
+		this.setQuat(this.rotq, Math.random(), Math.random(), Math.random(), Math.random() * Math.PI * 2);
 	}
 
 	// ----------------------------------------------------------------
