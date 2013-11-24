@@ -14,9 +14,6 @@ import 'Game.jsx';
 class Main{
 	// 画像リスト
 	static var imgs : Map.<HTMLImageElement>;
-	// イベントリスト
-	static var slist : EventCartridge[];
-	static var plist : EventCartridge[];
 
 	// ----------------------------------------------------------------
 	// main関数
@@ -42,8 +39,6 @@ class Main{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		Main.slist = new EventCartridge[];
-		Main.plist = new EventCartridge[];
 	}
 
 	// ----------------------------------------------------------------
@@ -53,9 +48,10 @@ class Main{
 		Cbtn.calc();
 		Ccvs.calc();
 		// イベント処理
-		EventCartridge.serialEvent(Main.slist);
-		EventCartridge.parallelEvent(Main.plist);
+		EventCartridge.serialEvent();
+		EventCartridge.parallelEvent();
 		// 描画処理
+		Cbtn.draw();
 		Game.draw();
 		if(EventCartridge.serialCurrent != null){EventCartridge.serialCurrent.draw();}
 		// 次のフレームへ

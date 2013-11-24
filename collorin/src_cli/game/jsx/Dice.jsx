@@ -58,9 +58,9 @@ class ECdice extends EventCartridge{
 					this._action = 0;
 					Cbtn.setBtn(false, "", "", "", "");
 					// 通信を行う
-					Main.loadxhr("/dice", "", function(resp:string):void{
+					Main.loadxhr("/dice", "", function(resp : string) : void{
 						this._pip = JSON.parse(resp)["pip"] as int;
-					}, function():void{
+					}, function() : void{
 						log "失敗";
 					});
 				}else if(Cbtn.trigger_x){

@@ -427,9 +427,9 @@ class Ccvs{
 	// ゲーム画面キャンバス フィールド位置
 	static var fx : number = 0;
 	static var fy : number = 0;
-	// ゲーム画面キャンバス プレイヤー位置
-	static var px : number = 0;
-	static var py : number = 0;
+	// ゲーム画面キャンバス カメラ位置
+	static var cx : number = 0;
+	static var cy : number = 0;
 	// ゲーム画面キャンバス 画面拡大
 	static var scale : number;
 	// ゲーム画面キャンバス 画面回転
@@ -439,6 +439,8 @@ class Ccvs{
 	static var cosv : number;
 	static var sinh : number;
 	static var cosh : number;
+	// マップモードフラグ
+	static var mapFlag = false;
 
 	// 内部演算用 マウス移動量差分を求める変数
 	static var _tempmdn : boolean;
@@ -450,7 +452,7 @@ class Ccvs{
 	static function init() : void{
 		Ccvs.scale = 1;
 		Ccvs.rotv = Math.PI / 180 * 0;
-		Ccvs.roth = Math.PI / 180 * 30;
+		Ccvs.roth = Math.PI / 180 * 45;
 		Ccvs.sinv = Math.sin(Ccvs.rotv);
 		Ccvs.cosv = Math.cos(Ccvs.rotv);
 		Ccvs.sinh = Math.sin(Ccvs.roth);
@@ -463,9 +465,6 @@ class Ccvs{
 		Ccvs.mx = Ctrl.mx - Ctrl.wl;
 		Ccvs.my = Ctrl.my - Ctrl.wt;
 
-		// TODO マップモードか確認
-		var mapFlag = false;
-
 		// キャンバス内でクリック開始したかの確認
 		if(Ccvs._tempmdn != Ctrl.mdn){
 			Ccvs._tempmdn = Ctrl.mdn;
@@ -474,7 +473,7 @@ class Ccvs{
 
 		if(Ccvs.mdn && Ctrl.mmv){
 			// マウス移動中
-			if(mapFlag){
+			if(Ccvs.mapFlag){
 				// マップモード時地図の水平移動
 				var x = Ccvs._tempmx - Ccvs.mx;
 				var y = Ccvs._tempmy - Ccvs.my;
@@ -500,19 +499,19 @@ class Ccvs{
 		Ccvs._tempmx = Ccvs.mx;
 		Ccvs._tempmy = Ccvs.my;
 
-		if(!mapFlag){
+		if(!Ccvs.mapFlag){
 			// 中心をプレイヤー位置に寄せる
-			Ccvs.fx += (Ccvs.px - Ccvs.fx) * 0.3;
-			Ccvs.fy += (Ccvs.py - Ccvs.fy) * 0.3;
+			Ccvs.fx += (Ccvs.cx - Ccvs.fx) * 0.3;
+			Ccvs.fy += (Ccvs.cy - Ccvs.fy) * 0.3;
 		}
 
 		// 水平角度
-		var roth = Math.PI / 180 * (mapFlag ? 90 : 30);
+		var roth = Math.PI / 180 * (Ccvs.mapFlag ? 90 : 30);
 		Ccvs.roth += (roth - Ccvs.roth) * 0.1;
 		Ccvs.sinh = Math.sin(Ccvs.roth);
 		Ccvs.cosh = Math.cos(Ccvs.roth);
 		// 拡大縮小
-		var scale = mapFlag ? 0.8 : 2.5;
+		var scale = Ccvs.mapFlag ? 0.8 : 2.5;
 		Ccvs.scale += (scale - Ccvs.scale) * 0.1;
 	}
 }

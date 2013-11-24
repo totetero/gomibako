@@ -13,23 +13,38 @@ abstract class EventCartridge{
 	// 直列イベント用 描画処理
 	function draw() : void{}
 
+	// 直列イベントの設定
+	static var serialList : EventCartridge[] = new EventCartridge[];
+	static function serialPush(ec : EventCartridge) : void{EventCartridge.serialList.push(ec);}
 	// 直列イベントの処理
-	static var serialCurrent : EventCartridge = null; 
-	static function serialEvent(list : EventCartridge[]) : void{
+	static var serialCurrent : EventCartridge = null;
+	static function serialEvent() : void{
 		if(EventCartridge.serialCurrent == null || !EventCartridge.serialCurrent.calc()){
-			if(list.length > 0){
-				EventCartridge.serialCurrent = list.shift();
+			if(EventCartridge.serialList.length > 0){
+				EventCartridge.serialCurrent = EventCartridge.serialList.shift();
 				EventCartridge.serialCurrent.init();
-				EventCartridge.serialEvent(list);
+				EventCartridge.serialEvent();
 			}else{
 				EventCartridge.serialCurrent = null;
 			}
 		}
 	}
+	// 直列イベントの割り込み
+	static function serialCutting(ec : EventCartridge) : void{
+		if(EventCartridge.serialCurrent != null){
+			EventCartridge.serialList.unshift(EventCartridge.serialCurrent);
+			EventCartridge.serialCurrent = null;
+		}
+		EventCartridge.serialList.unshift(ec);
+	}
+
+	// 並列イベントの設定
+	static var parallelList : EventCartridge[] = new EventCartridge[];
+	static function parallelPush(ec : EventCartridge) : void{EventCartridge.parallelList.push(ec);}
 	// 並列イベントの処理
-	static function parallelEvent(list : EventCartridge[]) : void{
-		for(var i = 0; i < list.length; i++){
-			if(!list[i].calc()){list.splice(i--,1);}
+	static function parallelEvent() : void{
+		for(var i = 0; i < EventCartridge.parallelList.length; i++){
+			if(!EventCartridge.parallelList[i].calc()){EventCartridge.parallelList.splice(i--,1);}
 		}
 	}
 }
