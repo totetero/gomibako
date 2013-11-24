@@ -50,6 +50,7 @@ exports.getddat = function(user, callback){
 
 	imgs["player"] = "./src_cli/game/img/player.png";
 	imgs["dice"] = "./src_cli/game/img/dice.png";
+	imgs["background"] = "./src_cli/game/img/background.png";
 
 	file.file2json(null, null, imgs, function(data){
 		jdat.imgs = data.imgs;

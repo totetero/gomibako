@@ -24,11 +24,7 @@ class Main{
 		Main.regImg(jdat["imgs"] as Map.<string>, function(){
 			delete jdat["imgs"];
 			// 初期化
-			Ctrl.init();
-			Cbtn.init();
-			Ccvs.init();
 			Main.init();
-			Game.init();
 			// メインループ開始
 			Main.mainloop();
 			// ローディング表記除去
@@ -39,11 +35,17 @@ class Main{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
+		BackGround.init();
+		Ctrl.init();
+		Cbtn.init();
+		Ccvs.init();
+		Game.init();
 	}
 
 	// ----------------------------------------------------------------
 	// mainloop関数
 	static function mainloop() : void{
+		BackGround.calc();
 		Ctrl.calc();
 		Cbtn.calc();
 		Ccvs.calc();
@@ -51,6 +53,7 @@ class Main{
 		EventCartridge.serialEvent();
 		EventCartridge.parallelEvent();
 		// 描画処理
+		BackGround.draw();
 		Cbtn.draw();
 		Game.draw();
 		EventCartridge.serialDraw();
@@ -92,6 +95,87 @@ class Main{
 		xhr.addEventListener("timeout", function(e : Event) : void{log "timeout"; failureFunc();});
 		// 通信開始
 		xhr.send(request);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// 背景クラス
+class BackGround{
+	static var img : HTMLImageElement;
+	static var div0 : HTMLDivElement;
+	static var div1 : HTMLDivElement;
+	static var div2 : HTMLDivElement;
+	static var canvas : HTMLCanvasElement;
+	static var context : CanvasRenderingContext2D;
+	static var ww : int = 0;
+	static var wh : int = 0;
+	static var action : int = 0;
+
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		BackGround.img = Main.imgs["background"];
+		BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+		BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
+		BackGround.canvas.width = 1;
+		BackGround.canvas.height = BackGround.img.height;
+		BackGround.context.drawImage(BackGround.img, 0, 0);
+		var imgdat1 = BackGround.context.getImageData(0, 0, 1, 1).data;
+		var imgdat2 = BackGround.context.getImageData(0, BackGround.canvas.height - 1, 1, 1).data;
+		var color1 = "rgb(" + imgdat1[0] + "," + imgdat1[1] + "," + imgdat1[2] + ")";
+		var color2 = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
+
+		BackGround.div0 = dom.document.createElement("div") as HTMLDivElement;
+		BackGround.div0.style.position = "absolute";
+		BackGround.div0.style.width = "100%";
+		BackGround.div0.style.height = "100%";
+		BackGround.div1 = dom.document.createElement("div") as HTMLDivElement;
+		BackGround.div1.style.position = "absolute";
+		BackGround.div1.style.top = "0px";
+		BackGround.div1.style.width = "100%";
+		BackGround.div1.style.height = "50%";
+		BackGround.div1.style.backgroundColor = color1;
+		BackGround.div2 = dom.document.createElement("div") as HTMLDivElement;
+		BackGround.div2.style.position = "absolute";
+		BackGround.div2.style.bottom = "0px";
+		BackGround.div2.style.width = "100%";
+		BackGround.div2.style.height = "50%";
+		BackGround.div2.style.backgroundColor = color2;
+		BackGround.div0.appendChild(BackGround.div1);
+		BackGround.div0.appendChild(BackGround.div2);
+		BackGround.div0.appendChild(BackGround.canvas);
+		dom.document.body.appendChild(BackGround.div0);
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	static function calc() : void{
+		if(BackGround.ww != Ctrl.ww || BackGround.wh != Ctrl.wh){
+			BackGround.ww = Ctrl.ww;
+			BackGround.wh = Ctrl.wh;
+			BackGround.div0.removeChild(BackGround.canvas);
+			BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+			BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
+			BackGround.canvas.width = BackGround.ww;
+			BackGround.canvas.height = BackGround.img.height;
+			BackGround.canvas.style.position = "absolute";
+			BackGround.canvas.style.top = ((BackGround.wh - BackGround.canvas.height) * 0.5) + "px";
+			BackGround.div0.appendChild(BackGround.canvas);
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	static function draw() : void{
+		var imgw = BackGround.img.width;
+		var pos = (BackGround.action++) % imgw;
+		var num = Math.ceil(BackGround.ww / BackGround.img.width) + 1;
+		for(var i = 0; i < num; i++){
+			BackGround.context.drawImage(BackGround.img, imgw * (i - 1) + pos, 0);
+		}
 	}
 }
 
