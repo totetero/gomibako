@@ -53,7 +53,7 @@ class Main{
 		// 描画処理
 		Cbtn.draw();
 		Game.draw();
-		if(EventCartridge.serialCurrent != null){EventCartridge.serialCurrent.draw();}
+		EventCartridge.serialDraw();
 		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);
 	}

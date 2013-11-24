@@ -44,6 +44,10 @@ class Game{
 	}
 }
 
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 // メインイベントカートリッジ
 class ECmain extends EventCartridge{
 	// 初期化
@@ -110,6 +114,8 @@ class ECmove extends EventCartridge{
 	var _dstList : int[][];
 	var _srcList : int[][];
 
+	var _ecAssist : ECmove.ECassist = null;
+
 	// コンストラクタ
 	function constructor(pip : int){
 		this._pip = pip;
@@ -120,39 +126,37 @@ class ECmove extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(true, "", "", "C : マップ", "Sp : メニュー");
+		Cbtn.setBtn(true, "", "X : 一つ戻る", "C : マップ", "Sp : メニュー");
+		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
 		Cbtn.trigger_s = false;
 
 		log "あと" + this._pip + "マス";
+
+		// 補助クラス登録
+		if(this._ecAssist == null){
+			this._ecAssist = new ECmove.ECassist(this);
+			EventCartridge.parallelPush(this._ecAssist);
+		}
 	}
 
 	// 計算
 	override function calc() : boolean{
-		if(this._dstList.length > 0){
-			// ヘックス目的地に向かう
-			var px = Game.field.calcHexCoordx(this._dstList[0][0], this._dstList[0][1]);
-			var py = Game.field.calcHexCoordy(this._dstList[0][0], this._dstList[0][1]);
-			var x = px - Game.player.x;
-			var y = py - Game.player.y;
-			var speed = 3.0;
-			if(x * x + y * y < speed * speed){
-				Game.player.x = px;
-				Game.player.y = py;
-				this._dstList.shift();
-			}else{
-				Game.player.r = Math.atan2(y, x);
-				Game.player.x += speed * Math.cos(Game.player.r);
-				Game.player.y += speed * Math.sin(Game.player.r);
-			}
-			Ccvs.cx = Game.player.x;
-			Ccvs.cy = Game.player.y;
-			Game.player.action++;
-		}else if(Cbtn.trigger_c){
+		if(Cbtn.trigger_c){
 			// マップ表示ボタン
-			Game.player.action = 0;
 			EventCartridge.serialCutting(new ECmap());
 			return false;
+		}else if(this._dstList.length > 0){
+			// ヘックス目的地に向かう
+			// 補助クラスに任せる
+		}else if(Cbtn.trigger_x){
+			// 一つ戻るボタン
+			Cbtn.trigger_x = false;
+			if(this._srcList.length > 0){
+				this._pip++;
+				this._dstList.unshift(this._srcList.shift());
+				log "あと" + this._pip + "マス";
+			}
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
 			var dir = 0;
@@ -219,16 +223,47 @@ class ECmove extends EventCartridge{
 					log "あと" + this._pip + "マス";
 				}
 			}
-			// 結果より移動状態じゃなかったらプレイヤーを静止状態に
-			if(!moveFlag){Game.player.action = 0;}
 		}else{
 			// 移動完了
 			log "移動完了";
-			Game.player.action = 0;
+			this._ecAssist = null;
 			return false;
 		}
 
 		return true;
+	}
+
+	// 補助クラス
+	class ECassist extends EventCartridge{
+		var _parent : ECmove;
+		// コンストラクタ
+		function constructor(parentEC : ECmove){this._parent = parentEC;}
+		// 計算
+		override function calc() : boolean{
+			if(this._parent._dstList.length > 0){
+				// ヘックス目的地に向かう
+				var px = Game.field.calcHexCoordx(this._parent._dstList[0][0], this._parent._dstList[0][1]);
+				var py = Game.field.calcHexCoordy(this._parent._dstList[0][0], this._parent._dstList[0][1]);
+				var x = px - Game.player.x;
+				var y = py - Game.player.y;
+				var speed = 3.0;
+				if(x * x + y * y < speed * speed){
+					Game.player.x = px;
+					Game.player.y = py;
+					this._parent._dstList.shift();
+				}else{
+					Game.player.r = Math.atan2(y, x);
+					Game.player.x += speed * Math.cos(Game.player.r);
+					Game.player.y += speed * Math.sin(Game.player.r);
+				}
+				Ccvs.cx = Game.player.x;
+				Ccvs.cy = Game.player.y;
+				Game.player.action++;
+			}else{
+				Game.player.action = 0;
+			}
+			return (this._parent._ecAssist != null);
+		}
 	}
 }
 
