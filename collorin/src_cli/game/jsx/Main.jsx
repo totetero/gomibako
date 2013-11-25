@@ -117,9 +117,11 @@ class BackGround{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
+		// canvas 作成
 		BackGround.img = Main.imgs["background"];
 		BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
+		// 空の色と大地の色を獲得
 		BackGround.canvas.width = 1;
 		BackGround.canvas.height = BackGround.img.height;
 		BackGround.context.drawImage(BackGround.img, 0, 0);
@@ -127,23 +129,16 @@ class BackGround{
 		var imgdat2 = BackGround.context.getImageData(0, BackGround.canvas.height - 1, 1, 1).data;
 		var color1 = "rgb(" + imgdat1[0] + "," + imgdat1[1] + "," + imgdat1[2] + ")";
 		var color2 = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
-
+		// div作成
 		BackGround.div0 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div0.style.position = "absolute";
-		BackGround.div0.style.width = "100%";
-		BackGround.div0.style.height = "100%";
+		BackGround.div0.className = "background";
 		BackGround.div1 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div1.style.position = "absolute";
-		BackGround.div1.style.top = "0px";
-		BackGround.div1.style.width = "100%";
-		BackGround.div1.style.height = "50%";
+		BackGround.div1.className = "skycolor";
 		BackGround.div1.style.backgroundColor = color1;
 		BackGround.div2 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div2.style.position = "absolute";
-		BackGround.div2.style.bottom = "0px";
-		BackGround.div2.style.width = "100%";
-		BackGround.div2.style.height = "50%";
+		BackGround.div2.className = "groundcolor";
 		BackGround.div2.style.backgroundColor = color2;
+		// DOM登録
 		BackGround.div0.appendChild(BackGround.div1);
 		BackGround.div0.appendChild(BackGround.div2);
 		BackGround.div0.appendChild(BackGround.canvas);
@@ -153,25 +148,31 @@ class BackGround{
 	// ----------------------------------------------------------------
 	// 計算
 	static function calc() : void{
-		if(BackGround.ww != Ctrl.ww || BackGround.wh != Ctrl.wh){
+		BackGround.action++;
+		if(BackGround.ww != Ctrl.ww){
+			// 画面横幅が変わったらcanvasを作り直して横幅をそろえる
 			BackGround.ww = Ctrl.ww;
-			BackGround.wh = Ctrl.wh;
+			BackGround.wh = 0;
 			BackGround.div0.removeChild(BackGround.canvas);
 			BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 			BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
 			BackGround.canvas.width = BackGround.ww;
 			BackGround.canvas.height = BackGround.img.height;
-			BackGround.canvas.style.position = "absolute";
-			BackGround.canvas.style.top = ((BackGround.wh - BackGround.canvas.height) * 0.5) + "px";
 			BackGround.div0.appendChild(BackGround.canvas);
+		}
+		if(BackGround.wh != Ctrl.wh){
+			// 画面縦幅が変わったらcanvasの位置を調整する
+			BackGround.wh = Ctrl.wh;
+			BackGround.canvas.style.top = ((BackGround.wh - BackGround.canvas.height) * 0.5) + "px";
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	static function draw() : void{
+		// ループする背景
 		var imgw = BackGround.img.width;
-		var pos = (BackGround.action++) % imgw;
+		var pos = BackGround.action % imgw;
 		var num = Math.ceil(BackGround.ww / BackGround.img.width) + 1;
 		for(var i = 0; i < num; i++){
 			BackGround.context.drawImage(BackGround.img, imgw * (i - 1) + pos, 0);

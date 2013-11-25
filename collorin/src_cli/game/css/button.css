@@ -3,7 +3,7 @@
 /* -------------------------------- */
 /* --------  十字キー -------- */
 
-.arrow{
+div.root div.arrow{
 	position: absolute;
 	left: 0px;
 	bottom: 0px;
@@ -11,16 +11,17 @@
 	height: 144px;
 }
 
-.arrow div{
+div.root div.arrow div{
 	position: absolute;
 	border: solid 2px white;
+	background-color: rgba(255, 255, 255, 0.5)
 }
 
-.arrow div.hover{
+div.root div.arrow div.hover{
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
-.arrow div::before{
+div.root div.arrow div::before{
 	content: '';
 	position: absolute;
 	left: -1px;
@@ -28,7 +29,7 @@
 	border: solid 2px black;
 }
 
-.arrow div.up{
+div.root div.arrow div.up{
 	left: 56px;
 	top: 18px;
 	width: 28px;
@@ -36,13 +37,13 @@
 	border-radius: 8px 8px 15px 15px;
 }
 
-.arrow div.up::before{
+div.root div.arrow div.up::before{
 	width: 26px;
 	height: 36px;
 	border-radius: 8px 8px 15px 15px;
 }
 
-.arrow div.dn{
+div.root div.arrow div.dn{
 	left: 56px;
 	bottom: 18px;
 	width: 28px;
@@ -50,13 +51,13 @@
 	border-radius: 15px 15px 8px 8px;
 }
 
-.arrow div.dn::before{
+div.root div.arrow div.dn::before{
 	width: 26px;
 	height: 36px;
 	border-radius: 15px 15px 8px 8px;
 }
 
-.arrow div.rt{
+div.root div.arrow div.rt{
 	right: 18px;
 	top: 56px;
 	width: 38px;
@@ -64,13 +65,13 @@
 	border-radius: 15px 8px 8px 15px;
 }
 
-.arrow div.rt::before{
+div.root div.arrow div.rt::before{
 	width: 36px;
 	height: 26px;
 	border-radius: 15px 8px 8px 15px;
 }
 
-.arrow div.lt{
+div.root div.arrow div.lt{
 	left: 18px;
 	top: 56px;
 	width: 38px;
@@ -78,7 +79,7 @@
 	border-radius: 8px 15px 15px 8px;
 }
 
-.arrow div.lt::before{
+div.root div.arrow div.lt::before{
 	width: 36px;
 	height: 26px;
 	border-radius: 8px 15px 15px 8px;
@@ -89,7 +90,7 @@
 /* -------------------------------- */
 /* --------  ボタン -------- */
 
-.button{
+div.root div.button{
 	position: absolute;
 	right: 0px;
 	bottom: 0px;
@@ -97,7 +98,7 @@
 	height: 144px;
 }
 
-.button div{
+div.root div.button div{
 	position: absolute;
 	left: 12px;
 	width: 116px;
@@ -106,13 +107,14 @@
 	border: solid 2px white;
 	border-radius: 14px;
 	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
 }
 
-.button div.hover{
+div.root div.button div.hover{
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
-.button div::before{
+div.root div.button div::before{
 	content: '';
 	position: absolute;
 	left: -1px;
@@ -123,10 +125,10 @@
 	border-radius: 12px;
 }
 
-.button div.zb{top: 2px;}
-.button div.xb{top: 38px;}
-.button div.cb{top: 74px;}
-.button div.sb{top: 110px;}
+div.root .button div.zb{top: 2px;}
+div.root .button div.xb{top: 38px;}
+div.root .button div.cb{top: 74px;}
+div.root .button div.sb{top: 110px;}
 
 /* -------------------------------- */
 /* -------------------------------- */
