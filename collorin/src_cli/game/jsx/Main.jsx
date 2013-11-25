@@ -39,6 +39,7 @@ class Main{
 		Ctrl.init();
 		Cbtn.init();
 		Ccvs.init();
+		Message.init();
 		Game.init();
 	}
 
@@ -95,6 +96,26 @@ class Main{
 		xhr.addEventListener("timeout", function(e : Event) : void{log "timeout"; failureFunc();});
 		// 通信開始
 		xhr.send(request);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// メッセージ表示クラス
+class Message{
+	static var div : HTMLDivElement;
+
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		// div作成
+		Message.div = dom.document.createElement("div") as HTMLDivElement;
+		Message.div.className = "message";
+		Message.div.innerHTML = "あと0マス";
+		// DOM登録
+		dom.document.body.appendChild(Message.div);
 	}
 }
 
