@@ -165,7 +165,11 @@ class DrawDice{
 	var _pos0 : number[][];
 	var _pos1 : number[][];
 	var _size : number;
-	
+
+	var _canvas : HTMLCanvasElement;
+	var _context : CanvasRenderingContext2D;
+	var _action : int = 0;
+
 	var x : number = 0;
 	var y : number = 0;
 	var h : number = 0;
@@ -174,6 +178,12 @@ class DrawDice{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
+		// オフスクリーンcanvasの準備
+		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
+		this._canvas.width = 100;
+		this._canvas.height = 100;
+
 		// サイコロ頂点を作成
 		var s = 0.2;
 		this._pos0 = [
@@ -259,43 +269,49 @@ class DrawDice{
 		Ctrl.context.restore();
 
 		// さいころ描画
-		Ctrl.context.save();
-		Ctrl.context.translate(this.x, this.y - (this.h + this._size * 0.5) * Ccvs.cosh);
-		Ctrl.context.scale(this._size, this._size);
-		for(var i = 0; i < 2; i++){
-			var lineFlag = (i == 0);
-			var type = lineFlag ? -1 : 0;
-			// 面描画
-			this.drawPolygon(lineFlag ? -1 : 1, pos[ 0], pos[ 1], pos[ 2], pos[ 3]);
-			this.drawPolygon(lineFlag ? -1 : 6, pos[ 4], pos[ 5], pos[ 6], pos[ 7]);
-			this.drawPolygon(lineFlag ? -1 : 2, pos[ 8], pos[ 9], pos[10], pos[11]);
-			this.drawPolygon(lineFlag ? -1 : 5, pos[12], pos[13], pos[14], pos[15]);
-			this.drawPolygon(lineFlag ? -1 : 3, pos[16], pos[17], pos[18], pos[19]);
-			this.drawPolygon(lineFlag ? -1 : 4, pos[20], pos[21], pos[22], pos[23]);
-			// 頂点の三角形
-			this.drawPolygon(type, pos[ 0], pos[13], pos[23], null);
-			this.drawPolygon(type, pos[ 1], pos[22], pos[11], null);
-			this.drawPolygon(type, pos[ 2], pos[10], pos[18], null);
-			this.drawPolygon(type, pos[ 3], pos[17], pos[14], null);
-			this.drawPolygon(type, pos[ 4], pos[20], pos[12], null);
-			this.drawPolygon(type, pos[ 5], pos[15], pos[16], null);
-			this.drawPolygon(type, pos[ 6], pos[19], pos[ 9], null);
-			this.drawPolygon(type, pos[ 7], pos[ 8], pos[21], null);
-			// 側面の四角形
-			this.drawPolygon(type, pos[ 1], pos[ 0], pos[23], pos[22]);
-			this.drawPolygon(type, pos[ 2], pos[ 1], pos[11], pos[10]);
-			this.drawPolygon(type, pos[ 3], pos[ 2], pos[18], pos[17]);
-			this.drawPolygon(type, pos[ 0], pos[ 3], pos[14], pos[13]);
-			this.drawPolygon(type, pos[ 5], pos[ 4], pos[12], pos[15]);
-			this.drawPolygon(type, pos[ 6], pos[ 5], pos[16], pos[19]);
-			this.drawPolygon(type, pos[ 7], pos[ 6], pos[ 9], pos[ 8]);
-			this.drawPolygon(type, pos[ 4], pos[ 7], pos[21], pos[20]);
-			this.drawPolygon(type, pos[10], pos[ 9], pos[19], pos[18]);
-			this.drawPolygon(type, pos[ 8], pos[11], pos[22], pos[21]);
-			this.drawPolygon(type, pos[13], pos[12], pos[20], pos[23]);
-			this.drawPolygon(type, pos[15], pos[14], pos[17], pos[16]);
+		if((this._action++ % 3) == 0){
+			this._context.save();
+			this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+			this._context.translate(this._canvas.width * 0.5, this._canvas.height * 0.5);
+			this._context.scale(this._size, this._size);
+			for(var i = 0; i < 2; i++){
+				var lineFlag = (i == 0);
+				var type = lineFlag ? -1 : 0;
+				// 面描画
+				this.drawPolygon(lineFlag ? -1 : 1, pos[ 0], pos[ 1], pos[ 2], pos[ 3]);
+				this.drawPolygon(lineFlag ? -1 : 6, pos[ 4], pos[ 5], pos[ 6], pos[ 7]);
+				this.drawPolygon(lineFlag ? -1 : 2, pos[ 8], pos[ 9], pos[10], pos[11]);
+				this.drawPolygon(lineFlag ? -1 : 5, pos[12], pos[13], pos[14], pos[15]);
+				this.drawPolygon(lineFlag ? -1 : 3, pos[16], pos[17], pos[18], pos[19]);
+				this.drawPolygon(lineFlag ? -1 : 4, pos[20], pos[21], pos[22], pos[23]);
+				// 頂点の三角形
+				this.drawPolygon(type, pos[ 0], pos[13], pos[23], null);
+				this.drawPolygon(type, pos[ 1], pos[22], pos[11], null);
+				this.drawPolygon(type, pos[ 2], pos[10], pos[18], null);
+				this.drawPolygon(type, pos[ 3], pos[17], pos[14], null);
+				this.drawPolygon(type, pos[ 4], pos[20], pos[12], null);
+				this.drawPolygon(type, pos[ 5], pos[15], pos[16], null);
+				this.drawPolygon(type, pos[ 6], pos[19], pos[ 9], null);
+				this.drawPolygon(type, pos[ 7], pos[ 8], pos[21], null);
+				// 側面の四角形
+				this.drawPolygon(type, pos[ 1], pos[ 0], pos[23], pos[22]);
+				this.drawPolygon(type, pos[ 2], pos[ 1], pos[11], pos[10]);
+				this.drawPolygon(type, pos[ 3], pos[ 2], pos[18], pos[17]);
+				this.drawPolygon(type, pos[ 0], pos[ 3], pos[14], pos[13]);
+				this.drawPolygon(type, pos[ 5], pos[ 4], pos[12], pos[15]);
+				this.drawPolygon(type, pos[ 6], pos[ 5], pos[16], pos[19]);
+				this.drawPolygon(type, pos[ 7], pos[ 6], pos[ 9], pos[ 8]);
+				this.drawPolygon(type, pos[ 4], pos[ 7], pos[21], pos[20]);
+				this.drawPolygon(type, pos[10], pos[ 9], pos[19], pos[18]);
+				this.drawPolygon(type, pos[ 8], pos[11], pos[22], pos[21]);
+				this.drawPolygon(type, pos[13], pos[12], pos[20], pos[23]);
+				this.drawPolygon(type, pos[15], pos[14], pos[17], pos[16]);
+			}
+			this._context.restore();
 		}
-		Ctrl.context.restore();
+		var x = this.x - this._canvas.width * 0.5;
+		var y = this.y - this._canvas.height * 0.5 - (this.h + this._size * 0.5) * Ccvs.cosh;
+		Ctrl.context.drawImage(this._canvas, x, y);
 	}
 
 	// 面を描画する関数
@@ -311,14 +327,14 @@ class DrawDice{
 		if(type < 0){
 			// 描画順により枠線になる面の描画
 			var scale = 1.05;
-			Ctrl.context.fillStyle = "#000";
-			Ctrl.context.beginPath();
-			Ctrl.context.moveTo(top0[0] * scale, top0[1] * scale);
-			Ctrl.context.lineTo(top1[0] * scale, top1[1] * scale);
-			Ctrl.context.lineTo(top2[0] * scale, top2[1] * scale);
-			if(top3 != null){Ctrl.context.lineTo(top3[0] * scale, top3[1] * scale);}
-			Ctrl.context.closePath();
-			Ctrl.context.fill();
+			this._context.fillStyle = "#000";
+			this._context.beginPath();
+			this._context.moveTo(top0[0] * scale, top0[1] * scale);
+			this._context.lineTo(top1[0] * scale, top1[1] * scale);
+			this._context.lineTo(top2[0] * scale, top2[1] * scale);
+			if(top3 != null){this._context.lineTo(top3[0] * scale, top3[1] * scale);}
+			this._context.closePath();
+			this._context.fill();
 		}else{
 			// 環境光と反射光
 			var z1 = top1[2] - top0[2];
@@ -329,8 +345,8 @@ class DrawDice{
 			var dot = (cx * 0 + cy * 0.5 + cz * 0.87) / cr;
 			var light = Math.min(255, 150 + 200 * dot) as int;
 			var color = "rgb(" + light + "," + light + "," + light + ")";
-			Ctrl.context.fillStyle = color;
-        
+			this._context.fillStyle = color;
+
 			if(type > 0){
 				// 面の描画
 				// 参考 最速チュパカブラ研究会 2009年2月11日の日記(http://d.hatena.ne.jp/gyuque/20090211)
@@ -364,27 +380,27 @@ class DrawDice{
 				var vh1 = v1 > v2 ? v1 : v2; vh1 = vh1 > v3 ? vh1 : v3;
 				uw1 = uw1 - uw0;
 				vh1 = vh1 - vh0;
-				Ctrl.context.save();
-				Ctrl.context.beginPath();
-				Ctrl.context.moveTo(top0[0], top0[1]);
-				Ctrl.context.lineTo(top1[0], top1[1]);
-				Ctrl.context.lineTo(top2[0], top2[1]);
-				Ctrl.context.lineTo(top3[0], top3[1]);
-				Ctrl.context.closePath();
-				Ctrl.context.clip();
-				Ctrl.context.transform(t11, t21, t12, t22, t13, t23);
-				Ctrl.context.fill();
-				Ctrl.context.drawImage(Main.imgs["dice"], uw0, vh0, uw1, vh1, uw0, vh0, uw1, vh1);
-				Ctrl.context.restore();
+				this._context.save();
+				this._context.beginPath();
+				this._context.moveTo(top0[0], top0[1]);
+				this._context.lineTo(top1[0], top1[1]);
+				this._context.lineTo(top2[0], top2[1]);
+				this._context.lineTo(top3[0], top3[1]);
+				this._context.closePath();
+				this._context.clip();
+				this._context.transform(t11, t21, t12, t22, t13, t23);
+				this._context.fill();
+				this._context.drawImage(Main.imgs["dice"], uw0, vh0, uw1, vh1, uw0, vh0, uw1, vh1);
+				this._context.restore();
 			}else{
 				// 辺と頂点の描画
-				Ctrl.context.beginPath();
-				Ctrl.context.moveTo(top0[0], top0[1]);
-				Ctrl.context.lineTo(top1[0], top1[1]);
-				Ctrl.context.lineTo(top2[0], top2[1]);
-				if(top3 != null){Ctrl.context.lineTo(top3[0], top3[1]);}
-				Ctrl.context.closePath();
-				Ctrl.context.fill();
+				this._context.beginPath();
+				this._context.moveTo(top0[0], top0[1]);
+				this._context.lineTo(top1[0], top1[1]);
+				this._context.lineTo(top2[0], top2[1]);
+				if(top3 != null){this._context.lineTo(top3[0], top3[1]);}
+				this._context.closePath();
+				this._context.fill();
 			}
 		}
 	}
