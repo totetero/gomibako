@@ -53,7 +53,7 @@ class ECmain extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(false, "Z : サイコロ", "X : アイテム", "C : マップ", "Sp : メニュー");
+		Cbtn.setBtn(-1, "Z : サイコロ", "X : アイテム", "C : マップ", "Sp : メニュー");
 		Cbtn.trigger_z = false;
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
@@ -91,7 +91,7 @@ class ECmap extends EventCartridge{
 		// マップモード設定
 		Ccvs.mapFlag = true;
 		// ボタンの設定
-		Cbtn.setBtn(false, "", "X : 戻る", "", "");
+		Cbtn.setBtn(0, "", "X : 戻る", "", "");
 		Cbtn.trigger_x = false;
 	}
 
@@ -126,7 +126,7 @@ class ECmove extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(true, "", "X : 一つ戻る", "C : マップ", "Sp : メニュー");
+		Cbtn.setBtn(1, "", "X : 一つ戻る", "C : マップ", "Sp : メニュー");
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
 		Cbtn.trigger_s = false;

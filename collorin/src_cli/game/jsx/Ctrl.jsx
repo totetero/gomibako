@@ -176,6 +176,7 @@ class Cbtn{
 	// 内部演算用 ゲーム画面用DOM
 	static var _arrowDiv : HTMLDivElement;
 	static var _buttonDiv : HTMLDivElement;
+	static var _characterDiv : HTMLDivElement;
 	static var _upDiv : HTMLDivElement;
 	static var _dnDiv : HTMLDivElement;
 	static var _rtDiv : HTMLDivElement;
@@ -205,7 +206,7 @@ class Cbtn{
 	static var _actionMax : int = 8;
 	static var _actionArrow : int = 0;
 	static var _actionButton : int = 0;
-	static var _showArrow : boolean;
+	static var _showArrow : int;
 	static var _strButtonz : string;
 	static var _strButtonx : string;
 	static var _strButtonc : string;
@@ -217,6 +218,7 @@ class Cbtn{
 		// DOM作成
 		Cbtn._arrowDiv = dom.document.createElement("div") as HTMLDivElement;
 		Cbtn._buttonDiv = dom.document.createElement("div") as HTMLDivElement;
+		Cbtn._characterDiv = dom.document.createElement("div") as HTMLDivElement;
 		Cbtn._upDiv = dom.document.createElement("div") as HTMLDivElement;
 		Cbtn._dnDiv = dom.document.createElement("div") as HTMLDivElement;
 		Cbtn._rtDiv = dom.document.createElement("div") as HTMLDivElement;
@@ -227,6 +229,7 @@ class Cbtn{
 		Cbtn._sbDiv = dom.document.createElement("div") as HTMLDivElement;
 		Cbtn._arrowDiv.className = "arrow";
 		Cbtn._buttonDiv.className = "button";
+		Cbtn._characterDiv.className = "character";
 		Cbtn._upDiv.className = "up";
 		Cbtn._dnDiv.className = "dn";
 		Cbtn._rtDiv.className = "rt";
@@ -236,6 +239,7 @@ class Cbtn{
 		Cbtn._cbDiv.className = "cb";
 		Cbtn._sbDiv.className = "sb";
 		Cbtn._arrowDiv.style.display = "none";
+		Cbtn._characterDiv.style.display = "none";
 		Cbtn._zbDiv.style.display = "none";
 		Cbtn._xbDiv.style.display = "none";
 		Cbtn._cbDiv.style.display = "none";
@@ -250,6 +254,7 @@ class Cbtn{
 		Cbtn._buttonDiv.appendChild(Cbtn._sbDiv);
 		Ctrl.div.appendChild(Cbtn._arrowDiv);
 		Ctrl.div.appendChild(Cbtn._buttonDiv);
+		Ctrl.div.appendChild(Cbtn._characterDiv);
 	}
 
 	// ----------------------------------------------------------------
@@ -292,10 +297,12 @@ class Cbtn{
 		if(Cbtn.k_s != k_s){Cbtn.k_s = k_s; Cbtn._sbDiv.className = Cbtn.k_s ? "sb hover" : "sb";}
 		// 十字キー入れ替えモーション
 		if(Cbtn._actionArrow + Cbtn._actionMax == 0){
-			Cbtn._arrowDiv.style.display = Cbtn._showArrow ? "block" : "none";
+			Cbtn._arrowDiv.style.display = (Cbtn._showArrow > 0) ? "block" : "none";
+			Cbtn._characterDiv.style.display = (Cbtn._showArrow < 0) ? "block" : "none";
 		}else{
 			var num = Math.abs(Cbtn._actionArrow) / Cbtn._actionMax;
 			Cbtn._arrowDiv.style.left = (-144 * num * num) + "px";
+			Cbtn._characterDiv.style.left = (-144 * num * num) + "px";
 		}
 		// ボタン入れ替えモーション
 		if(Cbtn._actionButton + Cbtn._actionMax == 0){
@@ -358,7 +365,7 @@ class Cbtn{
 	static function btnchk() : boolean{
 		var flag = false;
 		// 左の十字キーエリア確認
-		flag = flag || (0 < Ctrl.mx && Ctrl.mx < 144 && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
+		flag = flag || (Cbtn._showArrow > 0 && 0 < Ctrl.mx && Ctrl.mx < 144 && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
 		// 右のボタンエリア確認
 		flag = flag || (Ctrl.ww - 144 < Ctrl.mx && Ctrl.mx < Ctrl.ww && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
 		return flag;
@@ -396,7 +403,7 @@ class Cbtn{
 
 	// ----------------------------------------------------------------
 	// ボタンの設定と入れ替えモーション開始
-	static function setBtn(arrow : boolean, btnz : string, btnx : string, btnc : string, btns : string) : void{
+	static function setBtn(arrow : int, btnz : string, btnx : string, btnc : string, btns : string) : void{
 		// 十字キー設定
 		if(Cbtn._showArrow != arrow){
 			Cbtn._actionArrow = (Cbtn._actionArrow == 0) ? 1 : Math.abs(Cbtn._actionArrow);
