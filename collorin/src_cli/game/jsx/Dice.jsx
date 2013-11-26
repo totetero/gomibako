@@ -29,7 +29,7 @@ class ECdice extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// さいころ初期化
-		this._dice = new DrawDice();
+		this._dice = new DrawDice(40);
 		this._dice.x = 80;
 		this._dice.y = 80;
 		this._dice.h = 0;
@@ -177,12 +177,12 @@ class DrawDice{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
+	function constructor(size : number){
 		// オフスクリーンcanvasの準備
 		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
-		this._canvas.width = 100;
-		this._canvas.height = 100;
+		this._canvas.width = size * 2;
+		this._canvas.height = size * 2;
 
 		// サイコロ頂点を作成
 		var s = 0.2;
@@ -194,7 +194,7 @@ class DrawDice{
 			[1 + s, 0, 0], [1 + s, 0, 1], [1 + s, 1, 1], [1 + s, 1, 0],
 			[0 - s, 0, 0], [0 - s, 1, 0], [0 - s, 1, 1], [0 - s, 0, 1]
 		];
-		// サイコロ頂点を原点中心の最大座標1に正規化する
+		// サイコロ頂点を原点中心の最大座標0.5に正規化する
 		for(var i = 0; i < this._pos0.length; i++){
 			for(var j = 0; j < this._pos0[i].length; j++){
 				this._pos0[i][j] = (this._pos0[i][j] - 0.5) / (1 + s);
@@ -204,7 +204,7 @@ class DrawDice{
 		this._pos1 = new number[][];
 		for(var i = 0; i < this._pos0.length; i++){this._pos1[i] = new number[];}
 		// サイコロの大きさ
-		this._size = 40;
+		this._size = size;
 	}
 
 	// ----------------------------------------------------------------
@@ -239,25 +239,6 @@ class DrawDice{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		var rq = new number[];
-		this.setQuat(rq, 1, 0, 0, Ccvs.roth);
-		this.multiQuat(rq, rq, this.rotq);
-
-		var pos = this._pos1;
-		for(var i = 0; i < this._pos0.length; i++){
-			// クォータニオン回転の適用
-			var x = this._pos0[i][0];
-			var y = this._pos0[i][1];
-			var z = this._pos0[i][2];
-			var ix =  rq[3] * x + rq[1] * z - rq[2] * y;
-			var iy =  rq[3] * y + rq[2] * x - rq[0] * z;
-			var iz =  rq[3] * z + rq[0] * y - rq[1] * x;
-			var iw = -rq[0] * x - rq[1] * y - rq[2] * z;
-			pos[i][0] = ix * rq[3] - iw * rq[0] - iy * rq[2] + iz * rq[1];
-			pos[i][1] = iy * rq[3] - iw * rq[1] - iz * rq[0] + ix * rq[2];
-			pos[i][2] = iz * rq[3] - iw * rq[2] - ix * rq[1] + iy * rq[0];
-		}
-
 		// 影描画
 		Ctrl.context.save();
 		Ctrl.context.fillStyle = "rgba(0, 0, 0, 0.5)";
@@ -270,6 +251,26 @@ class DrawDice{
 
 		// さいころ描画
 		if((this._action++ % 3) == 0){
+			// 回転クォータニオンに視角をかける
+			var rq = new number[];
+			this.setQuat(rq, 1, 0, 0, Ccvs.roth);
+			this.multiQuat(rq, rq, this.rotq);
+
+			// 各頂点座標にクォータニオン回転の適用
+			var pos = this._pos1;
+			for(var i = 0; i < this._pos0.length; i++){
+				var x = this._pos0[i][0];
+				var y = this._pos0[i][1];
+				var z = this._pos0[i][2];
+				var ix =  rq[3] * x + rq[1] * z - rq[2] * y;
+				var iy =  rq[3] * y + rq[2] * x - rq[0] * z;
+				var iz =  rq[3] * z + rq[0] * y - rq[1] * x;
+				var iw = -rq[0] * x - rq[1] * y - rq[2] * z;
+				pos[i][0] = ix * rq[3] - iw * rq[0] - iy * rq[2] + iz * rq[1];
+				pos[i][1] = iy * rq[3] - iw * rq[1] - iz * rq[0] + ix * rq[2];
+				pos[i][2] = iz * rq[3] - iw * rq[2] - ix * rq[1] + iy * rq[0];
+			}
+
 			this._context.save();
 			this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
 			this._context.translate(this._canvas.width * 0.5, this._canvas.height * 0.5);
