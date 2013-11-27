@@ -102,6 +102,11 @@ class Field{
 				}
 			}
 		}
+		// 最大最小位置の確認準備
+		Ccvs.cxmax = 0;
+		Ccvs.cymax = 0;
+		Ccvs.cxmin = this._canvas.width;
+		Ccvs.cymin = this._canvas.height;
 		// スゴロクマス描画
 		for(var i = 0; i < this._hex.length; i++){
 			switch(this._hex[i].type){
@@ -115,6 +120,11 @@ class Field{
 			this.hexPath(this._context, cx, cy);
 			this._context.fill();
 			this._context.stroke();
+			// 最大最小位置の確認
+			Ccvs.cxmax = Math.max(Ccvs.cxmax, cx + this._size * 0.86602540378);
+			Ccvs.cymax = Math.max(Ccvs.cymax, cy + this._size);
+			Ccvs.cxmin = Math.min(Ccvs.cxmin, cx - this._size * 0.86602540378);
+			Ccvs.cymin = Math.min(Ccvs.cymin, cy - this._size);
 		}
 	}
 

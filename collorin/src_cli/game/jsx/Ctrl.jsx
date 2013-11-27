@@ -437,12 +437,15 @@ class Ccvs{
 	static var mdn : boolean;
 	static var mx : int;
 	static var my : int;
-	// ゲーム画面キャンバス フィールド位置 TODO 名称変更? 表示中心
-	static var fx : number = 0;
-	static var fy : number = 0;
-	// ゲーム画面キャンバス カメラ位置 TODO 名称変更? 設定中心
-	static var cx : number = 0;
-	static var cy : number = 0;
+	// ゲーム画面キャンバス カメラ位置
+	static var cx0 : number = 0;
+	static var cy0 : number = 0;
+	static var cx1 : number = 0;
+	static var cy1 : number = 0;
+	static var cxmax : number = 0;
+	static var cymax : number = 0;
+	static var cxmin : number = 0;
+	static var cymin : number = 0;
 	// ゲーム画面キャンバス 画面拡大
 	static var scale : number;
 	// ゲーム画面キャンバス 画面回転
@@ -459,6 +462,8 @@ class Ccvs{
 	static var _tempmdn : boolean;
 	static var _tempmx : int = 0;
 	static var _tempmy : int = 0;
+	// 内部演算用 垂直回転角度
+	static var _rotv : number;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -470,6 +475,7 @@ class Ccvs{
 		Ccvs.cosv = Math.cos(Ccvs.rotv);
 		Ccvs.sinh = Math.sin(Ccvs.roth);
 		Ccvs.cosh = Math.cos(Ccvs.roth);
+		Ccvs._rotv = Ccvs.rotv;
 	}
 
 	// ----------------------------------------------------------------
@@ -490,8 +496,10 @@ class Ccvs{
 				// マップモード時地図の水平移動
 				var x = Ccvs._tempmx - Ccvs.mx;
 				var y = Ccvs._tempmy - Ccvs.my;
-				Ccvs.fx += (x *  Ccvs.cosv + y * Ccvs.sinv) / Ccvs.scale;
-				Ccvs.fy += (x * -Ccvs.sinv + y * Ccvs.cosv) / Ccvs.scale;
+				Ccvs.cx0 += (x *  Ccvs.cosv + y * Ccvs.sinv) / Ccvs.scale;
+				Ccvs.cy0 += (x * -Ccvs.sinv + y * Ccvs.cosv) / Ccvs.scale;
+				if(Ccvs.cx0 > Ccvs.cxmax){Ccvs.cx0 = Ccvs.cxmax;}else if(Ccvs.cx0 < Ccvs.cxmin){Ccvs.cx0 = Ccvs.cxmin;}
+				if(Ccvs.cy0 > Ccvs.cymax){Ccvs.cy0 = Ccvs.cymax;}else if(Ccvs.cy0 < Ccvs.cymin){Ccvs.cy0 = Ccvs.cymin;}
 			}else{
 				// 舞台回転処理
 				var x0 = Ccvs._tempmx - Ctrl.canvas.width * 0.5;
@@ -504,6 +512,8 @@ class Ccvs{
 					var cos = (x0 * x1 + y0 * y1) / (r0 * r1);
 					if(cos > 1){cos = 1;}else if(cos < -1){cos = -1;}
 					Ccvs.rotv += Math.acos(cos) * ((x0 * y1 - y0 * x1 > 0) ? 1 : -1);
+					// 垂直角度処理
+					Ccvs._rotv = Ccvs.rotv;
 					Ccvs.sinv = Math.sin(Ccvs.rotv);
 					Ccvs.cosv = Math.cos(Ccvs.rotv);
 				}
@@ -513,23 +523,31 @@ class Ccvs{
 		Ccvs._tempmy = Ccvs.my;
 
 		if(Ccvs.mapFlag){
-			// 垂直軸回転角度を0にする TODO 戻す処理とリファクタリング
+			// モード変更時に垂直回転を最低限にするための処理
 			while(Ccvs.rotv < -Math.PI){Ccvs.rotv += Math.PI * 2;}
 			while(Ccvs.rotv > Math.PI){Ccvs.rotv -= Math.PI * 2;}
-			Ccvs.rotv *= 0.9;
-			Ccvs.sinv = Math.sin(Ccvs.rotv);
-			Ccvs.cosv = Math.cos(Ccvs.rotv);
+			while(Ccvs._rotv < -Math.PI){Ccvs._rotv += Math.PI * 2;}
+			while(Ccvs._rotv > Math.PI){Ccvs._rotv -= Math.PI * 2;}
 		}else{
 			// 中心をプレイヤー位置に寄せる
-			Ccvs.fx += (Ccvs.cx - Ccvs.fx) * 0.3;
-			Ccvs.fy += (Ccvs.cy - Ccvs.fy) * 0.3;
+			Ccvs.cx0 += (Ccvs.cx1 - Ccvs.cx0) * 0.3;
+			Ccvs.cy0 += (Ccvs.cy1 - Ccvs.cy0) * 0.3;
 		}
 
+		// 垂直角度
+		var drv = Ccvs.rotv - (Ccvs.mapFlag ? 0 : Ccvs._rotv);
+		if(Math.abs(drv) > 0.01){
+			Ccvs.rotv -= drv * 0.1;
+			Ccvs.sinv = Math.sin(Ccvs.rotv);
+			Ccvs.cosv = Math.cos(Ccvs.rotv);
+		}
 		// 水平角度
-		var roth = Math.PI / 180 * (Ccvs.mapFlag ? 90 : 30);
-		Ccvs.roth += (roth - Ccvs.roth) * 0.1;
-		Ccvs.sinh = Math.sin(Ccvs.roth);
-		Ccvs.cosh = Math.cos(Ccvs.roth);
+		var drh = Ccvs.roth - Math.PI / 180 * (Ccvs.mapFlag ? 90 : 30);
+		if(Math.abs(drh) > 0.01){
+			Ccvs.roth -= drh * 0.1;
+			Ccvs.sinh = Math.sin(Ccvs.roth);
+			Ccvs.cosh = Math.cos(Ccvs.roth);
+		}
 		// 拡大縮小
 		var scale = Ccvs.mapFlag ? 0.8 : 2.5;
 		Ccvs.scale += (scale - Ccvs.scale) * 0.1;

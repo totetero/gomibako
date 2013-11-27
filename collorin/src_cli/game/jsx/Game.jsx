@@ -24,8 +24,8 @@ class Game{
 		Game.field = new Field();
 		Game.clist = new DrawUnit[];
 		Game.player = new Player();
-		Ccvs.cx = Ccvs.fx = Game.player.x;
-		Ccvs.cy = Ccvs.fy = Game.player.y;
+		Ccvs.cx0 = Ccvs.cx1 = Game.player.x;
+		Ccvs.cy0 = Ccvs.cy1 = Game.player.y;
 
 		EventCartridge.serialPush(new ECmain());
 	}
@@ -36,9 +36,9 @@ class Game{
 		// 描画開始
 		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
 		// フィールド描画
-		Game.field.draw(Ccvs.fx, Ccvs.fy);
+		Game.field.draw(Ccvs.cx0, Ccvs.cy0);
 		// プレイヤー描画準備
-		Game.player.preDraw(Ccvs.fx, Ccvs.fy);
+		Game.player.preDraw(Ccvs.cx0, Ccvs.cy0);
 		// キャラクター描画
 		DrawUnit.drawList(Game.clist);
 	}
@@ -256,8 +256,8 @@ class ECmove extends EventCartridge{
 					Game.player.x += speed * Math.cos(Game.player.r);
 					Game.player.y += speed * Math.sin(Game.player.r);
 				}
-				Ccvs.cx = Game.player.x;
-				Ccvs.cy = Game.player.y;
+				Ccvs.cx1 = Game.player.x;
+				Ccvs.cy1 = Game.player.y;
 				Game.player.action++;
 			}else{
 				Game.player.action = 0;
@@ -307,8 +307,8 @@ class Player{
 			this.x += speed * Math.cos(this.r);
 			this.y += speed * Math.sin(this.r);
 		}
-		Ccvs.cx = Game.player.x;
-		Ccvs.cy = Game.player.y;
+		Ccvs.cx1 = Game.player.x;
+		Ccvs.cy1 = Game.player.y;
 	}
 
 	// ----------------------------------------------------------------
