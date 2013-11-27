@@ -16,7 +16,7 @@ div.root canvas.main{
 /* -------------------------------- */
 /* --------  メッセージ -------- */
 
-div.message{
+div.root div.message{
 	position: absolute;
 	right: 12px;
 	top: 12px;
@@ -29,7 +29,7 @@ div.message{
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-div.message::before{
+div.root div.message::before{
 	content: '';
 	position: absolute;
 	right: -2px;

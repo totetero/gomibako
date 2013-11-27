@@ -3,6 +3,8 @@ import 'js/web.jsx';
 import 'timer.jsx';
 
 import 'Ctrl.jsx';
+import 'Status.jsx';
+import 'Message.jsx';
 import 'EventCartridge.jsx';
 import 'Game.jsx';
 
@@ -39,6 +41,7 @@ class Main{
 		Ctrl.init();
 		Cbtn.init();
 		Ccvs.init();
+		Status.init();
 		Message.init();
 		Game.init();
 	}
@@ -103,26 +106,6 @@ class Main{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// メッセージ表示クラス
-class Message{
-	static var div : HTMLDivElement;
-
-	// ----------------------------------------------------------------
-	// 初期化
-	static function init() : void{
-		// div作成
-		Message.div = dom.document.createElement("div") as HTMLDivElement;
-		Message.div.className = "message";
-		Message.div.innerHTML = "あと0マス";
-		// DOM登録
-		dom.document.body.appendChild(Message.div);
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
 // 背景クラス
 class BackGround{
 	static var img : HTMLImageElement;
@@ -152,12 +135,12 @@ class BackGround{
 		var color2 = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
 		// div作成
 		BackGround.div0 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div0.className = "background";
 		BackGround.div1 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div1.className = "skycolor";
-		BackGround.div1.style.backgroundColor = color1;
 		BackGround.div2 = dom.document.createElement("div") as HTMLDivElement;
+		BackGround.div0.className = "background";
+		BackGround.div1.className = "skycolor";
 		BackGround.div2.className = "groundcolor";
+		BackGround.div1.style.backgroundColor = color1;
 		BackGround.div2.style.backgroundColor = color2;
 		// DOM登録
 		BackGround.div0.appendChild(BackGround.div1);
