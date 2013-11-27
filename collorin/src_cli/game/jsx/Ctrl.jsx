@@ -55,6 +55,12 @@ class Ctrl{
 			Ctrl.div.addEventListener("mousedown", Ctrl.mdnfn, true);
 			Ctrl.div.addEventListener("mousemove", Ctrl.mmvfn, true);
 			Ctrl.div.addEventListener("mouseup", Ctrl.mupfn, true);
+			Ctrl.div.addEventListener("mouseout", function(e : Event){
+				var me : MouseEvent = e as MouseEvent;
+				if(Ctrl.mdn && me.target == Ctrl.div && (me.clientX <= 0 || Ctrl.ww <= me.clientX || me.clientY <= 0 || Ctrl.wh <= me.clientY)){
+					Ctrl.mupfn(e);
+				}
+			}, true);
 			dom.document.addEventListener("keydown", Cbtn.kdnfn, true);
 			dom.document.addEventListener("keyup", Cbtn.kupfn, true);
 		}
@@ -114,8 +120,8 @@ class Ctrl{
 	// マウス移動
 	static function mmvfn(e : Event) : void{
 		// イベント処理
+		Ctrl.getmmv(e);
 		if(Ctrl._mode > 0){
-			Ctrl.getmmv(e);
 			if(Ctrl._mode == 1){
 				// ボタン押下処理
 				Cbtn.btnfn(false);
@@ -137,8 +143,8 @@ class Ctrl{
 	// マウスを離す
 	static function mupfn(e : Event) : void{
 		// イベント処理
+		Ctrl.getmmv(e);
 		if(Ctrl._mode > 0){
-			Ctrl.getmmv(e);
 			if(Ctrl._mode == 1){
 				// ボタン押下終了
 				Cbtn.btnfn(true);
@@ -431,10 +437,10 @@ class Ccvs{
 	static var mdn : boolean;
 	static var mx : int;
 	static var my : int;
-	// ゲーム画面キャンバス フィールド位置
+	// ゲーム画面キャンバス フィールド位置 TODO 名称変更? 表示中心
 	static var fx : number = 0;
 	static var fy : number = 0;
-	// ゲーム画面キャンバス カメラ位置
+	// ゲーム画面キャンバス カメラ位置 TODO 名称変更? 設定中心
 	static var cx : number = 0;
 	static var cy : number = 0;
 	// ゲーム画面キャンバス 画面拡大
@@ -484,8 +490,8 @@ class Ccvs{
 				// マップモード時地図の水平移動
 				var x = Ccvs._tempmx - Ccvs.mx;
 				var y = Ccvs._tempmy - Ccvs.my;
-				Ccvs.fx += x *  Ccvs.cosv + y * Ccvs.sinv;
-				Ccvs.fy += x * -Ccvs.sinv + y * Ccvs.cosv;
+				Ccvs.fx += (x *  Ccvs.cosv + y * Ccvs.sinv) / Ccvs.scale;
+				Ccvs.fy += (x * -Ccvs.sinv + y * Ccvs.cosv) / Ccvs.scale;
 			}else{
 				// 舞台回転処理
 				var x0 = Ccvs._tempmx - Ctrl.canvas.width * 0.5;
@@ -506,7 +512,14 @@ class Ccvs{
 		Ccvs._tempmx = Ccvs.mx;
 		Ccvs._tempmy = Ccvs.my;
 
-		if(!Ccvs.mapFlag){
+		if(Ccvs.mapFlag){
+			// 垂直軸回転角度を0にする TODO 戻す処理とリファクタリング
+			while(Ccvs.rotv < -Math.PI){Ccvs.rotv += Math.PI * 2;}
+			while(Ccvs.rotv > Math.PI){Ccvs.rotv -= Math.PI * 2;}
+			Ccvs.rotv *= 0.9;
+			Ccvs.sinv = Math.sin(Ccvs.rotv);
+			Ccvs.cosv = Math.cos(Ccvs.rotv);
+		}else{
 			// 中心をプレイヤー位置に寄せる
 			Ccvs.fx += (Ccvs.cx - Ccvs.fx) * 0.3;
 			Ccvs.fy += (Ccvs.cy - Ccvs.fy) * 0.3;
