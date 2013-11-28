@@ -1,19 +1,21 @@
 var fs = require("fs");
 
 // ファイルを読み込んでjsonに書き出す
-exports.file2json = function(js, css, imgs, callback){
+exports.file2json = function(js, css, imgs, strs, callback){
 	// ファイルロード
 	jdat = {};
 	if(js){jdat.js = [];}else{js = [];}
 	if(css){jdat.css = [];}else{css = [];}
 	if(imgs){jdat.imgs = {};}else{imgs = {};}
+	if(strs){jdat.strs = {};}else{strs = {};}
 	var count = js.length + css.length;
 	for(var i in imgs){count++;}
+	for(var i in strs){count++;}
 	// ジャバスクリプトロード
 	for(var i = 0; i < js.length; i++){
 		(function(index){
 			jdat.js[index] = null;
-			fs.readFile(js[i], "utf-8", function (err, data){
+			fs.readFile(js[index], "utf-8", function (err, data){
 				jdat.js[index] = data;
 				// すべてのロードが終わったらコールバック
 				if(--count == 0){callback(jdat);}
@@ -24,7 +26,7 @@ exports.file2json = function(js, css, imgs, callback){
 	for(var i = 0; i < css.length; i++){
 		(function(index){
 			jdat.css[index] = null;
-			fs.readFile(css[i], "utf-8", function (err, data){
+			fs.readFile(css[index], "utf-8", function (err, data){
 				jdat.css[index] = data;
 				// すべてのロードが終わったらコールバック
 				if(--count == 0){callback(jdat);}
@@ -34,8 +36,18 @@ exports.file2json = function(js, css, imgs, callback){
 	// 画像ロード
 	for(var i in imgs){
 		(function(tag){
-			fs.readFile(imgs[i], function (err, data){
+			fs.readFile(imgs[tag], function (err, data){
 				jdat.imgs[tag] = "data:image/png;base64," + new Buffer(data).toString("base64");
+				// すべてのロードが終わったらコールバック
+				if(--count == 0){callback(jdat);}
+			});
+		})(i);
+	}
+	// 文字列ロード
+	for(var i in strs){
+		(function(tag){
+			fs.readFile(strs[tag], "utf-8", function (err, data){
+				jdat.strs[tag] = data;
 				// すべてのロードが終わったらコールバック
 				if(--count == 0){callback(jdat);}
 			});

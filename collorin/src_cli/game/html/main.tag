@@ -1,0 +1,1 @@
+<div class="hoge"></div>

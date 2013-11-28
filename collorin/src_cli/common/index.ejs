@@ -48,6 +48,16 @@
 					}else if(jdat.imgs){
 						window.jdat.imgs = jdat.imgs;
 					}
+					// 文字列データを一つの連想配列にまとめる 動的データ優先
+					if(window.jdat.strs){
+						for(var i in jdat.strs){
+							if(!window.jdat.strs.hasOwnProperty(i)){
+								window.jdat.strs[i] = jdat.strs[i];
+							}
+						}
+					}else if(jdat.strs){
+						window.jdat.strs = jdat.strs;
+					}
 					// スタイルシート設定
 					for(var i = 0; i < jdat.css.length; i++){
 						var style = document.createElement("style");

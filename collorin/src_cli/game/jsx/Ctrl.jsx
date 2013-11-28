@@ -44,6 +44,10 @@ class Ctrl{
 		Ctrl.div.appendChild(Ctrl.canvas);
 		dom.document.body.appendChild(Ctrl.div);
 
+		// TEST
+		//var jdat = js.global["jdat"] as variant;
+		//log jdat["strs"]["mainTag"] as string;
+
 		// リスナー追加
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
 		if(Ctrl.isTouch){

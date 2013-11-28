@@ -27,19 +27,22 @@ exports.getsdat = function(callback){
 	var js = [];
 	var css = [];
 	var imgs = {};
+	var strs = {};
 
 	js.push("./src_cli/game/jsx/game.js");
 	js.push("./src_cli/game/js/init.js");
 	css.push("./src_cli/game/css/main.css");
 	css.push("./src_cli/game/css/button.css");
 	css.push("./src_cli/game/css/status.css");
+	strs["mainTag"] = "./src_cli/game/html/main.tag";
 	imgs["player"] = "./src_cli/game/img/player.png";
 	imgs["player1"] = "./src_cli/game/img/player.png";
 
-	file.file2json(js, css, imgs, function(data){
+	file.file2json(js, css, imgs, strs, function(data){
 		jdat.js = data.js;
 		jdat.css = data.css;
 		jdat.imgs = data.imgs;
+		jdat.strs = data.strs;
 		callback(JSON.stringify(jdat));
 	});
 };
@@ -53,7 +56,7 @@ exports.getddat = function(user, callback){
 	imgs["dice"] = "./src_cli/game/img/dice.png";
 	imgs["background"] = "./src_cli/game/img/background.png";
 
-	file.file2json(null, null, imgs, function(data){
+	file.file2json(null, null, imgs, null, function(data){
 		jdat.imgs = data.imgs;
 		callback(JSON.stringify(jdat));
 	});

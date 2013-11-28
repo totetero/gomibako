@@ -17,7 +17,7 @@ exports.init = function(app){
 		imgs["player"] = "./src_cli/game/img/player.png";
 
 		// ゲーム静的情報
-		file.file2json(js, css, imgs, function(data){
+		file.file2json(js, css, imgs, null, function(data){
 			jdat.js = data.js;
 			jdat.css = data.css;
 			jdat.imgs = data.imgs;
@@ -49,7 +49,7 @@ exports.init = function(app){
 		imgs["enemy3"] = "./src_cli/chat/img/enemy3.png";
 
 		// ゲーム動的情報
-		file.file2json(null, null, imgs, function(data){
+		file.file2json(null, null, imgs, null, function(data){
 			jdat.imgs = data.imgs;
 			res.contentType('application/json');
 			res.send(JSON.stringify(jdat));
