@@ -53,13 +53,15 @@ class Main{
 		Ctrl.calc();
 		Cbtn.calc();
 		Ccvs.calc();
+		Message.calc();
 		// イベント処理
 		EventCartridge.serialEvent();
 		EventCartridge.parallelEvent();
 		// 描画処理
 		BackGround.draw();
-		Cbtn.draw();
 		Game.draw();
+		Cbtn.draw();
+		Message.draw();
 		EventCartridge.serialDraw();
 		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);

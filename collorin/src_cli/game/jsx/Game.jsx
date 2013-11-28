@@ -4,6 +4,7 @@ import 'timer.jsx';
 
 import 'Main.jsx';
 import 'Ctrl.jsx';
+import 'Message.jsx';
 import 'EventCartridge.jsx';
 import 'Field.jsx';
 import 'Character.jsx';
@@ -131,7 +132,7 @@ class ECmove extends EventCartridge{
 		Cbtn.trigger_c = false;
 		Cbtn.trigger_s = false;
 
-		log "あと" + this._pip + "マス";
+		Message.setMsg("あと" + this._pip + "マス");
 
 		// 補助クラス登録
 		if(this._ecAssist == null){
@@ -155,7 +156,7 @@ class ECmove extends EventCartridge{
 			if(this._srcList.length > 0){
 				this._pip++;
 				this._dstList.unshift(this._srcList.shift());
-				log "あと" + this._pip + "マス";
+				Message.setMsg("あと" + this._pip + "マス");
 			}
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
@@ -220,12 +221,12 @@ class ECmove extends EventCartridge{
 						this._pip--;
 						this._srcList.unshift([x, y] : int[]);
 					}
-					log "あと" + this._pip + "マス";
+					Message.setMsg("あと" + this._pip + "マス");
 				}
 			}
 		}else{
 			// 移動完了
-			log "移動完了";
+			Message.setMsg("");
 			this._ecAssist = null;
 			return false;
 		}
