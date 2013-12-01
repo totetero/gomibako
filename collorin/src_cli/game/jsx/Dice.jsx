@@ -61,7 +61,7 @@ class ECdice extends EventCartridge{
 					Main.loadxhr("/dice", "", function(resp : string) : void{
 						this._pip = JSON.parse(resp)["pip"] as int;
 					}, function() : void{
-						log "失敗";
+						this._pip = -1;
 					});
 				}else if(Cbtn.trigger_x){
 					// キャンセルボタン
@@ -98,6 +98,7 @@ class ECdice extends EventCartridge{
 			case 3:
 				// 通信待機ジャンプ
 				if(this._action == 0 && this._pip > 0){
+					// 通信成功時
 					this._mode = 4;
 					this._action = 0;
 					switch(this._pip){
@@ -112,6 +113,10 @@ class ECdice extends EventCartridge{
 					this._dice.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
 					this._dice.multiQuat(this._dice.rotq, q1, this._dice.rotq);
 					this._dice.multiQuat(this._dice.rotq, this._rotq2, this._dice.rotq);
+				}else if(this._pip < 0){
+					// 通信失敗時
+					this._xfunc();
+					return false;
 				}else if(this._action++ < 20){
 					this._dice.h = 100 * Math.sin(this._action / 20 * Math.PI);
 					this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
