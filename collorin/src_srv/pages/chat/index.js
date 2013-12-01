@@ -14,7 +14,7 @@ exports.init = function(app){
 
 		js.push("./src_cli/chat/jsx/chat.js");
 		js.push("./src_cli/chat/js/init.js");
-		imgs["player"] = "./src_cli/game/img/player.png";
+		imgs["player"] = "./src_cli/game/img/pdot.png";
 
 		// ゲーム静的情報
 		file.file2json(js, css, imgs, null, function(data){
