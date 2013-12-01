@@ -16,6 +16,7 @@ import 'Game.jsx';
 class Main{
 	// 画像リスト
 	static var imgs : Map.<HTMLImageElement>;
+	static var b64imgs : Map.<string>;
 
 	// ----------------------------------------------------------------
 	// main関数
@@ -25,6 +26,7 @@ class Main{
 		dom.document.getElementById("root").innerHTML = jdat["strs"]["mainTag"] as string;
 		// 画像準備
 		Main.imgs = {} : Map.<HTMLImageElement>;
+		Main.b64imgs = {} : Map.<string>;
 		Main.regImg(jdat["imgs"] as Map.<string>, function(){
 			delete jdat["imgs"];
 			// 初期化
@@ -76,13 +78,20 @@ class Main{
 		for(var i in b64imgs){count++;}
 		if(count > 0){
 			for(var i in b64imgs){
-				var img = dom.createElement("img") as HTMLImageElement;
-				img.onload = function(e : Event){
-					// すべての登録が終わったらコールバック
+				if(i.search(/^b64_/) == 0){
+					// css用画像
+					Main.b64imgs[i.substring(4)] = b64imgs[i];
 					if(--count == 0){callback();}
-				};
-				img.src = b64imgs[i];
-				Main.imgs[i] = img;
+				}else{
+					// canvas用画像
+					var img = dom.createElement("img") as HTMLImageElement;
+					img.onload = function(e : Event){
+						// すべての登録が終わったらコールバック
+						if(--count == 0){callback();}
+					};
+					img.src = b64imgs[i];
+					Main.imgs[i] = img;
+				}
 			}
 		}else{
 			callback();

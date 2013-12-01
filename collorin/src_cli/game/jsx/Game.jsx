@@ -28,6 +28,8 @@ class Game{
 		Ccvs.cx0 = Ccvs.cx1 = Game.player.x;
 		Ccvs.cy0 = Ccvs.cy1 = Game.player.y;
 
+		Cbtn.setChara(Main.b64imgs["pstand"]);
+
 		EventCartridge.serialPush(new ECmain());
 	}
 
@@ -408,7 +410,7 @@ class Player{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
-		this.character = new DrawPlayer(Main.imgs["player"]);
+		this.character = new DrawPlayer(Main.imgs["pdot"]);
 		Game.clist.push(this.character);
 		this.x = Game.field.calcHexCoordx(2, 2);
 		this.y = Game.field.calcHexCoordy(2, 2);

@@ -198,6 +198,7 @@ class Cbtn{
 	static var _actionArrow : int = 0;
 	static var _actionButton : int = 0;
 	static var _showArrow : int;
+	static var _showButton : boolean;
 	static var _strButtonz : string;
 	static var _strButtonx : string;
 	static var _strButtonc : string;
@@ -330,7 +331,7 @@ class Cbtn{
 		// 左の十字キーエリア確認
 		flag = flag || (Cbtn._showArrow > 0 && 0 < Ctrl.mx && Ctrl.mx < 144 && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
 		// 右のボタンエリア確認
-		flag = flag || (Ctrl.ww - 144 < Ctrl.mx && Ctrl.mx < Ctrl.ww && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
+		flag = flag || (Cbtn._showButton && Ctrl.ww - 144 < Ctrl.mx && Ctrl.mx < Ctrl.ww && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
 		return flag;
 	}
 
@@ -375,12 +376,19 @@ class Cbtn{
 
 		// ボタン設定
 		if(Cbtn._strButtonz != btnz || Cbtn._strButtonx != btnx || Cbtn._strButtonc != btnc || Cbtn._strButtons != btns){
+			Cbtn._showButton = (btnz != "") || (btnx != "") || (btnc != "") || (btns != "");
 			Cbtn._actionButton = (Cbtn._actionButton == 0) ? 1 : Math.abs(Cbtn._actionButton);
 			Cbtn._strButtonz = btnz;
 			Cbtn._strButtonx = btnx;
 			Cbtn._strButtonc = btnc;
 			Cbtn._strButtons = btns;
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// キャラクター画像設定
+	static function setChara(url : string) : void{
+		Cbtn._characterDiv.style.backgroundImage = "url(" + url + ")";
 	}
 }
 

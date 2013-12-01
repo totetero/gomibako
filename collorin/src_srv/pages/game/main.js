@@ -36,8 +36,6 @@ exports.getsdat = function(callback){
 	css.push("./src_cli/game/css/status.css");
 	css.push("./src_cli/game/css/menu.css");
 	strs["mainTag"] = "./src_cli/game/html/main.tag";
-	imgs["player"] = "./src_cli/game/img/player.png";
-	imgs["player1"] = "./src_cli/game/img/player.png";
 
 	file.file2json(js, css, imgs, strs, function(data){
 		jdat.js = data.js;
@@ -53,7 +51,8 @@ exports.getddat = function(user, callback){
 	var jdat = {};
 	var imgs = {};
 
-	imgs["player"] = "./src_cli/game/img/player.png";
+	imgs["pdot"] = "./src_cli/game/img/pdot.png";
+	imgs["b64_pstand"] = "./src_cli/game/img/pstand.png";
 	imgs["dice"] = "./src_cli/game/img/dice.png";
 	imgs["background"] = "./src_cli/game/img/background.png";
 
