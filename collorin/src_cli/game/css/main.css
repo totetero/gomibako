@@ -9,6 +9,12 @@ div#root{
 
 div#root canvas.main{
 	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 320px;
+	height: 320px;
+	margin-top: -160px;
+	margin-left: -160px;
 }
 
 /* -------------------------------- */

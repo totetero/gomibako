@@ -35,7 +35,7 @@ class Game{
 	// 描画
 	static function draw() : void{
 		// 描画開始
-		Ctrl.context.clearRect(0, 0, Ctrl.canvas.width, Ctrl.canvas.height);
+		Ccvs.context.clearRect(0, 0, Ccvs.canvas.width, Ccvs.canvas.height);
 		// フィールド描画
 		Game.field.draw(Ccvs.cx0, Ccvs.cy0);
 		// プレイヤー描画準備

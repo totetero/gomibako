@@ -3,7 +3,7 @@
 	<div class="groundcolor"></div>
 </div>
 
-<canvas class="jsx_ctrl main" width="320" height="320"></canvas>
+<canvas class="jsx_ccvs main" width="320" height="320"></canvas>
 
 <div class="jsx_cbtn character" style="display:none;"></div>
 

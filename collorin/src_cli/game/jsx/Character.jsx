@@ -134,20 +134,20 @@ class DrawCharacterParts extends DrawUnit{
 	// 描画
 	override function draw() : void{
 		var ps = (this.size * this.drScale) as int;
-		var px = (this.drx - ps * 0.5 + Ctrl.canvas.width * 0.5) as int;
-		var py = (this.dry - ps * 0.5 + Ctrl.canvas.height * 0.5) as int;
-		if(px + ps < 0 || px - ps > Ctrl.canvas.width || py + ps < 0 || py - ps > Ctrl.canvas.height){
+		var px = (this.drx - ps * 0.5 + Ccvs.canvas.width * 0.5) as int;
+		var py = (this.dry - ps * 0.5 + Ccvs.canvas.height * 0.5) as int;
+		if(px + ps < 0 || px - ps > Ccvs.canvas.width || py + ps < 0 || py - ps > Ccvs.canvas.height){
 		}else if(this.yswap || this.zswap){
 			var rx = px + ps * 0.5;
 			var ry = py + ps * 0.5;
-			Ctrl.context.save();
-			Ctrl.context.translate(rx, ry);
-			Ctrl.context.scale(this.yswap ? -1 : 1, this.zswap ? -1 : 1);
-			Ctrl.context.translate(-rx, -ry);
-			Ctrl.context.drawImage(this.img, this.u, this.v, this.size, this.size, px, py, ps, ps);
-			Ctrl.context.restore();
+			Ccvs.context.save();
+			Ccvs.context.translate(rx, ry);
+			Ccvs.context.scale(this.yswap ? -1 : 1, this.zswap ? -1 : 1);
+			Ccvs.context.translate(-rx, -ry);
+			Ccvs.context.drawImage(this.img, this.u, this.v, this.size, this.size, px, py, ps, ps);
+			Ccvs.context.restore();
 		}else{
-			Ctrl.context.drawImage(this.img, this.u, this.v, this.size, this.size, px, py, ps, ps);
+			Ccvs.context.drawImage(this.img, this.u, this.v, this.size, this.size, px, py, ps, ps);
 		}
 	}
 }

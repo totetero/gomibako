@@ -134,40 +134,40 @@ class Field{
 		this._gridxpos = x;
 		this._gridypos = y;
 		// 描画開始
-		Ctrl.context.save();
-		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
-		Ctrl.context.scale(Ccvs.scale, Ccvs.scale * Ccvs.sinh);
-		Ctrl.context.rotate(Ccvs.rotv);
-		Ctrl.context.translate(-this._gridxpos, -this._gridypos);
+		Ccvs.context.save();
+		Ccvs.context.translate(Ccvs.canvas.width * 0.5, Ccvs.canvas.height * 0.5);
+		Ccvs.context.scale(Ccvs.scale, Ccvs.scale * Ccvs.sinh);
+		Ccvs.context.rotate(Ccvs.rotv);
+		Ccvs.context.translate(-this._gridxpos, -this._gridypos);
 
 		// 地形描画
-		Ctrl.context.drawImage(this._canvas, 0, 0);
+		Ccvs.context.drawImage(this._canvas, 0, 0);
 
 		// テスト
 		if(Ccvs.mdn){
 			// キャンバスタッチ位置から座標獲得
-			var x0 = (Ccvs.mx - Ctrl.canvas.width * 0.5) / Ccvs.scale;
-			var y0 = (Ccvs.my - Ctrl.canvas.height * 0.5) / (Ccvs.scale * Ccvs.sinh);
+			var x0 = (Ccvs.mx - Ccvs.canvas.width * 0.5) / Ccvs.scale;
+			var y0 = (Ccvs.my - Ccvs.canvas.height * 0.5) / (Ccvs.scale * Ccvs.sinh);
 			var px = (x0 *  Ccvs.cosv + y0 * Ccvs.sinv) + this._gridxpos;
 			var py = (x0 * -Ccvs.sinv + y0 * Ccvs.cosv) + this._gridypos;
 			// タッチ位置描画
-			Ctrl.context.fillStyle = "rgba(0, 0, 0, 0.5)";
-			Ctrl.context.beginPath();
-			Ctrl.context.arc(px, py, 6, 0, Math.PI*2, false);
-			Ctrl.context.fill();
+			Ccvs.context.fillStyle = "rgba(0, 0, 0, 0.5)";
+			Ccvs.context.beginPath();
+			Ccvs.context.arc(px, py, 6, 0, Math.PI*2, false);
+			Ccvs.context.fill();
 			if(!Ctrl.mmv){
 				// 座標をヘックス中心座に変換
 				var hex = this.getHexFromCoordinate(px, py);
 				var cx = this.calcHexCoordx(hex.x, hex.y);
 				var cy = this.calcHexCoordy(hex.x, hex.y);
 				// タッチヘックス描画
-				this.hexPath(Ctrl.context, cx, cy);
-				Ctrl.context.fill();
+				this.hexPath(Ccvs.context, cx, cy);
+				Ccvs.context.fill();
 			}
 		}
 
 		// 描画終了
-		Ctrl.context.restore();
+		Ccvs.context.restore();
 	}
 
 	// ----------------------------------------------------------------

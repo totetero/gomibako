@@ -8,19 +8,15 @@ import 'timer.jsx';
 
 // 操作用クラス
 class Ctrl{
+	// ゲーム画面用DOM
+	static var div : HTMLDivElement;
 	// マウス状態
 	static var isTouch : boolean;
 	static var mdn : boolean;
 	static var mmv : boolean;
 	static var mx : int = 0;
 	static var my : int = 0;
-	// ゲーム画面用DOM
-	static var div : HTMLDivElement;
-	static var canvas : HTMLCanvasElement;
-	static var context : CanvasRenderingContext2D;
 	// ウインドウ状態
-	static var wl : int;
-	static var wt : int;
 	static var ww : int = 0;
 	static var wh : int = 0;
 
@@ -34,8 +30,6 @@ class Ctrl{
 	static function init() : void{
 		// DOM獲得
 		Ctrl.div = dom.document.getElementById("root") as HTMLDivElement;
-		Ctrl.canvas = dom.document.getElementsByClassName("jsx_ctrl main").item(0) as HTMLCanvasElement;
-		Ctrl.context = Ctrl.canvas.getContext("2d") as CanvasRenderingContext2D;
 
 		// リスナー追加
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
@@ -68,8 +62,6 @@ class Ctrl{
 		if(Ctrl.ww != w || Ctrl.wh != h){
 			Ctrl.ww = w;
 			Ctrl.wh = h;
-			Ctrl.canvas.style.left = (Ctrl.wl = (w - Ctrl.canvas.width) * 0.5) + "px";
-			Ctrl.canvas.style.top = (Ctrl.wt = (h - Ctrl.canvas.height) * 0.5) + "px";
 		}
 	}
 
@@ -398,6 +390,9 @@ class Cbtn{
 // キャンバス操作クラス
 
 class Ccvs{
+	// ゲーム画面用DOM
+	static var canvas : HTMLCanvasElement;
+	static var context : CanvasRenderingContext2D;
 	// マウス状態 キャンバスとの相対位置
 	static var mdn : boolean;
 	static var mx : int;
@@ -411,9 +406,8 @@ class Ccvs{
 	static var cymax : number = 0;
 	static var cxmin : number = 0;
 	static var cymin : number = 0;
-	// ゲーム画面キャンバス 画面拡大
+	// ゲーム画面キャンバス 画面拡大回転
 	static var scale : number;
-	// ゲーム画面キャンバス 画面回転
 	static var rotv : number;
 	static var roth : number;
 	static var sinv : number;
@@ -433,6 +427,10 @@ class Ccvs{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
+		// DOM獲得
+		Ccvs.canvas = dom.document.getElementsByClassName("jsx_ccvs main").item(0) as HTMLCanvasElement;
+		Ccvs.context = Ccvs.canvas.getContext("2d") as CanvasRenderingContext2D;
+
 		Ccvs.scale = 1;
 		Ccvs.rotv = Math.PI / 180 * 0;
 		Ccvs.roth = Math.PI / 180 * 45;
@@ -446,13 +444,13 @@ class Ccvs{
 	// ----------------------------------------------------------------
 	// 計算
 	static function calc() : void{
-		Ccvs.mx = Ctrl.mx - Ctrl.wl;
-		Ccvs.my = Ctrl.my - Ctrl.wt;
+		Ccvs.mx = Ctrl.mx - (Ctrl.ww - Ccvs.canvas.width) * 0.5;
+		Ccvs.my = Ctrl.my - (Ctrl.wh - Ccvs.canvas.height) * 0.5;
 
 		// キャンバス内でクリック開始したかの確認
 		if(Ccvs._tempmdn != Ctrl.mdn){
 			Ccvs._tempmdn = Ctrl.mdn;
-			Ccvs.mdn = (Ccvs._tempmdn && 0 < Ccvs.mx && Ccvs.mx < Ctrl.canvas.width && 0 < Ccvs.my && Ccvs.my < Ctrl.canvas.height);
+			Ccvs.mdn = (Ccvs._tempmdn && 0 < Ccvs.mx && Ccvs.mx < Ccvs.canvas.width && 0 < Ccvs.my && Ccvs.my < Ccvs.canvas.height);
 		}
 
 		if(Ccvs.mdn && Ctrl.mmv){
@@ -467,11 +465,11 @@ class Ccvs{
 				if(Ccvs.cy0 > Ccvs.cymax){Ccvs.cy0 = Ccvs.cymax;}else if(Ccvs.cy0 < Ccvs.cymin){Ccvs.cy0 = Ccvs.cymin;}
 			}else{
 				// 舞台回転処理
-				var x0 = Ccvs._tempmx - Ctrl.canvas.width * 0.5;
-				var y0 = Ccvs._tempmy - Ctrl.canvas.height * 0.5;
+				var x0 = Ccvs._tempmx - Ccvs.canvas.width * 0.5;
+				var y0 = Ccvs._tempmy - Ccvs.canvas.height * 0.5;
 				var r0 = Math.sqrt(x0 * x0 + y0 * y0);
-				var x1 = Ccvs.mx - Ctrl.canvas.width * 0.5;
-				var y1 = Ccvs.my - Ctrl.canvas.height * 0.5;
+				var x1 = Ccvs.mx - Ccvs.canvas.width * 0.5;
+				var y1 = Ccvs.my - Ccvs.canvas.height * 0.5;
 				var r1 = Math.sqrt(x1 * x1 + y1 * y1);
 				if(r0 > 20 && r1 > 20){
 					var cos = (x0 * x1 + y0 * y1) / (r0 * r1);

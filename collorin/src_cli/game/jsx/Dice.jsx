@@ -147,12 +147,12 @@ class ECdice extends EventCartridge{
 	// 描画
 	override function draw() : void{
 		// 描画の中心位置をキャンバス中心に設定
-		Ctrl.context.save();
-		Ctrl.context.translate(Ctrl.canvas.width * 0.5, Ctrl.canvas.height * 0.5);
+		Ccvs.context.save();
+		Ccvs.context.translate(Ccvs.canvas.width * 0.5, Ccvs.canvas.height * 0.5);
 		// 描画
 		this._dice.draw();
 		// 描画の中心位置を戻す
-		Ctrl.context.restore();
+		Ccvs.context.restore();
 	}
 }
 
@@ -240,14 +240,14 @@ class DrawDice{
 	// 描画
 	function draw() : void{
 		// 影描画
-		Ctrl.context.save();
-		Ctrl.context.fillStyle = "rgba(0, 0, 0, 0.5)";
-		Ctrl.context.translate(this.x, this.y);
-		Ctrl.context.scale(1, Ccvs.sinh);
-		Ctrl.context.beginPath();
-		Ctrl.context.arc(0, 0, this._size * 0.75, 0, Math.PI*2, false);
-		Ctrl.context.fill();
-		Ctrl.context.restore();
+		Ccvs.context.save();
+		Ccvs.context.fillStyle = "rgba(0, 0, 0, 0.5)";
+		Ccvs.context.translate(this.x, this.y);
+		Ccvs.context.scale(1, Ccvs.sinh);
+		Ccvs.context.beginPath();
+		Ccvs.context.arc(0, 0, this._size * 0.75, 0, Math.PI*2, false);
+		Ccvs.context.fill();
+		Ccvs.context.restore();
 
 		// さいころ描画
 		if((this._action++ % 3) == 0){
@@ -312,7 +312,7 @@ class DrawDice{
 		}
 		var x = this.x - this._canvas.width * 0.5;
 		var y = this.y - this._canvas.height * 0.5 - (this.h + this._size * 0.5) * Ccvs.cosh;
-		Ctrl.context.drawImage(this._canvas, x, y);
+		Ccvs.context.drawImage(this._canvas, x, y);
 	}
 
 	// 面を描画する関数
