@@ -32,21 +32,10 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		// ゲーム画面canvasの準備
-		Ctrl.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+		// DOM獲得
+		Ctrl.div = dom.document.getElementById("root") as HTMLDivElement;
+		Ctrl.canvas = dom.document.getElementsByClassName("jsx_ctrl main").item(0) as HTMLCanvasElement;
 		Ctrl.context = Ctrl.canvas.getContext("2d") as CanvasRenderingContext2D;
-		Ctrl.canvas.className = "main";
-		Ctrl.canvas.width = 320;
-		Ctrl.canvas.height = 320;
-		// root divの準備
-		Ctrl.div = dom.document.createElement("div") as HTMLDivElement;
-		Ctrl.div.className = "root";
-		Ctrl.div.appendChild(Ctrl.canvas);
-		dom.document.body.appendChild(Ctrl.div);
-
-		// TEST
-		//var jdat = js.global["jdat"] as variant;
-		//log jdat["strs"]["mainTag"] as string;
 
 		// リスナー追加
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
@@ -225,46 +214,18 @@ class Cbtn{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		// DOM作成
-		Cbtn._arrowDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._buttonDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._characterDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._upDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._dnDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._rtDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._ltDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._zbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._xbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._cbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._sbDiv = dom.document.createElement("div") as HTMLDivElement;
-		Cbtn._arrowDiv.className = "arrow";
-		Cbtn._buttonDiv.className = "button";
-		Cbtn._characterDiv.className = "character";
-		Cbtn._upDiv.className = "up";
-		Cbtn._dnDiv.className = "dn";
-		Cbtn._rtDiv.className = "rt";
-		Cbtn._ltDiv.className = "lt";
-		Cbtn._zbDiv.className = "zb";
-		Cbtn._xbDiv.className = "xb";
-		Cbtn._cbDiv.className = "cb";
-		Cbtn._sbDiv.className = "sb";
-		Cbtn._arrowDiv.style.display = "none";
-		Cbtn._characterDiv.style.display = "none";
-		Cbtn._zbDiv.style.display = "none";
-		Cbtn._xbDiv.style.display = "none";
-		Cbtn._cbDiv.style.display = "none";
-		Cbtn._sbDiv.style.display = "none";
-		Cbtn._arrowDiv.appendChild(Cbtn._upDiv);
-		Cbtn._arrowDiv.appendChild(Cbtn._dnDiv);
-		Cbtn._arrowDiv.appendChild(Cbtn._rtDiv);
-		Cbtn._arrowDiv.appendChild(Cbtn._ltDiv);
-		Cbtn._buttonDiv.appendChild(Cbtn._zbDiv);
-		Cbtn._buttonDiv.appendChild(Cbtn._xbDiv);
-		Cbtn._buttonDiv.appendChild(Cbtn._cbDiv);
-		Cbtn._buttonDiv.appendChild(Cbtn._sbDiv);
-		Ctrl.div.appendChild(Cbtn._arrowDiv);
-		Ctrl.div.appendChild(Cbtn._buttonDiv);
-		Ctrl.div.appendChild(Cbtn._characterDiv);
+		// DOM獲得
+		Cbtn._arrowDiv = dom.document.getElementsByClassName("jsx_cbtn arrow").item(0) as HTMLDivElement;
+		Cbtn._buttonDiv = dom.document.getElementsByClassName("jsx_cbtn button").item(0) as HTMLDivElement;
+		Cbtn._characterDiv = dom.document.getElementsByClassName("jsx_cbtn character").item(0) as HTMLDivElement;
+		Cbtn._upDiv = Cbtn._arrowDiv.getElementsByClassName("up").item(0) as HTMLDivElement;
+		Cbtn._dnDiv = Cbtn._arrowDiv.getElementsByClassName("dn").item(0) as HTMLDivElement;
+		Cbtn._rtDiv = Cbtn._arrowDiv.getElementsByClassName("rt").item(0) as HTMLDivElement;
+		Cbtn._ltDiv = Cbtn._arrowDiv.getElementsByClassName("lt").item(0) as HTMLDivElement;
+		Cbtn._zbDiv = Cbtn._buttonDiv.getElementsByClassName("zb").item(0) as HTMLDivElement;
+		Cbtn._xbDiv = Cbtn._buttonDiv.getElementsByClassName("xb").item(0) as HTMLDivElement;
+		Cbtn._cbDiv = Cbtn._buttonDiv.getElementsByClassName("cb").item(0) as HTMLDivElement;
+		Cbtn._sbDiv = Cbtn._buttonDiv.getElementsByClassName("sb").item(0) as HTMLDivElement;
 	}
 
 	// ----------------------------------------------------------------

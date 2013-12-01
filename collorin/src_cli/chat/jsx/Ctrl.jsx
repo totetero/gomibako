@@ -51,13 +51,12 @@ class Ctrl{
 		Ctrl.canvas.width = 320;
 		Ctrl.canvas.height = 320;
 		// root divの準備
-		Ctrl.div = dom.document.createElement("div") as HTMLDivElement;
+		Ctrl.div = dom.document.getElementById("root") as HTMLDivElement;
 		Ctrl.div.style.position = "absolute";
 		Ctrl.div.style.overflow = "hidden";
 		Ctrl.div.style.width = "100%";
 		Ctrl.div.style.height = "100%";
 		Ctrl.div.appendChild(Ctrl.canvas);
-		dom.document.body.appendChild(Ctrl.div);
 
 		// リスナー追加
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;

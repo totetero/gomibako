@@ -16,12 +16,8 @@ class Message{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		// div作成
-		Message._div = dom.document.createElement("div") as HTMLDivElement;
-		Message._div.className = "message";
-		Message._div.style.display = "none";
-		// DOM登録
-		Ctrl.div.appendChild(Message._div);
+		// DOM獲得
+		Message._div = dom.document.getElementsByClassName("jsx_message message").item(0) as HTMLDivElement;
 	}
 
 	// ----------------------------------------------------------------

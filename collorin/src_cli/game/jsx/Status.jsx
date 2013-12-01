@@ -20,44 +20,17 @@ class Status{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		// div作成
-		Status.div = dom.document.createElement("div") as HTMLDivElement;
-		Status.ndiv = dom.document.createElement("div") as HTMLDivElement;
-		Status.hdiv0 = dom.document.createElement("div") as HTMLDivElement;
-		Status.hdiv1 = dom.document.createElement("div") as HTMLDivElement;
-		Status.hdiv2 = dom.document.createElement("div") as HTMLDivElement;
-		Status.sdiv0 = dom.document.createElement("div") as HTMLDivElement;
-		Status.sdiv1 = dom.document.createElement("div") as HTMLDivElement;
-		Status.sdiv2 = dom.document.createElement("div") as HTMLDivElement;
-		var hpDiv = dom.document.createElement("div") as HTMLDivElement;
-		var spDiv = dom.document.createElement("div") as HTMLDivElement;
-		Status.div.className = "status";
-		Status.ndiv.className = "name";
-		Status.hdiv0.className = "covor";
-		Status.hdiv1.className = "param";
-		Status.hdiv2.className = "param";
-		Status.sdiv0.className = "covor";
-		Status.sdiv1.className = "param";
-		Status.sdiv2.className = "param";
-		hpDiv.className = "gauge hp";
-		spDiv.className = "gauge sp";
-		hpDiv.innerHTML = "HP";
-		spDiv.innerHTML = "SP";
-		Status.hdiv1.style.backgroundColor = "red";
-		Status.hdiv2.style.backgroundColor = "pink";
-		Status.sdiv1.style.backgroundColor = "blue";
-		Status.sdiv2.style.backgroundColor = "pink";
-		// DOM登録
-		//hpDiv.appendChild(Status.hdiv2);
-		hpDiv.appendChild(Status.hdiv1);
-		hpDiv.appendChild(Status.hdiv0);
-		//spDiv.appendChild(Status.sdiv2);
-		spDiv.appendChild(Status.sdiv1);
-		spDiv.appendChild(Status.sdiv0);
-		Status.div.appendChild(Status.ndiv);
-		Status.div.appendChild(hpDiv);
-		Status.div.appendChild(spDiv);
-		Ctrl.div.appendChild(Status.div);
+		// DOM獲得
+		Status.div = dom.document.getElementsByClassName("jsx_status status").item(0) as HTMLDivElement;
+		Status.ndiv = Status.div.getElementsByClassName("name").item(0) as HTMLDivElement;
+		var hdiv = Status.div.getElementsByClassName("hp").item(0) as HTMLDivElement;
+		var sdiv = Status.div.getElementsByClassName("sp").item(0) as HTMLDivElement;
+		Status.hdiv0 = hdiv.getElementsByClassName("wrap").item(0) as HTMLDivElement;
+		Status.hdiv1 = hdiv.getElementsByClassName("param").item(1) as HTMLDivElement;
+		Status.hdiv2 = hdiv.getElementsByClassName("param").item(0) as HTMLDivElement;
+		Status.sdiv0 = sdiv.getElementsByClassName("wrap").item(0) as HTMLDivElement;
+		Status.sdiv1 = sdiv.getElementsByClassName("param").item(1) as HTMLDivElement;
+		Status.sdiv2 = sdiv.getElementsByClassName("param").item(0) as HTMLDivElement;
 
 		// test
 		Status.ndiv.innerHTML = "ノエル";

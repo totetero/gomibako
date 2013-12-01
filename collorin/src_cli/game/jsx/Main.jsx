@@ -21,6 +21,8 @@ class Main{
 	// main関数
 	static function main(args : string[]) : void{
 		var jdat = js.global["jdat"] as variant;
+		// タグ生成
+		dom.document.getElementById("root").innerHTML = jdat["strs"]["mainTag"] as string;
 		// 画像準備
 		Main.imgs = {} : Map.<HTMLImageElement>;
 		Main.regImg(jdat["imgs"] as Map.<string>, function(){
@@ -123,32 +125,23 @@ class BackGround{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		// canvas 作成
+		// DOM獲得
+		BackGround.div0 = dom.document.getElementsByClassName("jsx_background background").item(0) as HTMLDivElement;
+		BackGround.div1 = BackGround.div0.getElementsByClassName("skycolor").item(0) as HTMLDivElement;
+		BackGround.div2 = BackGround.div0.getElementsByClassName("groundcolor").item(0) as HTMLDivElement;
+		// canvas作成
 		BackGround.img = Main.imgs["background"];
 		BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
+		BackGround.div0.appendChild(BackGround.canvas);
 		// 空の色と大地の色を獲得
 		BackGround.canvas.width = 1;
 		BackGround.canvas.height = BackGround.img.height;
 		BackGround.context.drawImage(BackGround.img, 0, 0);
 		var imgdat1 = BackGround.context.getImageData(0, 0, 1, 1).data;
 		var imgdat2 = BackGround.context.getImageData(0, BackGround.canvas.height - 1, 1, 1).data;
-		var color1 = "rgb(" + imgdat1[0] + "," + imgdat1[1] + "," + imgdat1[2] + ")";
-		var color2 = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
-		// div作成
-		BackGround.div0 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div1 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div2 = dom.document.createElement("div") as HTMLDivElement;
-		BackGround.div0.className = "background";
-		BackGround.div1.className = "skycolor";
-		BackGround.div2.className = "groundcolor";
-		BackGround.div1.style.backgroundColor = color1;
-		BackGround.div2.style.backgroundColor = color2;
-		// DOM登録
-		BackGround.div0.appendChild(BackGround.div1);
-		BackGround.div0.appendChild(BackGround.div2);
-		BackGround.div0.appendChild(BackGround.canvas);
-		dom.document.body.appendChild(BackGround.div0);
+		BackGround.div1.style.backgroundColor = "rgb(" + imgdat1[0] + "," + imgdat1[1] + "," + imgdat1[2] + ")";
+		BackGround.div2.style.backgroundColor = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
 	}
 
 	// ----------------------------------------------------------------

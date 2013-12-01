@@ -1,13 +1,13 @@
 body{margin: 0;}
 
-div.root{
+div#root{
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
 }
 
-div.root canvas.main{
+div#root canvas.main{
 	position: absolute;
 }
 
@@ -16,7 +16,7 @@ div.root canvas.main{
 /* -------------------------------- */
 /* --------  メッセージ -------- */
 
-div.root div.message{
+div#root div.message{
 	position: absolute;
 	right: 12px;
 	top: 12px;
@@ -29,7 +29,7 @@ div.root div.message{
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-div.root div.message::before{
+div#root div.message::before{
 	content: '';
 	position: absolute;
 	right: -2px;
@@ -45,27 +45,27 @@ div.root div.message::before{
 /* -------------------------------- */
 /* --------  背景 -------- */
 
-div.background{
+div#root div.background{
 	position: absolute;
 	width: 100%;
 	height: 100%;
 }
 
-div.background div.skycolor{
+div#root div.background div.skycolor{
 	position: absolute;
 	top: 0px;
 	width: 100%;
 	height: 50%;
 }
 
-div.background div.groundcolor{
+div#root div.background div.groundcolor{
 	position: absolute;
 	bottom: 0px;
 	width: 100%;
 	height: 50%;
 }
 
-div.background canvas{
+div#root div.background canvas{
 	position: absolute;
 }
 

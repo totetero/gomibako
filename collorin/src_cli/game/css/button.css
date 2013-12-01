@@ -3,7 +3,7 @@
 /* -------------------------------- */
 /* --------  十字キー -------- */
 
-div.root div.arrow{
+div#root div.arrow{
 	position: absolute;
 	left: 0px;
 	bottom: 0px;
@@ -11,17 +11,17 @@ div.root div.arrow{
 	height: 144px;
 }
 
-div.root div.arrow div{
+div#root div.arrow div{
 	position: absolute;
 	border: solid 3px white;
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-div.root div.arrow div.hover{
+div#root div.arrow div.hover{
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
-div.root div.arrow div::before{
+div#root div.arrow div::before{
 	content: '';
 	position: absolute;
 	left: -2px;
@@ -31,7 +31,7 @@ div.root div.arrow div::before{
 	border: solid 2px black;
 }
 
-div.root div.arrow div.up{
+div#root div.arrow div.up{
 	left: 56px;
 	top: 18px;
 	width: 26px;
@@ -39,11 +39,11 @@ div.root div.arrow div.up{
 	border-radius: 8px 8px 15px 15px;
 }
 
-div.root div.arrow div.up::before{
+div#root div.arrow div.up::before{
 	border-radius: 8px 8px 15px 15px;
 }
 
-div.root div.arrow div.dn{
+div#root div.arrow div.dn{
 	left: 56px;
 	bottom: 18px;
 	width: 26px;
@@ -51,11 +51,11 @@ div.root div.arrow div.dn{
 	border-radius: 15px 15px 8px 8px;
 }
 
-div.root div.arrow div.dn::before{
+div#root div.arrow div.dn::before{
 	border-radius: 15px 15px 8px 8px;
 }
 
-div.root div.arrow div.rt{
+div#root div.arrow div.rt{
 	right: 18px;
 	top: 56px;
 	width: 36px;
@@ -63,11 +63,11 @@ div.root div.arrow div.rt{
 	border-radius: 15px 8px 8px 15px;
 }
 
-div.root div.arrow div.rt::before{
+div#root div.arrow div.rt::before{
 	border-radius: 15px 8px 8px 15px;
 }
 
-div.root div.arrow div.lt{
+div#root div.arrow div.lt{
 	left: 18px;
 	top: 56px;
 	width: 36px;
@@ -75,7 +75,7 @@ div.root div.arrow div.lt{
 	border-radius: 8px 15px 15px 8px;
 }
 
-div.root div.arrow div.lt::before{
+div#root div.arrow div.lt::before{
 	border-radius: 8px 15px 15px 8px;
 }
 
@@ -84,7 +84,7 @@ div.root div.arrow div.lt::before{
 /* -------------------------------- */
 /* --------  ボタン -------- */
 
-div.root div.button{
+div#root div.button{
 	position: absolute;
 	right: 0px;
 	bottom: 0px;
@@ -92,7 +92,7 @@ div.root div.button{
 	height: 144px;
 }
 
-div.root div.button div{
+div#root div.button div{
 	position: absolute;
 	left: 12px;
 	width: 114px;
@@ -104,11 +104,11 @@ div.root div.button div{
 	background-color: rgba(255, 255, 255, 0.5);
 }
 
-div.root div.button div.hover{
+div#root div.button div.hover{
 	background-color: rgba(0, 0, 0, 0.5);
 }
 
-div.root div.button div::before{
+div#root div.button div::before{
 	content: '';
 	position: absolute;
 	left: -2px;
@@ -119,17 +119,17 @@ div.root div.button div::before{
 	border-radius: 12px;
 }
 
-div.root .button div.zb{top: 2px;}
-div.root .button div.xb{top: 38px;}
-div.root .button div.cb{top: 74px;}
-div.root .button div.sb{top: 110px;}
+div#root .button div.zb{top: 2px;}
+div#root .button div.xb{top: 38px;}
+div#root .button div.cb{top: 74px;}
+div#root .button div.sb{top: 110px;}
 
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
 /* --------  キャラクター画像 -------- */
 
-div.root div.character{
+div#root div.character{
 	position: absolute;
 	left: 0px;
 	bottom: 0px;
