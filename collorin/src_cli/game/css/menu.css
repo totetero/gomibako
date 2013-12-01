@@ -1,0 +1,92 @@
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- メニュー -------- */
+
+div#root div.menu{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: none;
+}
+
+div#root div.menu div.cvsCenter div.title{
+	position: absolute;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+div#root div.menu div.cvsCenter div.btn{
+	position: absolute;
+	height: 26px;
+	line-height: 30px;
+	border: solid 3px white;
+	border-radius: 12px;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+div#root div.menu div.cvsCenter div.btn.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+div#root div.menu div.cvsCenter div.btn::before{
+	content: '';
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	width: 100%;
+	height: 100%;
+	border: solid 2px black;
+	border-radius: 12px;
+}
+
+/* -------------------------------- */
+
+div#root div.menu div.cvsCenter.menu1{
+	display: none;
+}
+
+div#root div.menu div.cvsCenter.menu1 div.title{
+	left: 100px;
+	top: 40px;
+	width: 120px;
+}
+
+div#root div.menu div.cvsCenter.menu1 div.btn{
+	left: 60px;
+	width: 200px;
+}
+
+div#root div.menu div.cvsCenter.menu1 div.btn.sound{top: 110px;}
+div#root div.menu div.cvsCenter.menu1 div.btn.exit{top: 180px;}
+div#root div.menu div.cvsCenter.menu1 div.btn.close{top: 250px;}
+
+/* -------------------------------- */
+
+div#root div.menu div.cvsCenter.menu2{
+	display: none;
+}
+
+div#root div.menu div.cvsCenter.menu2 div.title{
+	left: 60px;
+	top: 50px;
+	width: 200px;
+}
+
+div#root div.menu div.cvsCenter.menu2 div.btn{
+	left: 100px;
+	width: 120px;
+}
+
+div#root div.menu div.cvsCenter.menu2 div.btn.yes{top: 140px;}
+div#root div.menu div.cvsCenter.menu2 div.btn.no{top: 230px;}
+
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+

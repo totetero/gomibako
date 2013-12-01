@@ -144,7 +144,7 @@ class Field{
 		Ccvs.context.drawImage(this._canvas, 0, 0);
 
 		// テスト
-		if(Ccvs.mdn){
+		if(Ccvs.mdn && (Ccvs.mode == 0 || Ccvs.mode == 1)){
 			// キャンバスタッチ位置から座標獲得
 			var x0 = (Ccvs.mx - Ccvs.canvas.width * 0.5) / Ccvs.scale;
 			var y0 = (Ccvs.my - Ccvs.canvas.height * 0.5) / (Ccvs.scale * Ccvs.sinh);
@@ -158,11 +158,13 @@ class Field{
 			if(!Ctrl.mmv){
 				// 座標をヘックス中心座に変換
 				var hex = this.getHexFromCoordinate(px, py);
-				var cx = this.calcHexCoordx(hex.x, hex.y);
-				var cy = this.calcHexCoordy(hex.x, hex.y);
-				// タッチヘックス描画
-				this.hexPath(Ccvs.context, cx, cy);
-				Ccvs.context.fill();
+				if(hex.type > 0){
+					var cx = this.calcHexCoordx(hex.x, hex.y);
+					var cy = this.calcHexCoordy(hex.x, hex.y);
+					// タッチヘックス描画
+					this.hexPath(Ccvs.context, cx, cy);
+					Ccvs.context.fill();
+				}
 			}
 		}
 

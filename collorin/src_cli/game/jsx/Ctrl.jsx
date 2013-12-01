@@ -414,8 +414,8 @@ class Ccvs{
 	static var cosv : number;
 	static var sinh : number;
 	static var cosh : number;
-	// マップモードフラグ
-	static var mapFlag = false;
+	// モード (0:舞台回転 1:マップ移動)
+	static var mode = 0;
 
 	// 内部演算用 マウス移動量差分を求める変数
 	static var _tempmdn : boolean;
@@ -455,15 +455,7 @@ class Ccvs{
 
 		if(Ccvs.mdn && Ctrl.mmv){
 			// マウス移動中
-			if(Ccvs.mapFlag){
-				// マップモード時地図の水平移動
-				var x = Ccvs._tempmx - Ccvs.mx;
-				var y = Ccvs._tempmy - Ccvs.my;
-				Ccvs.cx0 += (x *  Ccvs.cosv + y * Ccvs.sinv) / Ccvs.scale;
-				Ccvs.cy0 += (x * -Ccvs.sinv + y * Ccvs.cosv) / Ccvs.scale;
-				if(Ccvs.cx0 > Ccvs.cxmax){Ccvs.cx0 = Ccvs.cxmax;}else if(Ccvs.cx0 < Ccvs.cxmin){Ccvs.cx0 = Ccvs.cxmin;}
-				if(Ccvs.cy0 > Ccvs.cymax){Ccvs.cy0 = Ccvs.cymax;}else if(Ccvs.cy0 < Ccvs.cymin){Ccvs.cy0 = Ccvs.cymin;}
-			}else{
+			if(Ccvs.mode == 0){
 				// 舞台回転処理
 				var x0 = Ccvs._tempmx - Ccvs.canvas.width * 0.5;
 				var y0 = Ccvs._tempmy - Ccvs.canvas.height * 0.5;
@@ -480,12 +472,20 @@ class Ccvs{
 					Ccvs.sinv = Math.sin(Ccvs.rotv);
 					Ccvs.cosv = Math.cos(Ccvs.rotv);
 				}
+			}else if(Ccvs.mode == 1){
+				// マップ移動 地図の水平移動
+				var x = Ccvs._tempmx - Ccvs.mx;
+				var y = Ccvs._tempmy - Ccvs.my;
+				Ccvs.cx0 += (x *  Ccvs.cosv + y * Ccvs.sinv) / Ccvs.scale;
+				Ccvs.cy0 += (x * -Ccvs.sinv + y * Ccvs.cosv) / Ccvs.scale;
+				if(Ccvs.cx0 > Ccvs.cxmax){Ccvs.cx0 = Ccvs.cxmax;}else if(Ccvs.cx0 < Ccvs.cxmin){Ccvs.cx0 = Ccvs.cxmin;}
+				if(Ccvs.cy0 > Ccvs.cymax){Ccvs.cy0 = Ccvs.cymax;}else if(Ccvs.cy0 < Ccvs.cymin){Ccvs.cy0 = Ccvs.cymin;}
 			}
 		}
 		Ccvs._tempmx = Ccvs.mx;
 		Ccvs._tempmy = Ccvs.my;
 
-		if(Ccvs.mapFlag){
+		if(Ccvs.mode == 1){
 			// モード変更時に垂直回転を最低限にするための処理
 			while(Ccvs.rotv < -Math.PI){Ccvs.rotv += Math.PI * 2;}
 			while(Ccvs.rotv > Math.PI){Ccvs.rotv -= Math.PI * 2;}
@@ -498,21 +498,21 @@ class Ccvs{
 		}
 
 		// 垂直角度
-		var drv = Ccvs.rotv - (Ccvs.mapFlag ? 0 : Ccvs._rotv);
+		var drv = Ccvs.rotv - ((Ccvs.mode == 1) ? 0 : Ccvs._rotv);
 		if(Math.abs(drv) > 0.01){
 			Ccvs.rotv -= drv * 0.1;
 			Ccvs.sinv = Math.sin(Ccvs.rotv);
 			Ccvs.cosv = Math.cos(Ccvs.rotv);
 		}
 		// 水平角度
-		var drh = Ccvs.roth - Math.PI / 180 * (Ccvs.mapFlag ? 90 : 30);
+		var drh = Ccvs.roth - Math.PI / 180 * ((Ccvs.mode == 1) ? 90 : 30);
 		if(Math.abs(drh) > 0.01){
 			Ccvs.roth -= drh * 0.1;
 			Ccvs.sinh = Math.sin(Ccvs.roth);
 			Ccvs.cosh = Math.cos(Ccvs.roth);
 		}
 		// 拡大縮小
-		var scale = Ccvs.mapFlag ? 0.8 : 2.5;
+		var scale = (Ccvs.mode == 1) ? 0.8 : 2.5;
 		Ccvs.scale += (scale - Ccvs.scale) * 0.1;
 	}
 }

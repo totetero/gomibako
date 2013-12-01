@@ -48,13 +48,14 @@ class Game{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
+// メインループイベントカートリッジ
 
 // メインイベントカートリッジ
 class ECmain extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(-1, "Z : サイコロ", "X : アイテム", "C : マップ", "Sp : メニュー");
+		Cbtn.setBtn(-1, "サイコロ", "", "マップ", "メニュー");
 		Cbtn.trigger_z = false;
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
@@ -79,28 +80,9 @@ class ECmain extends EventCartridge{
 			// マップ表示ボタン
 			EventCartridge.serialCutting(new ECmap());
 			return false;
-		}
-
-		return true;
-	}
-}
-
-// マップ表示イベントカートリッジ
-class ECmap extends EventCartridge{
-	// 初期化
-	override function init() : void{
-		// マップモード設定
-		Ccvs.mapFlag = true;
-		// ボタンの設定
-		Cbtn.setBtn(0, "", "X : 戻る", "", "");
-		Cbtn.trigger_x = false;
-	}
-
-	// 計算
-	override function calc() : boolean{
-		// ボタン確認
-		if(Cbtn.trigger_x){
-			Ccvs.mapFlag = false;
+		}else if(Cbtn.trigger_s){
+			// メニュー表示ボタン
+			EventCartridge.serialCutting(new ECmenu());
 			return false;
 		}
 
@@ -127,7 +109,7 @@ class ECmove extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(1, "", "X : 一つ戻る", "C : マップ", "Sp : メニュー");
+		Cbtn.setBtn(1, "", "一歩戻る", "マップ", "メニュー");
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
 		Cbtn.trigger_s = false;
@@ -146,6 +128,10 @@ class ECmove extends EventCartridge{
 		if(Cbtn.trigger_c){
 			// マップ表示ボタン
 			EventCartridge.serialCutting(new ECmap());
+			return false;
+		}else if(Cbtn.trigger_s){
+			// メニュー表示ボタン
+			EventCartridge.serialCutting(new ECmenu());
 			return false;
 		}else if(this._dstList.length > 0){
 			// ヘックス目的地に向かう
@@ -271,6 +257,145 @@ class ECmove extends EventCartridge{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
+// 割り込み系イベントカートリッジ
+
+// メニュー表示イベントカートリッジ
+class ECmenu extends EventCartridge{
+	var _div0 : HTMLDivElement;
+	var _div1 : HTMLDivElement;
+	var _div2 : HTMLDivElement;
+	var _m1sbtn : HTMLDivElement;
+	var _m1ebtn : HTMLDivElement;
+	var _m1cbtn : HTMLDivElement;
+	var _m2ybtn : HTMLDivElement;
+	var _m2nbtn : HTMLDivElement;
+
+	var _mode : int = 1;
+	var _button : int = 0;
+	var _mdn : boolean = false;
+
+	// 初期化
+	override function init() : void{
+		// DOM獲得
+		this._div0 = dom.document.getElementsByClassName("jsx_ecmenu menu").item(0) as HTMLDivElement;
+		this._div1 = this._div0.getElementsByClassName("menu1").item(0) as HTMLDivElement;
+		this._div2 = this._div0.getElementsByClassName("menu2").item(0) as HTMLDivElement;
+		this._m1sbtn = this._div1.getElementsByClassName("btn sound").item(0) as HTMLDivElement;
+		this._m1ebtn = this._div1.getElementsByClassName("btn exit").item(0) as HTMLDivElement;
+		this._m1cbtn = this._div1.getElementsByClassName("btn close").item(0) as HTMLDivElement;
+		this._m2ybtn = this._div2.getElementsByClassName("btn yes").item(0) as HTMLDivElement;
+		this._m2nbtn = this._div2.getElementsByClassName("btn no").item(0) as HTMLDivElement;
+		this._div0.style.display = "block";
+		// マップモード設定
+		Ccvs.mode = -1;
+		// ボタンの設定
+		Cbtn.setBtn(0, "", "", "", "");
+	}
+
+	// 計算
+	override function calc() : boolean{
+		// ボタン範囲の確認
+		var btnid = 1;
+		if(Ccvs.mx < 0 || 320 < Ccvs.mx || Ccvs.my < 0 || 320 < Ccvs.my){
+			btnid = 0;
+		}else if(Math.abs(this._mode) == 1){
+			if(60 < Ccvs.mx && Ccvs.mx < 260){
+				if(110 < Ccvs.my && Ccvs.my < 140){btnid = 101;}
+				else if(180 < Ccvs.my && Ccvs.my < 210){btnid = 102;}
+				else if(250 < Ccvs.my && Ccvs.my < 280){btnid = 103;}
+			}
+		}else if(Math.abs(this._mode) == 2){
+			if(100 < Ccvs.mx && Ccvs.mx < 220){
+				if(140 < Ccvs.my && Ccvs.my < 170){btnid = 201;}
+				else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 202;}
+			}
+		}
+
+		// マウスクリックの確認
+		if(this._mdn != Ctrl.mdn){
+			this._mdn = Ctrl.mdn;
+			if(!this._mdn){
+				if(btnid == 101){
+					// 音系
+				}else if(btnid == 102){
+					// 中断確認
+					this._mode = 2;
+				}else if(btnid == 0 || btnid == 103 || btnid == 202){
+					// メニューを閉じる
+					this._div0.style.display = "none";
+					Ccvs.mode = 0;
+					return false;
+				}else if(btnid == 201){
+					// 中断
+					this._mode = 3;
+					dom.document.location.href = "/exit";
+				}
+			}
+		}
+
+		// ボタン押下状態の確認
+		if(!this._mdn){btnid = 1;}
+		if(Math.abs(this._button) != btnid){this._button = btnid;}
+
+		return true;
+	}
+
+	// 描画
+	override function draw() : void{
+		// モードによる表示非表示
+		if(this._mode == 1){
+			this._div1.style.display = "block";
+			this._div2.style.display = "none";
+			this._mode = -1;
+		}else if(this._mode == 2){
+			this._div1.style.display = "none";
+			this._div2.style.display = "block";
+			this._mode = -2;
+		}else if(this._mode == 3){
+			this._div1.style.display = "none";
+			this._div2.style.display = "none";
+			this._mode = -3;
+		}
+
+		// ボタン押下状態の描画
+		if(this._button > 0){
+			this._m1sbtn.className = (this._button == 101) ? "btn sound hover" : "btn sound";
+			this._m1ebtn.className = (this._button == 102) ? "btn exit hover" : "btn exit";
+			this._m1cbtn.className = (this._button == 103) ? "btn close hover" : "btn close";
+			this._m2ybtn.className = (this._button == 201) ? "btn yes hover" : "btn yes";
+			this._m2nbtn.className = (this._button == 202) ? "btn no hover" : "btn no";
+			this._button *= -1;
+		}
+	}
+}
+
+
+// マップ表示イベントカートリッジ
+class ECmap extends EventCartridge{
+	// 初期化
+	override function init() : void{
+		// マップモード設定
+		Ccvs.mode = 1;
+		// ボタンの設定
+		Cbtn.setBtn(0, "", "戻る", "", "");
+		Cbtn.trigger_x = false;
+	}
+
+	// 計算
+	override function calc() : boolean{
+		// ボタン確認
+		if(Cbtn.trigger_x){
+			Ccvs.mode = 0;
+			return false;
+		}
+
+		return true;
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
 
 // プレイヤークラス
 class Player{
@@ -287,7 +412,7 @@ class Player{
 		Game.clist.push(this.character);
 		this.x = Game.field.calcHexCoordx(2, 2);
 		this.y = Game.field.calcHexCoordy(2, 2);
-		this.r = Math.PI * 0.5;
+		this.r = Math.PI * 1.5;
 	}
 
 	// ----------------------------------------------------------------

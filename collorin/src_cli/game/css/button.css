@@ -9,6 +9,7 @@ div#root div.arrow{
 	bottom: 0px;
 	width: 144px;
 	height: 144px;
+	display:none;
 }
 
 div#root div.arrow div{
@@ -102,6 +103,7 @@ div#root div.button div{
 	border-radius: 12px;
 	text-align: center;
 	background-color: rgba(255, 255, 255, 0.5);
+	display:none;
 }
 
 div#root div.button div.hover{
@@ -136,6 +138,7 @@ div#root div.character{
 	width: 160px;
 	height: 240px;
 	background-color: rgba(255, 0, 0, 0.1);
+	display:none;
 }
 
 /* -------------------------------- */

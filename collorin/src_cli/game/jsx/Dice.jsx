@@ -40,7 +40,7 @@ class ECdice extends EventCartridge{
 		this._dice.setQuat(this._rotq1, 1, 0, 0, -0.4);
 		this._dice.setQuat(this._rotq2, 1, 0, 0, 0.4 * 20);
 		// ボタンの設定
-		Cbtn.setBtn(-1, "Z : 投げる", "X : 戻る", "", "");
+		Cbtn.setBtn(-1, "投げる", "戻る", "", "");
 		Cbtn.trigger_z = false;
 		Cbtn.trigger_x = false;
 	}

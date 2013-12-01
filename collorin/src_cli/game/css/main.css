@@ -7,7 +7,7 @@ div#root{
 	overflow: hidden;
 }
 
-div#root canvas.main{
+div#root .cvsCenter{
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -33,6 +33,7 @@ div#root div.message{
 	padding: 0 20px;
 	text-align: center;
 	background-color: rgba(255, 255, 255, 0.5);
+	display:none;
 }
 
 div#root div.message::before{

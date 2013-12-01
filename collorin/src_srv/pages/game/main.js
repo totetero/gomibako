@@ -34,6 +34,7 @@ exports.getsdat = function(callback){
 	css.push("./src_cli/game/css/main.css");
 	css.push("./src_cli/game/css/button.css");
 	css.push("./src_cli/game/css/status.css");
+	css.push("./src_cli/game/css/menu.css");
 	strs["mainTag"] = "./src_cli/game/html/main.tag";
 	imgs["player"] = "./src_cli/game/img/player.png";
 	imgs["player1"] = "./src_cli/game/img/player.png";
