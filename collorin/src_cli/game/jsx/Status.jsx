@@ -9,7 +9,6 @@ import 'Ctrl.jsx';
 // ステータス表示クラス
 class Status{
 	static var div : HTMLDivElement;
-	static var ndiv : HTMLDivElement;
 	static var hdiv0 : HTMLDivElement;
 	static var hdiv1 : HTMLDivElement;
 	static var hdiv2 : HTMLDivElement;
@@ -22,7 +21,6 @@ class Status{
 	static function init() : void{
 		// DOM獲得
 		Status.div = dom.document.getElementsByClassName("jsx_status status").item(0) as HTMLDivElement;
-		Status.ndiv = Status.div.getElementsByClassName("name").item(0) as HTMLDivElement;
 		var hdiv = Status.div.getElementsByClassName("hp").item(0) as HTMLDivElement;
 		var sdiv = Status.div.getElementsByClassName("sp").item(0) as HTMLDivElement;
 		Status.hdiv0 = hdiv.getElementsByClassName("wrap").item(0) as HTMLDivElement;
@@ -33,7 +31,6 @@ class Status{
 		Status.sdiv2 = sdiv.getElementsByClassName("param").item(0) as HTMLDivElement;
 
 		// test
-		Status.ndiv.innerHTML = "ノエル";
 		Status.hdiv0.innerHTML = "30/100";
 		Status.sdiv0.innerHTML = "80/100";
 		Status.hdiv1.style.width = "30px";

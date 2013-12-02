@@ -8,7 +8,6 @@
 <div class="jsx_cbtn character"></div>
 
 <div class="jsx_status status">
-	<div class="name"></div>
 	<div class="gauge hp">
 		<div>HP</div>
 		<div class="param" style="background-color:pink;"></div>

@@ -291,7 +291,7 @@ class ECmenu extends EventCartridge{
 		// マップモード設定
 		Ccvs.mode = -1;
 		// ボタンの設定
-		Cbtn.setBtn(0, "", "", "", "");
+		Cbtn.setBtn(-1, "", "", "", "");
 	}
 
 	// 計算
