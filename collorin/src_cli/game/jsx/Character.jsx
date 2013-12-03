@@ -1,5 +1,6 @@
 import 'js/web.jsx';
 
+import "Main.jsx";
 import "Ctrl.jsx";
 
 // ----------------------------------------------------------------
@@ -68,15 +69,10 @@ class DrawCharacter extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 部分描画関数
 	function setParts(p : DrawCharacterParts, x: number, y: number, z: number, type : int) : void{
-		// 位置等設定
 		p.visible = true;
-		p.drx = this.drX + this.drScale * 35 * (x * this.drCos - y * this.drSin);
-		var y0 = this.drY + this.drScale * 35 * (x * this.drSin + y * this.drCos);
-		var z0 = this.drZ + this.drScale * 35 * (z - 0.05);
-		p.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
-		p.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
 		p.drScale = this.drScale;
 
+		// 回転の確認
 		var av = 0;
 		switch(type){
 			case 1: case 2: case 3: case 4: av = this.drAngv1; break;
@@ -84,23 +80,41 @@ class DrawCharacter extends DrawUnit{
 		}
 
 		// 反転の確認
+		var x0 = p.x0;
+		var z0 = p.z0;
 		p.yswap = false;
+		p.zswap = false;
 		// 上下反転
-		p.zswap = (type == 3 || type == 4);
+		if(type == 3 || type == 4){
+			p.zswap = !p.zswap;
+			z0 *= -1;
+		}
 		// 前後反転
 		if(type == 2 || type == 3){
 			if(av == 0){av = 2;}else if(av == 2){av = 0;}
 			p.yswap = !p.yswap;
+			x0 *= -1;
 		}
 		// 左右反転
 		if(p.swap){
 			if(av == 1){av = 3;}else if(av == 3){av = 1;}
 			p.yswap = !p.yswap;
 		}
+		// ボディローカル座標に、反転を考慮したパーツローカル座標を足し合わせ
+		x += x0;
+		y += p.y0;
+		z += z0;
+
+		// 位置等設定
+		p.drx = this.drX + this.drScale * 35 * (x * this.drCos - y * this.drSin);
+		var y0 = this.drY + this.drScale * 35 * (x * this.drSin + y * this.drCos);
+		var z0 = this.drZ + this.drScale * 35 * (z - 0.05);
+		p.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
+		p.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
 
 		// 視点を考慮したuv座標設定
-		p.u = p.u0 + av * p.size;
-		p.v = p.v0;
+		p.dru = p.u0 + av * p.uvsize;
+		p.drv = p.v0;
 	}
 
 	// ----------------------------------------------------------------
@@ -113,27 +127,39 @@ class DrawCharacter extends DrawUnit{
 // 体のパーツクラス
 class DrawCharacterParts extends DrawUnit{
 	var img : HTMLImageElement;
-	var drx : number;
-	var dry : number;
-	var drScale : number;
-	var u : int;
-	var v : int;
+	// パーツローカル座標
+	var x0 : number;
+	var y0 : number;
+	var z0 : number;
+	// テクスチャ情報
 	var u0 : int;
 	var v0 : int;
-	var size : int;
+	var uvsize : int;
+	// 左右反転フラグ
 	var swap : boolean;
+
+	var drx : number;
+	var dry : number;
+	var dru : int;
+	var drv : int;
+	var drScale : number;
 	var yswap : boolean;
 	var zswap : boolean;
+
 	// コンストラクタ
-	function constructor(u0 : int, v0 : int, size : int, swap : boolean){
+	function constructor(img : HTMLImageElement, x0 : number, y0 : number, z0 : number, u0 : int, v0 : int, uvsize : int, swap : boolean){
+		this.img = img;
+		this.x0 = x0;
+		this.y0 = y0;
+		this.z0 = z0;
 		this.u0 = u0;
 		this.v0 = v0;
-		this.size = size;
+		this.uvsize = uvsize;
 		this.swap = swap;
 	}
 	// 描画
 	override function draw() : void{
-		var ps = (this.size * this.drScale) as int;
+		var ps = (this.uvsize * this.drScale) as int;
 		var px = (this.drx - ps * 0.5 + Ccvs.canvas.width * 0.5) as int;
 		var py = (this.dry - ps * 0.5 + Ccvs.canvas.height * 0.5) as int;
 		if(px + ps < 0 || px - ps > Ccvs.canvas.width || py + ps < 0 || py - ps > Ccvs.canvas.height){
@@ -144,10 +170,10 @@ class DrawCharacterParts extends DrawUnit{
 			Ccvs.context.translate(rx, ry);
 			Ccvs.context.scale(this.yswap ? -1 : 1, this.zswap ? -1 : 1);
 			Ccvs.context.translate(-rx, -ry);
-			Ccvs.context.drawImage(this.img, this.u, this.v, this.size, this.size, px, py, ps, ps);
+			Ccvs.context.drawImage(this.img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
 			Ccvs.context.restore();
 		}else{
-			Ccvs.context.drawImage(this.img, this.u, this.v, this.size, this.size, px, py, ps, ps);
+			Ccvs.context.drawImage(this.img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
 		}
 	}
 }
@@ -158,94 +184,59 @@ class DrawCharacterParts extends DrawUnit{
 
 // プレイヤークラス
 class DrawPlayer extends DrawCharacter{
-	var parts_head = new DrawCharacterParts( 0,  0, 16, false);
-	var parts_body = new DrawCharacterParts( 0, 16, 16, false);
-	var parts_ftr1 = new DrawCharacterParts( 0, 32,  8, false);
-	var parts_ftl1 = new DrawCharacterParts( 0, 32,  8, true);
-	var parts_ftr2 = new DrawCharacterParts(32, 32,  8, false);
-	var parts_ftl2 = new DrawCharacterParts(32, 32,  8, true);
-	var parts_hndr = new DrawCharacterParts( 0, 40,  8, false);
-	var parts_hndl = new DrawCharacterParts( 0, 40,  8, true);
-	var parts_hair = new DrawCharacterParts( 0, 48, 16, false);
-	var parts_hail = new DrawCharacterParts( 0, 48, 16, true);
-	var parts_tail = new DrawCharacterParts( 0, 64, 16, false);
+	var _parts : Map.<DrawCharacterParts[]>;
+	var _pose : Map.<Map.<number[]>[]>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(img : HTMLImageElement){
+	function constructor(parts : string, pose : string){
 		this.duList = new DrawUnit[];
-		this.duList.push(this.parts_head);
-		this.duList.push(this.parts_body);
-		this.duList.push(this.parts_ftr1);
-		this.duList.push(this.parts_ftl1);
-		this.duList.push(this.parts_ftr2);
-		this.duList.push(this.parts_ftl2);
-		this.duList.push(this.parts_hndr);
-		this.duList.push(this.parts_hndl);
-		this.duList.push(this.parts_hair);
-		this.duList.push(this.parts_hail);
-		this.duList.push(this.parts_tail);
-		for(var i = 0; i < this.duList.length; i++){(this.duList[i] as DrawCharacterParts).img = img;}
+		this._parts = {} : Map.<DrawCharacterParts[]>;
+		this._pose = JSON.parse(pose) as Map.<Map.<number[]>[]>;
+		var jparts = JSON.parse(parts);
+		var img = Main.imgs[jparts["img"] as string];
+		var dat = jparts["dat"] as Map.<number[][]>;
+
+		// パーツの登録
+		for(var i in dat){
+			this._parts[i] = new DrawCharacterParts[];
+			for(var j = 0; j < dat[i].length; j++){
+				var temp = dat[i][j];
+				var x = temp[0];
+				var y = temp[1];
+				var z = temp[2];
+				var u = Math.round(temp[3]);
+				var v = Math.round(temp[4]);
+				var s = Math.round(temp[5]);
+				var swap = (Math.round(temp[6]) > 0);
+				this._parts[i][j] = new DrawCharacterParts(img, x, y, z, u, v, s, swap);
+				this.duList.push(this._parts[i][j]);
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 姿勢関数
 	function setPose(action : int) : void{
+		var pose : Map.<number[]>;
+		
 		if(action > 0){
 			// 移動
-			switch(((action / 6) as int) % 4){
-				case 0:
-					this.setParts(this.parts_head,  0.12,  0.00, 0.45, 1);
-					this.setParts(this.parts_body,  0.00,  0.00, 0.23, 1);
-					this.setParts(this.parts_ftr1,  0.10,  0.07, 0.10, 1);
-					this.setParts(this.parts_ftl2, -0.20, -0.07, 0.20, 1);
-					this.setParts(this.parts_hndr, -0.10,  0.15, 0.25, 0);
-					this.setParts(this.parts_hndl,  0.10, -0.15, 0.25, 0);
-					this.setParts(this.parts_hair,  0.06,  0.20, 0.43, 1);
-					this.setParts(this.parts_hail,  0.06, -0.20, 0.43, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.36, 1);break;
-				case 1:
-					this.setParts(this.parts_head,  0.12,  0.00, 0.47, 1);
-					this.setParts(this.parts_body,  0.00,  0.00, 0.26, 1);
-					this.setParts(this.parts_ftr1,  0.00,  0.07, 0.10, 1);
-					this.setParts(this.parts_ftl1,  0.00, -0.07, 0.15, 1);
-					this.setParts(this.parts_hndr, -0.05,  0.18, 0.25, 0);
-					this.setParts(this.parts_hndl,  0.05, -0.18, 0.25, 0);
-					this.setParts(this.parts_hair,  0.06,  0.20, 0.45, 1);
-					this.setParts(this.parts_hail,  0.06, -0.20, 0.45, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.38, 1);break;
-				case 2:
-					this.setParts(this.parts_head,  0.12,  0.00, 0.45, 1);
-					this.setParts(this.parts_body,  0.00,  0.00, 0.23, 1);
-					this.setParts(this.parts_ftr2, -0.20,  0.07, 0.20, 1);
-					this.setParts(this.parts_ftl1,  0.10, -0.07, 0.10, 1);
-					this.setParts(this.parts_hndr,  0.10,  0.15, 0.25, 0);
-					this.setParts(this.parts_hndl, -0.10, -0.15, 0.25, 0);
-					this.setParts(this.parts_hair,  0.06,  0.20, 0.43, 1);
-					this.setParts(this.parts_hail,  0.06, -0.20, 0.43, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.36, 1);break;
-				case 3:
-					this.setParts(this.parts_head,  0.12,  0.00, 0.47, 1);
-					this.setParts(this.parts_body,  0.00,  0.00, 0.26, 1);
-					this.setParts(this.parts_ftr1,  0.00,  0.07, 0.15, 1);
-					this.setParts(this.parts_ftl1,  0.00, -0.07, 0.10, 1);
-					this.setParts(this.parts_hndr,  0.05,  0.18, 0.25, 0);
-					this.setParts(this.parts_hndl, -0.05, -0.18, 0.25, 0);
-					this.setParts(this.parts_hair,  0.06,  0.20, 0.45, 1);
-					this.setParts(this.parts_hail,  0.06, -0.20, 0.45, 1);
-					this.setParts(this.parts_tail, -0.07,  0.00, 0.38, 1);break;
-			}
+			pose = this._pose["walk"][((action / 6) as int) % 4];
 		}else{
 			// 静止
-			this.setParts(this.parts_head,  0.00,  0.00, 0.52, 1);
-			this.setParts(this.parts_body, -0.02,  0.00, 0.27, 1);
-			this.setParts(this.parts_ftr1,  0.02,  0.10, 0.10, 1);
-			this.setParts(this.parts_ftl1, -0.02, -0.10, 0.10, 1);
-			this.setParts(this.parts_hndr, -0.02,  0.20, 0.25, 0);
-			this.setParts(this.parts_hndl,  0.02, -0.20, 0.25, 0);
-			this.setParts(this.parts_hair, -0.05,  0.20, 0.50, 1);
-			this.setParts(this.parts_hail, -0.05, -0.20, 0.50, 1);
-			this.setParts(this.parts_tail, -0.15,  0.00, 0.40, 1);
+			pose = this._pose["stand"][0];
+		}
+
+		// 姿勢の解釈
+		for(var i in pose){
+			for(var j in this._parts[i]){
+				var x = pose[i][1];
+				var y = pose[i][2];
+				var z = pose[i][3];
+				var type = Math.round(pose[i][0]);
+				this.setParts(this._parts[i][j], x, y, z, type);
+			}
 		}
 	}
 }
