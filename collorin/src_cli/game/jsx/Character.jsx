@@ -26,57 +26,57 @@ abstract class DrawUnit{
 
 // キャラクタークラス
 class DrawCharacter extends DrawUnit{
-	var duList : DrawUnit[];
-	var drX : number;
-	var drY : number;
-	var drZ : number;
-	var drScale : number;
-	var drAngv1 : number;
-	var drAngv2 : number;
-	var drSin : number;
-	var drCos : number;
+	var _duList : DrawUnit[];
+	var _drX : number;
+	var _drY : number;
+	var _drZ : number;
+	var _drScale : number;
+	var _drAngv1 : number;
+	var _drAngv2 : number;
+	var _drSin : number;
+	var _drCos : number;
 
 	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(x : number, y : number, z : number, r : number, s : number) : void{
 		this.visible = true;
 		// 位置
-		this.drX = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
-		this.drY = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
-		this.drZ = Ccvs.scale * z;
-		this.drz = this.drY * Ccvs.cosh + this.drZ * Ccvs.sinh;
-		this.drScale = Ccvs.scale * s;
+		this._drX = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
+		this._drY = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
+		this._drZ = Ccvs.scale * z;
+		this.drz = this._drY * Ccvs.cosh + this._drZ * Ccvs.sinh;
+		this._drScale = Ccvs.scale * s;
 		// 三角関数
-		this.drSin = Math.sin(Ccvs.rotv + r);
-		this.drCos = Math.cos(Ccvs.rotv + r);
+		this._drSin = Math.sin(Ccvs.rotv + r);
+		this._drCos = Math.cos(Ccvs.rotv + r);
 		// テクスチャ垂直軸角度フレーム
 		var v = 45 + 180 / Math.PI * (-Ccvs.rotv - r);
 		while(v  > 360){v  -= 360;} while(v  <= 0){v  += 360;}
-		if(v  < 90){this.drAngv1 = 1;}else if(v  <= 180){this.drAngv1 = 2;}else if(v  < 270){this.drAngv1 = 3;}else{this.drAngv1 = 0;}
+		if(v  < 90){this._drAngv1 = 1;}else if(v  <= 180){this._drAngv1 = 2;}else if(v  < 270){this._drAngv1 = 3;}else{this._drAngv1 = 0;}
 		// テクスチャ垂直軸角度フレーム タイヤ用
 		var v = 22.5 + 180 / Math.PI * (-Ccvs.rotv - r);
 		while(v > 360){v -= 360;} while(v  <= 0){v  += 360;}
-		if(v < 45){this.drAngv2 = 2;}
-		else if(v < 90){this.drAngv2 = 1;}
-		else if(v < 135){this.drAngv2 = 0;}
-		else if(v < 180){this.drAngv2 = 3;}
-		else if(v < 225){this.drAngv2 = 2;}
-		else if(v < 270){this.drAngv2 = 1;}
-		else if(v < 315){this.drAngv2 = 0;}
-		else{this.drAngv2 = 3;}
+		if(v < 45){this._drAngv2 = 2;}
+		else if(v < 90){this._drAngv2 = 1;}
+		else if(v < 135){this._drAngv2 = 0;}
+		else if(v < 180){this._drAngv2 = 3;}
+		else if(v < 225){this._drAngv2 = 2;}
+		else if(v < 270){this._drAngv2 = 1;}
+		else if(v < 315){this._drAngv2 = 0;}
+		else{this._drAngv2 = 3;}
 	}
 
 	// ----------------------------------------------------------------
 	// 部分描画関数
 	function setParts(p : DrawCharacterParts, x: number, y: number, z: number, type : int) : void{
 		p.visible = true;
-		p.drScale = this.drScale;
+		p.drScale = this._drScale;
 
 		// 回転の確認
 		var av = 0;
 		switch(type){
-			case 1: case 2: case 3: case 4: av = this.drAngv1; break;
-			case 5: av = this.drAngv2; break;
+			case 1: case 2: case 3: case 4: av = this._drAngv1; break;
+			case 5: av = this._drAngv2; break;
 		}
 
 		// 反転の確認
@@ -106,9 +106,9 @@ class DrawCharacter extends DrawUnit{
 		z += z0;
 
 		// 位置等設定
-		p.drx = this.drX + this.drScale * 35 * (x * this.drCos - y * this.drSin);
-		var y0 = this.drY + this.drScale * 35 * (x * this.drSin + y * this.drCos);
-		var z0 = this.drZ + this.drScale * 35 * (z - 0.05);
+		p.drx = this._drX + this._drScale * 35 * (x * this._drCos - y * this._drSin);
+		var y0 = this._drY + this._drScale * 35 * (x * this._drSin + y * this._drCos);
+		var z0 = this._drZ + this._drScale * 35 * (z - 0.05);
 		p.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
 		p.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
 
@@ -120,13 +120,13 @@ class DrawCharacter extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		DrawUnit.drawList(this.duList);
+		DrawUnit.drawList(this._duList);
 	}
 }
 
 // 体のパーツクラス
 class DrawCharacterParts extends DrawUnit{
-	var img : HTMLImageElement;
+	var _img : HTMLImageElement;
 	// パーツローカル座標
 	var x0 : number;
 	var y0 : number;
@@ -148,7 +148,7 @@ class DrawCharacterParts extends DrawUnit{
 
 	// コンストラクタ
 	function constructor(img : HTMLImageElement, x0 : number, y0 : number, z0 : number, u0 : int, v0 : int, uvsize : int, swap : boolean){
-		this.img = img;
+		this._img = img;
 		this.x0 = x0;
 		this.y0 = y0;
 		this.z0 = z0;
@@ -170,10 +170,10 @@ class DrawCharacterParts extends DrawUnit{
 			Ccvs.context.translate(rx, ry);
 			Ccvs.context.scale(this.yswap ? -1 : 1, this.zswap ? -1 : 1);
 			Ccvs.context.translate(-rx, -ry);
-			Ccvs.context.drawImage(this.img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
+			Ccvs.context.drawImage(this._img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
 			Ccvs.context.restore();
 		}else{
-			Ccvs.context.drawImage(this.img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
+			Ccvs.context.drawImage(this._img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
 		}
 	}
 }
@@ -190,7 +190,7 @@ class DrawPlayer extends DrawCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(parts : string, pose : string){
-		this.duList = new DrawUnit[];
+		this._duList = new DrawUnit[];
 		this._parts = {} : Map.<DrawCharacterParts[]>;
 		this._pose = JSON.parse(pose) as Map.<Map.<number[]>[]>;
 		var jparts = JSON.parse(parts);
@@ -210,7 +210,7 @@ class DrawPlayer extends DrawCharacter{
 				var s = Math.round(temp[5]);
 				var swap = (Math.round(temp[6]) > 0);
 				this._parts[i][j] = new DrawCharacterParts(img, x, y, z, u, v, s, swap);
-				this.duList.push(this._parts[i][j]);
+				this._duList.push(this._parts[i][j]);
 			}
 		}
 	}
