@@ -26,6 +26,9 @@ abstract class DrawUnit{
 // キャラクタークラス
 class DrawCharacter extends DrawUnit{
 	var _duList : DrawUnit[];
+	var _parts : Map.<DrawCharacterParts[]>;
+	var _pose : Map.<Map.<number[]>[]>;
+
 	var _drX : number;
 	var _drY : number;
 	var _drZ : number;
@@ -34,6 +37,36 @@ class DrawCharacter extends DrawUnit{
 	var _drAngv2 : number;
 	var _drSin : number;
 	var _drCos : number;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(img : HTMLImageElement, parts : string, pose : string){
+		// サンプル
+		var parts = '{"head":[[0,0,0,0,0,16,0],[-0.06,0.20,-0.02,0,48,16,0],[-0.06,-0.20,-0.02,0,48,16,1],[-0.19,0,-0.09,0,64,16,0]],"body":[[0,0,0,0,16,16,0]],"ftr1":[[0,0,0,0,32,8,0]],"ftl1":[[0,0,0,0,32,8,1]],"ftr2":[[0,0,0,32,32,8,0]],"ftl2":[[0,0,0,32,32,8,1]],"hndr":[[0,0,0,0,40,8,0]],"hndl":[[0,0,0,0,40,8,1]]}';
+		var pose = '{"stand":[{"head":[1,0.00,0.00,0.52],"body":[1,-0.02,0.00,0.27],"ftr1":[1,0.02,0.10,0.10],"ftl1":[1,-0.02,-0.10,0.10],"hndr":[0,-0.02,0.20,0.25],"hndl":[0,0.02,-0.20,0.25]}],"walk":[{"head":[1,0.12,0.00,0.45],"body":[1,0.00,0.00,0.23],"ftr1":[1,0.10,0.07,0.10],"ftl2":[1,-0.20,-0.07,0.20],"hndr":[0,-0.10,0.15,0.25],"hndl":[0,0.10,-0.15,0.25]},{"head":[1,0.12,0.00,0.47],"body":[1,0.00,0.00,0.26],"ftr1":[1,0.00,0.07,0.10],"ftl1":[1,0.00,-0.07,0.15],"hndr":[0,-0.05,0.18,0.25],"hndl":[0,0.05,-0.18,0.25]},{"head":[1,0.12,0.00,0.45],"body":[1,0.00,0.00,0.23],"ftr2":[1,-0.20,0.07,0.20],"ftl1":[1,0.10,-0.07,0.10],"hndr":[0,0.10,0.15,0.25],"hndl":[0,-0.10,-0.15,0.25]},{"head":[1,0.12,0.00,0.47],"body":[1,0.00,0.00,0.26],"ftr1":[1,0.00,0.07,0.15],"ftl1":[1,0.00,-0.07,0.10],"hndr":[0,0.05,0.18,0.25],"hndl":[0,-0.05,-0.18,0.25]}]}';
+
+		this._duList = new DrawUnit[];
+		this._parts = {} : Map.<DrawCharacterParts[]>;
+		this._pose = JSON.parse(pose) as Map.<Map.<number[]>[]>;
+		var dat = JSON.parse(parts) as Map.<number[][]>;
+
+		// パーツの登録
+		for(var i in dat){
+			this._parts[i] = new DrawCharacterParts[];
+			for(var j = 0; j < dat[i].length; j++){
+				var temp = dat[i][j];
+				var x = temp[0];
+				var y = temp[1];
+				var z = temp[2];
+				var u = Math.round(temp[3]);
+				var v = Math.round(temp[4]);
+				var s = Math.round(temp[5]);
+				var swap = (Math.round(temp[6]) > 0);
+				this._parts[i][j] = new DrawCharacterParts(img, x, y, z, u, v, s, swap);
+				this._duList.push(this._parts[i][j]);
+			}
+		}
+	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
@@ -66,54 +99,66 @@ class DrawCharacter extends DrawUnit{
 	}
 
 	// ----------------------------------------------------------------
-	// 部分描画関数
-	function setParts(p : DrawCharacterParts, x: number, y: number, z: number, type : int) : void{
-		p.visible = true;
-		p.drScale = this._drScale;
+	// 姿勢関数
+	function setPose(motion : string, action : int) : void{
+		// エラーチェック
+		if(this._pose[motion] == null || this._pose[motion][action] == null){return;}
 
-		// 回転の確認
-		var av = 0;
-		switch(type){
-			case 1: case 2: case 3: case 4: av = this._drAngv1; break;
-			case 5: av = this._drAngv2; break;
-		}
+		// 姿勢の解釈
+		var pose = this._pose[motion][action];
+		for(var i in pose){
+			for(var j in this._parts[i]){
+				var p = this._parts[i][j];
+				p.visible = true;
 
-		// 反転の確認
-		var x0 = p.x0;
-		var z0 = p.z0;
-		p.yswap = false;
-		p.zswap = false;
-		// 上下反転
-		if(type == 3 || type == 4){
-			p.zswap = !p.zswap;
-			z0 *= -1;
-		}
-		// 前後反転
-		if(type == 2 || type == 3){
-			if(av == 0){av = 2;}else if(av == 2){av = 0;}
-			p.yswap = !p.yswap;
-			x0 *= -1;
-		}
-		// 左右反転
-		if(p.swap){
-			if(av == 1){av = 3;}else if(av == 3){av = 1;}
-			p.yswap = !p.yswap;
-		}
-		// ボディローカル座標に、反転を考慮したパーツローカル座標を足し合わせ
-		x += x0;
-		y += p.y0;
-		z += z0;
+				var type = Math.round(pose[i][0]);
 
-		// 位置等設定
-		p.drx = this._drX + this._drScale * 35 * (x * this._drCos - y * this._drSin);
-		var y0 = this._drY + this._drScale * 35 * (x * this._drSin + y * this._drCos);
-		var z0 = this._drZ + this._drScale * 35 * (z - 0.05);
-		p.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
-		p.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
+				// 回転の確認
+				var av = 0;
+				switch(type){
+					case 1: case 2: case 3: case 4: av = this._drAngv1; break;
+					case 5: av = this._drAngv2; break;
+				}
 
-		// 視点を考慮したuv座標設定
-		p.dru = p.u0 + av * p.uvsize;
-		p.drv = p.v0;
+				// 反転の確認
+				var x0 = p.x0;
+				var z0 = p.z0;
+				p.yswap = false;
+				p.zswap = false;
+				// 上下反転
+				if(type == 3 || type == 4){
+					p.zswap = !p.zswap;
+					z0 *= -1;
+				}
+				// 前後反転
+				if(type == 2 || type == 3){
+					if(av == 0){av = 2;}else if(av == 2){av = 0;}
+					p.yswap = !p.yswap;
+					x0 *= -1;
+				}
+				// 左右反転
+				if(p.swap){
+					if(av == 1){av = 3;}else if(av == 3){av = 1;}
+					p.yswap = !p.yswap;
+				}
+				// ボディローカル座標に、反転を考慮したパーツローカル座標を足し合わせ
+				var x = pose[i][1] + x0;
+				var y = pose[i][2] + p.y0;
+				var z = pose[i][3] + z0;
+
+				// 位置等設定
+				p.drx = this._drX + this._drScale * 35 * (x * this._drCos - y * this._drSin);
+				var y0 = this._drY + this._drScale * 35 * (x * this._drSin + y * this._drCos);
+				var z0 = this._drZ + this._drScale * 35 * (z - 0.05);
+				p.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
+				p.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
+				p.drScale = this._drScale;
+
+				// 視点を考慮したuv座標設定
+				p.dru = p.u0 + av * p.uvsize;
+				p.drv = p.v0;
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -156,6 +201,7 @@ class DrawCharacterParts extends DrawUnit{
 		this.uvsize = uvsize;
 		this.swap = swap;
 	}
+
 	// 描画
 	override function draw() : void{
 		var ps = (this.uvsize * this.drScale) as int;
@@ -173,67 +219,6 @@ class DrawCharacterParts extends DrawUnit{
 			Ccvs.context.restore();
 		}else{
 			Ccvs.context.drawImage(this._img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
-		}
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-// プレイヤークラス
-class DrawPlayer extends DrawCharacter{
-	var _parts : Map.<DrawCharacterParts[]>;
-	var _pose : Map.<Map.<number[]>[]>;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(img : HTMLImageElement, parts : string, pose : string){
-		this._duList = new DrawUnit[];
-		this._parts = {} : Map.<DrawCharacterParts[]>;
-		this._pose = JSON.parse(pose) as Map.<Map.<number[]>[]>;
-		var dat = JSON.parse(parts) as Map.<number[][]>;
-
-		// パーツの登録
-		for(var i in dat){
-			this._parts[i] = new DrawCharacterParts[];
-			for(var j = 0; j < dat[i].length; j++){
-				var temp = dat[i][j];
-				var x = temp[0];
-				var y = temp[1];
-				var z = temp[2];
-				var u = Math.round(temp[3]);
-				var v = Math.round(temp[4]);
-				var s = Math.round(temp[5]);
-				var swap = (Math.round(temp[6]) > 0);
-				this._parts[i][j] = new DrawCharacterParts(img, x, y, z, u, v, s, swap);
-				this._duList.push(this._parts[i][j]);
-			}
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// 姿勢関数
-	function setPose(action : int) : void{
-		var pose : Map.<number[]>;
-		
-		if(action > 0){
-			// 移動
-			pose = this._pose["walk"][((action / 6) as int) % 4];
-		}else{
-			// 静止
-			pose = this._pose["stand"][0];
-		}
-
-		// 姿勢の解釈
-		for(var i in pose){
-			for(var j in this._parts[i]){
-				var x = pose[i][1];
-				var y = pose[i][2];
-				var z = pose[i][3];
-				var type = Math.round(pose[i][0]);
-				this.setParts(this._parts[i][j], x, y, z, type);
-			}
 		}
 	}
 }
