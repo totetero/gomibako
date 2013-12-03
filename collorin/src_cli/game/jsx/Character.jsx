@@ -1,6 +1,5 @@
 import 'js/web.jsx';
 
-import "Main.jsx";
 import "Ctrl.jsx";
 
 // ----------------------------------------------------------------
@@ -189,13 +188,11 @@ class DrawPlayer extends DrawCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(parts : string, pose : string){
+	function constructor(img : HTMLImageElement, parts : string, pose : string){
 		this._duList = new DrawUnit[];
 		this._parts = {} : Map.<DrawCharacterParts[]>;
 		this._pose = JSON.parse(pose) as Map.<Map.<number[]>[]>;
-		var jparts = JSON.parse(parts);
-		var img = Main.imgs[jparts["img"] as string];
-		var dat = jparts["dat"] as Map.<number[][]>;
+		var dat = JSON.parse(parts) as Map.<number[][]>;
 
 		// パーツの登録
 		for(var i in dat){
