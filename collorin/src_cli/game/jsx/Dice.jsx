@@ -71,6 +71,7 @@ class ECdice extends EventCartridge{
 			this._dice.y = 80 - 2.7 * 60;
 			this._dice.h = 0;
 			this._dice.action = 0;
+			Cbtn.setBtn(-1, "", "", "", "");
 		}
 
 		switch(this._mode){
@@ -155,6 +156,7 @@ class ECdice extends EventCartridge{
 				}else{
 					this._mode = 5;
 					this._action = 0;
+					Cbtn.setBtn(-1, "", "", "", "");
 				}
 				break;
 			case 5:
