@@ -45,8 +45,34 @@ class ECdice extends EventCartridge{
 		Cbtn.trigger_x = false;
 	}
 
+	// さいころ目の回転設定
+	function _setPipRot() : void{
+		switch(this._pip){
+			case 1: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  0.5); break;
+			case 2: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  1  ); break;
+			case 3: this._dice.setQuat(this._dice.rotq, 0, 0, 1, Math.PI * -0.5); break;
+			case 4: this._dice.setQuat(this._dice.rotq, 0, 0, 1, Math.PI *  0.5); break;
+			case 5: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  0  ); break;
+			case 6: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI * -0.5); break;
+		}
+		var q1 = new number[];
+		this._dice.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
+		this._dice.multiQuat(this._dice.rotq, q1, this._dice.rotq);
+	}
+
 	// 計算
 	override function calc() : boolean{
+		if(this._pip > 0 && Cbtn.trigger_x && this._mode != 5){
+			// 通信完了後のスキップ
+			this._mode = 5;
+			this._action = 0;
+			this._setPipRot();
+			this._dice.x = 80 - 2.7 * 60;
+			this._dice.y = 80 - 2.7 * 60;
+			this._dice.h = 0;
+			this._dice.action = 0;
+		}
+
 		switch(this._mode){
 			case 0:
 				// 投げる待ち
@@ -60,6 +86,9 @@ class ECdice extends EventCartridge{
 					// 通信を行う
 					Main.loadxhr("/dice", "", function(resp : string) : void{
 						this._pip = JSON.parse(resp)["pip"] as int;
+						// スキップの設定
+						Cbtn.setBtn(-1, "", "スキップ", "", "");
+						Cbtn.trigger_x = false;
 					}, function() : void{
 						this._pip = -1;
 					});
@@ -101,17 +130,7 @@ class ECdice extends EventCartridge{
 					// 通信成功時
 					this._mode = 4;
 					this._action = 0;
-					switch(this._pip){
-						case 1: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  0.5); break;
-						case 2: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  1  ); break;
-						case 3: this._dice.setQuat(this._dice.rotq, 0, 0, 1, Math.PI * -0.5); break;
-						case 4: this._dice.setQuat(this._dice.rotq, 0, 0, 1, Math.PI *  0.5); break;
-						case 5: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI *  0  ); break;
-						case 6: this._dice.setQuat(this._dice.rotq, 1, 0, 0, Math.PI * -0.5); break;
-					}
-					var q1 = new number[];
-					this._dice.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
-					this._dice.multiQuat(this._dice.rotq, q1, this._dice.rotq);
+					this._setPipRot();
 					this._dice.multiQuat(this._dice.rotq, this._rotq2, this._dice.rotq);
 				}else if(this._pip < 0){
 					// 通信失敗時
@@ -173,12 +192,12 @@ class DrawDice{
 
 	var _canvas : HTMLCanvasElement;
 	var _context : CanvasRenderingContext2D;
-	var _action : int = 0;
 
 	var x : number = 0;
 	var y : number = 0;
 	var h : number = 0;
 	var rotq = [1, 0, 0, 0];
+	var action : int = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -255,7 +274,7 @@ class DrawDice{
 		Ccvs.context.restore();
 
 		// さいころ描画
-		if((this._action++ % 3) == 0){
+		if((this.action++ % 3) == 0){
 			// 回転クォータニオンに視角をかける
 			var rq = new number[];
 			this.setQuat(rq, 1, 0, 0, Ccvs.roth);
