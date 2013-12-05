@@ -31,8 +31,6 @@ class Main{
 			delete jdat["imgs"];
 			// 初期化
 			Main.init();
-			// メインループ開始
-			Main.mainloop();
 			// ローディング表記除去
 			dom.document.body.removeChild(dom.document.getElementById("loading"));
 		});
@@ -42,12 +40,34 @@ class Main{
 	// 初期化
 	static function init() : void{
 		BackGround.init();
+		Title.init();
 		Ctrl.init();
 		Cbtn.init();
 		Ccvs.init();
 		Status.init();
 		Message.init();
 		Game.init();
+		// ループ開始
+		Main.titleloop();
+	}
+
+	// ----------------------------------------------------------------
+	// titleloop関数
+	static function titleloop() : void{
+		if(!Ctrl.mdn){
+			BackGround.calc();
+			Ctrl.calc();
+			Title.calc();
+			// 描画処理
+			BackGround.draw();
+			Title.draw();
+			// 次のフレームへ
+			Timer.setTimeout(Main.titleloop, 33);
+		}else{
+			// メインループの開始
+			Title.dispose();
+			Main.mainloop();
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -118,6 +138,29 @@ class Main{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
+
+// タイトルクラス
+class Title{
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	static function calc() : void{
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	static function draw() : void{
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	static function dispose() : void{
+	}
+}
 
 // 背景クラス
 class BackGround{
