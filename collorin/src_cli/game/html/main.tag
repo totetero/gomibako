@@ -43,6 +43,7 @@
 		<div class="caption"></div>
 		<div class="btn start">開始</div>
 		<div class="btn sound">サウンドをONにする</div>
+		<div class="btn exit">離脱</div>
 	</div>
 </div>
 

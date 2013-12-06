@@ -113,6 +113,7 @@ class ECtitle extends EventCartridge{
 	var _div : HTMLDivElement;
 	var _startBtn : HTMLDivElement;
 	var _soundBtn : HTMLDivElement;
+	var _exitBtn : HTMLDivElement;
 
 	var _exist : boolean = true;
 	var _button : int = 0;
@@ -124,17 +125,24 @@ class ECtitle extends EventCartridge{
 		this._div = dom.document.getElementsByClassName("jsx_ectitle title").item(0) as HTMLDivElement;
 		this._startBtn = this._div.getElementsByClassName("btn start").item(0) as HTMLDivElement;
 		this._soundBtn = this._div.getElementsByClassName("btn sound").item(0) as HTMLDivElement;
+		this._exitBtn = this._div.getElementsByClassName("btn exit").item(0) as HTMLDivElement;
 
 		// マウスを離す サウンド再生は機種によってタッチしないと受け付けないのでイベントリスナーで処理する
 		var mupfn = function(e : Event) : void{
 			var btn = Math.abs(this._button);
-			if(btn == 101){
-				// スタートボタン
+			if(btn == 101 || btn == 103){
+				// イベントリスナー除去
 				if(Ctrl.isTouch){Ctrl.div.removeEventListener("touchend", mupfn, true);}
 				else{Ctrl.div.removeEventListener("mouseup", mupfn, true);}
+			}
+			if(btn == 101){
+				// スタートボタン処理
 				this._exist = false;
 			}else if(btn == 102){
-				// サウンドボタン
+				// サウンドボタン処理
+			}else if(btn == 103){
+				// 中断ボタン処理
+				dom.document.location.href = "/exit";
 			}
 		};
 		// イベントリスナー登録
@@ -153,12 +161,15 @@ class ECtitle extends EventCartridge{
 			var btnid = 1;
 			var b1 = this._startBtn.getBoundingClientRect();
 			var b2 = this._soundBtn.getBoundingClientRect();
+			var b3 = this._exitBtn.getBoundingClientRect();
 			if(b1.left < Ctrl.mx && Ctrl.mx < b1.right && b1.top < Ctrl.my && Ctrl.my < b1.bottom){btnid = 101;}
 			else if(b2.left < Ctrl.mx && Ctrl.mx < b2.right && b2.top < Ctrl.my && Ctrl.my < b2.bottom){btnid = 102;}
+			else if(b3.left < Ctrl.mx && Ctrl.mx < b3.right && b3.top < Ctrl.my && Ctrl.my < b3.bottom){btnid = 103;}
 			// 一通りの端末で動作確認するまでコメントとして残しておく
 			//if(60 < Ccvs.mx && Ccvs.mx < 260){
-			//	if(140 < Ccvs.my && Ccvs.my < 170){btnid = 101;}
-			//	else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 102;}
+			//	if(110 < Ccvs.my && Ccvs.my < 140){btnid = 101;}
+			//	else if(180 < Ccvs.my && Ccvs.my < 210){btnid = 102;}
+			//	else if(250 < Ccvs.my && Ccvs.my < 280){btnid = 103;}
 			//}
 
 			// ボタン押下状態の確認
@@ -180,6 +191,7 @@ class ECtitle extends EventCartridge{
 		if(this._button > 0){
 			this._startBtn.className = (this._button == 101) ? "btn start hover" : "btn start";
 			this._soundBtn.className = (this._button == 102) ? "btn sound hover" : "btn sound";
+			this._exitBtn.className = (this._button == 103) ? "btn exit hover" : "btn exit";
 			this._button *= -1;
 		}
 	}

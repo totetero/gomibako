@@ -12,7 +12,7 @@ div#root div.title{
 div#root div.title div.cvsCenter div.caption{
 	position: absolute;
 	left: 60px;
-	top: 50px;
+	top: 40px;
 	width: 200px;
 	height: 30px;
 	line-height: 30px;
@@ -47,8 +47,9 @@ div#root div.title div.cvsCenter div.btn::before{
 	border-radius: 12px;
 }
 
-div#root div.title div.cvsCenter div.btn.start{top: 140px;}
-div#root div.title div.cvsCenter div.btn.sound{top: 230px;}
+div#root div.title div.cvsCenter div.btn.start{top: 110px;}
+div#root div.title div.cvsCenter div.btn.sound{top: 180px;}
+div#root div.title div.cvsCenter div.btn.exit{top: 250px;}
 
 /* -------------------------------- */
 /* -------------------------------- */
