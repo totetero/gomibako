@@ -4,7 +4,6 @@ import 'timer.jsx';
 
 import 'Ctrl.jsx';
 import 'Status.jsx';
-import 'Message.jsx';
 import 'EventCartridge.jsx';
 import 'Game.jsx';
 
@@ -41,7 +40,6 @@ class Main{
 	static function init() : void{
 		Ctrl.init();
 		Status.init();
-		Message.init();
 		EventCartridge.parallelPush(new ECbackGround());
 		EventCartridge.parallelPush(new ECtitle());
 		// ループ開始
@@ -52,13 +50,10 @@ class Main{
 	// mainloop関数
 	static function mainloop() : void{
 		Ctrl.calc();
-		Message.calc();
 		// イベント処理
 		EventCartridge.serialEvent();
 		EventCartridge.parallelEvent();
 		// 描画処理
-		Cbtn.draw();
-		Message.draw();
 		EventCartridge.serialDraw();
 		EventCartridge.parallelDraw();
 		// 次のフレームへ

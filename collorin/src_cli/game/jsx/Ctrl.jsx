@@ -52,7 +52,6 @@ class Ctrl{
 			dom.document.addEventListener("keyup", Cbtn.kupfn, true);
 		}
 
-		Cbtn.init();
 		Ccvs.init();
 	}
 
@@ -156,7 +155,7 @@ class Ctrl{
 
 // ボタン用クラス
 class Cbtn{
-	// キー状態
+	// キー押下状態
 	static var kup : boolean;
 	static var kdn : boolean;
 	static var krt : boolean;
@@ -169,20 +168,12 @@ class Cbtn{
 	static var trigger_x : boolean;
 	static var trigger_c : boolean;
 	static var trigger_s : boolean;
+	// キー有効状態
+	static var showArrow : boolean;
+	static var showButton : boolean;
+	static var enableButton : boolean;
 
-	// 内部演算用 ゲーム画面用DOM
-	static var _arrowDiv : HTMLDivElement;
-	static var _buttonDiv : HTMLDivElement;
-	static var _characterDiv : HTMLDivElement;
-	static var _upDiv : HTMLDivElement;
-	static var _dnDiv : HTMLDivElement;
-	static var _rtDiv : HTMLDivElement;
-	static var _ltDiv : HTMLDivElement;
-	static var _zbDiv : HTMLDivElement;
-	static var _xbDiv : HTMLDivElement;
-	static var _cbDiv : HTMLDivElement;
-	static var _sbDiv : HTMLDivElement;
-	// 内部演算用 キー状態
+	// 内部演算用 キー押下状態
 	static var _bkup : boolean = false;
 	static var _bkdn : boolean = false;
 	static var _bkrt : boolean = false;
@@ -199,95 +190,18 @@ class Cbtn{
 	static var _kk_x : boolean = false;
 	static var _kk_c : boolean = false;
 	static var _kk_s : boolean = false;
-	// 内部演算用 アニメーション
-	static var _actionMax : int = 8;
-	static var _actionArrow : int = 0;
-	static var _actionButton : int = 0;
-	static var _showArrow : int;
-	static var _showButton : boolean;
-	static var _strButtonz : string;
-	static var _strButtonx : string;
-	static var _strButtonc : string;
-	static var _strButtons : string;
-
-	// ----------------------------------------------------------------
-	// 初期化
-	static function init() : void{
-		// DOM獲得
-		Cbtn._arrowDiv = dom.document.getElementsByClassName("jsx_cbtn arrow").item(0) as HTMLDivElement;
-		Cbtn._buttonDiv = dom.document.getElementsByClassName("jsx_cbtn button").item(0) as HTMLDivElement;
-		Cbtn._characterDiv = dom.document.getElementsByClassName("jsx_cbtn character").item(0) as HTMLDivElement;
-		Cbtn._upDiv = Cbtn._arrowDiv.getElementsByClassName("up").item(0) as HTMLDivElement;
-		Cbtn._dnDiv = Cbtn._arrowDiv.getElementsByClassName("dn").item(0) as HTMLDivElement;
-		Cbtn._rtDiv = Cbtn._arrowDiv.getElementsByClassName("rt").item(0) as HTMLDivElement;
-		Cbtn._ltDiv = Cbtn._arrowDiv.getElementsByClassName("lt").item(0) as HTMLDivElement;
-		Cbtn._zbDiv = Cbtn._buttonDiv.getElementsByClassName("zb").item(0) as HTMLDivElement;
-		Cbtn._xbDiv = Cbtn._buttonDiv.getElementsByClassName("xb").item(0) as HTMLDivElement;
-		Cbtn._cbDiv = Cbtn._buttonDiv.getElementsByClassName("cb").item(0) as HTMLDivElement;
-		Cbtn._sbDiv = Cbtn._buttonDiv.getElementsByClassName("sb").item(0) as HTMLDivElement;
-	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	static function calc() : void{
-		// 十字キー入れ替えモーション
-		if(Cbtn._actionArrow != 0){
-			if(Cbtn._actionArrow++ > Cbtn._actionMax){
-				Cbtn._actionArrow = -Cbtn._actionMax;
-			}
-		}
-		// ボタン入れ替えモーション
-		if(Cbtn._actionButton != 0){
-			if(Cbtn._actionButton++ > Cbtn._actionMax){
-				Cbtn._actionButton = -Cbtn._actionMax;
-			}
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	static function draw() : void{
-		// キー状態確認
-		var kup = Cbtn._bkup || Cbtn._kkup;
-		var kdn = Cbtn._bkdn || Cbtn._kkdn;
-		var krt = Cbtn._bkrt || Cbtn._kkrt;
-		var klt = Cbtn._bklt || Cbtn._kklt;
-		var k_z = Cbtn._bk_z || Cbtn._kk_z;
-		var k_x = Cbtn._bk_x || Cbtn._kk_x;
-		var k_c = Cbtn._bk_c || Cbtn._kk_c;
-		var k_s = Cbtn._bk_s || Cbtn._kk_s;
-		// キー状態描画
-		if(Cbtn.kup != kup){Cbtn.kup = kup; Cbtn._upDiv.className = Cbtn.kup ? "up hover" : "up";}
-		if(Cbtn.kdn != kdn){Cbtn.kdn = kdn; Cbtn._dnDiv.className = Cbtn.kdn ? "dn hover" : "dn";}
-		if(Cbtn.krt != krt){Cbtn.krt = krt; Cbtn._rtDiv.className = Cbtn.krt ? "rt hover" : "rt";}
-		if(Cbtn.klt != klt){Cbtn.klt = klt; Cbtn._ltDiv.className = Cbtn.klt ? "lt hover" : "lt";}
-		if(Cbtn.k_z != k_z){Cbtn.k_z = k_z; Cbtn._zbDiv.className = Cbtn.k_z ? "zb hover" : "zb";}
-		if(Cbtn.k_x != k_x){Cbtn.k_x = k_x; Cbtn._xbDiv.className = Cbtn.k_x ? "xb hover" : "xb";}
-		if(Cbtn.k_c != k_c){Cbtn.k_c = k_c; Cbtn._cbDiv.className = Cbtn.k_c ? "cb hover" : "cb";}
-		if(Cbtn.k_s != k_s){Cbtn.k_s = k_s; Cbtn._sbDiv.className = Cbtn.k_s ? "sb hover" : "sb";}
-		// 十字キー入れ替えモーション
-		if(Cbtn._actionArrow + Cbtn._actionMax == 0){
-			Cbtn._arrowDiv.style.display = (Cbtn._showArrow > 0) ? "block" : "none";
-			Cbtn._characterDiv.style.display = (Cbtn._showArrow < 0) ? "block" : "none";
-		}else{
-			var num = Math.abs(Cbtn._actionArrow) / Cbtn._actionMax;
-			Cbtn._arrowDiv.style.left = (-144 * num * num) + "px";
-			Cbtn._characterDiv.style.left = (-144 * num * num) + "px";
-		}
-		// ボタン入れ替えモーション
-		if(Cbtn._actionButton + Cbtn._actionMax == 0){
-			Cbtn._zbDiv.style.display = (Cbtn._strButtonz != "") ? "block" : "none";
-			Cbtn._xbDiv.style.display = (Cbtn._strButtonx != "") ? "block" : "none";
-			Cbtn._cbDiv.style.display = (Cbtn._strButtonc != "") ? "block" : "none";
-			Cbtn._sbDiv.style.display = (Cbtn._strButtons != "") ? "block" : "none";
-			Cbtn._zbDiv.innerHTML = Cbtn._strButtonz;
-			Cbtn._xbDiv.innerHTML = Cbtn._strButtonx;
-			Cbtn._cbDiv.innerHTML = Cbtn._strButtonc;
-			Cbtn._sbDiv.innerHTML = Cbtn._strButtons;
-		}else{
-			var num = Math.abs(Cbtn._actionButton) / Cbtn._actionMax;
-			Cbtn._buttonDiv.style.right = (-144 * num * num) + "px";
-		}
+		Cbtn.kup = Cbtn._bkup || Cbtn._kkup;
+		Cbtn.kdn = Cbtn._bkdn || Cbtn._kkdn;
+		Cbtn.krt = Cbtn._bkrt || Cbtn._kkrt;
+		Cbtn.klt = Cbtn._bklt || Cbtn._kklt;
+		Cbtn.k_z = Cbtn._bk_z || Cbtn._kk_z;
+		Cbtn.k_x = Cbtn._bk_x || Cbtn._kk_x;
+		Cbtn.k_c = Cbtn._bk_c || Cbtn._kk_c;
+		Cbtn.k_s = Cbtn._bk_s || Cbtn._kk_s;
 	}
 
 	// ----------------------------------------------------------------
@@ -300,10 +214,10 @@ class Cbtn{
 			case 38: Cbtn._kkup = true; break;
 			case 39: Cbtn._kkrt = true; break;
 			case 40: Cbtn._kkdn = true; break;
-			case 88: if(Cbtn._actionButton <= 0){Cbtn._kk_x = true;} break;
-			case 90: if(Cbtn._actionButton <= 0){Cbtn._kk_z = true;} break;
-			case 67: if(Cbtn._actionButton <= 0){Cbtn._kk_c = true;} break;
-			case 32: if(Cbtn._actionButton <= 0){Cbtn._kk_s = true;} break;
+			case 88: if(Cbtn.enableButton){Cbtn._kk_x = true;} break;
+			case 90: if(Cbtn.enableButton){Cbtn._kk_z = true;} break;
+			case 67: if(Cbtn.enableButton){Cbtn._kk_c = true;} break;
+			case 32: if(Cbtn.enableButton){Cbtn._kk_s = true;} break;
 			default: getkey = false;
 		}
 		// キーイベント終了
@@ -320,10 +234,10 @@ class Cbtn{
 			case 38: Cbtn._kkup = false; break;
 			case 39: Cbtn._kkrt = false; break;
 			case 40: Cbtn._kkdn = false; break;
-			case 88: Cbtn._kk_x = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_x = true;} break;
-			case 90: Cbtn._kk_z = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_z = true;} break;
-			case 67: Cbtn._kk_c = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_c = true;} break;
-			case 32: Cbtn._kk_s = false; if(Cbtn._actionButton <= 0){Cbtn.trigger_s = true;} break;
+			case 88: Cbtn._kk_x = false; if(Cbtn.enableButton){Cbtn.trigger_x = true;} break;
+			case 90: Cbtn._kk_z = false; if(Cbtn.enableButton){Cbtn.trigger_z = true;} break;
+			case 67: Cbtn._kk_c = false; if(Cbtn.enableButton){Cbtn.trigger_c = true;} break;
+			case 32: Cbtn._kk_s = false; if(Cbtn.enableButton){Cbtn.trigger_s = true;} break;
 			default: getkey = false;
 		}
 		// キーイベント終了
@@ -335,9 +249,9 @@ class Cbtn{
 	static function btnchk() : boolean{
 		var flag = false;
 		// 左の十字キーエリア確認
-		flag = flag || (Cbtn._showArrow > 0 && 0 < Ctrl.mx && Ctrl.mx < 144 && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
+		flag = flag || (Cbtn.showArrow && 0 < Ctrl.mx && Ctrl.mx < 144 && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
 		// 右のボタンエリア確認
-		flag = flag || (Cbtn._showButton && Ctrl.ww - 144 < Ctrl.mx && Ctrl.mx < Ctrl.ww && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
+		flag = flag || (Cbtn.showButton && Ctrl.ww - 144 < Ctrl.mx && Ctrl.mx < Ctrl.ww && Ctrl.wh - 144 < Ctrl.my && Ctrl.my < Ctrl.wh);
 		return flag;
 	}
 
@@ -362,39 +276,13 @@ class Cbtn{
 
 		// ボタン確認
 		var x = Ctrl.mx - Ctrl.ww + 144;
-		if(12 < x && x < 132 && Cbtn._actionButton <= 0){
+		if(12 < x && x < 132 && Cbtn.enableButton){
 			var y = Ctrl.my - Ctrl.wh + 144;
 			if(  0 < y && y <  36){if(trigger){Cbtn.trigger_z = true;}else{Cbtn._bk_z = true;}}
 			if( 36 < y && y <  72){if(trigger){Cbtn.trigger_x = true;}else{Cbtn._bk_x = true;}}
 			if( 72 < y && y < 108){if(trigger){Cbtn.trigger_c = true;}else{Cbtn._bk_c = true;}}
 			if(108 < y && y < 144){if(trigger){Cbtn.trigger_s = true;}else{Cbtn._bk_s = true;}}
 		}
-	}
-
-	// ----------------------------------------------------------------
-	// ボタンの設定と入れ替えモーション開始
-	static function setBtn(arrow : int, btnz : string, btnx : string, btnc : string, btns : string) : void{
-		// 十字キー設定
-		if(Cbtn._showArrow != arrow){
-			Cbtn._actionArrow = (Cbtn._actionArrow == 0) ? 1 : Math.abs(Cbtn._actionArrow);
-			Cbtn._showArrow = arrow;
-		}
-
-		// ボタン設定
-		if(Cbtn._strButtonz != btnz || Cbtn._strButtonx != btnx || Cbtn._strButtonc != btnc || Cbtn._strButtons != btns){
-			Cbtn._showButton = (btnz != "") || (btnx != "") || (btnc != "") || (btns != "");
-			Cbtn._actionButton = (Cbtn._actionButton == 0) ? 1 : Math.abs(Cbtn._actionButton);
-			Cbtn._strButtonz = btnz;
-			Cbtn._strButtonx = btnx;
-			Cbtn._strButtonc = btnc;
-			Cbtn._strButtons = btns;
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// キャラクター画像設定
-	static function setChara(url : string) : void{
-		Cbtn._characterDiv.style.backgroundImage = "url(" + url + ")";
 	}
 }
 

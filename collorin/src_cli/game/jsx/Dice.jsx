@@ -2,6 +2,7 @@ import 'js/web.jsx';
 
 import 'Main.jsx';
 import 'Ctrl.jsx';
+import 'Status.jsx';
 import 'EventCartridge.jsx';
 
 // ----------------------------------------------------------------
@@ -42,7 +43,7 @@ class ECdice extends EventCartridge{
 		this._dice.setQuat(this._rotq1, 1, 0, 0, -0.4);
 		this._dice.setQuat(this._rotq2, 1, 0, 0, 0.4 * 20);
 		// ボタンの設定
-		Cbtn.setBtn(-1, "投げる", "戻る", "", "");
+		Status.setBtn(-1, "投げる", "戻る", "", "");
 		Cbtn.trigger_z = false;
 		Cbtn.trigger_x = false;
 	}
@@ -79,7 +80,7 @@ class ECdice extends EventCartridge{
 			this._dice.y = 80 - 2.7 * 60;
 			this._dice.h = 0;
 			this._dice.action = 0;
-			Cbtn.setBtn(-1, "", "", "", "");
+			Status.setBtn(-1, "", "", "", "");
 		}
 
 		switch(this._mode){
@@ -91,12 +92,12 @@ class ECdice extends EventCartridge{
 					// 投げるボタン
 					this._mode = 1;
 					this._action = 0;
-					Cbtn.setBtn(-1, "", "", "", "");
+					Status.setBtn(-1, "", "", "", "");
 					// 通信を行う
 					Main.loadxhr("/dice", "", function(resp : string) : void{
 						this._pip = JSON.parse(resp)["pip"] as int;
 						// スキップの設定
-						Cbtn.setBtn(-1, "", "スキップ", "", "");
+						Status.setBtn(-1, "", "スキップ", "", "");
 						Cbtn.trigger_x = false;
 					}, function() : void{
 						this._pip = -1;
@@ -164,7 +165,7 @@ class ECdice extends EventCartridge{
 				}else{
 					this._mode = 5;
 					this._action = 0;
-					Cbtn.setBtn(-1, "", "", "", "");
+					Status.setBtn(-1, "", "", "", "");
 				}
 				break;
 			case 5:

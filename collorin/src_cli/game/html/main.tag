@@ -5,9 +5,9 @@
 
 <canvas class="jsx_ccvs main cvsCenter" width="320" height="320"></canvas>
 
-<div class="jsx_cbtn character"></div>
+<div class="jsx_ecstatbutton character"></div>
 
-<div class="jsx_status status">
+<div class="jsx_ecstatgauge status">
 	<div class="gauge hp">
 		<div>HP</div>
 		<div class="param" style="background-color:pink;"></div>
@@ -22,16 +22,16 @@
 	</div>
 </div>
 
-<div class="jsx_message message"></div>
+<div class="jsx_ecstatmessage message"></div>
 
-<div class="jsx_cbtn arrow">
+<div class="jsx_ecstatbutton arrow">
 	<div class="up"></div>
 	<div class="dn"></div>
 	<div class="rt"></div>
 	<div class="lt"></div>
 </div>
 
-<div class="jsx_cbtn button">
+<div class="jsx_ecstatbutton button">
 	<div class="zb"></div>
 	<div class="xb"></div>
 	<div class="cb"></div>

@@ -4,7 +4,7 @@ import 'timer.jsx';
 
 import 'Main.jsx';
 import 'Ctrl.jsx';
-import 'Message.jsx';
+import 'Status.jsx';
 import 'EventCartridge.jsx';
 import 'Field.jsx';
 import 'Character.jsx';
@@ -34,7 +34,7 @@ class ECgame extends EventCartridge{
 		Ccvs.scale = 1;
 		Ccvs.roth = Math.PI / 180 * 45;
 
-		Cbtn.setChara(Main.b64imgs["pstand"]);
+		Status.setChara(Main.b64imgs["pstand"]);
 
 		EventCartridge.serialPush(new ECmain());
 	}
@@ -70,7 +70,7 @@ class ECmain extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(-1, "サイコロ", "", "マップ", "メニュー");
+		Status.setBtn(-1, "サイコロ", "", "マップ", "メニュー");
 		Cbtn.trigger_z = false;
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
@@ -124,12 +124,12 @@ class ECmove extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Cbtn.setBtn(1, "", "一歩戻る", "マップ", "メニュー");
+		Status.setBtn(1, "", "一歩戻る", "マップ", "メニュー");
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
 		Cbtn.trigger_s = false;
 
-		Message.setMsg("あと" + this._pip + "マス");
+		Status.setMsg("あと" + this._pip + "マス");
 
 		// 補助クラス登録
 		if(this._ecAssist == null){
@@ -157,7 +157,7 @@ class ECmove extends EventCartridge{
 			if(this._srcList.length > 0){
 				this._pip++;
 				this._dstList.unshift(this._srcList.shift());
-				Message.setMsg("あと" + this._pip + "マス");
+				Status.setMsg("あと" + this._pip + "マス");
 			}
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
@@ -222,12 +222,12 @@ class ECmove extends EventCartridge{
 						this._pip--;
 						this._srcList.unshift([x, y] : int[]);
 					}
-					Message.setMsg("あと" + this._pip + "マス");
+					Status.setMsg("あと" + this._pip + "マス");
 				}
 			}
 		}else{
 			// 移動完了
-			Message.setMsg("");
+			Status.setMsg("");
 			this._ecAssist = null;
 			return false;
 		}
@@ -304,7 +304,7 @@ class ECmenu extends EventCartridge{
 		// マップモード設定
 		Ccvs.mode = -1;
 		// ボタンの設定
-		Cbtn.setBtn(-1, "", "", "", "");
+		Status.setBtn(-1, "", "", "", "");
 	}
 
 	// 計算
@@ -392,7 +392,7 @@ class ECmap extends EventCartridge{
 		// マップモード設定
 		Ccvs.mode = 1;
 		// ボタンの設定
-		Cbtn.setBtn(0, "", "戻る", "", "");
+		Status.setBtn(0, "", "戻る", "", "");
 		Cbtn.trigger_x = false;
 	}
 
