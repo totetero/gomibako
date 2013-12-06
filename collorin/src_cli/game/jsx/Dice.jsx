@@ -3,6 +3,7 @@ import 'js/web.jsx';
 import 'Main.jsx';
 import 'Ctrl.jsx';
 import 'Status.jsx';
+import 'Sound.jsx';
 import 'EventCartridge.jsx';
 
 // ----------------------------------------------------------------
@@ -119,6 +120,7 @@ class ECdice extends EventCartridge{
 					this._mode = 2;
 					this._action = 0;
 					this._dice.setRandomQuat();
+					Sound.play("dice");
 				}
 				break;
 			case 2:
@@ -132,6 +134,7 @@ class ECdice extends EventCartridge{
 					this._mode = 3;
 					this._action = 0;
 					this._dice.setRandomQuat();
+					Sound.play("dice");
 				}
 				break;
 			case 3:
@@ -153,6 +156,7 @@ class ECdice extends EventCartridge{
 					this._mode = 3;
 					this._action = 0;
 					this._dice.setRandomQuat();
+					Sound.play("dice");
 				}
 				break;
 			case 4:
@@ -166,6 +170,7 @@ class ECdice extends EventCartridge{
 					this._mode = 5;
 					this._action = 0;
 					Status.setBtn(-1, "", "", "", "");
+					Sound.play("dice");
 				}
 				break;
 			case 5:

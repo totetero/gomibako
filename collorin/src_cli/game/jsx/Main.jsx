@@ -4,6 +4,7 @@ import 'timer.jsx';
 
 import 'Ctrl.jsx';
 import 'Status.jsx';
+import 'Sound.jsx';
 import 'EventCartridge.jsx';
 import 'Game.jsx';
 
@@ -40,6 +41,7 @@ class Main{
 	static function init() : void{
 		Ctrl.init();
 		Status.init();
+		Sound.init("/sound/bgm/bgm_stagebgm_07_hq.m4a");
 		EventCartridge.parallelPush(new ECbackGround());
 		EventCartridge.parallelPush(new ECtitle());
 		// ループ開始
@@ -137,9 +139,12 @@ class ECtitle extends EventCartridge{
 			}
 			if(btn == 101){
 				// スタートボタン処理
+				Sound.setPlayable();
 				this._exist = false;
 			}else if(btn == 102){
 				// サウンドボタン処理
+				Sound.toggle();
+				this._soundBtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 			}else if(btn == 103){
 				// 中断ボタン処理
 				dom.document.location.href = "/exit";
@@ -149,6 +154,8 @@ class ECtitle extends EventCartridge{
 		if(Ctrl.isTouch){Ctrl.div.addEventListener("touchend", mupfn, true);}
 		else{Ctrl.div.addEventListener("mouseup", mupfn, true);}
 
+		// サウンドボタン
+		this._soundBtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 		// ステージ名
 		this._div.getElementsByClassName("caption").item(0).innerHTML = "コルロの森";
 	}

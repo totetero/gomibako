@@ -5,6 +5,7 @@ import 'timer.jsx';
 import 'Main.jsx';
 import 'Ctrl.jsx';
 import 'Status.jsx';
+import 'Sound.jsx';
 import 'EventCartridge.jsx';
 import 'Field.jsx';
 import 'Character.jsx';
@@ -306,6 +307,8 @@ class ECmenu extends EventCartridge{
 		Ccvs.mode = -1;
 		// ボタンの設定
 		Status.setBtn(-1, "", "", "", "");
+		// サウンドボタン
+		this._m1sbtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 	}
 
 	// 計算
@@ -349,6 +352,8 @@ class ECmenu extends EventCartridge{
 			if(!this._mdn){
 				if(btnid == 101){
 					// 音系
+					Sound.toggle();
+					this._m1sbtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 				}else if(btnid == 102){
 					// 中断確認
 					this._mode = 2;
