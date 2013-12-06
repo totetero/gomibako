@@ -38,15 +38,23 @@
 	<div class="sb"></div>
 </div>
 
+<div class="jsx_ectitle title">
+	<div class="cvsCenter">
+		<div class="caption"></div>
+		<div class="btn start">開始</div>
+		<div class="btn sound">サウンドをONにする</div>
+	</div>
+</div>
+
 <div class="jsx_ecmenu menu">
 	<div class="menu1 cvsCenter">
-		<div class="title">メニュー</div>
+		<div class="caption">メニュー</div>
 		<div class="btn sound">サウンドをONにする</div>
 		<div class="btn exit">ゲームを中断する</div>
 		<div class="btn close">メニューを閉じる</div>
 	</div>
 	<div class="menu2 cvsCenter">
-		<div class="title">本当に中断する？</div>
+		<div class="caption">本当に中断する？</div>
 		<div class="btn yes">はい</div>
 		<div class="btn no">いいえ</div>
 	</div>

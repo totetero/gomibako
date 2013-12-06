@@ -11,7 +11,7 @@ div#root div.menu{
 	display: none;
 }
 
-div#root div.menu div.cvsCenter div.title{
+div#root div.menu div.cvsCenter div.caption{
 	position: absolute;
 	height: 30px;
 	line-height: 30px;
@@ -50,7 +50,7 @@ div#root div.menu div.cvsCenter.menu1{
 	display: none;
 }
 
-div#root div.menu div.cvsCenter.menu1 div.title{
+div#root div.menu div.cvsCenter.menu1 div.caption{
 	left: 100px;
 	top: 40px;
 	width: 120px;
@@ -71,7 +71,7 @@ div#root div.menu div.cvsCenter.menu2{
 	display: none;
 }
 
-div#root div.menu div.cvsCenter.menu2 div.title{
+div#root div.menu div.cvsCenter.menu2 div.caption{
 	left: 60px;
 	top: 50px;
 	width: 200px;

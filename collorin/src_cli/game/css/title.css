@@ -1,0 +1,56 @@
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- タイトル -------- */
+
+div#root div.title{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+div#root div.title div.cvsCenter div.caption{
+	position: absolute;
+	left: 60px;
+	top: 50px;
+	width: 200px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+div#root div.title div.cvsCenter div.btn{
+	position: absolute;
+	left: 60px;
+	width: 200px;
+	height: 26px;
+	line-height: 30px;
+	border: solid 3px white;
+	border-radius: 12px;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+div#root div.title div.cvsCenter div.btn.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+div#root div.title div.cvsCenter div.btn::before{
+	content: '';
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	width: 100%;
+	height: 100%;
+	border: solid 2px black;
+	border-radius: 12px;
+}
+
+div#root div.title div.cvsCenter div.btn.start{top: 140px;}
+div#root div.title div.cvsCenter div.btn.sound{top: 230px;}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+

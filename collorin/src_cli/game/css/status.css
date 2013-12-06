@@ -7,7 +7,6 @@ div#root div.status{
 	position: absolute;
 	left: 12px;
 	top: 12px;
-	background-color: rgba(255, 255, 255, 0.5);
 }
 
 div#root div.status div.gauge{

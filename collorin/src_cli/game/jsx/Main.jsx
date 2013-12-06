@@ -110,24 +110,73 @@ class Main{
 
 // タイトルクラス
 class ECtitle extends EventCartridge{
+	var _div : HTMLDivElement;
+	var _startBtn : HTMLDivElement;
+	var _soundBtn : HTMLDivElement;
+
+	var _exist : boolean = true;
+	var _button : int = 0;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
+		// DOM獲得
+		this._div = dom.document.getElementsByClassName("jsx_ectitle title").item(0) as HTMLDivElement;
+		this._startBtn = this._div.getElementsByClassName("btn start").item(0) as HTMLDivElement;
+		this._soundBtn = this._div.getElementsByClassName("btn sound").item(0) as HTMLDivElement;
+
+		// マウスを離す サウンド再生は機種によってタッチしないと受け付けないのでイベントリスナーで処理する
+		var mupfn = function(e : Event) : void{
+			var btn = Math.abs(this._button);
+			if(btn == 101){
+				// スタートボタン
+				if(Ctrl.isTouch){Ctrl.div.removeEventListener("touchend", mupfn, true);}
+				else{Ctrl.div.removeEventListener("mouseup", mupfn, true);}
+				this._exist = false;
+			}else if(btn == 102){
+				// サウンドボタン
+			}
+		};
+		// イベントリスナー登録
+		if(Ctrl.isTouch){Ctrl.div.addEventListener("touchend", mupfn, true);}
+		else{Ctrl.div.addEventListener("mouseup", mupfn, true);}
+
+		// ステージ名
+		this._div.getElementsByClassName("caption").item(0).innerHTML = "コルロの森";
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		if(Ctrl.mdn){
+		if(this._exist){
+			// ボタン範囲の確認
+			var btnid = 1;
+			if(60 < Ccvs.mx && Ccvs.mx < 260){
+				if(140 < Ccvs.my && Ccvs.my < 170){btnid = 101;}
+				else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 102;}
+			}
+
+			// ボタン押下状態の確認
+			if(!Ctrl.mdn){btnid = 1;}
+			if(Math.abs(this._button) != btnid){this._button = btnid;}
+			return true;
+		}else{
+			// タイトルを閉じてゲームを開始する
+			Ctrl.div.removeChild(this._div);
 			EventCartridge.parallelPush(new ECgame());
 			return false;
 		}
-		return true;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
+		// ボタン押下状態の描画
+		if(this._button > 0){
+			this._startBtn.className = (this._button == 101) ? "btn start hover" : "btn start";
+			this._soundBtn.className = (this._button == 102) ? "btn sound hover" : "btn sound";
+			this._button *= -1;
+		}
 	}
 }
 

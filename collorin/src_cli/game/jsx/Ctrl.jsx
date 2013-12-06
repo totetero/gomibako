@@ -333,6 +333,7 @@ class Ccvs{
 		Ccvs.canvas = dom.document.getElementsByClassName("jsx_ccvs main").item(0) as HTMLCanvasElement;
 		Ccvs.context = Ccvs.canvas.getContext("2d") as CanvasRenderingContext2D;
 
+		Ccvs.mode = -1;
 		Ccvs.scale = 1;
 		Ccvs.rotv = Math.PI / 180 * 0;
 		Ccvs.roth = Math.PI / 180 * 45;

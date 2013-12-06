@@ -31,6 +31,7 @@ class ECgame extends EventCartridge{
 		Game.player = new Player();
 		Ccvs.cx0 = Ccvs.cx1 = Game.player.x;
 		Ccvs.cy0 = Ccvs.cy1 = Game.player.y;
+		Ccvs.mode = 0;
 		Ccvs.scale = 1;
 		Ccvs.roth = Math.PI / 180 * 45;
 
