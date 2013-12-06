@@ -51,6 +51,9 @@ class Ctrl{
 			dom.document.addEventListener("keydown", Cbtn.kdnfn, true);
 			dom.document.addEventListener("keyup", Cbtn.kupfn, true);
 		}
+
+		Cbtn.init();
+		Ccvs.init();
 	}
 
 	// ----------------------------------------------------------------
@@ -63,6 +66,9 @@ class Ctrl{
 			Ctrl.ww = w;
 			Ctrl.wh = h;
 		}
+
+		Cbtn.calc();
+		Ccvs.calc();
 	}
 
 	// ----------------------------------------------------------------

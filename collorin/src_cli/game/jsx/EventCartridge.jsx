@@ -6,11 +6,11 @@ import 'js.jsx';
 
 // イベントカートリッジクラス 継承して使う
 abstract class EventCartridge{
-	// イベント処理 返値でtrueを返す間はイベントが続く
-	abstract function calc() : boolean;
 	// 直列イベント用 開始直前の初期化処理
 	function init() : void{}
-	// 直列イベント用 描画処理
+	// イベント処理 返値でtrueを返す間はイベントが続く
+	function calc() : boolean{return false;}
+	// 描画処理
 	function draw() : void{}
 
 	// 直列イベントの設定
@@ -51,6 +51,12 @@ abstract class EventCartridge{
 	static function parallelEvent() : void{
 		for(var i = 0; i < EventCartridge._parallelList.length; i++){
 			if(!EventCartridge._parallelList[i].calc()){EventCartridge._parallelList.splice(i--,1);}
+		}
+	}
+	// 並列イベントの描画
+	static function parallelDraw() : void{
+		for(var i = 0; i < EventCartridge._parallelList.length; i++){
+			EventCartridge._parallelList[i].draw();
 		}
 	}
 }

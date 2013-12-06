@@ -1,4 +1,4 @@
-<div class="jsx_background background">
+<div class="jsx_ecbackground background">
 	<div class="skycolor"></div>
 	<div class="groundcolor"></div>
 </div>

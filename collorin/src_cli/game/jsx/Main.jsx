@@ -39,54 +39,28 @@ class Main{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		BackGround.init();
-		Title.init();
 		Ctrl.init();
-		Cbtn.init();
-		Ccvs.init();
 		Status.init();
 		Message.init();
-		Game.init();
+		EventCartridge.parallelPush(new ECbackGround());
+		EventCartridge.parallelPush(new ECtitle());
 		// ループ開始
-		Main.titleloop();
-	}
-
-	// ----------------------------------------------------------------
-	// titleloop関数
-	static function titleloop() : void{
-		if(!Ctrl.mdn){
-			BackGround.calc();
-			Ctrl.calc();
-			Title.calc();
-			// 描画処理
-			BackGround.draw();
-			Title.draw();
-			// 次のフレームへ
-			Timer.setTimeout(Main.titleloop, 33);
-		}else{
-			// メインループの開始
-			Title.dispose();
-			Main.mainloop();
-		}
+		Main.mainloop();
 	}
 
 	// ----------------------------------------------------------------
 	// mainloop関数
 	static function mainloop() : void{
-		BackGround.calc();
 		Ctrl.calc();
-		Cbtn.calc();
-		Ccvs.calc();
 		Message.calc();
 		// イベント処理
 		EventCartridge.serialEvent();
 		EventCartridge.parallelEvent();
 		// 描画処理
-		BackGround.draw();
-		Game.draw();
 		Cbtn.draw();
 		Message.draw();
 		EventCartridge.serialDraw();
+		EventCartridge.parallelDraw();
 		// 次のフレームへ
 		Timer.setTimeout(Main.mainloop, 33);
 	}
@@ -140,93 +114,94 @@ class Main{
 // ----------------------------------------------------------------
 
 // タイトルクラス
-class Title{
+class ECtitle extends EventCartridge{
 	// ----------------------------------------------------------------
-	// 初期化
-	static function init() : void{
+	// コンストラクタ
+	function constructor(){
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
-	static function calc() : void{
+	override function calc() : boolean{
+		if(Ctrl.mdn){
+			EventCartridge.parallelPush(new ECgame());
+			return false;
+		}
+		return true;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
-	static function draw() : void{
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	static function dispose() : void{
+	override function draw() : void{
 	}
 }
 
 // 背景クラス
-class BackGround{
-	static var img : HTMLImageElement;
-	static var div0 : HTMLDivElement;
-	static var div1 : HTMLDivElement;
-	static var div2 : HTMLDivElement;
-	static var canvas : HTMLCanvasElement;
-	static var context : CanvasRenderingContext2D;
-	static var ww : int = 0;
-	static var wh : int = 0;
-	static var action : int = 0;
+class ECbackGround extends EventCartridge{
+	var img : HTMLImageElement;
+	var div0 : HTMLDivElement;
+	var div1 : HTMLDivElement;
+	var div2 : HTMLDivElement;
+	var canvas : HTMLCanvasElement;
+	var context : CanvasRenderingContext2D;
+	var ww : int = 0;
+	var wh : int = 0;
+	var action : int = 0;
 
 	// ----------------------------------------------------------------
-	// 初期化
-	static function init() : void{
+	// コンストラクタ
+	function constructor(){
 		// DOM獲得
-		BackGround.div0 = dom.document.getElementsByClassName("jsx_background background").item(0) as HTMLDivElement;
-		BackGround.div1 = BackGround.div0.getElementsByClassName("skycolor").item(0) as HTMLDivElement;
-		BackGround.div2 = BackGround.div0.getElementsByClassName("groundcolor").item(0) as HTMLDivElement;
+		this.div0 = dom.document.getElementsByClassName("jsx_ecbackground background").item(0) as HTMLDivElement;
+		this.div1 = this.div0.getElementsByClassName("skycolor").item(0) as HTMLDivElement;
+		this.div2 = this.div0.getElementsByClassName("groundcolor").item(0) as HTMLDivElement;
 		// canvas作成
-		BackGround.img = Main.imgs["background"];
-		BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
-		BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
-		BackGround.div0.appendChild(BackGround.canvas);
+		this.img = Main.imgs["background"];
+		this.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+		this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+		this.div0.appendChild(this.canvas);
 		// 空の色と大地の色を獲得
-		BackGround.canvas.width = 1;
-		BackGround.canvas.height = BackGround.img.height;
-		BackGround.context.drawImage(BackGround.img, 0, 0);
-		var imgdat1 = BackGround.context.getImageData(0, 0, 1, 1).data;
-		var imgdat2 = BackGround.context.getImageData(0, BackGround.canvas.height - 1, 1, 1).data;
-		BackGround.div1.style.backgroundColor = "rgb(" + imgdat1[0] + "," + imgdat1[1] + "," + imgdat1[2] + ")";
-		BackGround.div2.style.backgroundColor = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
+		this.canvas.width = 1;
+		this.canvas.height = this.img.height;
+		this.context.drawImage(this.img, 0, 0);
+		var imgdat1 = this.context.getImageData(0, 0, 1, 1).data;
+		var imgdat2 = this.context.getImageData(0, this.canvas.height - 1, 1, 1).data;
+		this.div1.style.backgroundColor = "rgb(" + imgdat1[0] + "," + imgdat1[1] + "," + imgdat1[2] + ")";
+		this.div2.style.backgroundColor = "rgb(" + imgdat2[0] + "," + imgdat2[1] + "," + imgdat2[2] + ")";
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
-	static function calc() : void{
-		BackGround.action++;
-		if(BackGround.ww != Ctrl.ww){
+	override function calc() : boolean{
+		this.action++;
+		if(this.ww != Ctrl.ww){
 			// 画面横幅が変わったらcanvasを作り直して横幅をそろえる
-			BackGround.ww = Ctrl.ww;
-			BackGround.wh = 0;
-			BackGround.div0.removeChild(BackGround.canvas);
-			BackGround.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
-			BackGround.context = BackGround.canvas.getContext("2d") as CanvasRenderingContext2D;
-			BackGround.canvas.width = BackGround.ww;
-			BackGround.canvas.height = BackGround.img.height;
-			BackGround.div0.appendChild(BackGround.canvas);
+			this.ww = Ctrl.ww;
+			this.wh = 0;
+			this.div0.removeChild(this.canvas);
+			this.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+			this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+			this.canvas.width = this.ww;
+			this.canvas.height = this.img.height;
+			this.div0.appendChild(this.canvas);
 		}
-		if(BackGround.wh != Ctrl.wh){
+		if(this.wh != Ctrl.wh){
 			// 画面縦幅が変わったらcanvasの位置を調整する
-			BackGround.wh = Ctrl.wh;
-			BackGround.canvas.style.top = ((BackGround.wh - BackGround.canvas.height) * 0.5) + "px";
+			this.wh = Ctrl.wh;
+			this.canvas.style.top = ((this.wh - this.canvas.height) * 0.5) + "px";
 		}
+		return true;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
-	static function draw() : void{
+	override function draw() : void{
 		// ループする背景
-		var imgw = BackGround.img.width;
-		var pos = BackGround.action % imgw;
-		var num = Math.ceil(BackGround.ww / BackGround.img.width) + 1;
+		var imgw = this.img.width;
+		var pos = this.action % imgw;
+		var num = Math.ceil(this.ww / this.img.width) + 1;
 		for(var i = 0; i < num; i++){
-			BackGround.context.drawImage(BackGround.img, imgw * (i - 1) + pos, 0);
+			this.context.drawImage(this.img, imgw * (i - 1) + pos, 0);
 		}
 	}
 }

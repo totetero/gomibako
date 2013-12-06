@@ -14,19 +14,25 @@ import 'Dice.jsx';
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// ゲーム変数
 class Game{
 	static var field : Field;
 	static var player : Player;
 	static var clist : DrawUnit[];
+}
 
+// ゲームクラス
+class ECgame extends EventCartridge{
 	// ----------------------------------------------------------------
-	// 初期化
-	static function init() : void{
+	// コンストラクタ
+	function constructor(){
 		Game.field = new Field();
 		Game.clist = new DrawUnit[];
 		Game.player = new Player();
 		Ccvs.cx0 = Ccvs.cx1 = Game.player.x;
 		Ccvs.cy0 = Ccvs.cy1 = Game.player.y;
+		Ccvs.scale = 1;
+		Ccvs.roth = Math.PI / 180 * 45;
 
 		Cbtn.setChara(Main.b64imgs["pstand"]);
 
@@ -34,16 +40,23 @@ class Game{
 	}
 
 	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		return true;
+	}
+
+	// ----------------------------------------------------------------
 	// 描画
-	static function draw() : void{
+	override function draw() : void{
 		// 描画開始
 		Ccvs.context.clearRect(0, 0, Ccvs.canvas.width, Ccvs.canvas.height);
 		// フィールド描画
 		Game.field.draw(Ccvs.cx0, Ccvs.cy0);
-		// プレイヤー描画準備
-		Game.player.preDraw(Ccvs.cx0, Ccvs.cy0);
 		// キャラクター描画
+		Game.player.preDraw(Ccvs.cx0, Ccvs.cy0);
 		DrawUnit.drawList(Game.clist);
+		// さいころ描画
+		ECdice.drawDice();
 	}
 }
 

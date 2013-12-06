@@ -10,6 +10,7 @@ import 'EventCartridge.jsx';
 
 // さいころ管理クラス
 class ECdice extends EventCartridge{
+	static var self : ECdice;
 	var _zfunc : function(:int):void;
 	var _xfunc : function():void;
 
@@ -28,6 +29,7 @@ class ECdice extends EventCartridge{
 
 	// 初期化
 	override function init() : void{
+		ECdice.self = this;
 		// さいころ初期化
 		this._dice = new DrawDice(40);
 		this._dice.x = 80;
@@ -43,6 +45,12 @@ class ECdice extends EventCartridge{
 		Cbtn.setBtn(-1, "投げる", "戻る", "", "");
 		Cbtn.trigger_z = false;
 		Cbtn.trigger_x = false;
+	}
+
+	// 破棄
+	function _dispose() : boolean{
+		ECdice.self = null;
+		return false;
 	}
 
 	// さいころ目の回転設定
@@ -96,7 +104,7 @@ class ECdice extends EventCartridge{
 				}else if(Cbtn.trigger_x){
 					// キャンセルボタン
 					this._xfunc();
-					return false;
+					return this._dispose();
 				}
 				break;
 			case 1:
@@ -136,7 +144,7 @@ class ECdice extends EventCartridge{
 				}else if(this._pip < 0){
 					// 通信失敗時
 					this._xfunc();
-					return false;
+					return this._dispose();
 				}else if(this._action++ < 20){
 					this._dice.h = 100 * Math.sin(this._action / 20 * Math.PI);
 					this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
@@ -163,7 +171,7 @@ class ECdice extends EventCartridge{
 				// 目を見せる
 				if(++this._action >= 20){
 					this._zfunc(this._pip);
-					return false;
+					return this._dispose();
 				}
 				break;
 		}
@@ -171,14 +179,16 @@ class ECdice extends EventCartridge{
 	}
 
 	// 描画
-	override function draw() : void{
-		// 描画の中心位置をキャンバス中心に設定
-		Ccvs.context.save();
-		Ccvs.context.translate(Ccvs.canvas.width * 0.5, Ccvs.canvas.height * 0.5);
-		// 描画
-		this._dice.draw();
-		// 描画の中心位置を戻す
-		Ccvs.context.restore();
+	static function drawDice() : void{
+		if(ECdice.self != null){
+			// 描画の中心位置をキャンバス中心に設定
+			Ccvs.context.save();
+			Ccvs.context.translate(Ccvs.canvas.width * 0.5, Ccvs.canvas.height * 0.5);
+			// 描画
+			ECdice.self._dice.draw();
+			// 描画の中心位置を戻す
+			Ccvs.context.restore();
+		}
 	}
 }
 
