@@ -151,10 +151,15 @@ class ECtitle extends EventCartridge{
 		if(this._exist){
 			// ボタン範囲の確認
 			var btnid = 1;
-			if(60 < Ccvs.mx && Ccvs.mx < 260){
-				if(140 < Ccvs.my && Ccvs.my < 170){btnid = 101;}
-				else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 102;}
-			}
+			var b1 = this._startBtn.getBoundingClientRect();
+			var b2 = this._soundBtn.getBoundingClientRect();
+			if(b1.left < Ctrl.mx && Ctrl.mx < b1.right && b1.top < Ctrl.my && Ctrl.my < b1.bottom){btnid = 101;}
+			else if(b2.left < Ctrl.mx && Ctrl.mx < b2.right && b2.top < Ctrl.my && Ctrl.my < b2.bottom){btnid = 102;}
+			// 一通りの端末で動作確認するまでコメントとして残しておく
+			//if(60 < Ccvs.mx && Ccvs.mx < 260){
+			//	if(140 < Ccvs.my && Ccvs.my < 170){btnid = 101;}
+			//	else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 102;}
+			//}
 
 			// ボタン押下状態の確認
 			if(!Ctrl.mdn){btnid = 1;}

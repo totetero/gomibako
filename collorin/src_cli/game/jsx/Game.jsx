@@ -315,17 +315,33 @@ class ECmenu extends EventCartridge{
 		if(Ccvs.mx < 0 || 320 < Ccvs.mx || Ccvs.my < 0 || 320 < Ccvs.my){
 			btnid = 0;
 		}else if(Math.abs(this._mode) == 1){
-			if(60 < Ccvs.mx && Ccvs.mx < 260){
-				if(110 < Ccvs.my && Ccvs.my < 140){btnid = 101;}
-				else if(180 < Ccvs.my && Ccvs.my < 210){btnid = 102;}
-				else if(250 < Ccvs.my && Ccvs.my < 280){btnid = 103;}
-			}
+			var b1 = this._m1sbtn.getBoundingClientRect();
+			var b2 = this._m1ebtn.getBoundingClientRect();
+			var b3 = this._m1cbtn.getBoundingClientRect();
+			if(b1.left < Ctrl.mx && Ctrl.mx < b1.right && b1.top < Ctrl.my && Ctrl.my < b1.bottom){btnid = 101;}
+			else if(b2.left < Ctrl.mx && Ctrl.mx < b2.right && b2.top < Ctrl.my && Ctrl.my < b2.bottom){btnid = 102;}
+			else if(b3.left < Ctrl.mx && Ctrl.mx < b3.right && b3.top < Ctrl.my && Ctrl.my < b3.bottom){btnid = 103;}
 		}else if(Math.abs(this._mode) == 2){
-			if(100 < Ccvs.mx && Ccvs.mx < 220){
-				if(140 < Ccvs.my && Ccvs.my < 170){btnid = 201;}
-				else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 202;}
-			}
+			var b1 = this._m2ybtn.getBoundingClientRect();
+			var b2 = this._m2nbtn.getBoundingClientRect();
+			if(b1.left < Ctrl.mx && Ctrl.mx < b1.right && b1.top < Ctrl.my && Ctrl.my < b1.bottom){btnid = 201;}
+			else if(b2.left < Ctrl.mx && Ctrl.mx < b2.right && b2.top < Ctrl.my && Ctrl.my < b2.bottom){btnid = 202;}
 		}
+		// 一通りの端末で動作確認するまでコメントとして残しておく
+		//if(Ccvs.mx < 0 || 320 < Ccvs.mx || Ccvs.my < 0 || 320 < Ccvs.my){
+		//	btnid = 0;
+		//}else if(Math.abs(this._mode) == 1){
+		//	if(60 < Ccvs.mx && Ccvs.mx < 260){
+		//		if(110 < Ccvs.my && Ccvs.my < 140){btnid = 101;}
+		//		else if(180 < Ccvs.my && Ccvs.my < 210){btnid = 102;}
+		//		else if(250 < Ccvs.my && Ccvs.my < 280){btnid = 103;}
+		//	}
+		//}else if(Math.abs(this._mode) == 2){
+		//	if(100 < Ccvs.mx && Ccvs.mx < 220){
+		//		if(140 < Ccvs.my && Ccvs.my < 170){btnid = 201;}
+		//		else if(230 < Ccvs.my && Ccvs.my < 260){btnid = 202;}
+		//	}
+		//}
 
 		// マウスクリックの確認
 		if(this._mdn != Ctrl.mdn){
