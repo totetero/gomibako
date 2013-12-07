@@ -18,7 +18,8 @@ import 'Dice.jsx';
 // ゲーム変数
 class Game{
 	static var field : Field;
-	static var player : Player;
+	static var player : GameCharacter[];
+	static var enemy : GameCharacter[];
 	static var clist : DrawUnit[];
 }
 
@@ -29,16 +30,20 @@ class ECgame extends EventCartridge{
 	function constructor(){
 		Game.field = new Field();
 		Game.clist = new DrawUnit[];
-		Game.player = new Player();
-		Ccvs.cx0 = Ccvs.cx1 = Game.player.x;
-		Ccvs.cy0 = Ccvs.cy1 = Game.player.y;
+		Game.player = new GameCharacter[];
+		Game.player.push(new GameCharacter(1, 7, Math.PI * 1.5));
+		Game.player.push(new GameCharacter(2, 7, Math.PI * 1.5));
+		Game.enemy = new GameCharacter[];
+		Game.enemy.push(new GameCharacter(1, 5, Math.PI * 0.5));
+		Ccvs.cx0 = Ccvs.cx1 = Game.player[0].x;
+		Ccvs.cy0 = Ccvs.cy1 = Game.player[0].y;
 		Ccvs.mode = 0;
 		Ccvs.scale = 1;
 		Ccvs.roth = Math.PI / 180 * 45;
 
 		Status.setChara(Main.b64imgs["pstand"]);
 
-		EventCartridge.serialPush(new ECmain());
+		EventCartridge.serialPush(new ECmain(0));
 	}
 
 	// ----------------------------------------------------------------
@@ -55,7 +60,8 @@ class ECgame extends EventCartridge{
 		// フィールド描画
 		Game.field.draw(Ccvs.cx0, Ccvs.cy0);
 		// キャラクター描画
-		Game.player.preDraw(Ccvs.cx0, Ccvs.cy0);
+		for(var i = 0; i < Game.player.length; i++){Game.player[i].preDraw();}
+		for(var i = 0; i < Game.enemy.length; i++){Game.enemy[i].preDraw();}
 		DrawUnit.drawList(Game.clist);
 		// さいころ描画
 		ECdice.drawDice();
@@ -69,6 +75,13 @@ class ECgame extends EventCartridge{
 
 // メインイベントカートリッジ
 class ECmain extends EventCartridge{
+	var _turn : int;
+
+	// コンストラクタ
+	function constructor(turn : int){
+		this._turn = turn % Game.player.length;
+	}
+
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
@@ -77,6 +90,8 @@ class ECmain extends EventCartridge{
 		Cbtn.trigger_x = false;
 		Cbtn.trigger_c = false;
 		Cbtn.trigger_s = false;
+		Ccvs.cx1 = Game.player[this._turn].x;
+		Ccvs.cy1 = Game.player[this._turn].y;
 	}
 
 	// 計算
@@ -86,11 +101,11 @@ class ECmain extends EventCartridge{
 			// さいころボタン
 			EventCartridge.serialPush(new ECdice(function(pip : int) : void{
 				// さいころ投げた時
-				EventCartridge.serialPush(new ECmove(pip));
-				EventCartridge.serialPush(new ECmain());
+				EventCartridge.serialPush(new ECmove(pip, Game.player[this._turn]));
+				EventCartridge.serialPush(new ECmain(this._turn + 1));
 			}, function():void{
 				// さいころキャンセル時
-				EventCartridge.serialPush(new ECmain());
+				EventCartridge.serialPush(new ECmain(this._turn));
 			}));
 			return false;
 		}else if(Cbtn.trigger_c){
@@ -110,6 +125,7 @@ class ECmain extends EventCartridge{
 // 移動イベントカートリッジ
 class ECmove extends EventCartridge{
 	var _pip : int;
+	var _player : GameCharacter;
 
 	var _dstList : int[][];
 	var _srcList : int[][];
@@ -117,8 +133,9 @@ class ECmove extends EventCartridge{
 	var _ecAssist : ECmove.ECassist = null;
 
 	// コンストラクタ
-	function constructor(pip : int){
+	function constructor(pip : int, player : GameCharacter){
 		this._pip = pip;
+		this._player = player;
 		this._dstList = new int[][];
 		this._srcList = new int[][];
 	}
@@ -176,7 +193,7 @@ class ECmove extends EventCartridge{
 			else{moveFlag = false;}
 			if(moveFlag){
 				// プレイヤーの現在座標
-				var pos = Game.field.getHexFromCoordinate(Game.player.x, Game.player.y);
+				var pos = Game.field.getHexFromCoordinate(this._player.x, this._player.y);
 				var x = pos.x;
 				var y = pos.y;
 				// 周囲の存在するヘックスを調べる
@@ -208,7 +225,7 @@ class ECmove extends EventCartridge{
 					case 3: this._dstList.unshift([x - 1, y + 0] : int[]); break;
 					case 4: this._dstList.unshift([x + 0, y - 1] : int[]); break;
 					case 5: this._dstList.unshift([x + 1, y - 1] : int[]); break;
-					default: moveFlag = false; Game.player.r = dir / 180 * Math.PI; break;
+					default: moveFlag = false; this._player.r = dir / 180 * Math.PI; break;
 				}
 				// テスト
 				if(moveFlag){
@@ -244,27 +261,28 @@ class ECmove extends EventCartridge{
 		function constructor(parentEC : ECmove){this._parent = parentEC;}
 		// 計算
 		override function calc() : boolean{
+			var player = this._parent._player;
 			if(this._parent._dstList.length > 0){
 				// ヘックス目的地に向かう
 				var px = Game.field.calcHexCoordx(this._parent._dstList[0][0], this._parent._dstList[0][1]);
 				var py = Game.field.calcHexCoordy(this._parent._dstList[0][0], this._parent._dstList[0][1]);
-				var x = px - Game.player.x;
-				var y = py - Game.player.y;
+				var x = px - player.x;
+				var y = py - player.y;
 				var speed = 3.0;
 				if(x * x + y * y < speed * speed){
-					Game.player.x = px;
-					Game.player.y = py;
+					player.x = px;
+					player.y = py;
 					this._parent._dstList.shift();
 				}else{
-					Game.player.r = Math.atan2(y, x);
-					Game.player.x += speed * Math.cos(Game.player.r);
-					Game.player.y += speed * Math.sin(Game.player.r);
+					player.r = Math.atan2(y, x);
+					player.x += speed * Math.cos(player.r);
+					player.y += speed * Math.sin(player.r);
 				}
-				Ccvs.cx1 = Game.player.x;
-				Ccvs.cy1 = Game.player.y;
-				Game.player.action++;
+				Ccvs.cx1 = player.x;
+				Ccvs.cy1 = player.y;
+				player.action++;
 			}else{
-				Game.player.action = 0;
+				player.action = 0;
 			}
 			return (this._parent._ecAssist != null);
 		}
@@ -435,7 +453,7 @@ class ECmap extends EventCartridge{
 // ----------------------------------------------------------------
 
 // プレイヤークラス
-class Player{
+class GameCharacter{
 	var character : DrawCharacter;
 	var x : number;
 	var y : number;
@@ -444,12 +462,12 @@ class Player{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
+	function constructor(hexx : int, hexy : int, rot : number){
 		this.character = new DrawCharacter(Main.imgs["pdot"], "test", "test");
 		Game.clist.push(this.character);
-		this.x = Game.field.calcHexCoordx(2, 2);
-		this.y = Game.field.calcHexCoordy(2, 2);
-		this.r = Math.PI * 1.5;
+		this.x = Game.field.calcHexCoordx(hexx, hexy);
+		this.y = Game.field.calcHexCoordy(hexx, hexy);
+		this.r = rot;
 	}
 
 	// ----------------------------------------------------------------
@@ -470,14 +488,14 @@ class Player{
 			this.x += speed * Math.cos(this.r);
 			this.y += speed * Math.sin(this.r);
 		}
-		Ccvs.cx1 = Game.player.x;
-		Ccvs.cy1 = Game.player.y;
+		Ccvs.cx1 = this.x;
+		Ccvs.cy1 = this.y;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	function preDraw(x : number, y : number) : void{
-		this.character.preDraw(this.x - x, this.y - y, 0, this.r, 1.2);
+	function preDraw() : void{
+		this.character.preDraw(this.x - Ccvs.cx0, this.y - Ccvs.cy0, 0, this.r, 1.2);
 
 		if(this.action > 0){
 			// 移動
