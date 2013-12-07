@@ -415,7 +415,7 @@ class Ccvs{
 			Ccvs.cosh = Math.cos(Ccvs.roth);
 		}
 		// 拡大縮小
-		var scale = (Ccvs.mode == 1) ? 0.8 : 2.5;
+		var scale = (Ccvs.mode == 2) ? 4 : (Ccvs.mode == 1) ? 0.8 : 2.5;
 		Ccvs.scale += (scale - Ccvs.scale) * 0.1;
 	}
 }

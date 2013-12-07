@@ -34,7 +34,7 @@ class ECgame extends EventCartridge{
 		Game.player.push(new GameCharacter(1, 7, Math.PI * 1.5));
 		Game.player.push(new GameCharacter(2, 7, Math.PI * 1.5));
 		Game.enemy = new GameCharacter[];
-		Game.enemy.push(new GameCharacter(1, 5, Math.PI * 0.5));
+		Game.enemy.push(new GameCharacter(2, 4, Math.PI * 0.5));
 		Ccvs.cx0 = Ccvs.cx1 = Game.player[0].x;
 		Ccvs.cy0 = Ccvs.cy1 = Game.player[0].y;
 		Ccvs.mode = 0;
@@ -101,8 +101,9 @@ class ECmain extends EventCartridge{
 			// さいころボタン
 			EventCartridge.serialPush(new ECdice(function(pip : int) : void{
 				// さいころ投げた時
-				EventCartridge.serialPush(new ECmove(pip, Game.player[this._turn]));
-				EventCartridge.serialPush(new ECmain(this._turn + 1));
+				EventCartridge.serialPush(new ECmove(pip, Game.player[this._turn], function():void{
+					EventCartridge.serialPush(new ECmain(this._turn + 1));
+				}));
 			}, function():void{
 				// さいころキャンセル時
 				EventCartridge.serialPush(new ECmain(this._turn));
@@ -126,6 +127,7 @@ class ECmain extends EventCartridge{
 class ECmove extends EventCartridge{
 	var _pip : int;
 	var _player : GameCharacter;
+	var _func : function():void;
 
 	var _dstList : int[][];
 	var _srcList : int[][];
@@ -133,9 +135,10 @@ class ECmove extends EventCartridge{
 	var _ecAssist : ECmove.ECassist = null;
 
 	// コンストラクタ
-	function constructor(pip : int, player : GameCharacter){
+	function constructor(pip : int, player : GameCharacter, func : function():void){
 		this._pip = pip;
 		this._player = player;
+		this._func = func;
 		this._dstList = new int[][];
 		this._srcList = new int[][];
 	}
@@ -194,15 +197,17 @@ class ECmove extends EventCartridge{
 			if(moveFlag){
 				// プレイヤーの現在座標
 				var pos = Game.field.getHexFromCoordinate(this._player.x, this._player.y);
-				var x = pos.x;
-				var y = pos.y;
+				var x0 = pos.x;
+				var y0 = pos.y;
+				var x1 = x0;
+				var y1 = y0;
 				// 周囲の存在するヘックスを調べる
-				var movable0 = (Game.field.getHexFromIndex(x + 1, y + 0).type > 0);
-				var movable1 = (Game.field.getHexFromIndex(x + 0, y + 1).type > 0);
-				var movable2 = (Game.field.getHexFromIndex(x - 1, y + 1).type > 0);
-				var movable3 = (Game.field.getHexFromIndex(x - 1, y + 0).type > 0);
-				var movable4 = (Game.field.getHexFromIndex(x + 0, y - 1).type > 0);
-				var movable5 = (Game.field.getHexFromIndex(x + 1, y - 1).type > 0);
+				var movable0 = (Game.field.getHexFromIndex(x0 + 1, y0 + 0).type > 0);
+				var movable1 = (Game.field.getHexFromIndex(x0 + 0, y0 + 1).type > 0);
+				var movable2 = (Game.field.getHexFromIndex(x0 - 1, y0 + 1).type > 0);
+				var movable3 = (Game.field.getHexFromIndex(x0 - 1, y0 + 0).type > 0);
+				var movable4 = (Game.field.getHexFromIndex(x0 + 0, y0 - 1).type > 0);
+				var movable5 = (Game.field.getHexFromIndex(x0 + 1, y0 - 1).type > 0);
 				// 角度を使いやすい形に変換する
 				dir = 180 * (dir - Ccvs.rotv / Math.PI);
 				while(dir < 0){dir += 360;}
@@ -217,29 +222,49 @@ class ECmove extends EventCartridge{
 				if(movable4 && 210 - 45 < dir && dir < 270 + 45){index = (index < 0) ? 4 : 6;}
 				//if(movable5 && 270 - 45 < dir && dir < 330 + 45){index = (index < 0) ? 5 : 6;}
 				if(movable5 && (dir < 330 + 45 - 360 || 270 - 45 < dir)){index = (index < 0) ? 5 : 6;}
-				// 移動可能なヘックスに移動する
+				// 移動先を変数に入れる
 				switch(index){
-					case 0: this._dstList.unshift([x + 1, y + 0] : int[]); break;
-					case 1: this._dstList.unshift([x + 0, y + 1] : int[]); break;
-					case 2: this._dstList.unshift([x - 1, y + 1] : int[]); break;
-					case 3: this._dstList.unshift([x - 1, y + 0] : int[]); break;
-					case 4: this._dstList.unshift([x + 0, y - 1] : int[]); break;
-					case 5: this._dstList.unshift([x + 1, y - 1] : int[]); break;
-					default: moveFlag = false; this._player.r = dir / 180 * Math.PI; break;
+					case 0: x1 = x0 + 1; y1 = y0 + 0; break;
+					case 1: x1 = x0 + 0; y1 = y0 + 1; break;
+					case 2: x1 = x0 - 1; y1 = y0 + 1; break;
+					case 3: x1 = x0 - 1; y1 = y0 + 0; break;
+					case 4: x1 = x0 + 0; y1 = y0 - 1; break;
+					case 5: x1 = x0 + 1; y1 = y0 - 1; break;
 				}
-				// テスト
-				if(moveFlag){
-					if(this._srcList.length > 0){
-						if(this._dstList[0][0] == this._srcList[0][0] && this._dstList[0][1] == this._srcList[0][1]){
-							this._pip++;
-							this._srcList.shift();
-						}else{
-							this._pip--;
-							this._srcList.unshift([x, y] : int[]);
+				if(x1 != x0 || y1 != y0){
+					// 味方との対面イベントを確認する
+					for(var i = 0; i < Game.player.length; i++){
+						if(this._player == Game.player[i]){continue;}
+						var hex = Game.field.getHexFromCoordinate(Game.player[i].x, Game.player[i].y);
+						if(x1 == hex.x && y1 == hex.y){
+							// 移動中断
+							Status.setMsg("");
+							this._ecAssist = null;
+							// キャラクター対面イベント発生
+							EventCartridge.serialPush(new ECface(this._player, Game.player[i], this._func));
+							return false;
 						}
+					}
+					// 敵との対面イベントを確認する
+					for(var i = 0; i < Game.enemy.length; i++){
+						var hex = Game.field.getHexFromCoordinate(Game.enemy[i].x, Game.enemy[i].y);
+						if(x1 == hex.x && y1 == hex.y){
+							// 移動中断
+							Status.setMsg("");
+							this._ecAssist = null;
+							// キャラクター対面イベント発生
+							EventCartridge.serialPush(new ECface(this._player, Game.enemy[i], this._func));
+							return false;
+						}
+					}
+					// 対面イベントが発生しないならば移動先のヘックスに移動する
+					this._dstList.unshift([x1, y1] : int[]);
+					if(this._srcList.length > 0 && this._dstList[0][0] == this._srcList[0][0] && this._dstList[0][1] == this._srcList[0][1]){
+						this._pip++;
+						this._srcList.shift();
 					}else{
 						this._pip--;
-						this._srcList.unshift([x, y] : int[]);
+						this._srcList.unshift([x0, y0] : int[]);
 					}
 					Status.setMsg("あと" + this._pip + "マス");
 				}
@@ -248,6 +273,10 @@ class ECmove extends EventCartridge{
 			// 移動完了
 			Status.setMsg("");
 			this._ecAssist = null;
+			// 地形効果イベント発生
+			Status.setBtn(0, "", "", "", ""); // 演出test
+			EventCartridge.serialPush(new ECwait(10)); // 演出test
+			this._func();
 			return false;
 		}
 
@@ -273,6 +302,13 @@ class ECmove extends EventCartridge{
 					player.x = px;
 					player.y = py;
 					this._parent._dstList.shift();
+					// 強制停止系のイベントタイルを確認する
+					if(this._parent._srcList.length > 0){
+						// test とりあえずの判定
+						if(Game.field.getHexFromCoordinate(px, py).type == 2){
+							this._parent._pip = 0;
+						}
+					}
 				}else{
 					player.r = Math.atan2(y, x);
 					player.x += speed * Math.cos(player.r);
@@ -286,6 +322,57 @@ class ECmove extends EventCartridge{
 			}
 			return (this._parent._ecAssist != null);
 		}
+	}
+}
+
+// キャラクター対面イベントカートリッジ
+class ECface extends EventCartridge{
+	var _chara0 : GameCharacter;
+	var _chara1 : GameCharacter;
+	var _func : function():void;
+
+	var _mode : int = 0;
+	var _action : int = 0;
+
+	// コンストラクタ
+	function constructor(chara0 : GameCharacter, chara1 : GameCharacter, func : function():void){
+		this._chara0 = chara0;
+		this._chara1 = chara1;
+		this._func = func;
+	}
+
+	// 初期化
+	override function init() : void{
+		// ボタンの設定
+		Status.setBtn(-1, "", "", "", "");
+		// マップモード設定
+		Ccvs.mode = 2;
+		Ccvs.cx1 = (this._chara0.x + this._chara1.x) * 0.5;
+		Ccvs.cy1 = (this._chara0.y + this._chara1.y) * 0.5;
+		// キャラクターが向き合う
+		var r = Math.atan2(this._chara1.y - this._chara0.y, this._chara1.x - this._chara0.x);
+		this._chara0.r = r;
+		this._chara1.r = r + Math.PI;
+	}
+
+	// 計算
+	override function calc() : boolean{
+		switch(this._mode){
+			case 0:
+				if(++this._action >= 20){
+					Ccvs.mode = 0;
+					this._mode = 1;
+					this._action = 0;
+				}
+				break;
+			case 1:
+				if(++this._action >= 10){
+					this._func();
+					return false;
+				}
+				break;
+		}
+		return true;
 	}
 }
 
