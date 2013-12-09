@@ -53,7 +53,7 @@ exports.getddat = function(user, callback){
 	var imgs = {};
 
 	imgs["pdot"] = "./src_cli/game/img/pdot.png";
-	imgs["b64_pstand"] = "./src_cli/game/img/pstand.png";
+	imgs["b64_pstand"] = "./src_cli/game/img/sanmusu02.png";
 	imgs["dice"] = "./src_cli/game/img/dice.png";
 	imgs["background"] = "./src_cli/game/img/background.png";
 
