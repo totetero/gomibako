@@ -11,9 +11,9 @@ class Field{
 	var _canvas : HTMLCanvasElement;
 	var _context : CanvasRenderingContext2D;
 	// スゴロクマップ情報
-	var _hex : Hex[];
+	var _hex : FieldHex[];
 	// グリッド情報
-	var _grid : Hex[][];
+	var _grid : FieldHex[][];
 	var _gridxsize : int;
 	var _gridysize : int;
 	var _gridxpos : number;
@@ -26,33 +26,8 @@ class Field{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
-		this._hex = [
-			new Hex(0, 3, 1),
-			new Hex(0, 4, 1),
-			new Hex(0, 5, 2),
-			new Hex(1, 5, 1),
-			new Hex(2, 4, 1),
-			new Hex(2, 3, 1),
-			new Hex(2, 2, 1),
-			new Hex(1, 2, 1),
-			new Hex(3, 4, 1),
-			new Hex(4, 3, 1),
-			new Hex(5, 3, 1),
-			new Hex(5, 4, 1),
-			new Hex(5, 5, 1),
-			new Hex(5, 6, 1),
-			new Hex(4, 7, 1),
-			new Hex(3, 7, 1),
-			new Hex(2, 7, 1),
-			new Hex(1, 7, 1),
-			new Hex(1, 6, 1),
-			new Hex(3, 1, 1),
-			new Hex(4, 0, 1),
-			new Hex(5, 0, 1),
-			new Hex(5, 1, 1),
-			new Hex(4, 2, 1),
-		];
+	function constructor(hex : FieldHex[]){
+		this._hex = hex;
 
 		// グリッドサイズ計算
 		this._gridxsize = 0;
@@ -63,11 +38,11 @@ class Field{
 		}
 
 		// グリッド作成
-		this._grid = new Hex[][];
+		this._grid = new FieldHex[][];
 		for(var j = 0; j < this._gridysize; j++){
-			this._grid[j] = new Hex[];
+			this._grid[j] = new FieldHex[];
 			for(var i = 0; i < this._gridxsize; i++){
-				this._grid[j][i] = new Hex(i, j, 0);
+				this._grid[j][i] = new FieldHex(i, j, 0);
 			}
 		}
 		// グリッド情報挿入
@@ -192,7 +167,7 @@ class Field{
 
 	// ----------------------------------------------------------------
 	// 座標からヘックス情報獲得
-	function getHexFromCoordinate(x : number, y : number) : Hex{
+	function getHexFromCoordinate(x : number, y : number) : FieldHex{
 		var j = Math.round(((y - this._marginx) / (this._draft * this._size) - 1) / 1.5);
 		var i = Math.round(((x - this._marginy) / (this._draft * this._size * 0.86602540378) - 1 - j) / 2);
 		return this.getHexFromIndex(i, j);
@@ -200,14 +175,14 @@ class Field{
 
 	// ----------------------------------------------------------------
 	// インデックスからヘックス情報獲得
-	function getHexFromIndex(i : int, j : int) : Hex{
-		if(i < 0 || this._gridxsize <= i){return new Hex(i, j, 0);}
-		if(j < 0 || this._gridysize <= j){return new Hex(i, j, 0);}
+	function getHexFromIndex(i : int, j : int) : FieldHex{
+		if(i < 0 || this._gridxsize <= i){return new FieldHex(i, j, 0);}
+		if(j < 0 || this._gridysize <= j){return new FieldHex(i, j, 0);}
 		return this._grid[j][i];
 	}
 }
 
-class Hex{
+class FieldHex{
 	var x : int;
 	var y : int;
 	var type : int;

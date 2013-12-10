@@ -31,6 +31,8 @@
 				// 静的データ
 				var jdat = JSON.parse(document.getElementById("jdat").innerHTML);
 				var daturl = document.getElementById("daturl").innerHTML;
+				document.head.removeChild(document.getElementById("jdat"));
+				document.head.removeChild(document.getElementById("daturl"));
 
 				// 動的データのロード
 				var xhr = new XMLHttpRequest();

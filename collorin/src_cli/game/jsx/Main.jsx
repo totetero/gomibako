@@ -14,6 +14,8 @@ import 'Game.jsx';
 
 // メインクラス
 class Main{
+	// サーバから受け取ったjsonデータ
+	static var jdat : variant;
 	// 画像リスト
 	static var imgs : Map.<HTMLImageElement>;
 	static var b64imgs : Map.<string>;
@@ -21,14 +23,15 @@ class Main{
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
-		var jdat = js.global["jdat"] as variant;
+		Main.jdat = js.global["jdat"] as variant;
+		delete js.global["jdat"];
 		// タグ生成
-		dom.document.getElementById("root").innerHTML = jdat["strs"]["mainTag"] as string;
+		dom.document.getElementById("root").innerHTML = Main.jdat["strs"]["mainTag"] as string;
 		// 画像準備
 		Main.imgs = {} : Map.<HTMLImageElement>;
 		Main.b64imgs = {} : Map.<string>;
-		Main.regImg(jdat["imgs"] as Map.<string>, function(){
-			delete jdat["imgs"];
+		Main.regImg(Main.jdat["imgs"] as Map.<string>, function(){
+			delete Main.jdat["imgs"];
 			// 初期化
 			Main.init();
 			// ローディング表記除去

@@ -14,7 +14,6 @@ exports.init = function(app){
 
 		js.push("./src_cli/chat/jsx/chat.js");
 		js.push("./src_cli/chat/js/init.js");
-		imgs["player"] = "./src_cli/game/img/pdot.png";
 
 		// ゲーム静的情報
 		file.file2json(js, css, imgs, null, function(data){
@@ -38,15 +37,15 @@ exports.init = function(app){
 			case 4: jdat.imgname = "enemy2"; break;
 			case 5: jdat.imgname = "enemy3"; break;
 		}
-		imgs[jdat.imgname] = "./src_cli/chat/img/" + jdat.imgname + ".png";
+		imgs[jdat.imgname] = "./src_cli/common/img/character/" + jdat.imgname + "/dot.png";
 		
 		// TEST いったん全画像送る
-		imgs["player1"] = "./src_cli/chat/img/player1.png";
-		imgs["player2"] = "./src_cli/chat/img/player2.png";
-		imgs["player3"] = "./src_cli/chat/img/player3.png";
-		imgs["enemy1"] = "./src_cli/chat/img/enemy1.png";
-		imgs["enemy2"] = "./src_cli/chat/img/enemy2.png";
-		imgs["enemy3"] = "./src_cli/chat/img/enemy3.png";
+		imgs["player1"] = "./src_cli/common/img/character/player1/dot.png";
+		imgs["player2"] = "./src_cli/common/img/character/player2/dot.png";
+		imgs["player3"] = "./src_cli/common/img/character/player3/dot.png";
+		imgs["enemy1"] = "./src_cli/common/img/character/enemy1/dot.png";
+		imgs["enemy2"] = "./src_cli/common/img/character/enemy2/dot.png";
+		imgs["enemy3"] = "./src_cli/common/img/character/enemy3/dot.png";
 
 		// ゲーム動的情報
 		file.file2json(null, null, imgs, null, function(data){

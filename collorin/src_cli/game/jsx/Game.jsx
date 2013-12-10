@@ -28,20 +28,22 @@ class ECgame extends EventCartridge{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
-		Game.field = new Field();
+		// フィールド作成
+		Game.field = new Field(Main.jdat["hex"] as FieldHex[]);
+		// キャラクター作成
 		Game.clist = new DrawUnit[];
 		Game.player = new GameCharacter[];
-		Game.player.push(new GameCharacter(1, 7, Math.PI * 1.5));
-		Game.player.push(new GameCharacter(2, 7, Math.PI * 1.5));
 		Game.enemy = new GameCharacter[];
-		Game.enemy.push(new GameCharacter(2, 4, Math.PI * 0.5));
+		var pjdat = Main.jdat["player"] as variant[];
+		var ejdat = Main.jdat["enemy"] as variant[];
+		for(var i = 0; i < pjdat.length; i++){Game.player.push(new GameCharacter(pjdat[i]));}
+		for(var i = 0; i < ejdat.length; i++){Game.enemy.push(new GameCharacter(ejdat[i]));}
+		// カメラ設定
 		Ccvs.cx0 = Ccvs.cx1 = Game.player[0].x;
 		Ccvs.cy0 = Ccvs.cy1 = Game.player[0].y;
 		Ccvs.mode = 0;
 		Ccvs.scale = 1;
 		Ccvs.roth = Math.PI / 180 * 45;
-
-		Status.setChara(Main.b64imgs["pstand"]);
 
 		EventCartridge.serialPush(new ECmain(0));
 	}
@@ -92,6 +94,8 @@ class ECmain extends EventCartridge{
 		Cbtn.trigger_s = false;
 		Ccvs.cx1 = Game.player[this._turn].x;
 		Ccvs.cy1 = Game.player[this._turn].y;
+		// 
+		Status.setChara(Main.b64imgs["bust_" + Game.player[this._turn].id]);
 	}
 
 	// 計算
@@ -344,7 +348,7 @@ class ECface extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		// ボタンの設定
-		Status.setBtn(-1, "", "", "", "");
+		Status.setBtn(0, "", "", "", "");
 		// マップモード設定
 		Ccvs.mode = 2;
 		Ccvs.cx1 = (this._chara0.x + this._chara1.x) * 0.5;
@@ -542,6 +546,7 @@ class ECmap extends EventCartridge{
 // プレイヤークラス
 class GameCharacter{
 	var character : DrawCharacter;
+	var id : string;
 	var x : number;
 	var y : number;
 	var r : number;
@@ -549,12 +554,17 @@ class GameCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(hexx : int, hexy : int, rot : number){
-		this.character = new DrawCharacter(Main.imgs["pdot"], "test", "test");
+	function constructor(dat : variant){
+		var hexx = dat["x"] as int;
+		var hexy = dat["y"] as int;
+		var parts = Main.jdat["parts"][dat["parts"] as string] as string;
+		var pose = Main.jdat["pose"][dat["pose"] as string] as string;
+		this.id = dat["id"] as string;
+		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], parts, pose);
 		Game.clist.push(this.character);
 		this.x = Game.field.calcHexCoordx(hexx, hexy);
 		this.y = Game.field.calcHexCoordy(hexx, hexy);
-		this.r = rot;
+		this.r = dat["r"] as number;
 	}
 
 	// ----------------------------------------------------------------

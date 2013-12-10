@@ -139,7 +139,7 @@ div#root div.character{
 	height: 240px;
 	background-repeat: no-repeat;
 	background-size:480px 240px;
-	background-position: -160px 0;
+	background-position: 0 0;
 	display:none;
 }
 

@@ -3,6 +3,9 @@ var file = require("../../utils/file");
 
 // データベースモデル
 var UserModel = require("../../models/user").UserModel;
+// パーツとポーズ
+var charaParts = require("../../data/characterParts");
+var charaPose = require("../../data/characterPose");
 
 // ゲームの初期化
 exports.init = function(user, stage){
@@ -52,10 +55,66 @@ exports.getddat = function(user, callback){
 	var jdat = {};
 	var imgs = {};
 
-	imgs["pdot"] = "./src_cli/game/img/pdot.png";
-	imgs["b64_pstand"] = "./src_cli/game/img/sanmusu02.png";
-	imgs["dice"] = "./src_cli/game/img/dice.png";
-	imgs["background"] = "./src_cli/game/img/background.png";
+	// フィールド情報
+	jdat.stagename = "高天原";
+	jdat.hex = [
+		{x: 0, y: 3, type: 1},
+		{x: 0, y: 4, type: 1},
+		{x: 0, y: 5, type: 2},
+		{x: 1, y: 5, type: 1},
+		{x: 2, y: 4, type: 1},
+		{x: 2, y: 3, type: 1},
+		{x: 2, y: 2, type: 1},
+		{x: 1, y: 2, type: 1},
+		{x: 3, y: 4, type: 1},
+		{x: 4, y: 3, type: 1},
+		{x: 5, y: 3, type: 1},
+		{x: 5, y: 4, type: 1},
+		{x: 5, y: 5, type: 1},
+		{x: 5, y: 6, type: 1},
+		{x: 4, y: 7, type: 1},
+		{x: 3, y: 7, type: 1},
+		{x: 2, y: 7, type: 1},
+		{x: 1, y: 7, type: 1},
+		{x: 1, y: 6, type: 1},
+		{x: 3, y: 1, type: 1},
+		{x: 4, y: 0, type: 1},
+		{x: 5, y: 0, type: 1},
+		{x: 5, y: 1, type: 1},
+		{x: 4, y: 2, type: 1},
+	];
+	// 背景画像
+	imgs["background"] = "./src_cli/common/img/background/test.png";
+	// さいころ画像
+	imgs["dice"] = "./src_cli/common/img/dice/test.png";
+
+	// プレイヤー情報
+	jdat.player = [
+		{id: "player1", parts: "test", pose: "human", x: 1, y : 7, r: Math.PI * 1.5},
+		{id: "player2", parts: "test", pose: "human", x: 2, y : 7, r: Math.PI * 1.5},
+	];
+
+	// 敵情報
+	jdat.enemy = [
+		{id: "enemy3", parts: "test", pose: "human", x: 2, y : 4, r: Math.PI * 0.5},
+	];
+
+	// 画像など読み込み
+	jdat.parts = {};
+	jdat.pose = {};
+	for(var i = 0; i < jdat.player.length; i++){
+		var chara = jdat.player[i];
+		imgs["dot_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/dot.png";
+		imgs["b64_bust_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/bust.png";
+		jdat.parts[chara.parts] = charaParts[chara.parts];
+		jdat.pose[chara.pose] = charaPose[chara.pose];
+	}
+	for(var i = 0; i < jdat.enemy.length; i++){
+		var chara = jdat.enemy[i];
+		imgs["dot_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/dot.png";
+		jdat.parts[chara.parts] = charaParts[chara.parts];
+		jdat.pose[chara.pose] = charaPose[chara.pose];
+	}
 
 	file.file2json(null, null, imgs, null, function(data){
 		jdat.imgs = data.imgs;
