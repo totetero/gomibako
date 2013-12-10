@@ -160,7 +160,7 @@ class ECtitle extends EventCartridge{
 		// サウンドボタン
 		this._soundBtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 		// ステージ名
-		this._div.getElementsByClassName("caption").item(0).innerHTML = "コルロの森";
+		this._div.getElementsByClassName("caption").item(0).innerHTML = Main.jdat["stagename"] as string;
 	}
 
 	// ----------------------------------------------------------------
