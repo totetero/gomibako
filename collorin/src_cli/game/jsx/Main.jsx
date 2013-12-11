@@ -119,6 +119,7 @@ class ECtitle extends EventCartridge{
 	var _startBtn : HTMLDivElement;
 	var _soundBtn : HTMLDivElement;
 	var _exitBtn : HTMLDivElement;
+	var _mupfn : function(:Event):void;
 
 	var _exist : boolean = true;
 	var _button : int = 0;
@@ -132,14 +133,14 @@ class ECtitle extends EventCartridge{
 		this._soundBtn = this._div.getElementsByClassName("btn sound").item(0) as HTMLDivElement;
 		this._exitBtn = this._div.getElementsByClassName("btn exit").item(0) as HTMLDivElement;
 
+		// ステージ名
+		this._div.getElementsByClassName("caption").item(0).innerHTML = Main.jdat["stagename"] as string;
+
+		// サウンドボタン
+		this._soundBtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 		// マウスを離す サウンド再生は機種によってタッチしないと受け付けないのでイベントリスナーで処理する
-		var mupfn = function(e : Event) : void{
+		this._mupfn = function(e : Event) : void{
 			var btn = Math.abs(this._button);
-			if(btn == 101 || btn == 103){
-				// イベントリスナー除去
-				if(Ctrl.isTouch){Ctrl.div.removeEventListener("touchend", mupfn, true);}
-				else{Ctrl.div.removeEventListener("mouseup", mupfn, true);}
-			}
 			if(btn == 101){
 				// スタートボタン処理
 				Sound.setPlayable();
@@ -154,13 +155,16 @@ class ECtitle extends EventCartridge{
 			}
 		};
 		// イベントリスナー登録
-		if(Ctrl.isTouch){Ctrl.div.addEventListener("touchend", mupfn, true);}
-		else{Ctrl.div.addEventListener("mouseup", mupfn, true);}
+		if(Ctrl.isTouch){Ctrl.div.addEventListener("touchend", this._mupfn, true);}
+		else{Ctrl.div.addEventListener("mouseup", this._mupfn, true);}
+	}
 
-		// サウンドボタン
-		this._soundBtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
-		// ステージ名
-		this._div.getElementsByClassName("caption").item(0).innerHTML = Main.jdat["stagename"] as string;
+	// 破棄
+	function _dispose() : boolean{
+		// イベントリスナー除去
+		if(Ctrl.isTouch){Ctrl.div.removeEventListener("touchend", this._mupfn, true);}
+		else{Ctrl.div.removeEventListener("mouseup", this._mupfn, true);}
+		return false;
 	}
 
 	// ----------------------------------------------------------------
@@ -190,7 +194,7 @@ class ECtitle extends EventCartridge{
 			// タイトルを閉じてゲームを開始する
 			Ctrl.div.removeChild(this._div);
 			EventCartridge.parallelPush(new ECgame());
-			return false;
+			return this._dispose();
 		}
 	}
 

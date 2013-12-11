@@ -395,6 +395,7 @@ class ECmenu extends EventCartridge{
 	var _m1cbtn : HTMLDivElement;
 	var _m2ybtn : HTMLDivElement;
 	var _m2nbtn : HTMLDivElement;
+	var _mupfn : function(:Event):void;
 
 	var _mode : int = 1;
 	var _button : int = 0;
@@ -418,6 +419,26 @@ class ECmenu extends EventCartridge{
 		Status.setBtn(-1, "", "", "", "");
 		// サウンドボタン
 		this._m1sbtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
+		// マウスを離す サウンド再生は機種によってタッチしないと受け付けないのでイベントリスナーで処理する
+		this._mupfn = function(e : Event) : void{
+			var btn = Math.abs(this._button);
+			if(btn == 101){
+				// 音系
+				Sound.toggle();
+				this._m1sbtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
+			}
+		};
+		// イベントリスナー登録
+		if(Ctrl.isTouch){Ctrl.div.addEventListener("touchend", this._mupfn, true);}
+		else{Ctrl.div.addEventListener("mouseup", this._mupfn, true);}
+	}
+
+	// 破棄
+	function _dispose() : boolean{
+		// イベントリスナー除去
+		if(Ctrl.isTouch){Ctrl.div.removeEventListener("touchend", this._mupfn, true);}
+		else{Ctrl.div.removeEventListener("mouseup", this._mupfn, true);}
+		return false;
 	}
 
 	// 計算
@@ -461,8 +482,6 @@ class ECmenu extends EventCartridge{
 			if(!this._mdn){
 				if(btnid == 101){
 					// 音系
-					Sound.toggle();
-					this._m1sbtn.innerHTML = Sound.playing ? "サウンドON" : "サウンドOFF";
 				}else if(btnid == 102){
 					// 中断確認
 					this._mode = 2;
@@ -470,7 +489,7 @@ class ECmenu extends EventCartridge{
 					// メニューを閉じる
 					this._div0.style.display = "none";
 					Ccvs.mode = 0;
-					return false;
+					return this._dispose();
 				}else if(btnid == 201){
 					// 中断
 					this._mode = 3;
