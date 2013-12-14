@@ -578,12 +578,11 @@ class GameCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(dat : variant){
+		var drawInfo = new DrawInfo(Main.jdat["drawInfo"][dat["drawInfo"] as string]);
 		var hexx = dat["x"] as int;
 		var hexy = dat["y"] as int;
-		var parts = Main.jdat["parts"][dat["parts"] as string] as string;
-		var pose = Main.jdat["pose"][dat["pose"] as string] as string;
 		this.id = dat["id"] as string;
-		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], parts, pose);
+		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], drawInfo);
 		this.shadow = new DrawShadow();
 		Game.clist.push(this.character);
 		Game.slist.push(this.shadow);

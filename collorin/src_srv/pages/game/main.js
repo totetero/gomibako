@@ -3,9 +3,8 @@ var file = require("../../utils/file");
 
 // データベースモデル
 var UserModel = require("../../models/user").UserModel;
-// パーツとポーズ
-var charaParts = require("../../data/characterParts");
-var charaPose = require("../../data/characterPose");
+// キャラクター描画情報
+var characterDrawInfo = require("../../data/characterDrawInfo");
 
 // ゲームの初期化
 exports.init = function(user, stage){
@@ -90,30 +89,25 @@ exports.getddat = function(user, callback){
 
 	// プレイヤー情報
 	jdat.player = [
-		{id: "player1", parts: "test", pose: "human", x: 1, y : 7, r: Math.PI * 1.5},
-		{id: "player2", parts: "test", pose: "human", x: 2, y : 7, r: Math.PI * 1.5},
+		{id: "player1", drawInfo: "human", x: 1, y : 7, r: Math.PI * 1.5},
+		{id: "player2", drawInfo: "human", x: 2, y : 7, r: Math.PI * 1.5},
 	];
 
 	// 敵情報
 	jdat.enemy = [
-		{id: "enemy3", parts: "test", pose: "human", x: 2, y : 4, r: Math.PI * 0.5},
+		{id: "enemy3", drawInfo: "human", x: 2, y : 4, r: Math.PI * 0.5},
 	];
 
 	// 画像など読み込み
-	jdat.parts = {};
-	jdat.pose = {};
-	for(var i = 0; i < jdat.player.length; i++){
-		var chara = jdat.player[i];
-		imgs["dot_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/dot.png";
-		imgs["b64_bust_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/bust.png";
-		jdat.parts[chara.parts] = charaParts[chara.parts];
-		jdat.pose[chara.pose] = charaPose[chara.pose];
-	}
-	for(var i = 0; i < jdat.enemy.length; i++){
-		var chara = jdat.enemy[i];
-		imgs["dot_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/dot.png";
-		jdat.parts[chara.parts] = charaParts[chara.parts];
-		jdat.pose[chara.pose] = charaPose[chara.pose];
+	jdat.drawInfo = {};
+	var charaList = [jdat.player, jdat.enemy];
+	for(var i = 0; i < charaList.length; i++){
+		for(var j = 0; j < charaList[i].length; j++){
+			var chara = charaList[i][j];
+			imgs["dot_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/dot.png";
+			if(i == 0){imgs["b64_bust_" + chara.id] = "./src_cli/common/img/character/" + chara.id + "/bust.png";}
+			jdat.drawInfo[chara.drawInfo] = characterDrawInfo[chara.drawInfo];
+		}
 	}
 
 	file.file2json(null, null, imgs, null, function(data){

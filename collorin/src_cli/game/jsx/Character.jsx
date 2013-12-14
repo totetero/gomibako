@@ -23,38 +23,51 @@ abstract class DrawUnit{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// キャラクター描画情報クラス
+class DrawInfo{
+	var weapon : string;
+	var parts : Map.<number[][]>;
+	var pose : Map.<Map.<number[]>[]>;
+	// コンストラクタ
+	function constructor(dat : variant) {
+		this.weapon = dat["weapon"] as string;
+		this.parts  = dat["parts"] as Map.<number[][]>;
+		this.pose  = dat["pose"] as Map.<Map.<number[]>[]>;
+    }
+}
+
 // キャラクタークラス
 class DrawCharacter extends DrawUnit{
 	var _duList : DrawUnit[];
 	var _parts : Map.<DrawCharacterParts[]>;
 	var _pose : Map.<Map.<number[]>[]>;
+	var _weapon : DrawCharacterWeapon;
 
-	var _drX : number;
-	var _drY : number;
-	var _drZ : number;
-	var _drScale : number;
-	var _drAngv1 : number;
-	var _drAngv2 : number;
-	var _drSin : number;
-	var _drCos : number;
+	// パーツ描画用変数
+	var img : HTMLImageElement;
+	var drX0 : number;
+	var drY0 : number;
+	var drZ0 : number;
+	var drScale : number;
+	var drRotv : number;
+	var drSin : number;
+	var drCos : number;
+	var drAngv1 : number;
+	var drAngv2 : number;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(img : HTMLImageElement, parts : string, pose : string){
-		// サンプル
-		//var parts = '{"head":[[0,0,0,0,0,16,0],[-0.06,0.20,-0.02,0,48,16,0],[-0.06,-0.20,-0.02,0,48,16,1],[-0.19,0,-0.09,0,64,16,0]],"body":[[0,0,0,0,16,16,0]],"ftr1":[[0,0,0,0,32,8,0]],"ftl1":[[0,0,0,0,32,8,1]],"ftr2":[[0,0,0,32,32,8,0]],"ftl2":[[0,0,0,32,32,8,1]],"hndr":[[0,0,0,0,40,8,0]],"hndl":[[0,0,0,0,40,8,1]]}';
-		//var pose = '{"stand":[{"head":[1,0.00,0.00,0.52],"body":[1,-0.02,0.00,0.27],"ftr1":[1,0.02,0.10,0.10],"ftl1":[1,-0.02,-0.10,0.10],"hndr":[0,-0.02,0.20,0.25],"hndl":[0,0.02,-0.20,0.25]}],"walk":[{"head":[1,0.12,0.00,0.45],"body":[1,0.00,0.00,0.23],"ftr1":[1,0.10,0.07,0.10],"ftl2":[1,-0.20,-0.07,0.20],"hndr":[0,-0.10,0.15,0.25],"hndl":[0,0.10,-0.15,0.25]},{"head":[1,0.12,0.00,0.47],"body":[1,0.00,0.00,0.26],"ftr1":[1,0.00,0.07,0.10],"ftl1":[1,0.00,-0.07,0.15],"hndr":[0,-0.05,0.18,0.25],"hndl":[0,0.05,-0.18,0.25]},{"head":[1,0.12,0.00,0.45],"body":[1,0.00,0.00,0.23],"ftr2":[1,-0.20,0.07,0.20],"ftl1":[1,0.10,-0.07,0.10],"hndr":[0,0.10,0.15,0.25],"hndl":[0,-0.10,-0.15,0.25]},{"head":[1,0.12,0.00,0.47],"body":[1,0.00,0.00,0.26],"ftr1":[1,0.00,0.07,0.15],"ftl1":[1,0.00,-0.07,0.10],"hndr":[0,0.05,0.18,0.25],"hndl":[0,-0.05,-0.18,0.25]}]}';
-
+	function constructor(img : HTMLImageElement, drawInfo : DrawInfo){
+		this.img = img;
 		this._duList = new DrawUnit[];
 		this._parts = {} : Map.<DrawCharacterParts[]>;
-		this._pose = JSON.parse(pose) as Map.<Map.<number[]>[]>;
-		var dat = JSON.parse(parts) as Map.<number[][]>;
+		this._pose = drawInfo.pose;
 
 		// パーツの登録
-		for(var i in dat){
+		for(var i in drawInfo.parts){
 			this._parts[i] = new DrawCharacterParts[];
-			for(var j = 0; j < dat[i].length; j++){
-				var temp = dat[i][j];
+			for(var j = 0; j < drawInfo.parts[i].length; j++){
+				var temp = drawInfo.parts[i][j];
 				var x = temp[0];
 				var y = temp[1];
 				var z = temp[2];
@@ -62,9 +75,15 @@ class DrawCharacter extends DrawUnit{
 				var v = Math.round(temp[4]);
 				var s = Math.round(temp[5]);
 				var swap = (Math.round(temp[6]) > 0);
-				this._parts[i][j] = new DrawCharacterParts(img, x, y, z, u, v, s, swap);
+				this._parts[i][j] = new DrawCharacterParts(this, x, y, z, u, v, s, swap);
 				this._duList.push(this._parts[i][j]);
 			}
+		}
+
+		// 武器の登録
+		if(drawInfo.weapon != ""){
+			this._weapon = new DrawCharacterWeapon(this, drawInfo.weapon);
+			this._duList.push(this._weapon);
 		}
 	}
 
@@ -73,29 +92,30 @@ class DrawCharacter extends DrawUnit{
 	function preDraw(x : number, y : number, z : number, r : number, s : number) : void{
 		this.visible = true;
 		// 位置
-		this._drX = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
-		this._drY = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
-		this._drZ = Ccvs.scale * z;
-		this.drz = this._drY * Ccvs.cosh + this._drZ * Ccvs.sinh;
-		this._drScale = Ccvs.scale * s;
-		// 三角関数
-		this._drSin = Math.sin(Ccvs.rotv + r);
-		this._drCos = Math.cos(Ccvs.rotv + r);
+		this.drX0 = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
+		this.drY0 = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
+		this.drZ0 = Ccvs.scale * z;
+		this.drz = this.drY0 * Ccvs.cosh + this.drZ0 * Ccvs.sinh;
+		this.drScale = Ccvs.scale * s;
+		// 角度と三角関数
+		this.drRotv = Ccvs.rotv + r;
+		this.drSin = Math.sin(this.drRotv);
+		this.drCos = Math.cos(this.drRotv);
 		// テクスチャ垂直軸角度フレーム
-		var v = 45 + 180 / Math.PI * (-Ccvs.rotv - r);
+		var v = 45 + 180 / Math.PI * (-this.drRotv);
 		while(v  > 360){v  -= 360;} while(v  <= 0){v  += 360;}
-		if(v  < 90){this._drAngv1 = 1;}else if(v  <= 180){this._drAngv1 = 2;}else if(v  < 270){this._drAngv1 = 3;}else{this._drAngv1 = 0;}
+		if(v  < 90){this.drAngv1 = 1;}else if(v  <= 180){this.drAngv1 = 2;}else if(v  < 270){this.drAngv1 = 3;}else{this.drAngv1 = 0;}
 		// テクスチャ垂直軸角度フレーム タイヤ用
-		var v = 22.5 + 180 / Math.PI * (-Ccvs.rotv - r);
+		var v = 22.5 + 180 / Math.PI * (-this.drRotv);
 		while(v > 360){v -= 360;} while(v  <= 0){v  += 360;}
-		if(v < 45){this._drAngv2 = 2;}
-		else if(v < 90){this._drAngv2 = 1;}
-		else if(v < 135){this._drAngv2 = 0;}
-		else if(v < 180){this._drAngv2 = 3;}
-		else if(v < 225){this._drAngv2 = 2;}
-		else if(v < 270){this._drAngv2 = 1;}
-		else if(v < 315){this._drAngv2 = 0;}
-		else{this._drAngv2 = 3;}
+		if(v < 45){this.drAngv2 = 2;}
+		else if(v < 90){this.drAngv2 = 1;}
+		else if(v < 135){this.drAngv2 = 0;}
+		else if(v < 180){this.drAngv2 = 3;}
+		else if(v < 225){this.drAngv2 = 2;}
+		else if(v < 270){this.drAngv2 = 1;}
+		else if(v < 315){this.drAngv2 = 0;}
+		else{this.drAngv2 = 3;}
 	}
 
 	// ----------------------------------------------------------------
@@ -107,56 +127,14 @@ class DrawCharacter extends DrawUnit{
 		// 姿勢の解釈
 		var pose = this._pose[motion][action];
 		for(var i in pose){
-			for(var j in this._parts[i]){
-				var p = this._parts[i][j];
-				p.visible = true;
-
-				var type = Math.round(pose[i][0]);
-
-				// 回転の確認
-				var av = 0;
-				switch(type){
-					case 1: case 2: case 3: case 4: av = this._drAngv1; break;
-					case 5: av = this._drAngv2; break;
+			if(i == "weapon"){
+				// 特殊パーツ 武器
+				this._weapon.preDraw(pose[i]);
+			}else{
+				// 体のパーツ
+				for(var j in this._parts[i]){
+					this._parts[i][j].preDraw(pose[i]);
 				}
-
-				// 反転の確認
-				var x0 = p.x0;
-				var z0 = p.z0;
-				p.yswap = false;
-				p.zswap = false;
-				// 上下反転
-				if(type == 3 || type == 4){
-					p.zswap = !p.zswap;
-					z0 *= -1;
-				}
-				// 前後反転
-				if(type == 2 || type == 3){
-					if(av == 0){av = 2;}else if(av == 2){av = 0;}
-					p.yswap = !p.yswap;
-					x0 *= -1;
-				}
-				// 左右反転
-				if(p.swap){
-					if(av == 1){av = 3;}else if(av == 3){av = 1;}
-					p.yswap = !p.yswap;
-				}
-				// ボディローカル座標に、反転を考慮したパーツローカル座標を足し合わせ
-				var x = pose[i][1] + x0;
-				var y = pose[i][2] + p.y0;
-				var z = pose[i][3] + z0;
-
-				// 位置等設定
-				p.drx = this._drX + this._drScale * 35 * (x * this._drCos - y * this._drSin);
-				var y0 = this._drY + this._drScale * 35 * (x * this._drSin + y * this._drCos);
-				var z0 = this._drZ + this._drScale * 35 * (z - 0.05);
-				p.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
-				p.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
-				p.drScale = this._drScale;
-
-				// 視点を考慮したuv座標設定
-				p.dru = p.u0 + av * p.uvsize;
-				p.drv = p.v0;
 			}
 		}
 	}
@@ -170,56 +148,218 @@ class DrawCharacter extends DrawUnit{
 
 // 体のパーツクラス
 class DrawCharacterParts extends DrawUnit{
-	var _img : HTMLImageElement;
+	var _character : DrawCharacter;
 	// パーツローカル座標
-	var x0 : number;
-	var y0 : number;
-	var z0 : number;
+	var _x2 : number;
+	var _y2 : number;
+	var _z2 : number;
 	// テクスチャ情報
-	var u0 : int;
-	var v0 : int;
-	var uvsize : int;
+	var _u : int;
+	var _v : int;
+	var _uvsize : int;
 	// 左右反転フラグ
-	var swap : boolean;
+	var _swap : boolean;
 
-	var drx : number;
-	var dry : number;
-	var dru : int;
-	var drv : int;
-	var drScale : number;
-	var yswap : boolean;
-	var zswap : boolean;
+	var _drx : number;
+	var _dry : number;
+	var _dru : int;
+	var _drv : int;
+	var _yswap : boolean;
+	var _zswap : boolean;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(img : HTMLImageElement, x0 : number, y0 : number, z0 : number, u0 : int, v0 : int, uvsize : int, swap : boolean){
-		this._img = img;
-		this.x0 = x0;
-		this.y0 = y0;
-		this.z0 = z0;
-		this.u0 = u0;
-		this.v0 = v0;
-		this.uvsize = uvsize;
-		this.swap = swap;
+	function constructor(character : DrawCharacter, x2 : number, y2 : number, z2 : number, u : int, v : int, uvsize : int, swap : boolean){
+		this._character = character;
+		this._x2 = x2;
+		this._y2 = y2;
+		this._z2 = z2;
+		this._u = u;
+		this._v = v;
+		this._uvsize = uvsize;
+		this._swap = swap;
 	}
 
+	// ----------------------------------------------------------------
+	// 描画準備
+	function preDraw(pose : number[]) : void{
+		this.visible = true;
+		var type = Math.round(pose[0]);
+
+		// 回転の確認
+		var av = 0;
+		switch(type){
+			case 1: case 2: case 3: case 4: av = this._character.drAngv1; break;
+			case 5: av = this._character.drAngv2; break;
+		}
+
+		// パーツローカル座標の反転確認
+		var x2 = this._x2;
+		var z2 = this._z2;
+		this._yswap = false;
+		this._zswap = false;
+		// 上下反転
+		if(type == 3 || type == 4){
+			this._zswap = !this._zswap;
+			z2 *= -1;
+		}
+		// 前後反転
+		if(type == 2 || type == 3){
+			if(av == 0){av = 2;}else if(av == 2){av = 0;}
+			this._yswap = !this._yswap;
+			x2 *= -1;
+		}
+		// 左右反転
+		if(this._swap){
+			if(av == 1){av = 3;}else if(av == 3){av = 1;}
+			this._yswap = !this._yswap;
+		}
+
+		// ボディローカル座標
+		var x1 = pose[1] + x2;
+		var y1 = pose[2] + this._y2;
+		var z1 = pose[3] + z2;
+
+		// 描画位置等設定
+		this._drx = this._character.drX0 + this._character.drScale * 35 * (x1 * this._character.drCos - y1 * this._character.drSin);
+		var y0 = this._character.drY0 + this._character.drScale * 35 * (x1 * this._character.drSin + y1 * this._character.drCos);
+		var z0 = this._character.drZ0 + this._character.drScale * 35 * (z1 - 0.05);
+		this._dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
+		this.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
+
+		// 視点を考慮したuv座標設定
+		this._dru = this._u + av * this._uvsize;
+		this._drv = this._v;
+	}
+
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		var ps = (this.uvsize * this.drScale) as int;
-		var px = (this.drx - ps * 0.5 + Ccvs.canvas.width * 0.5) as int;
-		var py = (this.dry - ps * 0.5 + Ccvs.canvas.height * 0.5) as int;
+		var ps = (this._uvsize * this._character.drScale) as int;
+		var px = (this._drx - ps * 0.5 + Ccvs.canvas.width * 0.5) as int;
+		var py = (this._dry - ps * 0.5 + Ccvs.canvas.height * 0.5) as int;
 		if(px + ps < 0 || px - ps > Ccvs.canvas.width || py + ps < 0 || py - ps > Ccvs.canvas.height){
-		}else if(this.yswap || this.zswap){
+		}else if(this._yswap || this._zswap){
 			var rx = px + ps * 0.5;
 			var ry = py + ps * 0.5;
 			Ccvs.context.save();
 			Ccvs.context.translate(rx, ry);
-			Ccvs.context.scale(this.yswap ? -1 : 1, this.zswap ? -1 : 1);
+			Ccvs.context.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
 			Ccvs.context.translate(-rx, -ry);
-			Ccvs.context.drawImage(this._img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
+			Ccvs.context.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
 			Ccvs.context.restore();
 		}else{
-			Ccvs.context.drawImage(this._img, this.dru, this.drv, this.uvsize, this.uvsize, px, py, ps, ps);
+			Ccvs.context.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
 		}
+	}
+}
+
+// 武器とその軌跡クラス
+class DrawCharacterWeapon extends DrawUnit{
+	static var drawed : Map.<HTMLCanvasElement> = {} : Map.<HTMLCanvasElement>;
+
+	var _character : DrawCharacter;
+	var _canvas : HTMLCanvasElement = null;
+
+	var _drx : number;
+	var _dry : number;
+	var _action : int;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(character : DrawCharacter, weapon : string){
+		this._character = character;
+
+		if(DrawCharacterWeapon.drawed[weapon] == null){
+			// 武器画像作成
+			this._canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+			var context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
+			switch(weapon){
+				case "whiteSword": case "redSword":
+					// ステップ毎の軌跡開始角度と終了角度
+					var rslist = [-45 * Math.PI / 180, -45 * Math.PI / 180, -45 * Math.PI / 180, 45 * Math.PI / 180];
+					var rglist = [-45 * Math.PI / 180, -20 * Math.PI / 180,  45 * Math.PI / 180, 45 * Math.PI / 180];
+					this._canvas.height = 48;
+					this._canvas.width = this._canvas.height * rslist.length;
+					// 剣の長さ
+					var len0 = 10;
+					var len1 = 33;
+					// 剣と軌跡の色と太さ
+					switch(weapon){
+						case "whiteSword":
+							context.strokeStyle = "#fff";
+							context.fillStyle = "rgba(255, 255, 255 , 0.5)";
+							context.lineWidth = 3;
+							break;
+						case "redSword":
+							context.strokeStyle = "#f00";
+							context.fillStyle = "rgba(255, 0, 0 , 0.5)";
+							context.lineWidth = 3;
+							break;
+					}
+					// 剣と軌跡描画
+					for(var i = 0; i < rslist.length; i++){
+						var x = this._canvas.height * i;
+						var y = this._canvas.height * 0.5;
+						var c = Math.cos(rglist[i]);
+						var s = Math.sin(rglist[i]);
+						// 剣の軌跡
+						context.beginPath();
+						context.arc(x, y, len0, rslist[i], rglist[i], false);
+						context.arc(x, y, len1, rglist[i], rslist[i], true);
+						context.fill();
+						// 剣の形
+						context.beginPath();	
+						context.moveTo(x + len0 * c, y + len0 * s);
+						context.lineTo(x + len1 * c, y + len1 * s);
+						context.stroke();
+					}
+					// 武器画像作成完了
+					DrawCharacterWeapon.drawed[weapon] = this._canvas;
+					//log this._canvas.toDataURL("image/png");
+					break;
+				default:
+					// サーバからもらった画像も使うかも
+					break;
+			}
+		}else{
+			// 同じ画像を既に作っていれば使い回す
+			this._canvas = DrawCharacterWeapon.drawed[weapon];
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	function preDraw(pose : number[]) : void{
+		this.visible = true;
+		this._action = Math.round(pose[0]);
+
+		// ボディローカル座標
+		var x1 = pose[1];
+		var y1 = pose[2];
+		var z1 = pose[3];
+
+		// 描画位置等設定
+		this._drx = this._character.drX0 + this._character.drScale * 35 * (x1 * this._character.drCos - y1 * this._character.drSin);
+		var y0 = this._character.drY0 + this._character.drScale * 35 * (x1 * this._character.drSin + y1 * this._character.drCos);
+		var z0 = this._character.drZ0 + this._character.drScale * 35 * (z1 - 0.05);
+		this._dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
+		this.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		var ps = this._canvas.height * this._character.drScale;
+		var px = this._drx + Ccvs.canvas.width * 0.5;
+		var py = this._dry + Ccvs.canvas.height * 0.5;
+		Ccvs.context.save();
+		Ccvs.context.translate(px, py);
+		Ccvs.context.scale(1, Ccvs.sinh);
+		Ccvs.context.rotate(this._character.drRotv);
+		Ccvs.context.translate(ps * -0.5, ps * -0.5);
+		Ccvs.context.drawImage(this._canvas, this._canvas.height * this._action, 0, this._canvas.height, this._canvas.height, 0, 0, ps, ps);
+		Ccvs.context.restore();
 	}
 }
 
