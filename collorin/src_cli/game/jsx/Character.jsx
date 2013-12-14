@@ -226,4 +226,53 @@ class DrawCharacterParts extends DrawUnit{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
+// 影クラス
+
+class DrawShadow extends DrawUnit{
+	static var canvas : HTMLCanvasElement = null;
+	var drx : number;
+	var dry : number;
+	var drScale : number;
+	
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(){
+		// 影画像作成
+		if(DrawShadow.canvas == null){
+			DrawShadow.canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+			var context = DrawShadow.canvas.getContext("2d") as CanvasRenderingContext2D;
+			DrawShadow.canvas.width = DrawShadow.canvas.height = 32;
+			context.fillStyle = "rgba(0, 0, 0, 0.5)";
+			context.arc(16, 16, 15, 0, Math.PI * 2.0, true);
+			context.fill();
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	function preDraw(x : number, y : number, z : number, s : number) : void{
+		this.visible = true;
+		// 位置
+		this.drx = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
+		var y0 = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
+		var z0 = Ccvs.scale * z;
+		this.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
+		this.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
+		this.drScale = Ccvs.scale * s;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		var psx = (16 * this.drScale) as int;
+		var psy = (psx * Ccvs.sinh) as int;
+		var px = (this.drx - psx * 0.5 + Ccvs.canvas.width * 0.5) as int;
+		var py = (this.dry - psy * 0.5 + Ccvs.canvas.height * 0.5) as int;
+		Ccvs.context.drawImage(DrawShadow.canvas, px, py, psx, psy);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
 

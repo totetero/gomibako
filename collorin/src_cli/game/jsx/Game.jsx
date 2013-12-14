@@ -21,6 +21,7 @@ class Game{
 	static var player : GameCharacter[];
 	static var enemy : GameCharacter[];
 	static var clist : DrawUnit[];
+	static var slist : DrawUnit[];
 }
 
 // ゲームクラス
@@ -32,6 +33,7 @@ class ECgame extends EventCartridge{
 		Game.field = new Field(Main.jdat["hex"] as FieldHex[]);
 		// キャラクター作成
 		Game.clist = new DrawUnit[];
+		Game.slist = new DrawUnit[];
 		Game.player = new GameCharacter[];
 		Game.enemy = new GameCharacter[];
 		var pjdat = Main.jdat["player"] as variant[];
@@ -64,6 +66,7 @@ class ECgame extends EventCartridge{
 		// キャラクター描画
 		for(var i = 0; i < Game.player.length; i++){Game.player[i].preDraw();}
 		for(var i = 0; i < Game.enemy.length; i++){Game.enemy[i].preDraw();}
+		DrawUnit.drawList(Game.slist);
 		DrawUnit.drawList(Game.clist);
 		// さいころ描画
 		ECdice.drawDice();
@@ -565,6 +568,7 @@ class ECmap extends EventCartridge{
 // プレイヤークラス
 class GameCharacter{
 	var character : DrawCharacter;
+	var shadow : DrawShadow;
 	var id : string;
 	var x : number;
 	var y : number;
@@ -580,7 +584,9 @@ class GameCharacter{
 		var pose = Main.jdat["pose"][dat["pose"] as string] as string;
 		this.id = dat["id"] as string;
 		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], parts, pose);
+		this.shadow = new DrawShadow();
 		Game.clist.push(this.character);
+		Game.slist.push(this.shadow);
 		this.x = Game.field.calcHexCoordx(hexx, hexy);
 		this.y = Game.field.calcHexCoordy(hexx, hexy);
 		this.r = dat["r"] as number;
@@ -611,7 +617,10 @@ class GameCharacter{
 	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw() : void{
-		this.character.preDraw(this.x - Ccvs.cx0, this.y - Ccvs.cy0, 0, this.r, 1.2);
+		var x = this.x - Ccvs.cx0;
+		var y = this.y - Ccvs.cy0;
+		this.character.preDraw(x, y, 0, this.r, 1.2);
+		this.shadow.preDraw(x, y, 0, 1.2);
 
 		if(this.action > 0){
 			// 移動
