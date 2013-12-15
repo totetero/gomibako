@@ -323,9 +323,10 @@ class ECmove extends EventCartridge{
 				}
 				Ccvs.cx1 = player.x;
 				Ccvs.cy1 = player.y;
+				player.motion = "walk";
 				player.action++;
 			}else{
-				player.action = 0;
+				player.motion = "stand";
 			}
 			return (this._parent._ecAssist != null);
 		}
@@ -366,13 +367,30 @@ class ECface extends EventCartridge{
 	override function calc() : boolean{
 		switch(this._mode){
 			case 0:
-				if(++this._action >= 20){
-					Ccvs.mode = 0;
+				// アクション前半
+				this._chara0.motion = "attack1";
+				this._chara0.action = this._action;
+				if(++this._action >= 10){
 					this._mode = 1;
 					this._action = 0;
 				}
 				break;
 			case 1:
+				// アクション後半
+				this._chara0.motion = "attack2";
+				this._chara0.action = this._action;
+				this._chara1.motion = "damage";
+				this._chara1.action = this._action;
+				if(++this._action >= 10){
+					Ccvs.mode = 0;
+					this._mode = 2;
+					this._action = 0;
+				}
+				break;
+			case 2:
+				// アクション完了後
+				this._chara0.motion = "stand";
+				this._chara1.motion = "stand";
 				if(++this._action >= 10){
 					this._func();
 					return false;
@@ -567,12 +585,13 @@ class ECmap extends EventCartridge{
 
 // プレイヤークラス
 class GameCharacter{
-	var character : DrawCharacter;
-	var shadow : DrawShadow;
+	var _character : DrawCharacter;
+	var _shadow : DrawShadow;
 	var id : string;
 	var x : number;
 	var y : number;
 	var r : number;
+	var motion : string;
 	var action : int;
 
 	// ----------------------------------------------------------------
@@ -583,10 +602,10 @@ class GameCharacter{
 		var hexy = dat["y"] as int;
 		var size = 1.2;
 		this.id = dat["id"] as string;
-		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], drawInfo, size);
-		this.shadow = new DrawShadow(size);
-		Game.clist.push(this.character);
-		Game.slist.push(this.shadow);
+		this._character = new DrawCharacter(Main.imgs["dot_" + this.id], drawInfo, size);
+		this._shadow = new DrawShadow(size);
+		Game.clist.push(this._character);
+		Game.slist.push(this._shadow);
 		this.x = Game.field.calcHexCoordx(hexx, hexy);
 		this.y = Game.field.calcHexCoordy(hexx, hexy);
 		this.r = dat["r"] as number;
@@ -619,16 +638,22 @@ class GameCharacter{
 	function preDraw() : void{
 		var x = this.x - Ccvs.cx0;
 		var y = this.y - Ccvs.cy0;
-		this.shadow.preDraw(x, y, 0);
-
-		if(this.action > 0){
-			// 移動
-			this.character.preDraw(x, y, 0, this.r, "walk", ((this.action / 6) as int) % 4);
-		}else{
-			// 静止
-			this.character.preDraw(x, y, 0, this.r, "stand", 0);
+		this._shadow.preDraw(x, y, 0);
+		switch(this.motion){
+			case "walk": this._character.preDraw(x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
+			case "attack1":
+				var act = this._character.getLen(this.motion) - Math.ceil((10 - this.action) / 1);
+				if(act >= 0){this._character.preDraw(x, y, 0, this.r, this.motion, act);}
+				else{this._character.preDraw(x, y, 0, this.r, "stand", 0);}
+				break;
+			case "attack2":
+			case "damage":
+				var act = Math.floor(this.action / 1);
+				if(act < this._character.getLen(this.motion)){this._character.preDraw(x, y, 0, this.r, this.motion, act);}
+				else{this._character.preDraw(x, y, 0, this.r, "stand", 0);}
+				break;
+			default: this._character.preDraw(x, y, 0, this.r, "stand", 0); break;
 		}
-		
 	}
 }
 

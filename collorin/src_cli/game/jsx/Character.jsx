@@ -90,6 +90,12 @@ class DrawCharacter extends DrawUnit{
 	}
 
 	// ----------------------------------------------------------------
+	// モーションのフレーム数獲得
+	function getLen(motion : string) : int{
+		return this._pose[motion].length;
+	}
+
+	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(x : number, y : number, z : number, r : number, motion : string, action : int) : void{
 		// エラーチェック
