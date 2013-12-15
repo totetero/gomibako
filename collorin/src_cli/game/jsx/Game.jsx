@@ -581,9 +581,10 @@ class GameCharacter{
 		var drawInfo = new DrawInfo(Main.jdat["drawInfo"][dat["drawInfo"] as string]);
 		var hexx = dat["x"] as int;
 		var hexy = dat["y"] as int;
+		var size = 1.2;
 		this.id = dat["id"] as string;
-		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], drawInfo);
-		this.shadow = new DrawShadow();
+		this.character = new DrawCharacter(Main.imgs["dot_" + this.id], drawInfo, size);
+		this.shadow = new DrawShadow(size);
 		Game.clist.push(this.character);
 		Game.slist.push(this.shadow);
 		this.x = Game.field.calcHexCoordx(hexx, hexy);
@@ -618,15 +619,14 @@ class GameCharacter{
 	function preDraw() : void{
 		var x = this.x - Ccvs.cx0;
 		var y = this.y - Ccvs.cy0;
-		this.character.preDraw(x, y, 0, this.r, 1.2);
-		this.shadow.preDraw(x, y, 0, 1.2);
+		this.shadow.preDraw(x, y, 0);
 
 		if(this.action > 0){
 			// 移動
-			this.character.setPose("walk", ((this.action / 6) as int) % 4);
+			this.character.preDraw(x, y, 0, this.r, "walk", ((this.action / 6) as int) % 4);
 		}else{
 			// 静止
-			this.character.setPose("stand", 0);
+			this.character.preDraw(x, y, 0, this.r, "stand", 0);
 		}
 		
 	}

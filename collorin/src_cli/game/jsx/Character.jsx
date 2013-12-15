@@ -42,6 +42,7 @@ class DrawCharacter extends DrawUnit{
 	var _parts : Map.<DrawCharacterParts[]>;
 	var _pose : Map.<Map.<number[]>[]>;
 	var _weapon : DrawCharacterWeapon;
+	var _size : number;
 
 	// パーツ描画用変数
 	var img : HTMLImageElement;
@@ -57,11 +58,12 @@ class DrawCharacter extends DrawUnit{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(img : HTMLImageElement, drawInfo : DrawInfo){
+	function constructor(img : HTMLImageElement, drawInfo : DrawInfo, size : number){
 		this.img = img;
 		this._duList = new DrawUnit[];
 		this._parts = {} : Map.<DrawCharacterParts[]>;
 		this._pose = drawInfo.pose;
+		this._size = size;
 
 		// パーツの登録
 		for(var i in drawInfo.parts){
@@ -89,40 +91,22 @@ class DrawCharacter extends DrawUnit{
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	function preDraw(x : number, y : number, z : number, r : number, s : number) : void{
+	function preDraw(x : number, y : number, z : number, r : number, motion : string, action : int) : void{
+		// エラーチェック
+		if(this._pose[motion] == null || this._pose[motion][action] == null){return;}
+
 		this.visible = true;
-		// 位置
+		// ほぼグローバルな位置
 		this.drX0 = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
 		this.drY0 = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
 		this.drZ0 = Ccvs.scale * z;
 		this.drz = this.drY0 * Ccvs.cosh + this.drZ0 * Ccvs.sinh;
-		this.drScale = Ccvs.scale * s;
-		// 角度と三角関数
+		// 大きさ
+		this.drScale = Ccvs.scale * this._size;
+		// ボディローカルな角度と三角関数
 		this.drRotv = Ccvs.rotv + r;
 		this.drSin = Math.sin(this.drRotv);
 		this.drCos = Math.cos(this.drRotv);
-		// テクスチャ垂直軸角度フレーム
-		var v = 45 + 180 / Math.PI * (-this.drRotv);
-		while(v  > 360){v  -= 360;} while(v  <= 0){v  += 360;}
-		if(v  < 90){this.drAngv1 = 1;}else if(v  <= 180){this.drAngv1 = 2;}else if(v  < 270){this.drAngv1 = 3;}else{this.drAngv1 = 0;}
-		// テクスチャ垂直軸角度フレーム タイヤ用
-		var v = 22.5 + 180 / Math.PI * (-this.drRotv);
-		while(v > 360){v -= 360;} while(v  <= 0){v  += 360;}
-		if(v < 45){this.drAngv2 = 2;}
-		else if(v < 90){this.drAngv2 = 1;}
-		else if(v < 135){this.drAngv2 = 0;}
-		else if(v < 180){this.drAngv2 = 3;}
-		else if(v < 225){this.drAngv2 = 2;}
-		else if(v < 270){this.drAngv2 = 1;}
-		else if(v < 315){this.drAngv2 = 0;}
-		else{this.drAngv2 = 3;}
-	}
-
-	// ----------------------------------------------------------------
-	// 姿勢関数
-	function setPose(motion : string, action : int) : void{
-		// エラーチェック
-		if(this._pose[motion] == null || this._pose[motion][action] == null){return;}
 
 		// 姿勢の解釈
 		var pose = this._pose[motion][action];
@@ -185,16 +169,19 @@ class DrawCharacterParts extends DrawUnit{
 	function preDraw(pose : number[]) : void{
 		this.visible = true;
 		var type = Math.round(pose[0]);
-
-		// 回転の確認
+		
+		// パーツローカル角度
+		var rotv = Math.PI * pose[4] / 180;
+		// テクスチャ垂直軸角度フレーム
 		var av = 0;
 		switch(type){
-			case 1: case 2: case 3: case 4: av = this._character.drAngv1; break;
-			case 5: av = this._character.drAngv2; break;
+			case 1: case 2: case 3: case 4: av = Math.round(1 - (180 / Math.PI * (this._character.drRotv + rotv)) / 90) % 4; while(av < 0){av += 4;} break;
+			case 5: av = Math.round(1 - (180 / Math.PI * (this._character.drRotv + rotv)) / 45) % 4; while(av < 0){av += 4;} break; // TODO まだ適当
 		}
 
 		// パーツローカル座標の反転確認
 		var x2 = this._x2;
+		var y2 = this._y2;
 		var z2 = this._z2;
 		this._yswap = false;
 		this._zswap = false;
@@ -214,13 +201,21 @@ class DrawCharacterParts extends DrawUnit{
 			if(av == 1){av = 3;}else if(av == 3){av = 1;}
 			this._yswap = !this._yswap;
 		}
+		// パーツローカル回転
+		if(pose[4] != 0){
+			var cos = Math.cos(rotv);
+			var sin = Math.sin(rotv);
+			var x2r = x2 * cos - y2 * sin;
+			var y2r = x2 * sin + y2 * cos;
+			x2 = x2r;
+			y2 = y2r;
+		}
 
 		// ボディローカル座標
 		var x1 = pose[1] + x2;
-		var y1 = pose[2] + this._y2;
+		var y1 = pose[2] + y2;
 		var z1 = pose[3] + z2;
-
-		// 描画位置等設定
+		// グローバル座標
 		this._drx = this._character.drX0 + this._character.drScale * 35 * (x1 * this._character.drCos - y1 * this._character.drSin);
 		var y0 = this._character.drY0 + this._character.drScale * 35 * (x1 * this._character.drSin + y1 * this._character.drCos);
 		var z0 = this._character.drZ0 + this._character.drScale * 35 * (z1 - 0.05);
@@ -263,6 +258,7 @@ class DrawCharacterWeapon extends DrawUnit{
 
 	var _drx : number;
 	var _dry : number;
+	var _drr : number;
 	var _action : int;
 
 	// ----------------------------------------------------------------
@@ -334,12 +330,14 @@ class DrawCharacterWeapon extends DrawUnit{
 		this.visible = true;
 		this._action = Math.round(pose[0]);
 
+		// パーツローカル角度の確認
+		this._drr = this._character.drRotv + Math.PI * pose[4] / 180;
+
 		// ボディローカル座標
 		var x1 = pose[1];
 		var y1 = pose[2];
 		var z1 = pose[3];
-
-		// 描画位置等設定
+		// グローバル座標
 		this._drx = this._character.drX0 + this._character.drScale * 35 * (x1 * this._character.drCos - y1 * this._character.drSin);
 		var y0 = this._character.drY0 + this._character.drScale * 35 * (x1 * this._character.drSin + y1 * this._character.drCos);
 		var z0 = this._character.drZ0 + this._character.drScale * 35 * (z1 - 0.05);
@@ -356,7 +354,7 @@ class DrawCharacterWeapon extends DrawUnit{
 		Ccvs.context.save();
 		Ccvs.context.translate(px, py);
 		Ccvs.context.scale(1, Ccvs.sinh);
-		Ccvs.context.rotate(this._character.drRotv);
+		Ccvs.context.rotate(this._drr);
 		Ccvs.context.translate(ps * -0.5, ps * -0.5);
 		Ccvs.context.drawImage(this._canvas, this._canvas.height * this._action, 0, this._canvas.height, this._canvas.height, 0, 0, ps, ps);
 		Ccvs.context.restore();
@@ -370,13 +368,16 @@ class DrawCharacterWeapon extends DrawUnit{
 
 class DrawShadow extends DrawUnit{
 	static var canvas : HTMLCanvasElement = null;
-	var drx : number;
-	var dry : number;
-	var drScale : number;
+
+	var _size : number;
+
+	var _drx : number;
+	var _dry : number;
+	var _drScale : number;
 	
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
+	function constructor(size : number){
 		// 影画像作成
 		if(DrawShadow.canvas == null){
 			DrawShadow.canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
@@ -386,28 +387,30 @@ class DrawShadow extends DrawUnit{
 			context.arc(16, 16, 15, 0, Math.PI * 2.0, true);
 			context.fill();
 		}
+		// 影の大きさ
+		this._size = size;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	function preDraw(x : number, y : number, z : number, s : number) : void{
+	function preDraw(x : number, y : number, z : number) : void{
 		this.visible = true;
 		// 位置
-		this.drx = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
+		this._drx = Ccvs.scale * (x * Ccvs.cosv - y * Ccvs.sinv);
 		var y0 = Ccvs.scale * (x * Ccvs.sinv + y * Ccvs.cosv);
 		var z0 = Ccvs.scale * z;
-		this.dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
+		this._dry = y0 * Ccvs.sinh - z0 * Ccvs.cosh;
 		this.drz = y0 * Ccvs.cosh + z0 * Ccvs.sinh;
-		this.drScale = Ccvs.scale * s;
+		this._drScale = Ccvs.scale * this._size;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		var psx = (16 * this.drScale) as int;
+		var psx = (16 * this._drScale) as int;
 		var psy = (psx * Ccvs.sinh) as int;
-		var px = (this.drx - psx * 0.5 + Ccvs.canvas.width * 0.5) as int;
-		var py = (this.dry - psy * 0.5 + Ccvs.canvas.height * 0.5) as int;
+		var px = (this._drx - psx * 0.5 + Ccvs.canvas.width * 0.5) as int;
+		var py = (this._dry - psy * 0.5 + Ccvs.canvas.height * 0.5) as int;
 		Ccvs.context.drawImage(DrawShadow.canvas, px, py, psx, psy);
 	}
 }
