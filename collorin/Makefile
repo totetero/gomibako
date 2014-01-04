@@ -11,7 +11,8 @@ CHAT_JSX = src_cli/chat/jsx
 dafault: jsx srv
 
 srv:
-	node src_srv/main.js
+	#$(JSX) --run src/Main.jsx
+	$(JSX) --executable node --output game.js src_srv/Main.jsx && node game.js
 
 jsx: game chat
 
@@ -25,11 +26,4 @@ $(CHAT_JSX)/chat.js: $(CHAT_JSX)/*.jsx
 
 %.min.js: %.js
 	$(MIN) -c -o $@ $<
-
-setup:
-	npm install jsx uglify-js
-	npm install express ejs
-	npm install mongoose connect-mongo
-	npm install passport passport-local passport-twitter
-	npm install socket.io socket.io-client
 
