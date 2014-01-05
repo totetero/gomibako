@@ -152,7 +152,7 @@ class AuthPage{
 		app.all("*", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			if(req.isAuthenticated()){
 				next();
-			}else if(req.url.indexOf("/login") == 0){
+			}else if(req.url.indexOf("/top") == 0){
 				next();
 			}else{
 				res.redirect("/login");
