@@ -10,6 +10,9 @@ CHAT_JSX = src_cli/chat/jsx
 
 dafault: jsx srv
 
+put:
+	rsync -av * uni:/home/tote/toterabo/srvtest/
+
 srv:
 	#$(JSX) --run src/Main.jsx
 	$(JSX) --executable node --output game.js src_srv/Main.jsx && node game.js
