@@ -13,37 +13,40 @@
 		</script>
 	</head>
 	<body>
-		<div id="root" style="position:absolute;width:100%;height:100%;overflow:hidden;background-color:grey;">
-			<div id="header">
-				<!-- タイトル -->
-				<div style="position:relative;width:320px;height:240px;margin:10px auto 10px auto;">
-					<img src="/top/title.png" style="position:absolute;left:0px;top:0px;width:320px;height:240px;">
-					<img id="titleLogo" src="/top/logo.png" style="position:absolute;right:10px;top:10px;width:135px;height:50px;">
-				</div>
-            
-				<!-- ログインボタン -->
-				<div id="login_tw" class="button" style="width:300px;height:26px;line-height:28px;margin:10px auto 10px auto;">twitterでログイン</div>
-				<div id="login_fb" class="button" style="width:300px;height:26px;line-height:28px;margin:10px auto 10px auto;">facebookでログイン(永遠に準備中)</div>
-            
-				<!-- 説明 -->
-				<div style="width:100%;height:40px;line-height:40px;background-color:green;font-size:20px;text-align:center;margin:20px 0 0;">コロリンって？</div>
-				<div style="width:100%;background-color:white;text-align:center;margin:0 0 20px 0;padding:10px;">
-					<img src="/top/game.png" style="width:260px;height:260px;"><br>
-					前代未聞！！<br>スマートフォンブラウザ用の<br>疑似3D冒険型すごろく<br>ソーシャルゲームだよ
-				</div>
-			</div>
+		<div id="root">
+			<div id="scroll" style="top:0px;">
+				<div id="header">
+					<!-- タイトル -->
+					<div class="title">
+						<div class="img"></div>
+						<div class="logo"></div>
+					</div>
 
-			<!-- フッダ -->
-			<div id="footer" style="position:absolute;bottom:0px;width:100%;">
-				<div style="width:100%;background-color:green;text-align:center;">2014 <a href="http://totetero.com">totetero.com</a></div>
-				<!-- テスト用ログインフォーム -->
-				<form action="/auth/local" method="post">
-					ローカルログイン(テスト用)<br>
-					ユーザー名: <input type="text" name="user" placeholder="ユーザー名"/><br>
-					パスワード: <input type="password" name="password" placeholder="パスワード"/><br>
-					<input type="submit" value="ログイン" />
-				</form>
+					<!-- ログインボタン -->
+					<div id="login_tw" class="button" style="width:300px;height:26px;line-height:28px;margin:10px auto 10px auto;">twitterでログイン</div>
+					<div id="login_fb" class="button" style="width:300px;height:26px;line-height:28px;margin:10px auto 10px auto;">facebookでログイン(永遠に準備中)</div>
+
+					<!-- 説明 -->
+					<div style="width:100%;height:40px;line-height:40px;background-color:green;font-size:20px;text-align:center;margin:20px 0 0;">コロリンって？</div>
+					<div style="width:100%;background-color:white;text-align:center;margin:0 0 20px 0;padding:10px;">
+						<img src="/top/game.png" style="width:260px;height:260px;"><br>
+						前代未聞！！<br>スマートフォンブラウザ用の<br>疑似3D冒険型すごろく<br>ソーシャルゲームだよ
+					</div>
+				</div>
+
+				<!-- フッダ -->
+				<div id="footer">
+					<div class="license">2014 <a href="http://totetero.com">totetero.com</a></div>
+					<!-- テスト用ログインフォーム -->
+					<form action="/auth/local" method="post">
+						ローカルログイン(テスト用)<br>
+						ユーザー名: <input type="text" name="user" placeholder="ユーザー名"/><br>
+						パスワード: <input type="password" name="password" placeholder="パスワード"/><br>
+						<input type="submit" value="ログイン" />
+					</form>
+				</div>
 			</div>
+			<div id="scrollBar" style="top:0px;height:0px;"></div>
 
 			<!-- ローディングマスク -->
 			<div class="loading"></div>
