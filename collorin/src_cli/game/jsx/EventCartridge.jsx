@@ -61,6 +61,56 @@ abstract class EventCartridge{
 	}
 }
 
+// 内部直列化イベントカートリッジ TODO 未使用未テスト
+class SerializedEventCartridge extends EventCartridge{
+	var _list : EventCartridge[];
+	var _current : EventCartridge = null;
+	// コンストラクタ
+	function constructor(list : EventCartridge[]){
+		this._list = list;
+	}
+	// 計算
+	override function calc() : boolean{
+		if(this._current == null || !this._current.calc()){
+			if(this._list.length > 0){
+				this._current = this._list.shift();
+				this._current.init();
+				return this.calc();
+			}
+			return false;
+		}
+		return true;
+	}
+	// 描画
+	override function draw() : void{
+		if(this._current != null){
+			this._current.draw();
+		}
+	}
+}
+
+// 内部平列化イベントカートリッジ TODO 未使用未テスト
+class ParallelizedEventCartridge extends EventCartridge{
+	var _list : EventCartridge[];
+	// コンストラクタ
+	function constructor(list : EventCartridge[]){
+		this._list = list;
+	}
+	// 計算
+	override function calc() : boolean{
+		for(var i = 0; i < this._list.length; i++){
+			if(!this._list[i].calc()){this._list.splice(i--,1);}
+		}
+		return (this._list.length > 0);
+	}
+	// 描画
+	override function draw() : void{
+		for(var i = 0; i < this._list.length; i++){
+			this._list[i].draw();
+		}
+	}
+}
+
 // フレームウエイト
 class ECwait extends EventCartridge{
 	var _wait : int;
