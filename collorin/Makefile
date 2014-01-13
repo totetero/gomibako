@@ -4,29 +4,46 @@ else
 	DIR = $(shell pwd)
 endif
 JSX = $(DIR)/node_modules/jsx/bin/jsx
+LESS = $(DIR)/node_modules/less/bin/lessc
 MIN = $(DIR)/node_modules/uglify-js/bin/uglifyjs
 GAME_JSX = src_cli/game/jsx
 CHAT_JSX = src_cli/chat/jsx
+SRC_SRV_DIR = src_srv
+SRC_CLI_DIR = src_cli_test
 
-dafault: jsx srv
+# ---- test ----
+test: game.js public/index.js public/index.css
+	node game.js
 
-put:
-	rsync -av * uni:/home/tote/toterabo/srvtest/
+clean:
+	rm game.js public/index.js public/index.css
 
-srv:
-	#$(JSX) --run src/Main.jsx
-	$(JSX) --executable node --output game.js src_srv/Main.jsx && node game.js
+game.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
+	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/Main_test.jsx
 
-jsx: game chat
+public/index.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
+	$(JSX) --executable web --output $@ $(SRC_CLI_DIR)/Main.jsx
+	#$(MIN) -c -o $(@:%.js=%.min.js) $@
 
-game: $(GAME_JSX)/game.js
-$(GAME_JSX)/game.js: $(GAME_JSX)/*.jsx
+public/index.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
+	$(LESS) --compress $(SRC_CLI_DIR)/main.less $@
+# ---- test ----
+
+dafault: game_srv.js $(GAME_JSX)/game.js $(CHAT_JSX)/chat.js
+	node game_srv.js
+
+game_srv.js: $(shell find src_srv -name "*.jsx")
+	$(JSX) --executable node --output $@ src_srv/Main.jsx
+
+$(GAME_JSX)/game.js: $(shell find $(GAME_JSX) -name "*.jsx")
 	cd $(GAME_JSX) ; $(JSX) --output $(DIR)/$@ Main.jsx
 
-chat: $(CHAT_JSX)/chat.js
-$(CHAT_JSX)/chat.js: $(CHAT_JSX)/*.jsx
+$(CHAT_JSX)/chat.js: $(shell find $(CHAT_JSX) -name "*.jsx")
 	cd $(CHAT_JSX) ; $(JSX) --output $(DIR)/$@ Main.jsx
 
 %.min.js: %.js
 	$(MIN) -c -o $@ $<
+
+put:
+	rsync -av * uni:/home/tote/toterabo/srvtest/
 

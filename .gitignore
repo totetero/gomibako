@@ -1,6 +1,9 @@
 node_modules
 
 game.js
+game_srv.js
+public/index.js
+public/index.css
 src_cli/game/jsx/*.js
 src_cli/chat/jsx/*.js
 
