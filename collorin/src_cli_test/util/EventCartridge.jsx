@@ -6,8 +6,6 @@ import "js.jsx";
 
 // イベントカートリッジクラス 継承して使う
 abstract class EventCartridge{
-	// 親イベントプレイヤー TODO staticを無くす為の工夫だがもう少し検証要
-	var player : EventPlayer = null;
 	// 開始直前の初期化処理
 	function init() : void{}
 	// イベント処理 返値でtrueを返す間はイベントが続く
@@ -29,31 +27,22 @@ class EventPlayer{
 
 	// 直列イベントの追加
 	function serialPush(sec : EventCartridge) : void{
-		if(sec.player == null){
-			sec.player = this;
-			this._serialList.push(sec);
-		}
+		this._serialList.push(sec);
 	}
 
 	// 並列イベントの追加
 	function parallelPush(pec : EventCartridge) : void{
-		if(pec.player == null){
-			pec.player = this;
-			this._parallelList.push(pec);
-			pec.init();
-		}
+		this._parallelList.push(pec);
+		pec.init();
 	}
 
 	// 直列イベントの割り込み
 	function serialCutting(sec : EventCartridge) : void{
-		if(sec.player == null){
-			sec.player = this;
-			if(this._serialCurrent != null){
-				this._serialList.unshift(this._serialCurrent);
-				this._serialCurrent = null;
-			}
-			this._serialList.unshift(sec);
+		if(this._serialCurrent != null){
+			this._serialList.unshift(this._serialCurrent);
+			this._serialCurrent = null;
 		}
+		this._serialList.unshift(sec);
 	}
 
 	// --------------------------------
@@ -63,7 +52,6 @@ class EventPlayer{
 	function calcSerialEvent() : boolean{
 		if(this._serialCurrent != null && !this._serialCurrent.calc()){
 			this._serialCurrent.dispose();
-			this._serialCurrent.player = null;
 			this._serialCurrent = null;
 		}
 		if(this._serialCurrent == null){
@@ -82,7 +70,6 @@ class EventPlayer{
 		for(var i = 0; i < this._parallelList.length; i++){
 			if(!this._parallelList[i].calc()){
 				this._parallelList[i].dispose();
-				this._parallelList[i].player = null;
 				this._parallelList.splice(i--,1);
 			}
 		}
@@ -111,17 +98,16 @@ class EventPlayer{
 	function dispose() : void{
 		if(this._serialCurrent != null){
 			this._serialCurrent.dispose();
-			this._serialCurrent.player = null;
+			this._serialCurrent = null;
 		}
 		for(var i = 0; i < this._serialList.length; i++){
 			this._serialList[i].dispose();
-			this._serialList[i].player = null;
+			this._serialList.splice(i--,1);
 		}
 		for(var i = 0; i < this._parallelList.length; i++){
 			this._parallelList[i].dispose();
-			this._parallelList[i].player = null;
+			this._parallelList.splice(i--,1);
 		}
-		this._serialCurrent = null;
 	}
 }
 
@@ -131,7 +117,6 @@ class EventPlayer{
 
 // 内部直列化イベントカートリッジ
 class SerializedEventCartridge extends EventCartridge{
-	// 子イベントプレイヤー
 	var _player : EventPlayer = null;
 	// コンストラクタ
 	function constructor(list : EventCartridge[]){
@@ -156,7 +141,6 @@ class SerializedEventCartridge extends EventCartridge{
 
 // 内部平列化イベントカートリッジ
 class ParallelizedEventCartridge extends EventCartridge{
-	// 子イベントプレイヤー
 	var _player : EventPlayer = null;
 	// コンストラクタ
 	function constructor(list : EventCartridge[]){

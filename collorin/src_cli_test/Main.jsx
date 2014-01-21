@@ -13,21 +13,18 @@ class _Main{
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
-//		Loader.loadxhr("/", "mypage", function(response : string) : void{
-			Page.setPage(new MyPage());
-			// ループ開始
-			_Main.mainloop();
-//		}, function() : void{});
+		Page.current = new MyPage();
+		_Main.mainloop();
 	}
 
-	// ----------------------------------------------------------------
-	// mainloop関数
+	// メインループ
 	static function mainloop() : void{
 		// イベント処理
 		Page.current.calcSerialEvent();
 		Page.current.calcParallelEvent();
 		Page.current.drawSerialEvent();
 		Page.current.drawParallelEvent();
+
 		// 次のフレームへ
 		Timer.setTimeout(_Main.mainloop, 33);
 	}
