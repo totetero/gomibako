@@ -1,8 +1,8 @@
 import "timer.jsx";
+import 'js/web.jsx';
 
-import "util/Loader.jsx";
-import "util/EventCartridge.jsx";
-import "util/Page.jsx";
+import "./util/Ctrl.jsx";
+import "./page/Page.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -10,15 +10,20 @@ import "util/Page.jsx";
 
 // メインクラス
 class _Main{
+	
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
-		Page.current = new MyPage();
+		Ctrl.init();
+		Page.init();
+
 		_Main.mainloop();
 	}
 
 	// メインループ
 	static function mainloop() : void{
+		Ctrl.calc();
+
 		// イベント処理
 		Page.current.calcSerialEvent();
 		Page.current.calcParallelEvent();
@@ -27,39 +32,6 @@ class _Main{
 
 		// 次のフレームへ
 		Timer.setTimeout(_Main.mainloop, 33);
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-class MyPage extends Page{
-	// コンストラクタ
-	function constructor(){
-	}
-}
-
-class MypageTest extends EventCartridge{
-	// コンストラクタ
-	function constructor(){
-	}
-
-	// 初期化
-	override function init() : void{
-	}
-
-	// 計算
-	override function calc() : boolean{
-		return true;
-	}
-
-	// 描画
-	override function draw() : void{
-	}
-
-	// 破棄
-	override function dispose() : void{
 	}
 }
 

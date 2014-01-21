@@ -1,7 +1,7 @@
-import "js.jsx";
 import "js/web.jsx";
 
-import "./EventCartridge.jsx";
+import "../util/EventCartridge.jsx";
+import "./MyPage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -10,9 +10,15 @@ import "./EventCartridge.jsx";
 abstract class Page extends EventPlayer{
 	static var current : Page;
 
-	var div : HTMLImageElement;
+	// ページ機能の初期化
+	static function init() : void{
+		Page.current = new MyPage();
+	}
+
+	var div : HTMLDivElement;
 }
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
+

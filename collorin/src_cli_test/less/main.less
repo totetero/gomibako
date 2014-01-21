@@ -1,0 +1,148 @@
+body{
+	margin: 0;
+	overflow: hidden;
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* --------  root -------- */
+
+div#root{
+	position: absolute;
+	overflow: hidden;
+	background-color: red;
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* --------  十字キー -------- */
+
+div#lctrl{
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	width: 144px;
+	height: 144px;
+	//display:none;
+}
+
+div#lctrl div{
+	position: absolute;
+	border: solid 3px white;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+div#lctrl div::before{
+	content: '';
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	width: 100%;
+	height: 100%;
+	border: solid 2px black;
+}
+
+div#lctrl div.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+div#lctrl div.up{
+	left: 56px;
+	top: 18px;
+	width: 26px;
+	height: 36px;
+	border-radius: 8px 8px 15px 15px;
+}
+
+div#lctrl div.up::before{
+	border-radius: 8px 8px 15px 15px;
+}
+
+div#lctrl div.dn{
+	left: 56px;
+	bottom: 18px;
+	width: 26px;
+	height: 36px;
+	border-radius: 15px 15px 8px 8px;
+}
+
+div#lctrl div.dn::before{
+	border-radius: 15px 15px 8px 8px;
+}
+
+div#lctrl div.rt{
+	right: 18px;
+	top: 56px;
+	width: 36px;
+	height: 26px;
+	border-radius: 15px 8px 8px 15px;
+}
+
+div#lctrl div.rt::before{
+	border-radius: 15px 8px 8px 15px;
+}
+
+div#lctrl div.lt{
+	left: 18px;
+	top: 56px;
+	width: 36px;
+	height: 26px;
+	border-radius: 8px 15px 15px 8px;
+}
+
+div#lctrl div.lt::before{
+	border-radius: 8px 15px 15px 8px;
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* --------  ボタン -------- */
+
+div#rctrl{
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	width: 144px;
+	height: 144px;
+}
+
+div#rctrl div{
+	position: absolute;
+	left: 12px;
+	width: 114px;
+	height: 26px;
+	line-height: 30px;
+	border: solid 3px white;
+	border-radius: 12px;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+	//display:none;
+}
+
+div#rctrl div::before{
+	content: '';
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	width: 100%;
+	height: 100%;
+	border: solid 2px black;
+	border-radius: 12px;
+}
+
+div#rctrl div.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+div#rctrl div.zb{top: 2px;}
+div#rctrl div.xb{top: 38px;}
+div#rctrl div.cb{top: 74px;}
+div#rctrl div.sb{top: 110px;}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+

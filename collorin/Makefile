@@ -26,7 +26,7 @@ public/index.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
 	#$(MIN) -c -o $(@:%.js=%.min.js) $@
 
 public/index.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
-	$(LESS) --compress $(SRC_CLI_DIR)/main.less $@
+	$(LESS) --compress $(SRC_CLI_DIR)/less/main.less $@
 # ---- test ----
 
 dafault: game_srv.js $(GAME_JSX)/game.js $(CHAT_JSX)/chat.js
