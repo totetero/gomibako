@@ -10,7 +10,6 @@ import "./page/Page.jsx";
 
 // メインクラス
 class _Main{
-	
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
