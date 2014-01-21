@@ -1,5 +1,5 @@
 import "timer.jsx";
-import 'js/web.jsx';
+import "js/web.jsx";
 
 import "./util/Ctrl.jsx";
 import "./page/Page.jsx";
@@ -24,10 +24,11 @@ class _Main{
 		Ctrl.calc();
 
 		// イベント処理
-		Page.current.calcSerialEvent();
-		Page.current.calcParallelEvent();
-		Page.current.drawSerialEvent();
-		Page.current.drawParallelEvent();
+		var page = Page.current;
+		page.calcSerialEvent();
+		page.calcParallelEvent();
+		page.drawSerialEvent();
+		page.drawParallelEvent();
 
 		// 次のフレームへ
 		Timer.setTimeout(_Main.mainloop, 33);

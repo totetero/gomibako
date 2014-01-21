@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../util/EventCartridge.jsx";
+import "../util/Ctrl.jsx";
 import "./Page.jsx";
 
 // ----------------------------------------------------------------
@@ -16,7 +17,7 @@ class MyPage extends Page{
 				""" + "にょろにょろ" + """
 			</div>
 		""";
-		dom.document.getElementById("root").appendChild(this.div);
+		Ctrl.sdiv.appendChild(this.div);
 	}
 
 	// 破棄
