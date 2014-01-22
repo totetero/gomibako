@@ -21,12 +21,13 @@ class _Main{
 
 	// メインループ
 	static function mainloop() : void{
-		Ctrl.calc();
+		var page = Page.current;
 
 		// イベント処理
-		var page = Page.current;
+		Ctrl.calc();
 		page.calcSerialEvent();
 		page.calcParallelEvent();
+		Ctrl.draw();
 		page.drawSerialEvent();
 		page.drawParallelEvent();
 
