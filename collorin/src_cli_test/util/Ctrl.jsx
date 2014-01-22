@@ -116,20 +116,22 @@ class Ctrl{
 			Ctrl.rDiv.addEventListener("touchcancel", Ctrl.rctrl_mupfn, true);
 		}else{
 			rdiv.addEventListener("mousedown", Ctrl.root_mdnfn, true);
-			rdiv.addEventListener("mouseup", Ctrl.root_mupfn, true);
 			Ctrl.lDiv.addEventListener("mousedown", Ctrl.lctrl_mdnfn, true);
-			Ctrl.lDiv.addEventListener("mouseup", Ctrl.lctrl_mupfn, true);
 			Ctrl.rDiv.addEventListener("mousedown", Ctrl.rctrl_mdnfn, true);
-			Ctrl.rDiv.addEventListener("mouseup", Ctrl.rctrl_mupfn, true);
 			rdiv.addEventListener("mousemove", function(e : Event) : void{
 				Ctrl.root_mmvfn(e);
 				Ctrl.lctrl_mmvfn(e);
 				Ctrl.rctrl_mmvfn(e);
 			}, true);
+			rdiv.addEventListener("mouseup", function(e : Event) : void{
+				Ctrl.root_mupfn(e);
+				Ctrl.lctrl_mupfn(e);
+				Ctrl.rctrl_mupfn(e);
+			}, true);
 			rdiv.addEventListener("mouseout", function(e : Event) : void{
 				var x = (e as MouseEvent).clientX;
 				var y = (e as MouseEvent).clientY;
-				if(Ctrl.mdn && (x <= 0 || Ctrl.ww <= x || y <= 0 || Ctrl.wh <= y)){
+				if(x <= 0 || Ctrl.ww <= x || y <= 0 || Ctrl.wh <= y){
 					Ctrl.root_mupfn(e);
 					Ctrl.lctrl_mupfn(e);
 					Ctrl.rctrl_mupfn(e);
