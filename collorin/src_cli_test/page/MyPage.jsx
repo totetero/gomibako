@@ -9,26 +9,29 @@ import "./Page.jsx";
 // ----------------------------------------------------------------
 
 class MyPage extends Page{
+	// HTMLタグ
+	var htmlTag = """
+		<div class="navi">
+			<div class="b1">ワールド</div>
+			<div class="b2">クエスト</div>
+			<div class="b3">キャラクター</div>
+			<div class="b4">アイテム</div>
+		</div>
+
+		<div class="footer">おしらせバナースペース</div>
+
+		<div class="header">
+			<div class="title">マイページ</div>
+			<div class="btn back">back</div>
+			<div class="btn menu">menu</div>
+		</div>
+	""";
+
 	// コンストラクタ
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "mypage";
-		this.div.innerHTML = """
-			<div class="navi">
-				<div class="b1">ワールド</div>
-				<div class="b2">クエスト</div>
-				<div class="b3">キャラクター</div>
-				<div class="b4">アイテム</div>
-			</div>
-
-			<div class="footer">おしらせバナースペース</div>
-
-			<div class="header">
-				<div class="title">マイページ</div>
-				<div class="btn back">back</div>
-				<div class="btn menu">menu</div>
-			</div>
-		""";
+		this.div.innerHTML = this.htmlTag;
 		Ctrl.sdiv.appendChild(this.div);
 
 		this.serialPush(new MypageTest(this.div));
