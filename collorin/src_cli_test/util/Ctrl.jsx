@@ -187,14 +187,14 @@ class Ctrl{
 			Ctrl.sdiv.style.width = Ctrl.sw + "px";
 			Ctrl.sdiv.style.height = Ctrl.sh + "px";
 		}
-		if(Ctrl._update_up){Ctrl._update_up = false; Ctrl._upDiv.className = Ctrl.kup ? "up hover" : "up";}
-		if(Ctrl._update_dn){Ctrl._update_dn = false; Ctrl._dnDiv.className = Ctrl.kdn ? "dn hover" : "dn";}
-		if(Ctrl._update_rt){Ctrl._update_rt = false; Ctrl._rtDiv.className = Ctrl.krt ? "rt hover" : "rt";}
-		if(Ctrl._update_lt){Ctrl._update_lt = false; Ctrl._ltDiv.className = Ctrl.klt ? "lt hover" : "lt";}
-		if(Ctrl._update_zb){Ctrl._update_zb = false; Ctrl._zbDiv.className = Ctrl.k_z ? "zb hover" : "zb";}
-		if(Ctrl._update_xb){Ctrl._update_xb = false; Ctrl._xbDiv.className = Ctrl.k_x ? "xb hover" : "xb";}
-		if(Ctrl._update_cb){Ctrl._update_cb = false; Ctrl._cbDiv.className = Ctrl.k_c ? "cb hover" : "cb";}
-		if(Ctrl._update_sb){Ctrl._update_sb = false; Ctrl._sbDiv.className = Ctrl.k_s ? "sb hover" : "sb";}
+		if(Ctrl._update_up){Ctrl._update_up = false; Ctrl._upDiv.className = Ctrl.kup ? "up active" : "up";}
+		if(Ctrl._update_dn){Ctrl._update_dn = false; Ctrl._dnDiv.className = Ctrl.kdn ? "dn active" : "dn";}
+		if(Ctrl._update_rt){Ctrl._update_rt = false; Ctrl._rtDiv.className = Ctrl.krt ? "rt active" : "rt";}
+		if(Ctrl._update_lt){Ctrl._update_lt = false; Ctrl._ltDiv.className = Ctrl.klt ? "lt active" : "lt";}
+		if(Ctrl._update_zb){Ctrl._update_zb = false; Ctrl._zbDiv.className = Ctrl.k_z ? "zb active" : "zb";}
+		if(Ctrl._update_xb){Ctrl._update_xb = false; Ctrl._xbDiv.className = Ctrl.k_x ? "xb active" : "xb";}
+		if(Ctrl._update_cb){Ctrl._update_cb = false; Ctrl._cbDiv.className = Ctrl.k_c ? "cb active" : "cb";}
+		if(Ctrl._update_sb){Ctrl._update_sb = false; Ctrl._sbDiv.className = Ctrl.k_s ? "sb active" : "sb";}
 	}
 
 	// ----------------------------------------------------------------
