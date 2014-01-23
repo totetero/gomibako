@@ -152,7 +152,7 @@ class Ctrl{
 			Ctrl.ww = ww;
 			Ctrl.wh = wh;
 			Ctrl.sw = 320;
-			Ctrl.sh = Math.min(Math.max(Ctrl.wh, 320), 480);
+			Ctrl.sh = Math.min(Math.max(Ctrl.wh, 240), 480);
 			Ctrl.sx = Math.floor((Ctrl.ww - Ctrl.sw) * 0.5);
 			Ctrl.sy = Math.floor((Ctrl.wh - Ctrl.sh) * 0.5);
 			Ctrl._update_screen = true;
