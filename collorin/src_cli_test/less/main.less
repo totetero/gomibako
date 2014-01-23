@@ -1,30 +1,40 @@
 body{
 	margin: 0;
+	overflow: hidden;
 }
 
-/* -------------------------------- */
-/* -------------------------------- */
-/* -------------------------------- */
-/* --------  スクリーン -------- */
-
-div#root{
+#root{
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	overflow: hidden;
 	background-color: pink;
 }
 
-div#screen{
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- スクリーン -------- */
+
+#screen{
 	position: absolute;
 	overflow: hidden;
 	background-color: red;
 }
 
+#screen >div{
+	position: absolute;
+	overflow: hidden;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: blue;
+}
+
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
-/* --------  ボタン -------- */
+/* -------- コントローラー -------- */
 
 .ctrlBtn{
 	position: absolute;
@@ -32,13 +42,13 @@ div#screen{
 	width: 144px;
 	height: 144px;
 
-	>div{
+	div{
 		position: absolute;
 		border: solid 3px white;
 		background-color: rgba(255, 255, 255, 0.5);
 	}
 
-	>div::before{
+	div::before{
 		content: '';
 		position: absolute;
 		left: -2px;
@@ -48,7 +58,7 @@ div#screen{
 		border: solid 2px black;
 	}
 
-	>div.hover{
+	div.hover{
 		background-color: rgba(0, 0, 0, 0.5);
 	}
 
@@ -71,7 +81,7 @@ div#screen{
 	&.right{
 		right: 0px;
 
-		>div{
+		div{
 			left: 12px;
 			width: 114px;
 			height: 26px;
@@ -80,7 +90,7 @@ div#screen{
 			//display:none;
 		}
 
-		>div, >div::before{
+		div, >div::before{
 			border-radius: 12px;
 		}
 
@@ -90,6 +100,86 @@ div#screen{
 		.sb{top: 110px;}
 	}
 }
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- ヘッダー要素 -------- */
+
+#screen >div{
+	.header{
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 320px;
+		height: 48px;
+
+		.title{
+			position: absolute;
+			left: 5px;
+			top: 5px;
+			width: 221px - 6px;
+			height: 43px - 6px;
+			line-height: 38px;
+			border: solid 3px white;
+			border-radius: 10px;
+			background-color: rgba(255, 255, 255, 0.5);
+			text-align: center;
+			font-size: 20px;
+		}
+
+		.title::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-radius: 10px;
+		}
+
+		.btn{
+			position: absolute;
+			top: 0px;
+			width: 42px - 6px;
+			height: 48px - 3px;
+			line-height: 47px;
+			border: solid 3px white;
+			border-top: none;
+			border-radius: 0 0 10px 10px;
+			background-color: rgba(255, 255, 255, 0.5);
+			text-align: center;
+			font-size: 10px;
+		}
+
+		.btn::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			top: 0px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-top: none;
+			border-radius: 0 0 10px 10px;
+		}
+
+		.btn.hover{
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		.back{left: 231px;}
+		.menu{left: 278px;}
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- インポート -------- */
+
+@import "mypage.less";
 
 /* -------------------------------- */
 /* -------------------------------- */
