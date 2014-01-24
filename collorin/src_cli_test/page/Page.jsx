@@ -10,9 +10,23 @@ import "./MyPage.jsx";
 
 abstract class Page extends EventPlayer{
 	static var current : Page;
+	// ページ要素
+	static var parentDiv : HTMLDivElement;
+	// ヘッダ要素
+	static var headerDiv : HTMLDivElement;
+	static var titleDiv : HTMLDivElement;
+	static var backDiv : HTMLDivElement;
+	static var menuDiv : HTMLDivElement;
 
 	// ページ機能の初期化
 	static function init() : void{
+		// DOM獲得
+		Page.parentDiv = Ctrl.sdiv.getElementsByClassName("page").item(0) as HTMLDivElement;
+		Page.headerDiv = Ctrl.sdiv.getElementsByClassName("header").item(0) as HTMLDivElement;
+		Page.titleDiv = Page.headerDiv.getElementsByClassName("title").item(0) as HTMLDivElement;
+		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
+		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
+
 		Page.current = new MyPage();
 	}
 
