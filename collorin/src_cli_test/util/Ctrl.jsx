@@ -102,32 +102,32 @@ class Ctrl{
 		var rdiv = dom.document.getElementById("root") as HTMLDivElement;
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
 		if(Ctrl.isTouch){
-			rdiv.addEventListener("touchstart", Ctrl.root_mdnfn, true);
-			rdiv.addEventListener("touchmove", Ctrl.root_mmvfn, true);
-			rdiv.addEventListener("touchend", Ctrl.root_mupfn, true);
-			rdiv.addEventListener("touchcancel", Ctrl.root_mupfn, true);
-			Ctrl.lDiv.addEventListener("touchstart", Ctrl.lctrl_mdnfn, true);
-			Ctrl.lDiv.addEventListener("touchmove", Ctrl.lctrl_mmvfn, true);
-			Ctrl.lDiv.addEventListener("touchend", Ctrl.lctrl_mupfn, true);
-			Ctrl.lDiv.addEventListener("touchcancel", Ctrl.lctrl_mupfn, true);
-			Ctrl.rDiv.addEventListener("touchstart", Ctrl.rctrl_mdnfn, true);
-			Ctrl.rDiv.addEventListener("touchmove", Ctrl.rctrl_mmvfn, true);
-			Ctrl.rDiv.addEventListener("touchend", Ctrl.rctrl_mupfn, true);
-			Ctrl.rDiv.addEventListener("touchcancel", Ctrl.rctrl_mupfn, true);
+			rdiv.addEventListener("touchstart", Ctrl.root_mdnfn);
+			rdiv.addEventListener("touchmove", Ctrl.root_mmvfn);
+			rdiv.addEventListener("touchend", Ctrl.root_mupfn);
+			rdiv.addEventListener("touchcancel", Ctrl.root_mupfn);
+			Ctrl.lDiv.addEventListener("touchstart", Ctrl.lctrl_mdnfn);
+			Ctrl.lDiv.addEventListener("touchmove", Ctrl.lctrl_mmvfn);
+			Ctrl.lDiv.addEventListener("touchend", Ctrl.lctrl_mupfn);
+			Ctrl.lDiv.addEventListener("touchcancel", Ctrl.lctrl_mupfn);
+			Ctrl.rDiv.addEventListener("touchstart", Ctrl.rctrl_mdnfn);
+			Ctrl.rDiv.addEventListener("touchmove", Ctrl.rctrl_mmvfn);
+			Ctrl.rDiv.addEventListener("touchend", Ctrl.rctrl_mupfn);
+			Ctrl.rDiv.addEventListener("touchcancel", Ctrl.rctrl_mupfn);
 		}else{
-			rdiv.addEventListener("mousedown", Ctrl.root_mdnfn, true);
-			Ctrl.lDiv.addEventListener("mousedown", Ctrl.lctrl_mdnfn, true);
-			Ctrl.rDiv.addEventListener("mousedown", Ctrl.rctrl_mdnfn, true);
+			rdiv.addEventListener("mousedown", Ctrl.root_mdnfn);
+			Ctrl.lDiv.addEventListener("mousedown", Ctrl.lctrl_mdnfn);
+			Ctrl.rDiv.addEventListener("mousedown", Ctrl.rctrl_mdnfn);
 			rdiv.addEventListener("mousemove", function(e : Event) : void{
 				Ctrl.root_mmvfn(e);
 				Ctrl.lctrl_mmvfn(e);
 				Ctrl.rctrl_mmvfn(e);
-			}, true);
+			});
 			rdiv.addEventListener("mouseup", function(e : Event) : void{
 				Ctrl.root_mupfn(e);
 				Ctrl.lctrl_mupfn(e);
 				Ctrl.rctrl_mupfn(e);
-			}, true);
+			});
 			rdiv.addEventListener("mouseout", function(e : Event) : void{
 				var x = (e as MouseEvent).clientX;
 				var y = (e as MouseEvent).clientY;
@@ -136,9 +136,9 @@ class Ctrl{
 					Ctrl.lctrl_mupfn(e);
 					Ctrl.rctrl_mupfn(e);
 				}
-			}, true);
-			dom.document.addEventListener("keydown", Ctrl.kdnfn, true);
-			dom.document.addEventListener("keyup", Ctrl.kupfn, true);
+			});
+			dom.document.addEventListener("keydown", Ctrl.kdnfn);
+			dom.document.addEventListener("keyup", Ctrl.kupfn);
 		}
 	}
 
@@ -210,6 +210,7 @@ class Ctrl{
 		}
 		// 上位ノードイベントキャンセル
 		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	// ----------------------------------------------------------------
@@ -226,6 +227,7 @@ class Ctrl{
 		}
 		// 上位ノードイベントキャンセル
 		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	// ----------------------------------------------------------------
@@ -238,6 +240,7 @@ class Ctrl{
 		}
 		// 上位ノードイベントキャンセル
 		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	// ----------------------------------------------------------------
@@ -277,7 +280,9 @@ class Ctrl{
 				if(108 < y && y < 144){if(trigger){Ctrl.trigger_sb = true;}else{Ctrl._mk_s = true;}}
 			}
 		}
+		// 上位ノードイベントキャンセル
 		e.preventDefault();
+		e.stopPropagation();
 	}
 
 	// ----------------------------------------------------------------
@@ -296,7 +301,10 @@ class Ctrl{
 			default: getkey = false;
 		}
 		// キーイベント終了
-		if(getkey){e.preventDefault();}
+		if(getkey){
+			e.preventDefault();
+			e.stopPropagation();
+		}
 	}
 	
 	// ----------------------------------------------------------------
@@ -315,7 +323,10 @@ class Ctrl{
 			default: getkey = false;
 		}
 		// キーイベント終了
-		if(getkey){e.preventDefault();}
+		if(getkey){
+			e.preventDefault();
+			e.stopPropagation();
+		}
 	}
 }
 
