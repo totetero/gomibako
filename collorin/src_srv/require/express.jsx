@@ -3,7 +3,7 @@ import "../models/User.jsx";
 native class express{
 	static function create() : ExApplication;
 	static function logger(env : string) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
-	static function json() : function(req:ExRequest,res:ExResponse,next:function():void) : void;
+	static function json(options : variant) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function urlencoded() : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function methodOverride() : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function cookieParser() : function(req:ExRequest,res:ExResponse,next:function():void) : void;
@@ -43,6 +43,7 @@ native class ExApplication{
 native class ExRequest{
 	var url : string;
 	var params : variant;
+	var body : variant;
 	var user : UserModel;
 	function logout() : void;
 	function isAuthenticated() : boolean;

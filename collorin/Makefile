@@ -12,24 +12,24 @@ SRC_SRV_DIR = src_srv
 SRC_CLI_DIR = src_cli_test
 
 # ---- test ----
-test: game.js public/index.js public/index.css
+test: game.js public/main/index.js public/main/index.css
 	node game.js
 
 clean:
-	rm game.js public/index.js public/index.css
+	rm game.js public/main/index.js public/main/index.css
 
 game.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
 	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/Main_test.jsx
 
-public/index.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
+public/main/index.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
 	$(JSX) --executable web --output $@ $(SRC_CLI_DIR)/Main.jsx
 	#$(MIN) -c -o $(@:%.js=%.min.js) $@
 
-public/index.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
+public/main/index.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
 	$(LESS) --compress $(SRC_CLI_DIR)/less/main.less $@
 # ---- test ----
 
-dafault: game_srv.js $(GAME_JSX)/game.js $(CHAT_JSX)/chat.js
+default: game_srv.js $(GAME_JSX)/game.js $(CHAT_JSX)/chat.js
 	node game_srv.js
 
 game_srv.js: $(shell find src_srv -name "*.jsx")

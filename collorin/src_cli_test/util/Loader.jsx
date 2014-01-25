@@ -40,10 +40,11 @@ class Loader{
 
 	// ----------------------------------------------------------------
 	// XMLhttpリクエスト送信
-	static function loadxhr(url : string, request : string, successFunc : function(:string):void, failureFunc : function():void) : void{
+	static function loadxhr(url : string, request : variant, successFunc : function(:string):void, failureFunc : function():void) : void{
 		// リクエスト開始準備
 		var xhr = new XMLHttpRequest();
-		if(request != ""){xhr.open("POST", url, true);}else{xhr.open("GET", url, true);}
+		if(request != null){xhr.open("POST", url, true);}else{xhr.open("GET", url, true);}
+		xhr.setRequestHeader("Content-Type","application/json");
 		// リクエスト正常終了
 		xhr.addEventListener("load", function(e : Event) : void{successFunc(xhr.responseText);});
 		// リクエスト失敗
@@ -51,7 +52,7 @@ class Loader{
 		xhr.addEventListener("error", function(e : Event) : void{log "error"; failureFunc();});
 		xhr.addEventListener("timeout", function(e : Event) : void{log "timeout"; failureFunc();});
 		// 通信開始
-		xhr.send(request);
+		xhr.send(JSON.stringify(request));
 	}
 }
 

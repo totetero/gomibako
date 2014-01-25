@@ -27,7 +27,7 @@ class _Main{
 			app.set("views", node.__dirname + "/src_cli");
 			app.set("view engine", "ejs");
 			app.use(express.logger("dev"));
-			app.use(express.json());
+			app.use(express.json({strict: false}));
 			app.use(express.urlencoded());
 			app.use(express.methodOverride());
 			app.use(express.cookieParser());

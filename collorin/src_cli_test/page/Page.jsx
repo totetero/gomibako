@@ -1,5 +1,6 @@
 import "js/web.jsx";
 
+import "../util/Loader.jsx";
 import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
 import "./MyPage.jsx";
@@ -28,6 +29,9 @@ abstract class Page extends EventPlayer{
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
 
 		Page.current = new MyPage();
+
+		// テスト
+		Loader.loadxhr("/img", ["hoge", "fuga"], function(resp:string):void{}, function():void{});
 	}
 
 	var div : HTMLDivElement;
