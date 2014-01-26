@@ -66,13 +66,22 @@ class Loader{
 							var len3 = uInt8Array[index++] << 16;
 							var len4 = uInt8Array[index++] << 24;
 							var length = len1 + len2 + len3 + len4;
-							var data = "";
-							for(var i = 0; i < length; i++){data += String.fromCharCode(uInt8Array[index + i]);}
+							var type = "";
+							if(uInt8Array[index + 0] == 0x89 && uInt8Array[index + 1] == 0x50 && uInt8Array[index + 2] == 0x4e && uInt8Array[index + 3] == 0x47){
+								type = "data:image/png;base64,";
+							}else if(uInt8Array[index + 0] == 0x47 && uInt8Array[index + 1] == 0x49 && uInt8Array[index + 2] == 0x46 && uInt8Array[index + 3] == 0x38){
+								type = "data:image/gif;base64,";
+							}else if(uInt8Array[index + 0] == 0xff && uInt8Array[index + 1] == 0xd8 && uInt8Array[index + length - 2] == 0xff && uInt8Array[index + length - 1] == 0xd9){
+								type = "data:image/jpeg;base64,";
+							}
+							if(type != ""){
+								var data = "";
+								for(var i = 0; i < length; i++){data += String.fromCharCode(uInt8Array[index + i]);}
+								// base64情報GET!!
+								count++;
+								b64imgs[tag] = type + dom.window.btoa(data);
+							}
 							index += length;
-        
-							// base64情報GET!!
-							count++;
-							b64imgs[tag] = "data:image/png;base64," + dom.window.btoa(data);
 						}
         
 						// base64形式から画像オブジェクト作成
@@ -98,7 +107,7 @@ class Loader{
 						}
 					}else{
 						// リクエスト異常終了
-						callback("error");
+						callback("error " + xhr.status);
 					}
 				}
 			};
@@ -131,7 +140,7 @@ class Loader{
 					}
 				}else{
 					// リクエスト異常終了
-					log err;
+					log "error " + xhr.status;
 					failureFunc();
 				}
 				xhr = null;
