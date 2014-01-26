@@ -1,11 +1,11 @@
 node_modules
 
 game.js
-game_srv.js
+game_old.js
 public/main/index.js
 public/main/index.css
-src_cli/game/jsx/*.js
-src_cli/chat/jsx/*.js
+src_cli_old/game/jsx/*.js
+src_cli_old/chat/jsx/*.js
 
 *.min.js
 *.min.css

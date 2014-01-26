@@ -4,7 +4,7 @@ import "../require/nodejs.jsx";
 import "../require/express.jsx";
 import "../require/mongo.jsx";
 import "../require/socket.io.jsx";
-import "../util/File.jsx";
+import "../zzz_util_old/File.jsx";
 
 import "../models/User.jsx";
 
@@ -145,8 +145,8 @@ class ChatPage{
 			var jdat = {} : Map.<variant>;
 			var js = new string[];
         
-			js.push("./src_cli/chat/jsx/chat.js");
-			js.push("./src_cli/chat/js/init.js");
+			js.push("./src_cli_old/chat/jsx/chat.js");
+			js.push("./src_cli_old/chat/js/init.js");
         
 			new FileUtilJsonData(js, null, null, null, function(data : FileUtilJsonData){
 				jdat["js"] = data.js;
@@ -170,15 +170,15 @@ class ChatPage{
 				case 5: imgname = "enemy3"; break;
 			}
 			jdat["imgname"] = imgname;
-			imgs[imgname] = "./src_cli/common/img/character/" + imgname + "/dot.png";
+			imgs[imgname] = "./src_cli_old/common/img/character/" + imgname + "/dot.png";
 			
 			// TEST いったん全画像送る
-			imgs["player1"] = "./src_cli/common/img/character/player1/dot.png";
-			imgs["player2"] = "./src_cli/common/img/character/player2/dot.png";
-			imgs["player3"] = "./src_cli/common/img/character/player3/dot.png";
-			imgs["enemy1"] = "./src_cli/common/img/character/enemy1/dot.png";
-			imgs["enemy2"] = "./src_cli/common/img/character/enemy2/dot.png";
-			imgs["enemy3"] = "./src_cli/common/img/character/enemy3/dot.png";
+			imgs["player1"] = "./src_cli_old/common/img/character/player1/dot.png";
+			imgs["player2"] = "./src_cli_old/common/img/character/player2/dot.png";
+			imgs["player3"] = "./src_cli_old/common/img/character/player3/dot.png";
+			imgs["enemy1"] = "./src_cli_old/common/img/character/enemy1/dot.png";
+			imgs["enemy2"] = "./src_cli_old/common/img/character/enemy2/dot.png";
+			imgs["enemy3"] = "./src_cli_old/common/img/character/enemy3/dot.png";
         
 			// ゲーム動的情報
 			new FileUtilJsonData(null, null, imgs, null, function(data : FileUtilJsonData){

@@ -1,6 +1,6 @@
 import "../require/nodejs.jsx";
 import "../require/express.jsx";
-import "../util/File.jsx";
+import "../zzz_util_old/File.jsx";
 
 import "../models/User.jsx";
 import "../data/CharacterDrawInfo.jsx";
@@ -119,14 +119,14 @@ class GamePage{
 		var css = new string[];
 		var strs = {} : Map.<string>;
 
-		js.push("./src_cli/game/jsx/game.js");
-		js.push("./src_cli/game/js/init.js");
-		css.push("./src_cli/game/css/main.css");
-		css.push("./src_cli/game/css/title.css");
-		css.push("./src_cli/game/css/button.css");
-		css.push("./src_cli/game/css/status.css");
-		css.push("./src_cli/game/css/menu.css");
-		strs["mainTag"] = "./src_cli/game/html/main.tag";
+		js.push("./src_cli_old/game/jsx/game.js");
+		js.push("./src_cli_old/game/js/init.js");
+		css.push("./src_cli_old/game/css/main.css");
+		css.push("./src_cli_old/game/css/title.css");
+		css.push("./src_cli_old/game/css/button.css");
+		css.push("./src_cli_old/game/css/status.css");
+		css.push("./src_cli_old/game/css/menu.css");
+		strs["mainTag"] = "./src_cli_old/game/html/main.tag";
 
 		new FileUtilJsonData(js, css, null, strs, function(data : FileUtilJsonData){
 			jdat["js"] = data.js;
@@ -171,9 +171,9 @@ class GamePage{
 			{x: 4, y: 2, type: 1},
 		];
 		// 背景画像
-		imgs["background"] = "./src_cli/common/img/background/test.png";
+		imgs["background"] = "./src_cli_old/common/img/background/test.png";
 		// さいころ画像
-		imgs["dice"] = "./src_cli/common/img/dice/test.png";
+		imgs["dice"] = "./src_cli_old/common/img/dice/test.png";
 
 		// プレイヤー情報
 		jdat["player"] = [
@@ -193,8 +193,8 @@ class GamePage{
 			for(var j = 0; j < charaList[i].length; j++){
 				var id = charaList[i][j]["id"] as string;
 				var drawInfo = charaList[i][j]["drawInfo"] as string;
-				imgs["dot_" + id] = "./src_cli/common/img/character/" + id + "/dot.png";
-				if(i == 0){imgs["b64_bust_" + id] = "./src_cli/common/img/character/" + id + "/bust.png";}
+				imgs["dot_" + id] = "./src_cli_old/common/img/character/" + id + "/dot.png";
+				if(i == 0){imgs["b64_bust_" + id] = "./src_cli_old/common/img/character/" + id + "/bust.png";}
 				drawInfoList[drawInfo] = CharacterDrawInfo.data[drawInfo];
 			}
 		}

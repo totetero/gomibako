@@ -1,0 +1,125 @@
+body{
+	margin: 0;
+	padding: 0;
+}
+
+/* ---------------- ---------------- */
+
+#root{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background-color: grey;
+}
+
+#root #scroll{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+#root #scrollBar{
+	position: absolute;
+	right: 2px;
+	width: 5px;
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 3px;
+}
+
+/* ---------------- ---------------- */
+
+#root #header .title{
+	position: relative;
+	width: 320px;
+	height: 240px;
+	margin: 10px auto 10px auto;
+}
+
+#root #header .title .img{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 320px;
+	height: 240px;
+	background-image: url(/top/title.png);
+	background-size: 320px 240px;
+}
+
+#root #header .title .logo{
+	position:absolute;
+	right:10px;
+	top:10px;
+	width:135px;
+	height:50px;
+	background-image: url(/top/logo.png);
+	background-size: 135px 50px;
+}
+
+/* ---------------- ---------------- */
+
+#root #header .button{
+	position: relative;
+	border: solid 3px white;
+	border-radius: 12px;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+#root #header .button.hover{
+	background-color: rgba(0, 0, 0, 0.5);
+}
+#root #header .button::before{
+	content: '';
+	position: absolute;
+	left: -2px;
+	top: -2px;
+	width: 100%;
+	height: 100%;
+	border: solid 2px black;
+	border-radius: 12px;
+}
+
+/* ---------------- ---------------- */
+
+#root #footer{
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+}
+
+#root #footer .license{
+	width: 100%;
+	background-color: green;
+	text-align: center;
+}
+
+/* ---------------- ---------------- */
+
+#root .loading{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	visibility: hidden;
+}
+#root .loading::before{
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -40px;
+	margin-top: -40px;
+	width: 80px;
+	height: 80px;
+	background-image: url(/top/loading.gif);
+	background-size: 60px 60px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: white;
+	border-radius: 12px;
+}
+
+/* ---------------- ---------------- */
+
