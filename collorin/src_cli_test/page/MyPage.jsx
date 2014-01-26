@@ -78,6 +78,12 @@ class MyPageTest extends EventCartridge{
 			Page.transitionsPage(new WorldPage(), true);
 		}
 
+		if(this.btnList["back"].trigger){
+			this.btnList["back"].trigger = false;
+			// トップに戻る
+			dom.document.location.href = "/top";
+		}
+
 		return true;
 	}
 

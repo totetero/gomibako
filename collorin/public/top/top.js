@@ -177,7 +177,7 @@ var setup = (function(){
 	return function(loggedin){
 		if(loggedin){
 			setMouse([
-				{div: document.getElementById("mypage"), url: "/mypage"},
+				{div: document.getElementById("mypage"), url: "/main"},
 				{div: document.getElementById("logout"), url: "/logout"},
 			]);
 		}else{
