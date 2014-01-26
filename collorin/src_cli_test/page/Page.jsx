@@ -31,7 +31,9 @@ abstract class Page extends EventPlayer{
 		Page.current = new MyPage();
 
 		// テスト
-		Loader.loadxhr("/img", ["hoge", "fuga"], function(resp:string):void{}, function():void{});
+		Loader.loadImg({hoge: "top/logo2.png", nyan: "top/game.png", fuga: "top/title.png"}, function() : void{
+			log Loader.imgs;
+		}, function():void{});
 	}
 
 	var div : HTMLDivElement;

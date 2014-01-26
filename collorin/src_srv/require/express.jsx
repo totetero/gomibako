@@ -1,3 +1,4 @@
+import "nodejs.jsx";
 import "../models/User.jsx";
 
 native class express{
@@ -53,6 +54,7 @@ native class ExResponse{
 	function status(code : int) : ExResponse;
 	function redirect(url : string) : ExResponse;
 	function send(body : string) : ExResponse;
+	function send(body : Buffer) : ExResponse;
 	function render(path : string) : ExResponse;
 	function render(path : string, options : variant) : ExResponse;
 	function contentType(type : string) : ExResponse;

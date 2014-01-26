@@ -16,8 +16,14 @@ native class process{
 
 // ----------------------------------------------------------------
 
-native class Buffer {
+native class Buffer{
+	var length : int;
+	function constructor(size : int);
+	function constructor(str : string, encoding : string);
 	function toString(encoding : string) : string;
+	function copy(targetBuffer : Buffer, targetStart : int) : void;
+	function copy(targetBuffer : Buffer, targetStart : int, sourceStart : int, sourceEnd : int) : void;
+	function writeUInt8(value : int, offset : int) : void;
 }
 
 // ----------------------------------------------------------------
@@ -32,7 +38,7 @@ native class HTTPServer{
 
 // ----------------------------------------------------------------
 
-native class fs {
+native class fs{
 	static function readFile(filename : string, callback : function(err:variant,data:Buffer):void) : void;
 	static function readFile(filename : string, encoding : string, callback : function(err:variant,data:string):void) : void;
 } = "require('fs')";
