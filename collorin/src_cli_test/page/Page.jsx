@@ -4,11 +4,13 @@ import "../util/Loader.jsx";
 import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
 import "./MyPage.jsx";
+import "./WorldPage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// ページクラス 継承して使う
 abstract class Page extends EventPlayer{
 	static var current : Page;
 	// ページ要素
@@ -29,12 +31,15 @@ abstract class Page extends EventPlayer{
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
 
 		Page.current = new MyPage();
-
-		// テスト
-		Loader.loadImg({hoge: "top/logo2.png", nyan: "top/game.png", fuga: "top/title.png"}, function() : void{
-			log Loader.imgs;
-		}, function():void{});
 	}
+
+	// ページ遷移
+	static function transitionsPage(nextPage : Page, next : boolean) : void{
+		nextPage.serialCutting(new SECtransitionsPage(Page.current, nextPage, next));
+		Page.current = nextPage;
+	}
+
+	// ----------------------------------------------------------------
 
 	var div : HTMLDivElement;
 }
@@ -43,6 +48,7 @@ abstract class Page extends EventPlayer{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// ページ用ボタンクラス
 class PageButton{
 	var div : HTMLDivElement;
 	var active : boolean;
@@ -76,6 +82,52 @@ class PageButton{
 		}else if(!this.active && isActive){
 			this.div.className = this.div.className.replace(/ active/g , "");
 		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// ページ遷移エフェクト
+class SECtransitionsPage extends EventCartridge{
+	var currentPage : Page;
+	var nextPage : Page;
+	var next : boolean;
+	var action : int = 0;
+
+	// コンストラクタ
+	function constructor(currentPage : Page, nextPage : Page, next : boolean){
+		this.currentPage = currentPage;
+		this.nextPage = nextPage;
+		this.next = next;
+		if(this.next){
+			// 進む場合は初期位置の変更
+			this.nextPage.div.style.left = "320px";
+		}else{
+			// 戻る場合は重ね順の変更
+			Page.parentDiv.insertBefore(this.nextPage.div, this.currentPage.div);
+		}
+	}
+
+	// 計算
+	override function calc() : boolean{
+		return (this.action++ < 10);
+	}
+
+	// 描画
+	override function draw() : void{
+		var num = this.action / 10;
+		if(this.next){
+			this.nextPage.div.style.left = Math.floor(320 * (1 - num * num)) + "px";
+		}else{
+			this.currentPage.div.style.left = Math.floor(320 * (num * num)) + "px";
+		}
+	}
+
+	// 破棄
+	override function dispose() : void{
+		this.currentPage.dispose();
 	}
 }
 

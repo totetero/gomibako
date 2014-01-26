@@ -4,43 +4,31 @@ import "../util/Loader.jsx";
 import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
 import "./Page.jsx";
-import "./WorldPage.jsx";
+import "./MyPage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class MyPage extends Page{
+class WorldPage extends Page{
 	// HTMLタグ
 	var htmlTag = """
-		<div class="navi">
-			<div class="b1">ワールド</div>
-			<div class="b2">クエスト</div>
-			<div class="b3">キャラクター</div>
-			<div class="b4">アイテム</div>
-		</div>
-
-		<div class="footer">おしらせバナースペース</div>
+		<div>あいうえお</div>
 	""";
 
 	// コンストラクタ
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "mypage";
+		this.div.className = "world";
 		this.div.innerHTML = this.htmlTag;
 		Page.parentDiv.appendChild(this.div);
 
-		// テスト
-		Loader.loadImg({hoge: "top/logo.png", nyan: "top/game.png", fuga: "top/title.png"}, function() : void{
-			log Loader.imgs;
-		}, function():void{});
-
 		// ヘッダ設定
-		Page.titleDiv.innerHTML = "マイページ";
-		Page.backDiv.innerHTML = "top";
+		Page.titleDiv.innerHTML = "ワールド";
+		Page.backDiv.innerHTML = "back";
 		Page.menuDiv.innerHTML = "menu";
 
-		this.serialPush(new MyPageTest(this.div));
+		this.serialPush(new WorldPageTest(this.div));
 	}
 
 	// 破棄
@@ -51,16 +39,12 @@ class MyPage extends Page{
 	}
 }
 
-class MyPageTest extends EventCartridge{
+class WorldPageTest extends EventCartridge{
 	var btnList : Map.<PageButton>;
 
 	// コンストラクタ
 	function constructor(div : HTMLDivElement){
 		this.btnList = {} : Map.<PageButton>;
-		this.btnList["b1"] = new PageButton(div.getElementsByClassName("b1").item(0) as HTMLDivElement);
-		this.btnList["b2"] = new PageButton(div.getElementsByClassName("b2").item(0) as HTMLDivElement);
-		this.btnList["b3"] = new PageButton(div.getElementsByClassName("b3").item(0) as HTMLDivElement);
-		this.btnList["b4"] = new PageButton(div.getElementsByClassName("b4").item(0) as HTMLDivElement);
 		this.btnList["back"] = new PageButton(Page.backDiv);
 		this.btnList["menu"] = new PageButton(Page.menuDiv);
 	}
@@ -73,9 +57,9 @@ class MyPageTest extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this.btnList){this.btnList[name].calc();}
 
-		if(this.btnList["b1"].trigger){
-			this.btnList["b1"].trigger = false;
-			Page.transitionsPage(new WorldPage(), true);
+		if(this.btnList["back"].trigger){
+			this.btnList["back"].trigger = false;
+			Page.transitionsPage(new MyPage(), false);
 		}
 
 		return true;
