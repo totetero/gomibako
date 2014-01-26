@@ -5,6 +5,7 @@ import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
 import "./MyPage.jsx";
 import "./WorldPage.jsx";
+import "./game/GamePage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -13,7 +14,8 @@ import "./WorldPage.jsx";
 // ページクラス 継承して使う
 abstract class Page extends EventPlayer{
 	static var current : Page;
-	// ページ要素
+	static var lastHash : string = "none";
+	// ページ親要素
 	static var parentDiv : HTMLDivElement;
 	// ヘッダ要素
 	static var headerDiv : HTMLDivElement;
@@ -29,19 +31,42 @@ abstract class Page extends EventPlayer{
 		Page.titleDiv = Page.headerDiv.getElementsByClassName("title").item(0) as HTMLDivElement;
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
+	}
 
-		Page.current = new MyPage();
+	// ページ機能の監視
+	static function calc() : void{
+		var currentHash = dom.window.location.hash;
+		if(Page.lastHash != currentHash){
+			Page.lastHash = currentHash;
+			var nextPage : Page = null;
+			// ページの選定
+			if(currentHash.indexOf("game") == 1){nextPage = new GamePage();}
+			else if(currentHash.indexOf("world") == 1){nextPage = new WorldPage();}
+			else{nextPage = new MyPage();}
+			if(Page.current == null || Page.current.name != nextPage.name){
+				// ページ遷移
+				nextPage.serialCutting(new SECtransitionsPage(nextPage));
+				Page.current = nextPage;
+			}else{
+				// 同じページなのでページ遷移しない
+				nextPage.dispose();
+			}
+		}
 	}
 
 	// ページ遷移
-	static function transitionsPage(nextPage : Page, next : boolean) : void{
-		nextPage.serialCutting(new SECtransitionsPage(Page.current, nextPage, next));
-		Page.current = nextPage;
+	static function transitionsPage(name : string) : void{
+		dom.window.location.hash = name;
 	}
 
 	// ----------------------------------------------------------------
-
+	
+	// ページ本体要素
 	var div : HTMLDivElement;
+	// プロパティ
+	var name : string;
+	var depth : int = 0; // 深度 画面遷移時の演出に影響
+	var headerType : int = 0;
 }
 
 // ----------------------------------------------------------------
@@ -97,16 +122,22 @@ class SECtransitionsPage extends EventCartridge{
 	var action : int = 0;
 
 	// コンストラクタ
-	function constructor(currentPage : Page, nextPage : Page, next : boolean){
-		this.currentPage = currentPage;
+	function constructor(nextPage : Page){
+		this.currentPage = Page.current;
 		this.nextPage = nextPage;
-		this.next = next;
-		if(this.next){
-			// 進む場合は初期位置の変更
-			this.nextPage.div.style.left = "320px";
+
+		if(this.currentPage){
+			this.next = (this.currentPage.depth <= this.nextPage.depth);
+			if(this.next){
+				// 進む場合は初期位置の変更
+				this.nextPage.div.style.left = "320px";
+			}else{
+				// 戻る場合は重ね順の変更
+				Page.parentDiv.insertBefore(this.nextPage.div, this.currentPage.div);
+			}
 		}else{
-			// 戻る場合は重ね順の変更
-			Page.parentDiv.insertBefore(this.nextPage.div, this.currentPage.div);
+			// 一番最初はヘッダを隠しておく
+			Page.headerDiv.style.top = "-48px";
 		}
 	}
 
@@ -118,16 +149,45 @@ class SECtransitionsPage extends EventCartridge{
 	// 描画
 	override function draw() : void{
 		var num = this.action / 10;
-		if(this.next){
-			this.nextPage.div.style.left = Math.floor(320 * (1 - num * num)) + "px";
-		}else{
-			this.currentPage.div.style.left = Math.floor(320 * (num * num)) + "px";
+
+		// ヘッダの作成
+		var isBeforeHeader = (this.currentPage != null && this.currentPage.headerType > 0);
+		var isAfterHeader = (this.nextPage.headerType > 0);
+		if(this.action == 1){
+			Page.titleDiv.innerHTML = "";
+			Page.backDiv.innerHTML = "";
+			Page.menuDiv.innerHTML = "";
+		}else if(this.action == 10){
+			if(isAfterHeader){
+				Page.titleDiv.innerHTML = this.nextPage.name;
+				Page.backDiv.innerHTML = (this.nextPage.headerType == 1) ? "top" : "back";
+				Page.menuDiv.innerHTML = "menu";
+				Page.headerDiv.style.top = "0px";
+			}else{
+				Page.headerDiv.style.top = "-48px";
+			}
+		}
+		if(!isBeforeHeader && isAfterHeader){
+			// ヘッダの展開演出
+			Page.headerDiv.style.top = Math.floor(-48 * (1 - num * num)) + "px";
+		}else if(isBeforeHeader && !isAfterHeader){
+			// ヘッダの収納演出
+			Page.headerDiv.style.top = Math.floor(-48 * (num * num)) + "px";
+		}
+
+		if(this.currentPage){
+			// ページの遷移演出
+			if(this.next){
+				this.nextPage.div.style.left = Math.floor(320 * (1 - num * num)) + "px";
+			}else{
+				this.currentPage.div.style.left = Math.floor(320 * (num * num)) + "px";
+			}
 		}
 	}
 
 	// 破棄
 	override function dispose() : void{
-		this.currentPage.dispose();
+		if(this.currentPage){this.currentPage.dispose();}
 	}
 }
 

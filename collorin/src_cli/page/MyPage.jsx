@@ -4,7 +4,6 @@ import "../util/Loader.jsx";
 import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
 import "./Page.jsx";
-import "./WorldPage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -29,16 +28,15 @@ class MyPage extends Page{
 		this.div.className = "mypage";
 		this.div.innerHTML = this.htmlTag;
 		Page.parentDiv.appendChild(this.div);
+		// プロパティ設定
+		this.name = "マイページ";
+		this.depth = 1;
+		this.headerType = 1;
 
 		// テスト
 		Loader.loadImg({hoge: "top/logo.png", nyan: "top/game.png", fuga: "top/title.png"}, function() : void{
 			log Loader.imgs;
 		}, function():void{});
-
-		// ヘッダ設定
-		Page.titleDiv.innerHTML = "マイページ";
-		Page.backDiv.innerHTML = "top";
-		Page.menuDiv.innerHTML = "menu";
 
 		this.serialPush(new MyPageTest(this.div));
 	}
@@ -75,7 +73,7 @@ class MyPageTest extends EventCartridge{
 
 		if(this.btnList["b1"].trigger){
 			this.btnList["b1"].trigger = false;
-			Page.transitionsPage(new WorldPage(), true);
+			Page.transitionsPage("world");
 		}
 
 		if(this.btnList["back"].trigger){
