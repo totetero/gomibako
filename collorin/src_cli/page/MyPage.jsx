@@ -35,13 +35,8 @@ class MyPage extends Page{
 
 	// 初期化
 	override function init() : void{
-		// テスト
-		Loader.loadImg({hoge: "top/logo.png", nyan: "top/game.png", fuga: "top/title.png"}, function() : void{
-			log Loader.imgs;
-		}, function():void{});
-
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECmyPageMain(this.div));
+		this.serialPush(new SECmyPageMain(this));
 	}
 
 	// 破棄
@@ -51,15 +46,17 @@ class MyPage extends Page{
 }
 
 class SECmyPageMain extends EventCartridge{
+	var page : MyPage;
 	var btnList : Map.<PageButton>;
 
 	// コンストラクタ
-	function constructor(div : HTMLDivElement){
+	function constructor(page : MyPage){
+		this.page = page;
 		this.btnList = {} : Map.<PageButton>;
-		this.btnList["b1"] = new PageButton(div.getElementsByClassName("b1").item(0) as HTMLDivElement);
-		this.btnList["b2"] = new PageButton(div.getElementsByClassName("b2").item(0) as HTMLDivElement);
-		this.btnList["b3"] = new PageButton(div.getElementsByClassName("b3").item(0) as HTMLDivElement);
-		this.btnList["b4"] = new PageButton(div.getElementsByClassName("b4").item(0) as HTMLDivElement);
+		this.btnList["b1"] = new PageButton(this.page.div.getElementsByClassName("b1").item(0) as HTMLDivElement);
+		this.btnList["b2"] = new PageButton(this.page.div.getElementsByClassName("b2").item(0) as HTMLDivElement);
+		this.btnList["b3"] = new PageButton(this.page.div.getElementsByClassName("b3").item(0) as HTMLDivElement);
+		this.btnList["b4"] = new PageButton(this.page.div.getElementsByClassName("b4").item(0) as HTMLDivElement);
 		this.btnList["back"] = new PageButton(Page.backDiv);
 		this.btnList["menu"] = new PageButton(Page.menuDiv);
 	}

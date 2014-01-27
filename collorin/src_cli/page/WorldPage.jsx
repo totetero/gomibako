@@ -29,7 +29,7 @@ class WorldPage extends Page{
 	// 初期化
 	override function init() : void{
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECworldPageMain(this.div));
+		this.serialPush(new SECworldPageMain(this));
 	}
 
 	// 破棄
@@ -39,12 +39,14 @@ class WorldPage extends Page{
 }
 
 class SECworldPageMain extends EventCartridge{
+	var page : WorldPage;
 	var btnList : Map.<PageButton>;
 
 	// コンストラクタ
-	function constructor(div : HTMLDivElement){
+	function constructor(page : WorldPage){
+		this.page = page;
 		this.btnList = {} : Map.<PageButton>;
-		this.btnList["btn"] = new PageButton(div.getElementsByClassName("btn").item(0) as HTMLDivElement);
+		this.btnList["btn"] = new PageButton(this.page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
 		this.btnList["back"] = new PageButton(Page.backDiv);
 		this.btnList["menu"] = new PageButton(Page.menuDiv);
 	}
