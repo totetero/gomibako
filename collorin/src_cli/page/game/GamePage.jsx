@@ -20,24 +20,25 @@ class GamePage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "game";
 		this.div.innerHTML = this.htmlTag;
-		Page.parentDiv.appendChild(this.div);
 		// プロパティ設定
 		this.name = "すごろく";
 		this.depth = 3;
 		this.headerType = 0;
+	}
 
-		this.serialPush(new GamePageTest(this.div));
+	// 初期化
+	override function init() : void{
+		this.serialPush(new SECtransitionsPage(this));
+		this.serialPush(new SECgamePageMain(this.div));
 	}
 
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		Page.parentDiv.removeChild(this.div);
-		this.div = null;
 	}
 }
 
-class GamePageTest extends EventCartridge{
+class SECgamePageMain extends EventCartridge{
 	var btnList : Map.<PageButton>;
 
 	// コンストラクタ

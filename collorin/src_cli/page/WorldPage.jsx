@@ -20,24 +20,25 @@ class WorldPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "world";
 		this.div.innerHTML = this.htmlTag;
-		Page.parentDiv.appendChild(this.div);
 		// プロパティ設定
 		this.name = "ワールド";
 		this.depth = 2;
 		this.headerType = 2;
+	}
 
-		this.serialPush(new WorldPageTest(this.div));
+	// 初期化
+	override function init() : void{
+		this.serialPush(new SECtransitionsPage(this));
+		this.serialPush(new SECworldPageMain(this.div));
 	}
 
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		Page.parentDiv.removeChild(this.div);
-		this.div = null;
 	}
 }
 
-class WorldPageTest extends EventCartridge{
+class SECworldPageMain extends EventCartridge{
 	var btnList : Map.<PageButton>;
 
 	// コンストラクタ

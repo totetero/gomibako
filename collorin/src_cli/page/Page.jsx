@@ -46,7 +46,7 @@ abstract class Page extends EventPlayer{
 			else{nextPage = new MyPage();}
 			if(Page.current == null || Page.current.name != nextPage.name){
 				// ページ遷移
-				nextPage.serialCutting(new SECtransitionsPage(nextPage));
+				nextPage.init();
 				Page.current = nextPage;
 			}else{
 				// 同じページなのでページ遷移しない
@@ -61,13 +61,23 @@ abstract class Page extends EventPlayer{
 	}
 
 	// ----------------------------------------------------------------
-	
+
 	// ページ本体要素
 	var div : HTMLDivElement;
 	// プロパティ
 	var name : string;
 	var depth : int = 0; // 深度 画面遷移時の演出に影響
 	var headerType : int = 0;
+
+	// 開始直前の初期化処理
+	function init() : void{}
+
+	// 破棄
+	override function dispose() : void{
+		super.dispose();
+		if(Page.parentDiv.contains(this.div)){Page.parentDiv.removeChild(this.div);}
+		this.div = null;
+	}
 }
 
 // ----------------------------------------------------------------
@@ -127,16 +137,19 @@ class SECtransitionsPage extends EventCartridge{
 		this.currentPage = Page.current;
 		this.nextPage = nextPage;
 
+		// ページのdivを配置、設定
 		if(this.currentPage){
 			this.next = (this.currentPage.depth <= this.nextPage.depth);
 			if(this.next){
+				Page.parentDiv.appendChild(this.nextPage.div);
 				// 進む場合は初期位置の変更
 				Util.cssTranslate(this.nextPage.div, 320, 0);
 			}else{
-				// 戻る場合は重ね順の変更
+				// 戻る場合は重ね順を考慮して配置
 				Page.parentDiv.insertBefore(this.nextPage.div, this.currentPage.div);
 			}
 		}else{
+			Page.parentDiv.appendChild(this.nextPage.div);
 			// 一番最初はヘッダを隠しておく
 			Util.cssTranslate(Page.headerDiv, 0, -48);
 		}
@@ -151,9 +164,10 @@ class SECtransitionsPage extends EventCartridge{
 	override function draw() : void{
 		var num = this.action / 10;
 
-		// ヘッダの作成
+		// ヘッダの存在確認
 		var isBeforeHeader = (this.currentPage != null && this.currentPage.headerType > 0);
 		var isAfterHeader = (this.nextPage.headerType > 0);
+		// ヘッダの形成
 		if(this.action == 1){
 			Page.titleDiv.innerHTML = "";
 			Page.backDiv.innerHTML = "";

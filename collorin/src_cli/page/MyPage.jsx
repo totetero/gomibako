@@ -27,29 +27,30 @@ class MyPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "mypage";
 		this.div.innerHTML = this.htmlTag;
-		Page.parentDiv.appendChild(this.div);
 		// プロパティ設定
 		this.name = "マイページ";
 		this.depth = 1;
 		this.headerType = 1;
+	}
 
+	// 初期化
+	override function init() : void{
 		// テスト
 		Loader.loadImg({hoge: "top/logo.png", nyan: "top/game.png", fuga: "top/title.png"}, function() : void{
 			log Loader.imgs;
 		}, function():void{});
 
-		this.serialPush(new MyPageTest(this.div));
+		this.serialPush(new SECtransitionsPage(this));
+		this.serialPush(new SECmyPageMain(this.div));
 	}
 
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		Page.parentDiv.removeChild(this.div);
-		this.div = null;
 	}
 }
 
-class MyPageTest extends EventCartridge{
+class SECmyPageMain extends EventCartridge{
 	var btnList : Map.<PageButton>;
 
 	// コンストラクタ
