@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../util/EventCartridge.jsx";
+import "../util/Ctrl.jsx";
 
 // Bb3d (billboard base 3d graphic library)
 // ----------------------------------------------------------------
@@ -13,6 +14,10 @@ class Ccvs{
 	var height : int;
 	var canvas : HTMLCanvasElement;
 	var context : CanvasRenderingContext2D;
+	// マウス状態 キャンバスとの相対位置
+	var mdn : boolean;
+	var mx : int;
+	var my : int;
 
 	// コンストラクタ
 	function constructor(width : int, height : int, canvas : HTMLCanvasElement){
@@ -39,8 +44,8 @@ class Ccvs{
 	}
 }
 
-// キャンバスコントローラーカートリッジ
-class SECctrlCanvas extends EventCartridge{
+// キャンバスコントローラーカートリッジ 継承して使う
+abstract class SECctrlCanvas extends EventCartridge{
 	var ccvs : Ccvs;
 
 	// コンストラクタ
@@ -54,6 +59,9 @@ class SECctrlCanvas extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
+		var box = this.ccvs.canvas.getBoundingClientRect();
+		this.ccvs.mx = Ctrl.mx + Ctrl.sx - box.left - box.width * 0.5;
+		this.ccvs.my = Ctrl.my + Ctrl.sy - box.top - box.height * 0.5;
 		return true;
 	}
 

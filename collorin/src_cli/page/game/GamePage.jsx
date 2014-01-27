@@ -46,7 +46,8 @@ class GamePage extends Page{
 	// キャンバス描画
 	function canvasDraw() : void{
 		// test
-		this.ccvs.context.drawImage(Loader.imgs["player"], 10, 10);
+		this.ccvs.context.fillRect(0, 0, this.ccvs.width, this.ccvs.height);
+		this.ccvs.context.drawImage(Loader.imgs["player"], 10, 10, 64, 64);
 	}
 
 	// 破棄
@@ -71,6 +72,7 @@ class SECgamePageMain extends SECctrlCanvas{
 
 	// 計算
 	override function calc() : boolean{
+		super.calc();
 		return true;
 	}
 
