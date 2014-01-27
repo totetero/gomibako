@@ -5,7 +5,7 @@ import "js/web.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// メインクラス
+// 読み込みクラス
 class Loader{
 	// 画像リスト
 	static var imgs = {} : Map.<HTMLImageElement>;
@@ -83,7 +83,7 @@ class Loader{
 							}
 							index += length;
 						}
-        
+
 						// base64形式から画像オブジェクト作成
 						if(count > 0){
 							for(var tag in b64imgs){

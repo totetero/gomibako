@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../util/Loader.jsx";
 import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
+import "../util/Util.jsx";
 import "./MyPage.jsx";
 import "./WorldPage.jsx";
 import "./game/GamePage.jsx";
@@ -130,14 +131,14 @@ class SECtransitionsPage extends EventCartridge{
 			this.next = (this.currentPage.depth <= this.nextPage.depth);
 			if(this.next){
 				// 進む場合は初期位置の変更
-				this.nextPage.div.style.left = "320px";
+				Util.cssTranslate(this.nextPage.div, 320, 0);
 			}else{
 				// 戻る場合は重ね順の変更
 				Page.parentDiv.insertBefore(this.nextPage.div, this.currentPage.div);
 			}
 		}else{
 			// 一番最初はヘッダを隠しておく
-			Page.headerDiv.style.top = "-48px";
+			Util.cssTranslate(Page.headerDiv, 0, -48);
 		}
 	}
 
@@ -162,25 +163,25 @@ class SECtransitionsPage extends EventCartridge{
 				Page.titleDiv.innerHTML = this.nextPage.name;
 				Page.backDiv.innerHTML = (this.nextPage.headerType == 1) ? "top" : "back";
 				Page.menuDiv.innerHTML = "menu";
-				Page.headerDiv.style.top = "0px";
+				Util.cssTranslate(Page.headerDiv, 0, 0);
 			}else{
-				Page.headerDiv.style.top = "-48px";
+				Util.cssTranslate(Page.headerDiv, 0, -48);
 			}
 		}
 		if(!isBeforeHeader && isAfterHeader){
 			// ヘッダの展開演出
-			Page.headerDiv.style.top = Math.floor(-48 * (1 - num * num)) + "px";
+			Util.cssTranslate(Page.headerDiv, 0, -48 * (1 - num * num));
 		}else if(isBeforeHeader && !isAfterHeader){
 			// ヘッダの収納演出
-			Page.headerDiv.style.top = Math.floor(-48 * (num * num)) + "px";
+			Util.cssTranslate(Page.headerDiv, 0, -48 * (num * num));
 		}
 
 		if(this.currentPage){
 			// ページの遷移演出
 			if(this.next){
-				this.nextPage.div.style.left = Math.floor(320 * (1 - num * num)) + "px";
+				Util.cssTranslate(this.nextPage.div, 320 * (1 - num * num), 0);
 			}else{
-				this.currentPage.div.style.left = Math.floor(320 * (num * num)) + "px";
+				Util.cssTranslate(this.currentPage.div, 320 * (num * num), 0);
 			}
 		}
 	}
