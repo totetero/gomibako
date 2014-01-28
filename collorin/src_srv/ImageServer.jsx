@@ -21,23 +21,23 @@ class ImageServer{
 	// ----------------------------------------------------------------
 	// 画像読み込みクラス
 	class ImageLoader{
-		var callback : function(data:Buffer):void;
-		var tags = {} : Map.<Buffer>;
-		var imgs = {} : Map.<Buffer>;
-		var count = 0;
-		var totalLength = 0;
+		var _callback : function(data:Buffer):void;
+		var _tags = {} : Map.<Buffer>;
+		var _imgs = {} : Map.<Buffer>;
+		var _count = 0;
+		var _totalLength = 0;
 
 		// コンストラクタ
 		function constructor(path : string, urls : Map.<string>, callback : function(data:Buffer):void){
-			this.callback = callback;
+			this._callback = callback;
 			// 画像数を数える
-			for(var tag in urls){this.count++;}
-			if(this.count > 0){
+			for(var tag in urls){this._count++;}
+			if(this._count > 0){
 				// 画像を読み込む
 				for(var tag in urls){this.load(path + "/" + urls[tag], tag);}
 			}else{
 				// 読み込む画像数0
-				this.callback(null);
+				this._callback(null);
 			}
 		}
 
@@ -46,36 +46,36 @@ class ImageServer{
 			fs.readFile(url, function (err : variant, data : Buffer){
 				if(!err){
 					// 読み込み成功
-					this.tags[tag0] = new Buffer(tag0, "utf8");
-					this.imgs[tag0] = data;
-					this.totalLength += this.tags[tag0].length + this.imgs[tag0].length + 8;
+					this._tags[tag0] = new Buffer(tag0, "utf8");
+					this._imgs[tag0] = data;
+					this._totalLength += this._tags[tag0].length + this._imgs[tag0].length + 8;
 				}else{
 					// 読み込み失敗 TODO なんかデフォルトの透明画像でも用意しとく？
 				}
 	
-				if(--this.count == 0){
+				if(--this._count == 0){
 					// すべての読み込みが完了したらバッファをまとめて送信
 					var index = 0;
-					var data = new Buffer(this.totalLength);
-					for(var tag1 in this.tags){
+					var data = new Buffer(this._totalLength);
+					for(var tag1 in this._tags){
 						// タグ名
-						var length = this.tags[tag1].length;
+						var length = this._tags[tag1].length;
 						data.writeUInt8(length & 0xff, index++);
 						data.writeUInt8((length >> 8) & 0xff, index++);
 						data.writeUInt8((length >> 16) & 0xff, index++);
 						data.writeUInt8((length >> 24) & 0xff, index++);
-						this.tags[tag1].copy(data, index, 0, Math.min(length, 0xffffffff));
+						this._tags[tag1].copy(data, index, 0, Math.min(length, 0xffffffff));
 						index += length;
 						// 画像データ
-						var length = this.imgs[tag1].length;
+						var length = this._imgs[tag1].length;
 						data.writeUInt8(length & 0xff, index++);
 						data.writeUInt8((length >> 8) & 0xff, index++);
 						data.writeUInt8((length >> 16) & 0xff, index++);
 						data.writeUInt8((length >> 24) & 0xff, index++);
-						this.imgs[tag1].copy(data, index, 0, Math.min(length, 0xffffffff));
+						this._imgs[tag1].copy(data, index, 0, Math.min(length, 0xffffffff));
 						index += length;
 					}
-					this.callback(data);
+					this._callback(data);
 				}
 			});
 		}

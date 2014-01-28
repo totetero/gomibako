@@ -15,7 +15,7 @@ import "./game/GamePage.jsx";
 // ページクラス 継承して使う
 abstract class Page extends EventPlayer{
 	static var current : Page;
-	static var lastHash : string = "none";
+	static var _lastHash : string = "none";
 	// ページ親要素
 	static var containerDiv : HTMLDivElement;
 	// ヘッダ要素
@@ -37,8 +37,8 @@ abstract class Page extends EventPlayer{
 	// ページ機能の監視
 	static function calc() : void{
 		var currentHash = dom.window.location.hash;
-		if(Page.lastHash != currentHash){
-			Page.lastHash = currentHash;
+		if(Page._lastHash != currentHash){
+			Page._lastHash = currentHash;
 			var nextPage : Page = null;
 			// ページの選定
 			if(currentHash.indexOf("game") == 1){nextPage = new GamePage();}
@@ -127,29 +127,29 @@ class PageButton{
 
 // ページ遷移エフェクト
 class SECtransitionsPage extends EventCartridge{
-	var currentPage : Page;
-	var nextPage : Page;
-	var next : boolean;
-	var action : int = 0;
+	var _currentPage : Page;
+	var _nextPage : Page;
+	var _next : boolean;
+	var _action : int = 0;
 
 	// コンストラクタ
 	function constructor(nextPage : Page){
-		this.currentPage = Page.current;
-		this.nextPage = nextPage;
+		this._currentPage = Page.current;
+		this._nextPage = nextPage;
 
 		// ページのdivを配置、設定
-		if(this.currentPage != null){
-			this.next = (this.currentPage.depth <= this.nextPage.depth);
-			if(this.next){
-				Page.containerDiv.appendChild(this.nextPage.div);
+		if(this._currentPage != null){
+			this._next = (this._currentPage.depth <= this._nextPage.depth);
+			if(this._next){
+				Page.containerDiv.appendChild(this._nextPage.div);
 				// 進む場合は初期位置の変更
-				Util.cssTranslate(this.nextPage.div, 320, 0);
+				Util.cssTranslate(this._nextPage.div, 320, 0);
 			}else{
 				// 戻る場合は重ね順を考慮して配置
-				Page.containerDiv.insertBefore(this.nextPage.div, this.currentPage.div);
+				Page.containerDiv.insertBefore(this._nextPage.div, this._currentPage.div);
 			}
 		}else{
-			Page.containerDiv.appendChild(this.nextPage.div);
+			Page.containerDiv.appendChild(this._nextPage.div);
 			// 一番最初はヘッダを隠しておく
 			Util.cssTranslate(Page.headerDiv, 0, -48);
 		}
@@ -157,25 +157,25 @@ class SECtransitionsPage extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		return (this.action++ < 10);
+		return (this._action++ < 10);
 	}
 
 	// 描画
 	override function draw() : void{
-		var num = this.action / 10;
+		var num = this._action / 10;
 
 		// ヘッダの存在確認
-		var isBeforeHeader = (this.currentPage != null && this.currentPage.headerType > 0);
-		var isAfterHeader = (this.nextPage.headerType > 0);
+		var isBeforeHeader = (this._currentPage != null && this._currentPage.headerType > 0);
+		var isAfterHeader = (this._nextPage.headerType > 0);
 		// ヘッダの形成
-		if(this.action == 1){
+		if(this._action == 1){
 			Page.titleDiv.innerHTML = "";
 			Page.backDiv.innerHTML = "";
 			Page.menuDiv.innerHTML = "";
-		}else if(this.action == 10){
+		}else if(this._action == 10){
 			if(isAfterHeader){
-				Page.titleDiv.innerHTML = this.nextPage.name;
-				Page.backDiv.innerHTML = (this.nextPage.headerType == 1) ? "top" : "back";
+				Page.titleDiv.innerHTML = this._nextPage.name;
+				Page.backDiv.innerHTML = (this._nextPage.headerType == 1) ? "top" : "back";
 				Page.menuDiv.innerHTML = "menu";
 				Util.cssTranslate(Page.headerDiv, 0, 0);
 			}else{
@@ -190,19 +190,19 @@ class SECtransitionsPage extends EventCartridge{
 			Util.cssTranslate(Page.headerDiv, 0, -48 * (num * num));
 		}
 
-		if(this.currentPage != null){
+		if(this._currentPage != null){
 			// ページの遷移演出
-			if(this.next){
-				Util.cssTranslate(this.nextPage.div, 320 * (1 - num * num), 0);
+			if(this._next){
+				Util.cssTranslate(this._nextPage.div, 320 * (1 - num * num), 0);
 			}else{
-				Util.cssTranslate(this.currentPage.div, 320 * (num * num), 0);
+				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
 			}
 		}
 	}
 
 	// 破棄
 	override function dispose() : void{
-		if(this.currentPage != null){this.currentPage.dispose();}
+		if(this._currentPage != null){this._currentPage.dispose();}
 	}
 }
 

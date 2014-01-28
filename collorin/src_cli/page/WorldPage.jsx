@@ -11,7 +11,7 @@ import "./Page.jsx";
 
 class WorldPage extends Page{
 	// HTMLタグ
-	var htmlTag = """
+	var _htmlTag = """
 		<div class="btn">テストステージ</div>
 	""";
 
@@ -19,7 +19,7 @@ class WorldPage extends Page{
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page world";
-		this.div.innerHTML = this.htmlTag;
+		this.div.innerHTML = this._htmlTag;
 		// プロパティ設定
 		this.name = "ワールド";
 		this.depth = 2;
@@ -39,16 +39,15 @@ class WorldPage extends Page{
 }
 
 class SECworldPageMain extends EventCartridge{
-	var page : WorldPage;
-	var btnList : Map.<PageButton>;
+	var _page : WorldPage;
+	var _btnList = {} : Map.<PageButton>;
 
 	// コンストラクタ
 	function constructor(page : WorldPage){
-		this.page = page;
-		this.btnList = {} : Map.<PageButton>;
-		this.btnList["btn"] = new PageButton(this.page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
-		this.btnList["back"] = new PageButton(Page.backDiv);
-		this.btnList["menu"] = new PageButton(Page.menuDiv);
+		this._page = page;
+		this._btnList["btn"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
+		this._btnList["back"] = new PageButton(Page.backDiv);
+		this._btnList["menu"] = new PageButton(Page.menuDiv);
 	}
 
 	// 初期化
@@ -57,15 +56,15 @@ class SECworldPageMain extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		for(var name in this.btnList){this.btnList[name].calc();}
+		for(var name in this._btnList){this._btnList[name].calc();}
 
-		if(this.btnList["btn"].trigger){
-			this.btnList["btn"].trigger = false;
+		if(this._btnList["btn"].trigger){
+			this._btnList["btn"].trigger = false;
 			Page.transitionsPage("game");
 		}
 
-		if(this.btnList["back"].trigger){
-			this.btnList["back"].trigger = false;
+		if(this._btnList["back"].trigger){
+			this._btnList["back"].trigger = false;
 			Page.transitionsPage("mypage");
 		}
 
@@ -74,7 +73,7 @@ class SECworldPageMain extends EventCartridge{
 
 	// 描画
 	override function draw() : void{
-		for(var name in this.btnList){this.btnList[name].draw();}
+		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
 	// 破棄

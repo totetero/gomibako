@@ -11,7 +11,7 @@ import "./Page.jsx";
 
 class MyPage extends Page{
 	// HTMLタグ
-	var htmlTag = """
+	var _htmlTag = """
 		<div class="navi">
 			<div class="b1">ワールド</div>
 			<div class="b2">クエスト</div>
@@ -26,7 +26,7 @@ class MyPage extends Page{
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page mypage";
-		this.div.innerHTML = this.htmlTag;
+		this.div.innerHTML = this._htmlTag;
 		// プロパティ設定
 		this.name = "マイページ";
 		this.depth = 1;
@@ -46,19 +46,18 @@ class MyPage extends Page{
 }
 
 class SECmyPageMain extends EventCartridge{
-	var page : MyPage;
-	var btnList : Map.<PageButton>;
+	var _page : MyPage;
+	var _btnList = {} : Map.<PageButton>;
 
 	// コンストラクタ
 	function constructor(page : MyPage){
-		this.page = page;
-		this.btnList = {} : Map.<PageButton>;
-		this.btnList["b1"] = new PageButton(this.page.div.getElementsByClassName("b1").item(0) as HTMLDivElement);
-		this.btnList["b2"] = new PageButton(this.page.div.getElementsByClassName("b2").item(0) as HTMLDivElement);
-		this.btnList["b3"] = new PageButton(this.page.div.getElementsByClassName("b3").item(0) as HTMLDivElement);
-		this.btnList["b4"] = new PageButton(this.page.div.getElementsByClassName("b4").item(0) as HTMLDivElement);
-		this.btnList["back"] = new PageButton(Page.backDiv);
-		this.btnList["menu"] = new PageButton(Page.menuDiv);
+		this._page = page;
+		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("b1").item(0) as HTMLDivElement);
+		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("b2").item(0) as HTMLDivElement);
+		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("b3").item(0) as HTMLDivElement);
+		this._btnList["b4"] = new PageButton(this._page.div.getElementsByClassName("b4").item(0) as HTMLDivElement);
+		this._btnList["back"] = new PageButton(Page.backDiv);
+		this._btnList["menu"] = new PageButton(Page.menuDiv);
 	}
 
 	// 初期化
@@ -67,15 +66,15 @@ class SECmyPageMain extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		for(var name in this.btnList){this.btnList[name].calc();}
+		for(var name in this._btnList){this._btnList[name].calc();}
 
-		if(this.btnList["b1"].trigger){
-			this.btnList["b1"].trigger = false;
+		if(this._btnList["b1"].trigger){
+			this._btnList["b1"].trigger = false;
 			Page.transitionsPage("world");
 		}
 
-		if(this.btnList["back"].trigger){
-			this.btnList["back"].trigger = false;
+		if(this._btnList["back"].trigger){
+			this._btnList["back"].trigger = false;
 			// トップに戻る
 			dom.document.location.href = "/top";
 		}
@@ -85,7 +84,7 @@ class SECmyPageMain extends EventCartridge{
 
 	// 描画
 	override function draw() : void{
-		for(var name in this.btnList){this.btnList[name].draw();}
+		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
 	// 破棄

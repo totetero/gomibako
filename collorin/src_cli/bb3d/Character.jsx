@@ -39,8 +39,8 @@ class DrawInfo{
 
 // キャラクタークラス
 class DrawCharacter extends DrawUnit{
-	var _duList : DrawUnit[];
-	var _parts : Map.<DrawCharacterParts[]>;
+	var _duList = new DrawUnit[];
+	var _parts = {} : Map.<DrawCharacterParts[]>;
 	var _pose : Map.<Map.<number[]>[]>;
 	var _weapon : DrawCharacterWeapon;
 	var _size : number;
@@ -61,8 +61,6 @@ class DrawCharacter extends DrawUnit{
 	// コンストラクタ
 	function constructor(img : HTMLImageElement, drawInfo : DrawInfo, size : number){
 		this.img = img;
-		this._duList = new DrawUnit[];
-		this._parts = {} : Map.<DrawCharacterParts[]>;
 		this._pose = drawInfo.pose;
 		this._size = size;
 

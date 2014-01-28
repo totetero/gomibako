@@ -13,7 +13,7 @@ import "../Page.jsx";
 
 class GamePage extends Page{
 	// HTMLタグ
-	var htmlTag = """
+	var _htmlTag = """
 		<canvas></canvas>
 	""";
 
@@ -28,7 +28,7 @@ class GamePage extends Page{
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page game";
-		this.div.innerHTML = this.htmlTag;
+		this.div.innerHTML = this._htmlTag;
 		// キャンバス
 		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 		// プロパティ設定
@@ -51,14 +51,14 @@ class GamePage extends Page{
 	// キャンバス描画
 	function canvasDraw() : void{
 		this.ccvs.context.clearRect(0, 0, this.ccvs.width, this.ccvs.height);
-		this.drawTestField(this.ccvs);
+		this._drawTestField(this.ccvs);
 		if(this.player != null){this.player.preDraw(this.ccvs);}
 		DrawUnit.drawList(this.ccvs, this.slist);
 		DrawUnit.drawList(this.ccvs, this.clist);
 	}
 
 	// テスト地形描画
-	function drawTestField(ccvs : Ccvs) : void{
+	function _drawTestField(ccvs : Ccvs) : void{
 		// 描画開始
 		ccvs.context.save();
 		ccvs.context.translate(ccvs.width * 0.5, ccvs.height * 0.5);
@@ -85,12 +85,12 @@ class GamePage extends Page{
 }
 
 class SECgamePageMain extends SECctrlCanvas{
-	var page : GamePage;
+	var _page : GamePage;
 
 	// コンストラクタ
 	function constructor(page : GamePage){
 		super(page.ccvs);
-		this.page = page;
+		this._page = page;
 	}
 
 	// 初期化
@@ -100,13 +100,13 @@ class SECgamePageMain extends SECctrlCanvas{
 	// 計算
 	override function calc() : boolean{
 		super.calc();
-		this.page.player.calc(this.ccvs);
+		this._page.player.calc(this.ccvs);
 		return true;
 	}
 
 	// 描画
 	override function draw() : void{
-		this.page.canvasDraw();
+		this._page.canvasDraw();
 	}
 
 	// 破棄
