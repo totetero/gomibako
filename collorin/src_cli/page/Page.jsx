@@ -17,7 +17,7 @@ abstract class Page extends EventPlayer{
 	static var current : Page;
 	static var lastHash : string = "none";
 	// ページ親要素
-	static var parentDiv : HTMLDivElement;
+	static var containerDiv : HTMLDivElement;
 	// ヘッダ要素
 	static var headerDiv : HTMLDivElement;
 	static var titleDiv : HTMLDivElement;
@@ -27,7 +27,7 @@ abstract class Page extends EventPlayer{
 	// ページ機能の初期化
 	static function init() : void{
 		// DOM獲得
-		Page.parentDiv = Ctrl.sdiv.getElementsByClassName("pageContainer").item(0) as HTMLDivElement;
+		Page.containerDiv = Ctrl.sdiv.getElementsByClassName("pageContainer").item(0) as HTMLDivElement;
 		Page.headerDiv = Ctrl.sdiv.getElementsByClassName("header").item(0) as HTMLDivElement;
 		Page.titleDiv = Page.headerDiv.getElementsByClassName("title").item(0) as HTMLDivElement;
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
@@ -75,7 +75,7 @@ abstract class Page extends EventPlayer{
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		if(Page.parentDiv.contains(this.div)){Page.parentDiv.removeChild(this.div);}
+		if(Page.containerDiv.contains(this.div)){Page.containerDiv.removeChild(this.div);}
 		this.div = null;
 	}
 }
@@ -138,18 +138,18 @@ class SECtransitionsPage extends EventCartridge{
 		this.nextPage = nextPage;
 
 		// ページのdivを配置、設定
-		if(this.currentPage){
+		if(this.currentPage != null){
 			this.next = (this.currentPage.depth <= this.nextPage.depth);
 			if(this.next){
-				Page.parentDiv.appendChild(this.nextPage.div);
+				Page.containerDiv.appendChild(this.nextPage.div);
 				// 進む場合は初期位置の変更
 				Util.cssTranslate(this.nextPage.div, 320, 0);
 			}else{
 				// 戻る場合は重ね順を考慮して配置
-				Page.parentDiv.insertBefore(this.nextPage.div, this.currentPage.div);
+				Page.containerDiv.insertBefore(this.nextPage.div, this.currentPage.div);
 			}
 		}else{
-			Page.parentDiv.appendChild(this.nextPage.div);
+			Page.containerDiv.appendChild(this.nextPage.div);
 			// 一番最初はヘッダを隠しておく
 			Util.cssTranslate(Page.headerDiv, 0, -48);
 		}
@@ -190,7 +190,7 @@ class SECtransitionsPage extends EventCartridge{
 			Util.cssTranslate(Page.headerDiv, 0, -48 * (num * num));
 		}
 
-		if(this.currentPage){
+		if(this.currentPage != null){
 			// ページの遷移演出
 			if(this.next){
 				Util.cssTranslate(this.nextPage.div, 320 * (1 - num * num), 0);
@@ -202,7 +202,7 @@ class SECtransitionsPage extends EventCartridge{
 
 	// 破棄
 	override function dispose() : void{
-		if(this.currentPage){this.currentPage.dispose();}
+		if(this.currentPage != null){this.currentPage.dispose();}
 	}
 }
 
