@@ -18,7 +18,7 @@ class _Main{
 		dom.document.body.innerHTML = """
 			<div id="root">
 				<div id="screen">
-					<div class="page"></div>
+					<div class="pageContainer"></div>
 					<div class="header">
 						<div class="title"></div>
 						<div class="btn back"></div>

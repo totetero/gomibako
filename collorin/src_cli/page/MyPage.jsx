@@ -25,7 +25,7 @@ class MyPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "mypage";
+		this.div.className = "page mypage";
 		this.div.innerHTML = this.htmlTag;
 		// プロパティ設定
 		this.name = "マイページ";

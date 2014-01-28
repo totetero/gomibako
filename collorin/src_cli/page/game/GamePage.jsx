@@ -22,7 +22,7 @@ class GamePage extends Page{
 	// コンストラクタ
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "game";
+		this.div.className = "page game";
 		this.div.innerHTML = this.htmlTag;
 		// キャンバス
 		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);

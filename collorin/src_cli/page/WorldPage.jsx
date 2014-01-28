@@ -18,7 +18,7 @@ class WorldPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "world";
+		this.div.className = "page world";
 		this.div.innerHTML = this.htmlTag;
 		// プロパティ設定
 		this.name = "ワールド";
