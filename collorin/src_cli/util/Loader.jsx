@@ -56,19 +56,23 @@ class Loader{
 							var index = 0;
 							var totalLength = uInt8Array.length;
 							while(index < totalLength){
+								// ファイルのタグ名長さ読み取り
 								var len1 = uInt8Array[index++];
 								var len2 = uInt8Array[index++] << 8;
 								var len3 = uInt8Array[index++] << 16;
 								var len4 = uInt8Array[index++] << 24;
 								var length = len1 + len2 + len3 + len4;
+								// タグ名記録
 								var tag = "";
 								for(var i = 0; i < length; i++){tag += String.fromCharCode(uInt8Array[index + i]);}
 								index += length;
+								// ファイルのバイナリ長さ読み取り
 								var len1 = uInt8Array[index++];
 								var len2 = uInt8Array[index++] << 8;
 								var len3 = uInt8Array[index++] << 16;
 								var len4 = uInt8Array[index++] << 24;
 								var length = len1 + len2 + len3 + len4;
+								// ファイル形式の確認
 								var type = "";
 								var cp0 = uInt8Array[index + 0];
 								var cp1 = uInt8Array[index + 1];

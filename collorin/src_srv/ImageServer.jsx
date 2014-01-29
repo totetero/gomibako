@@ -36,9 +36,9 @@ class ImageServer{
 	// ----------------------------------------------------------------
 	// base64形式での画像読み込みクラス
 	class ImageLoaderB64{
+		var _count : int;
 		var _callback : function(data:string):void;
 		var _imgs = {} : Map.<string>;
-		var _count : int;
 
 		// コンストラクタ
 		function constructor(path : string, urls : Map.<string>, count : int, callback : function(data:string):void){
@@ -51,23 +51,34 @@ class ImageServer{
 		// データのロード
 		function load(url : string, tag : string) : void{
 			fs.readFile(url, function (err : variant, data : Buffer){
-				var type = "";
-				var cp0 = data.readUInt8(0);
-				var cp1 = data.readUInt8(1);
-				var cp2 = data.readUInt8(2);
-				var cp3 = data.readUInt8(3);
-				var cm1 = data.readUInt8(data.length - 1);
-				var cm2 = data.readUInt8(data.length - 2);
-				if(cp0 == 0x89 && cp1 == 0x50 && cp2 == 0x4e && cp3 == 0x47){
-					type = "data:image/png;base64,";
-				}else if(cp0 == 0x47 && cp1 == 0x49 && cp2 == 0x46 && cp3 == 0x38){
-					type = "data:image/gif;base64,";
-				}else if(cp0 == 0xff && cp1 == 0xd8 && cm2 == 0xff && cm1 == 0xd9){
-					type = "data:image/jpeg;base64,";
+				if(!err){
+					// 読み込み成功 ファイル形式の確認
+					var type = "";
+					var cp0 = data.readUInt8(0);
+					var cp1 = data.readUInt8(1);
+					var cp2 = data.readUInt8(2);
+					var cp3 = data.readUInt8(3);
+					var cm1 = data.readUInt8(data.length - 1);
+					var cm2 = data.readUInt8(data.length - 2);
+					if(cp0 == 0x89 && cp1 == 0x50 && cp2 == 0x4e && cp3 == 0x47){
+						type = "data:image/png;base64,";
+					}else if(cp0 == 0x47 && cp1 == 0x49 && cp2 == 0x46 && cp3 == 0x38){
+						type = "data:image/gif;base64,";
+					}else if(cp0 == 0xff && cp1 == 0xd8 && cm2 == 0xff && cm1 == 0xd9){
+						type = "data:image/jpeg;base64,";
+					}
+					if(type != ""){
+						// base64情報GET!!
+						this._imgs[tag] = type + data.toString("base64");
+					}else{
+						// 読み込み失敗 TODO なんかデフォルトの透明画像でも用意しとく？
+					}
+				}else{
+					// 読み込み失敗 TODO なんかデフォルトの透明画像でも用意しとく？
 				}
-				this._imgs[tag] = type + data.toString("base64");
-				// すべてのロードが終わったらコールバック
+
 				if(--this._count == 0){
+					// すべての読み込みが完了したら送信
 					this._callback(JSON.stringify(this._imgs));
 				}
 			});
@@ -77,10 +88,10 @@ class ImageServer{
 	// ----------------------------------------------------------------
 	// binaryデータでの画像読み込みクラス
 	class ImageLoaderBin{
+		var _count : int;
 		var _callback : function(data:Buffer):void;
 		var _tags = {} : Map.<Buffer>;
 		var _imgs = {} : Map.<Buffer>;
-		var _count : int;
 		var _totalLength = 0;
 
 		// コンストラクタ
