@@ -28,11 +28,12 @@ class Loader{
 		}
 
 		if(count > 0){
+			var isBin = js.eval("dom.window.ArrayBuffer") as boolean;
 			// リクエスト開始準備
 			var xhr = new XMLHttpRequest();
 			xhr.open("POST", "/img", true);
 			xhr.setRequestHeader("Content-Type","application/json");
-			xhr.responseType = "arraybuffer";
+			xhr.responseType = isBin ? "arraybuffer" : "text";
 			// リクエスト完了後の後片付け処理
 			var callback = function(err : string) : void{
 				if(err == ""){
@@ -43,45 +44,58 @@ class Loader{
 				}
 				xhr = null;
 			};
+			// リクエスト状態変化関数
 			xhr.onreadystatechange = function(e : Event) : void{
 				if(xhr.readyState == 4){
 					if(xhr.status == 200){
 						// リクエスト正常終了 受け取ったバイナリをbase64形式に変更
 						var b64imgs = {} : Map.<string>;
-						var uInt8Array = new Uint8Array(xhr.response as ArrayBuffer);
-						var index = 0;
 						var count = 0;
-						var totalLength = uInt8Array.length;
-						while(index < totalLength){
-							var len1 = uInt8Array[index++];
-							var len2 = uInt8Array[index++] << 8;
-							var len3 = uInt8Array[index++] << 16;
-							var len4 = uInt8Array[index++] << 24;
-							var length = len1 + len2 + len3 + len4;
-							var tag = "";
-							for(var i = 0; i < length; i++){tag += String.fromCharCode(uInt8Array[index + i]);}
-							index += length;
-							var len1 = uInt8Array[index++];
-							var len2 = uInt8Array[index++] << 8;
-							var len3 = uInt8Array[index++] << 16;
-							var len4 = uInt8Array[index++] << 24;
-							var length = len1 + len2 + len3 + len4;
-							var type = "";
-							if(uInt8Array[index + 0] == 0x89 && uInt8Array[index + 1] == 0x50 && uInt8Array[index + 2] == 0x4e && uInt8Array[index + 3] == 0x47){
-								type = "data:image/png;base64,";
-							}else if(uInt8Array[index + 0] == 0x47 && uInt8Array[index + 1] == 0x49 && uInt8Array[index + 2] == 0x46 && uInt8Array[index + 3] == 0x38){
-								type = "data:image/gif;base64,";
-							}else if(uInt8Array[index + 0] == 0xff && uInt8Array[index + 1] == 0xd8 && uInt8Array[index + length - 2] == 0xff && uInt8Array[index + length - 1] == 0xd9){
-								type = "data:image/jpeg;base64,";
+						if(isBin){
+							var uInt8Array = new Uint8Array(xhr.response as ArrayBuffer);
+							var index = 0;
+							var totalLength = uInt8Array.length;
+							while(index < totalLength){
+								var len1 = uInt8Array[index++];
+								var len2 = uInt8Array[index++] << 8;
+								var len3 = uInt8Array[index++] << 16;
+								var len4 = uInt8Array[index++] << 24;
+								var length = len1 + len2 + len3 + len4;
+								var tag = "";
+								for(var i = 0; i < length; i++){tag += String.fromCharCode(uInt8Array[index + i]);}
+								index += length;
+								var len1 = uInt8Array[index++];
+								var len2 = uInt8Array[index++] << 8;
+								var len3 = uInt8Array[index++] << 16;
+								var len4 = uInt8Array[index++] << 24;
+								var length = len1 + len2 + len3 + len4;
+								var type = "";
+								var cp0 = uInt8Array[index + 0];
+								var cp1 = uInt8Array[index + 1];
+								var cp2 = uInt8Array[index + 2];
+								var cp3 = uInt8Array[index + 3];
+								var cm1 = uInt8Array[index + length - 1];
+								var cm2 = uInt8Array[index + length - 2];
+								if(cp0 == 0x89 && cp1 == 0x50 && cp2 == 0x4e && cp3 == 0x47){
+									type = "data:image/png;base64,";
+								}else if(cp0 == 0x47 && cp1 == 0x49 && cp2 == 0x46 && cp3 == 0x38){
+									type = "data:image/gif;base64,";
+								}else if(cp0 == 0xff && cp1 == 0xd8 && cm2 == 0xff && cm1 == 0xd9){
+									type = "data:image/jpeg;base64,";
+								}
+								if(type != ""){
+									var data = "";
+									for(var i = 0; i < length; i++){data += String.fromCharCode(uInt8Array[index + i]);}
+									// base64情報GET!!
+									count++;
+									b64imgs[tag] = type + dom.window.btoa(data);
+								}
+								index += length;
 							}
-							if(type != ""){
-								var data = "";
-								for(var i = 0; i < length; i++){data += String.fromCharCode(uInt8Array[index + i]);}
-								// base64情報GET!!
-								count++;
-								b64imgs[tag] = type + dom.window.btoa(data);
-							}
-							index += length;
+						}else{
+							// ArrayBuffer非対応！！
+							b64imgs = JSON.parse(xhr.responseText) as Map.<string>;
+							for(var tag in b64imgs){count++;}
 						}
 
 						// base64形式から画像オブジェクト作成
@@ -112,7 +126,10 @@ class Loader{
 				}
 			};
 			// 通信開始
-			xhr.send(JSON.stringify(request));
+			xhr.send(JSON.stringify({
+				isBin: isBin,
+				urls: request
+			}));
 		}else{
 			// 読み込むものが無い
 			successFunc();

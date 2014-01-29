@@ -23,6 +23,7 @@ native class Buffer{
 	function toString(encoding : string) : string;
 	function copy(targetBuffer : Buffer, targetStart : int) : void;
 	function copy(targetBuffer : Buffer, targetStart : int, sourceStart : int, sourceEnd : int) : void;
+	function readUInt8(offset : int) : int;
 	function writeUInt8(value : int, offset : int) : void;
 }
 
