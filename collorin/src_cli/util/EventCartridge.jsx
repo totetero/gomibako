@@ -20,6 +20,7 @@ class EventPlayer{
 	var _serialCurrent : EventCartridge = null;
 	var _serialList : EventCartridge[] = new EventCartridge[];
 	var _parallelList : EventCartridge[] = new EventCartridge[];
+	var _disposeList : EventCartridge[] = new EventCartridge[];
 
 	// --------------------------------
 	// イベントの設定
@@ -46,11 +47,25 @@ class EventPlayer{
 
 	// --------------------------------
 	// イベントの処理
-
-	// 直列イベントの処理
+	function calcEvent() : boolean{
+		// 使い終わっている要素の破棄
+		for(var i = 0; i < this._disposeList.length; i++){this._disposeList[i].dispose();}
+		this._disposeList.length = 0;
+		// 直列イベントの処理
+		var serialExist = this.calcSerialEvent();
+		// 並列イベントの処理
+		for(var i = 0; i < this._parallelList.length; i++){
+			if(!this._parallelList[i].calc()){
+				this._disposeList.push(this._parallelList[i]);
+				this._parallelList.splice(i--,1);
+			}
+		}
+		return serialExist || this._parallelList.length > 0;
+	}
+	// 直列イベントの処理 再帰関数
 	function calcSerialEvent() : boolean{
 		if(this._serialCurrent != null && !this._serialCurrent.calc()){
-			this._serialCurrent.dispose();
+			this._disposeList.push(this._serialCurrent);
 			this._serialCurrent = null;
 		}
 		if(this._serialCurrent == null){
@@ -64,29 +79,14 @@ class EventPlayer{
 		return true;
 	}
 
-	// 並列イベントの処理
-	function calcParallelEvent() : boolean{
-		for(var i = 0; i < this._parallelList.length; i++){
-			if(!this._parallelList[i].calc()){
-				this._parallelList[i].dispose();
-				this._parallelList.splice(i--,1);
-			}
-		}
-		return this._parallelList.length > 0;
-	}
-
 	// --------------------------------
 	// イベントの描画
-
-	// 直列イベントの描画
-	function drawSerialEvent() : void{
+	function drawEvent() : void{
+		// 直列イベントの描画
 		if(this._serialCurrent != null){
 			this._serialCurrent.draw();
 		}
-	}
-
-	// 並列イベントの描画
-	function drawParallelEvent() : void{
+		// 並列イベントの描画
 		for(var i = 0; i < this._parallelList.length; i++){
 			this._parallelList[i].draw();
 		}
@@ -99,14 +99,12 @@ class EventPlayer{
 			this._serialCurrent.dispose();
 			this._serialCurrent = null;
 		}
-		for(var i = 0; i < this._serialList.length; i++){
-			this._serialList[i].dispose();
-			this._serialList.splice(i--,1);
-		}
-		for(var i = 0; i < this._parallelList.length; i++){
-			this._parallelList[i].dispose();
-			this._parallelList.splice(i--,1);
-		}
+		for(var i = 0; i < this._serialList.length; i++){this._serialList[i].dispose();}
+		for(var i = 0; i < this._parallelList.length; i++){this._parallelList[i].dispose();}
+		for(var i = 0; i < this._disposeList.length; i++){this._disposeList[i].dispose();}
+		this._serialList.length = 0;
+		this._parallelList.length = 0;
+		this._disposeList.length = 0;
 	}
 }
 
@@ -126,11 +124,11 @@ class SerializedEventCartridge extends EventCartridge{
 	}
 	// 計算
 	override function calc() : boolean{
-		return this._player.calcSerialEvent();
+		return this._player.calcEvent();
 	}
 	// 描画
 	override function draw() : void{
-		this._player.drawSerialEvent();
+		this._player.drawEvent();
 	}
 	// 破棄
 	override function dispose() : void{
@@ -150,11 +148,11 @@ class ParallelizedEventCartridge extends EventCartridge{
 	}
 	// 計算
 	override function calc() : boolean{
-		return this._player.calcParallelEvent();
+		return this._player.calcEvent();
 	}
 	// 描画
 	override function draw() : void{
-		this._player.drawParallelEvent();
+		this._player.drawEvent();
 	}
 	// 破棄
 	override function dispose() : void{

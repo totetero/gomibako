@@ -55,15 +55,9 @@ class _Main{
 		// イベント処理
 		Ctrl.calc();
 		Page.calc();
-		if(page != null){
-			page.calcSerialEvent();
-			page.calcParallelEvent();
-		}
+		if(page != null){page.calcEvent();}
 		Ctrl.draw();
-		if(page != null){
-			page.drawSerialEvent();
-			page.drawParallelEvent();
-		}
+		if(page != null){page.drawEvent();}
 
 		// 次のフレームへ
 		Timer.setTimeout(_Main.mainloop, 33);
