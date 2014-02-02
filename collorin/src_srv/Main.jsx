@@ -5,6 +5,7 @@ import "require/passport.jsx";
 
 import "ImageServer.jsx";
 import "Auth.jsx";
+import "page/*.jsx";
 
 import "data/CharacterDrawInfo.jsx";
 
@@ -59,19 +60,11 @@ class _Main{
 		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("main/index.ejs");});
 		// 画像サーバ
 		ImageServer.setPage("/img", app.get("views") as string, app);
-		// テスト
-		app.get("/mypage", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"マイページ"}));});
-		app.get("/world", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"ワールド"}));});
-		app.get("/game", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"ゲーム"}));});
-		app.get("/chat", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"チャット"}));});
-
 		// 各ページ設定
-		//GamePage.setPage(app);
-		//TopPage.setPage(app);
-		//MyPage.setPage(app);
-		//StagePage.setPage(app);
-		//ChatPage.setPage(app);
-		//ChatPage.setSocket(app, srv, mongoStore);
+		MyPage.setPage(app);
+		WorldPage.setPage(app);
+		GamePage.setPage(app);
+		ChatPage.setPage(app);
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";

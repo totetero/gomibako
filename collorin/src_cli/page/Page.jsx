@@ -88,11 +88,8 @@ class SECloadPage extends EventCartridge{
 		this.exist = true;
 		// ページ情報ロード開始
 		Loader.loadxhr(url, request, function(response : variant) : void{
-			// ページ情報ロード成功 画像ロードテスト
-			Loader.loadImg({
-				player: "img/character/player0/dot.png",
-				grid: "img/gridField/test.png"
-			}, function() : void{
+			// ページ情報ロード成功 画像ロード
+			Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
 				// 画像ロード成功
 				successFunc(response);
 				this.exist = false;
