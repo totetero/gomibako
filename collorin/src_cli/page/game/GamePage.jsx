@@ -24,8 +24,9 @@ class GamePage extends Page{
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
 
-	// コンストラクタ
-	function constructor(){
+	// 初期化
+	override function init() : void{
+		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page game";
 		this.div.innerHTML = this._htmlTag;
@@ -35,15 +36,13 @@ class GamePage extends Page{
 		this.name = "すごろく";
 		this.depth = 3;
 		this.headerType = 0;
-	}
 
-	// 初期化
-	override function init() : void{
 		// テスト
 		Loader.loadImg({player: "img/character/player0/dot.png"}, function() : void{
 			this.player = new GameCharacter(this);
 		}, function():void{});
 
+		// イベント設定
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECgamePageMain(this));
 	}

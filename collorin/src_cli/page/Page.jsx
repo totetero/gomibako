@@ -48,9 +48,6 @@ abstract class Page extends EventPlayer{
 				// ページ遷移
 				nextPage.init();
 				Page.current = nextPage;
-			}else{
-				// 同じページなのでページ遷移しない
-				nextPage.dispose();
 			}
 		}
 	}
@@ -71,54 +68,6 @@ abstract class Page extends EventPlayer{
 
 	// 開始直前の初期化処理
 	function init() : void{}
-
-	// 破棄
-	override function dispose() : void{
-		super.dispose();
-		if(Page.containerDiv.contains(this.div)){Page.containerDiv.removeChild(this.div);}
-		this.div = null;
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-// ページ用ボタンクラス
-class PageButton{
-	var div : HTMLDivElement;
-	var active : boolean;
-	var trigger : boolean;
-
-	// コンストラクタ
-	function constructor(div : HTMLDivElement){
-		this.div = div;
-	}
-
-	// 計算
-	function calc() : void{
-		if(Ctrl.mdn){
-			var box = this.div.getBoundingClientRect();
-			var x0 = box.left - Ctrl.sx;
-			var y0 = box.top - Ctrl.sy;
-			var x1 = x0 + box.width;
-			var y1 = y0 + box.height;
-			this.active = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
-		}else if(this.active){
-			this.active = false;
-			this.trigger = true;
-		}
-	}
-
-	// 描画
-	function draw() : void{
-		var isActive = this.div.className.indexOf(" active") >= 0;
-		if(this.active && !isActive){
-			this.div.className += " active";
-		}else if(!this.active && isActive){
-			this.div.className = this.div.className.replace(/ active/g , "");
-		}
-	}
 }
 
 // ----------------------------------------------------------------
@@ -138,18 +87,17 @@ class SECtransitionsPage extends EventCartridge{
 		this._nextPage = nextPage;
 
 		// ページのdivを配置、設定
+		Page.containerDiv.appendChild(this._nextPage.div);
 		if(this._currentPage != null){
 			this._next = (this._currentPage.depth <= this._nextPage.depth);
 			if(this._next){
-				Page.containerDiv.appendChild(this._nextPage.div);
 				// 進む場合は初期位置の変更
 				Util.cssTranslate(this._nextPage.div, 320, 0);
 			}else{
-				// 戻る場合は重ね順を考慮して配置
-				Page.containerDiv.insertBefore(this._nextPage.div, this._currentPage.div);
+				// 戻る場合は重ね順を考慮して配置しなおし
+				Page.containerDiv.appendChild(this._currentPage.div);
 			}
 		}else{
-			Page.containerDiv.appendChild(this._nextPage.div);
 			// 一番最初はヘッダを隠しておく
 			Util.cssTranslate(Page.headerDiv, 0, -48);
 		}
@@ -202,7 +150,52 @@ class SECtransitionsPage extends EventCartridge{
 
 	// 破棄
 	override function dispose() : void{
-		if(this._currentPage != null){this._currentPage.dispose();}
+		if(this._currentPage != null){
+			// 遷移後に元いたページの後片付け
+			this._currentPage.dispose();
+			Page.containerDiv.removeChild(this._currentPage.div);
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// ページ用ボタンクラス
+class PageButton{
+	var div : HTMLDivElement;
+	var active : boolean;
+	var trigger : boolean;
+
+	// コンストラクタ
+	function constructor(div : HTMLDivElement){
+		this.div = div;
+	}
+
+	// 計算
+	function calc() : void{
+		if(Ctrl.mdn){
+			var box = this.div.getBoundingClientRect();
+			var x0 = box.left - Ctrl.sx;
+			var y0 = box.top - Ctrl.sy;
+			var x1 = x0 + box.width;
+			var y1 = y0 + box.height;
+			this.active = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+		}else if(this.active){
+			this.active = false;
+			this.trigger = true;
+		}
+	}
+
+	// 描画
+	function draw() : void{
+		var isActive = this.div.className.indexOf(" active") >= 0;
+		if(this.active && !isActive){
+			this.div.className += " active";
+		}else if(!this.active && isActive){
+			this.div.className = this.div.className.replace(/ active/g , "");
+		}
 	}
 }
 

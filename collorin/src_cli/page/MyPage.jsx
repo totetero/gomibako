@@ -22,8 +22,9 @@ class MyPage extends Page{
 		<div class="footer">おしらせバナースペース</div>
 	""";
 
-	// コンストラクタ
-	function constructor(){
+	// 初期化
+	override function init() : void{
+		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page mypage";
 		this.div.innerHTML = this._htmlTag;
@@ -31,10 +32,8 @@ class MyPage extends Page{
 		this.name = "マイページ";
 		this.depth = 1;
 		this.headerType = 1;
-	}
 
-	// 初期化
-	override function init() : void{
+		// イベント設定
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECmyPageMain(this));
 	}

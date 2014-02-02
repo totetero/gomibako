@@ -15,8 +15,9 @@ class WorldPage extends Page{
 		<div class="btn">テストステージ</div>
 	""";
 
-	// コンストラクタ
-	function constructor(){
+	// 初期化
+	override function init() : void{
+		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page world";
 		this.div.innerHTML = this._htmlTag;
@@ -24,10 +25,8 @@ class WorldPage extends Page{
 		this.name = "ワールド";
 		this.depth = 2;
 		this.headerType = 2;
-	}
 
-	// 初期化
-	override function init() : void{
+		// イベント設定
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECworldPageMain(this));
 	}
