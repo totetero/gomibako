@@ -74,6 +74,50 @@ abstract class Page extends EventPlayer{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// ページ情報読み込み
+class SECloadPage extends EventCartridge{
+	var exist : boolean;
+	
+	// コンストラクタ
+	function constructor(url : string, request : variant, successFunc : function(response:variant):void){
+		this.exist = true;
+		// ページ情報ロード開始
+		Loader.loadxhr(url, request, function(response : variant) : void{
+			// ページ情報ロード成功 画像ロードテスト
+			Loader.loadImg({player: "img/character/player0/dot.png"}, function() : void{
+				// 画像ロード成功
+				successFunc(response);
+				this.exist = false;
+			}, function():void{
+				// 画像ロード失敗
+			});
+		}, function() : void{
+			// ページ情報ロード失敗
+		});
+	}
+
+	// 初期化
+	override function init() : void{
+	}
+
+	// 計算
+	override function calc() : boolean{
+		return this.exist;
+	}
+
+	// 描画
+	override function draw() : void{
+	}
+
+	// 破棄
+	override function dispose() : void{
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 // ページ遷移エフェクト
 class SECtransitionsPage extends EventCartridge{
 	var _currentPage : Page;

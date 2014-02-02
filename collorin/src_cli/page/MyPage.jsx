@@ -34,6 +34,10 @@ class MyPage extends Page{
 		this.headerType = 1;
 
 		// イベント設定
+		this.serialPush(new SECloadPage("/mypage", null, function(response : variant) : void{
+			// データの形成
+			log response;
+		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECmyPageMain(this));
 	}

@@ -59,6 +59,10 @@ class _Main{
 		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("main/index.ejs");});
 		// 画像サーバ
 		ImageServer.setPage("/img", app.get("views") as string, app);
+		// テスト
+		app.get("/mypage", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"マイページ"}));});
+		app.get("/world", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"ワールド"}));});
+		app.get("/game", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"ゲーム"}));});
 
 		// 各ページ設定
 		//GamePage.setPage(app);

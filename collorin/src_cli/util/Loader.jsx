@@ -34,16 +34,6 @@ class Loader{
 			xhr.open("POST", "/img", true);
 			xhr.setRequestHeader("Content-Type","application/json");
 			xhr.responseType = isBin ? "arraybuffer" : "text";
-			// リクエスト完了後の後片付け処理
-			var callback = function(err : string) : void{
-				if(err == ""){
-					successFunc();
-				}else{
-					log err;
-					failureFunc();
-				}
-				xhr = null;
-			};
 			// リクエスト状態変化関数
 			xhr.onreadystatechange = function(e : Event) : void{
 				if(xhr.readyState == 4){
@@ -108,25 +98,27 @@ class Loader{
 								if(tag.indexOf("b64_") == 0){
 									// css用画像
 									Loader.b64imgs[tag.substring(4)] = b64imgs[tag];
-									if(--count == 0){callback("");}
+									if(--count == 0){successFunc();}
 								}else{
 									// canvas用画像
 									var img = dom.createElement("img") as HTMLImageElement;
 									img.onload = function(e : Event){
 										// すべての登録が終わったらコールバック
-										if(--count == 0){callback("");}
+										if(--count == 0){successFunc();}
 									};
 									img.src = b64imgs[tag];
 									Loader.imgs[tag] = img;
 								}
 							}
 						}else{
-							callback("");
+							successFunc();
 						}
 					}else{
 						// リクエスト異常終了
-						callback("error " + xhr.status);
+						log "error " + xhr.status;
+						failureFunc();
 					}
+					xhr = null;
 				}
 			};
 			// 通信開始
@@ -142,7 +134,7 @@ class Loader{
 
 	// ----------------------------------------------------------------
 	// XMLhttpリクエスト送信
-	static function loadxhr(url : string, request : variant, successFunc : function(:variant):void, failureFunc : function():void) : void{
+	static function loadxhr(url : string, request : variant, successFunc : function(response:variant):void, failureFunc : function():void) : void{
 		// リクエスト開始準備
 		var xhr = new XMLHttpRequest();
 		if(request != null){xhr.open("POST", url, true);}else{xhr.open("GET", url, true);}

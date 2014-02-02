@@ -27,6 +27,10 @@ class WorldPage extends Page{
 		this.headerType = 2;
 
 		// イベント設定
+		this.serialPush(new SECloadPage("/world", null, function(response : variant) : void{
+			// データの形成
+			log response;
+		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECworldPageMain(this));
 	}

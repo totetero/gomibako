@@ -39,17 +39,20 @@ class GamePage extends Page{
 		this.depth = 3;
 		this.headerType = 0;
 
-		// テスト
-		var fdat : variant = [{x: 0, y: 3, type: 1},{x: 0, y: 4, type: 1},{x: 0, y: 5, type: 2},{x: 1, y: 5, type: 1},{x: 2, y: 4, type: 1},{x: 2, y: 3, type: 1},{x: 2, y: 2, type: 1},{x: 1, y: 2, type: 1},{x: 3, y: 4, type: 1},{x: 4, y: 3, type: 1},{x: 5, y: 3, type: 1},{x: 5, y: 4, type: 1},{x: 5, y: 5, type: 1},{x: 5, y: 6, type: 1},{x: 4, y: 7, type: 1},{x: 3, y: 7, type: 1},{x: 2, y: 7, type: 1},{x: 1, y: 7, type: 1},{x: 1, y: 6, type: 1},{x: 3, y: 1, type: 1},{x: 4, y: 0, type: 1},{x: 5, y: 0, type: 1},{x: 5, y: 1, type: 1},{x: 4, y: 2, type: 1},];
-		this.field = new HexField(this.ccvs, fdat as HexFieldCell[]);
-		// テスト
-		Loader.loadImg({player: "img/character/player0/dot.png"}, function() : void{
-			this.player = new GameCharacter(this);
-		}, function():void{});
-
 		// イベント設定
+		this.serialPush(new SECloadPage("/game", null, function(response : variant) : void{
+			// データの形成
+			log response;
+			// フィールドテスト
+			var fdat : variant = [{x: 0, y: 3, type: 1},{x: 0, y: 4, type: 1},{x: 0, y: 5, type: 2},{x: 1, y: 5, type: 1},{x: 2, y: 4, type: 1},{x: 2, y: 3, type: 1},{x: 2, y: 2, type: 1},{x: 1, y: 2, type: 1},{x: 3, y: 4, type: 1},{x: 4, y: 3, type: 1},{x: 5, y: 3, type: 1},{x: 5, y: 4, type: 1},{x: 5, y: 5, type: 1},{x: 5, y: 6, type: 1},{x: 4, y: 7, type: 1},{x: 3, y: 7, type: 1},{x: 2, y: 7, type: 1},{x: 1, y: 7, type: 1},{x: 1, y: 6, type: 1},{x: 3, y: 1, type: 1},{x: 4, y: 0, type: 1},{x: 5, y: 0, type: 1},{x: 5, y: 1, type: 1},{x: 4, y: 2, type: 1},];
+			this.field = new HexField(this.ccvs, fdat as HexFieldCell[]);
+			// キャラクターテスト
+			this.player = new GameCharacter(this);
+
+			//this.canvasDraw();
+			this.serialPush(new SECgamePageMain(this));
+		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECgamePageMain(this));
 	}
 
 	// キャンバス描画
