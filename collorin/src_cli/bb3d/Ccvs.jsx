@@ -19,10 +19,14 @@ class Ccvs{
 	var mx : int;
 	var my : int;
 	// ゲーム画面キャンバス カメラ位置
-	var cx : int;
-	var cy : int;
+	var cx : number;
+	var cy : number;
+	var cxmax : number = 0;
+	var cymax : number = 0;
+	var cxmin : number = 0;
+	var cymin : number = 0;
 	// ゲーム画面キャンバス 画面拡大回転
-	var scale : number = 2;
+	var scale : number = 1;
 	var rotv : number = Math.PI / 180 * 30;
 	var roth : number = Math.PI / 180 * 45;
 	var sinv : number;
@@ -53,12 +57,6 @@ class Ccvs{
 		this.cosv = Math.cos(this.rotv);
 		this.sinh = Math.sin(this.roth);
 		this.cosh = Math.cos(this.roth);
-	}
-
-	// 破棄
-	function dispose() : void{
-		this.canvas = null;
-		this.context = null;
 	}
 }
 
@@ -119,7 +117,7 @@ abstract class SECctrlCanvas extends EventCartridge{
 			this.ccvs.cosh = Math.cos(this.ccvs.roth);
 		}
 		// 拡大縮小
-		var scale = 1;
+		var scale = 2.5;
 		this.ccvs.scale += (scale - this.ccvs.scale) * 0.1;
 
 		return true;
