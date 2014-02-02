@@ -105,6 +105,18 @@ class SECchatPageMain extends SECctrlCanvas{
 	override function calc() : boolean{
 		super.calc();
 		this._page.player.calc(this.ccvs);
+
+		if(Ctrl.trigger_zb){
+			Ctrl.trigger_zb = false;
+			this._page.player.talk("キツネ大好き");
+		}
+
+		if(Ctrl.trigger_xb){
+			Ctrl.trigger_xb = false;
+			this._page.player.talk("");
+		}
+
+
 		return true;
 	}
 
@@ -125,6 +137,7 @@ class SECchatPageMain extends SECctrlCanvas{
 // キャラクタークラス
 class ChatCharacter{
 	var _character : DrawCharacter;
+	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
 	var x : number;
 	var y : number;
@@ -139,12 +152,20 @@ class ChatCharacter{
 		var drawInfo = new DrawInfo(cdat);
 		var size = 1.2;
 		this._character = new DrawCharacter(Loader.imgs["player"], drawInfo, size);
+		this._balloon = new DrawBalloon();
 		this._shadow = new DrawShadow(size);
 		page.clist.push(this._character);
+		page.clist.push(this._balloon);
 		page.slist.push(this._shadow);
 		this.x = 100;
 		this.y = 100;
 		this.r = 0;
+	}
+
+	// ----------------------------------------------------------------
+	// 会話
+	function talk(message : string) : void{
+		this._balloon.setText(message, -1);
 	}
 
 	// ----------------------------------------------------------------
@@ -177,6 +198,7 @@ class ChatCharacter{
 	function preDraw(ccvs : Ccvs) : void{
 		var x = this.x - ccvs.cx;
 		var y = this.y - ccvs.cy;
+		this._balloon.preDraw(ccvs, x, y, 35, 1.0);
 		this._shadow.preDraw(ccvs, x, y, 0);
 		switch(this.motion){
 			case "walk": this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
