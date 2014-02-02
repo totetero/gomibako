@@ -25,6 +25,7 @@ class _Main{
 						<div class="btn menu"></div>
 					</div>
 				</div>
+				<div id="loading"></div>
 				<div id="lctrl" class="ctrlBtn left">
 					<div class="up"></div>
 					<div class="dn"></div>

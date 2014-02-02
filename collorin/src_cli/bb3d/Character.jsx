@@ -273,7 +273,7 @@ class DrawCharacterWeapon extends DrawUnit{
 
 		if(DrawCharacterWeapon.drawed[weapon] == null){
 			// 武器画像作成
-			this._canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+			this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 			var context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
 			switch(weapon){
 				case "whiteSword": case "redSword":
@@ -385,7 +385,7 @@ class DrawShadow extends DrawUnit{
 	function constructor(size : number){
 		// 影画像作成
 		if(DrawShadow.canvas == null){
-			DrawShadow.canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+			DrawShadow.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 			var context = DrawShadow.canvas.getContext("2d") as CanvasRenderingContext2D;
 			DrawShadow.canvas.width = DrawShadow.canvas.height = 32;
 			context.fillStyle = "rgba(0, 0, 0, 0.5)";

@@ -52,7 +52,7 @@ class HexField{
 		}
 
 		// クラス内部キャンバスに描画
-		this._canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
 		this._canvas.width = HexField._size * (this._gridxsize + (this._gridysize - 1) * 0.5) * 0.86602540378 * 2 * HexField._draft + HexField._marginx * 2;
 		this._canvas.height = HexField._size * (this._gridysize * 1.5 + 0.5) * HexField._draft + HexField._marginy * 2;

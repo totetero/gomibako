@@ -18,9 +18,10 @@ abstract class EventCartridge{
 // イベント再生クラス
 class EventPlayer{
 	var _serialCurrent : EventCartridge = null;
-	var _serialList : EventCartridge[] = new EventCartridge[];
-	var _parallelList : EventCartridge[] = new EventCartridge[];
-	var _disposeList : EventCartridge[] = new EventCartridge[];
+	var _serialList = new EventCartridge[];
+	var _serialDisposeList = new EventCartridge[];
+	var _parallelList = new EventCartridge[];
+	var _parallelExistList = new boolean[];
 
 	// --------------------------------
 	// イベントの設定
@@ -33,6 +34,7 @@ class EventPlayer{
 	// 並列イベントの追加
 	function parallelPush(pec : EventCartridge) : void{
 		this._parallelList.push(pec);
+		this._parallelExistList.push(true);
 		pec.init();
 	}
 
@@ -48,40 +50,55 @@ class EventPlayer{
 	// --------------------------------
 	// イベントの処理
 	function calcEvent() : boolean{
-		// 使い終わっている要素の破棄
-		for(var i = 0; i < this._disposeList.length; i++){this._disposeList[i].dispose();}
-		this._disposeList.length = 0;
+		// 使い終わっている直列イベントの破棄
+		if(this._serialDisposeList.length > 0){
+			for(var i = 0; i < this._serialDisposeList.length; i++){
+				this._serialDisposeList[i].dispose();
+			}
+			this._serialDisposeList.length = 0;
+		}
+		// 使い終わっている並列イベントの破棄
+		for(var i = 0; i < this._parallelList.length; i++){
+			if(!this._parallelExistList[i]){
+				this._parallelList[i].dispose();
+				this._parallelList.splice(i, 1);
+				this._parallelExistList.splice(i--, 1);
+			}
+		}
+
 		// 直列イベントの処理
-		var serialExist = this.calcSerialEvent();
+		this.calcSerialEvent();
 		// 並列イベントの処理
 		for(var i = 0; i < this._parallelList.length; i++){
 			if(!this._parallelList[i].calc()){
-				this._disposeList.push(this._parallelList[i]);
-				this._parallelList.splice(i--,1);
+				this._parallelExistList[i] = false;
 			}
 		}
-		return serialExist || this._parallelList.length > 0;
+
+		return this._serialCurrent != null || this._parallelList.length > 0;
 	}
 	// 直列イベントの処理 再帰関数
-	function calcSerialEvent() : boolean{
+	function calcSerialEvent() : void{
 		if(this._serialCurrent != null && !this._serialCurrent.calc()){
-			this._disposeList.push(this._serialCurrent);
+			this._serialDisposeList.push(this._serialCurrent);
 			this._serialCurrent = null;
 		}
 		if(this._serialCurrent == null){
 			if(this._serialList.length > 0){
 				this._serialCurrent = this._serialList.shift();
 				this._serialCurrent.init();
-				return this.calcSerialEvent();
+				this.calcSerialEvent();
 			}
-			return false;
 		}
-		return true;
 	}
 
 	// --------------------------------
 	// イベントの描画
 	function drawEvent() : void{
+		// 使い終わっている直列イベントの最後の描画
+		for(var i = 0; i < this._serialDisposeList.length; i++){
+			this._serialDisposeList[i].draw();
+		}
 		// 直列イベントの描画
 		if(this._serialCurrent != null){
 			this._serialCurrent.draw();
@@ -101,10 +118,11 @@ class EventPlayer{
 		}
 		for(var i = 0; i < this._serialList.length; i++){this._serialList[i].dispose();}
 		for(var i = 0; i < this._parallelList.length; i++){this._parallelList[i].dispose();}
-		for(var i = 0; i < this._disposeList.length; i++){this._disposeList[i].dispose();}
+		for(var i = 0; i < this._serialDisposeList.length; i++){this._serialDisposeList[i].dispose();}
 		this._serialList.length = 0;
+		this._serialDisposeList.length = 0;
 		this._parallelList.length = 0;
-		this._disposeList.length = 0;
+		this._parallelExistList.length = 0;
 	}
 }
 

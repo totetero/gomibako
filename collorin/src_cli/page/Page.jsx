@@ -23,6 +23,8 @@ abstract class Page extends EventPlayer{
 	static var titleDiv : HTMLDivElement;
 	static var backDiv : HTMLDivElement;
 	static var menuDiv : HTMLDivElement;
+	// ロード画面要素
+	static var loadingDiv : HTMLDivElement;
 
 	// ページ機能の初期化
 	static function init() : void{
@@ -32,6 +34,7 @@ abstract class Page extends EventPlayer{
 		Page.titleDiv = Page.headerDiv.getElementsByClassName("title").item(0) as HTMLDivElement;
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
+		Page.loadingDiv = dom.document.getElementById("loading") as HTMLDivElement;
 	}
 
 	// ページ機能の監視
@@ -107,6 +110,11 @@ class SECloadPage extends EventCartridge{
 
 	// 描画
 	override function draw() : void{
+		// ロード画面描画
+		var display = this.exist ? "block" : "none";
+		if(Page.loadingDiv.style.display != display){
+			Page.loadingDiv.style.display = display;
+		}
 	}
 
 	// 破棄
@@ -149,7 +157,7 @@ class SECtransitionsPage extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		return (this._action++ < 10);
+		return (++this._action < 10);
 	}
 
 	// 描画
