@@ -18,6 +18,14 @@ class ChatPage extends Page{
 		<canvas></canvas>
 	""";
 
+	// コンストラクタ
+	function constructor(){
+		// プロパティ設定
+		this.name = "チャット";
+		this.depth = 3;
+		this.headerType = 0;
+	}
+
 	// キャンバス情報
 	var ccvs : Ccvs;
 	// キャラクター
@@ -35,10 +43,6 @@ class ChatPage extends Page{
 		// キャンバス
 		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 		this.ccvs.scale = 2;
-		// プロパティ設定
-		this.name = "チャット";
-		this.depth = 3;
-		this.headerType = 0;
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{

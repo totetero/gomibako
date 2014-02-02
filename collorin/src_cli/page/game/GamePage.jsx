@@ -18,6 +18,14 @@ class GamePage extends Page{
 		<canvas></canvas>
 	""";
 
+	// コンストラクタ
+	function constructor(){
+		// プロパティ設定
+		this.name = "すごろく";
+		this.depth = 3;
+		this.headerType = 0;
+	}
+
 	// キャンバス情報
 	var ccvs : Ccvs;
 	// キャラクター
@@ -34,10 +42,6 @@ class GamePage extends Page{
 		this.div.innerHTML = this._htmlTag;
 		// キャンバス
 		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
-		// プロパティ設定
-		this.name = "すごろく";
-		this.depth = 3;
-		this.headerType = 0;
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/game", null, function(response : variant) : void{

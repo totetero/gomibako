@@ -16,16 +16,20 @@ class WorldPage extends Page{
 		<div class="btn" style="top:140px;">チャットステージ</div>
 	""";
 
+	// コンストラクタ
+	function constructor(){
+		// プロパティ設定
+		this.name = "ワールド";
+		this.depth = 2;
+		this.headerType = 2;
+	}
+
 	// 初期化
 	override function init() : void{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page world";
 		this.div.innerHTML = this._htmlTag;
-		// プロパティ設定
-		this.name = "ワールド";
-		this.depth = 2;
-		this.headerType = 2;
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/world", null, function(response : variant) : void{
