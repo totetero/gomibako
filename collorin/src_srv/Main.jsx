@@ -63,6 +63,7 @@ class _Main{
 		app.get("/mypage", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"マイページ"}));});
 		app.get("/world", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"ワールド"}));});
 		app.get("/game", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"ゲーム"}));});
+		app.get("/chat", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.send(JSON.stringify({"test":"チャット"}));});
 
 		// 各ページ設定
 		//GamePage.setPage(app);

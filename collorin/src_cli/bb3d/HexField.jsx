@@ -17,8 +17,6 @@ class HexField{
 	var _grid : HexFieldCell[][];
 	var _gridxsize : int;
 	var _gridysize : int;
-	var _gridxpos : number;
-	var _gridypos : number;
 	// グリッド定数
 	static const _marginx : int = 10;
 	static const _marginy : int = 10;
@@ -107,25 +105,23 @@ class HexField{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw(ccvs : Ccvs, x : number, y : number, select : boolean) : void {
-		this._gridxpos = x;
-		this._gridypos = y;
 		// 描画開始
 		ccvs.context.save();
 		ccvs.context.translate(ccvs.width * 0.5, ccvs.height * 0.5);
 		ccvs.context.scale(ccvs.scale, ccvs.scale * ccvs.sinh);
 		ccvs.context.rotate(ccvs.rotv);
-		ccvs.context.translate(-this._gridxpos, -this._gridypos);
+		ccvs.context.translate(-x, -y);
 
 		// 地形描画
 		ccvs.context.drawImage(this._canvas, 0, 0);
 
-		// 選択
+		// 選択テスト
 		if(select){
 			// キャンバスタッチ位置から座標獲得
 			var x0 = (ccvs.mx - ccvs.width * 0.5) / ccvs.scale;
 			var y0 = (ccvs.my - ccvs.height * 0.5) / (ccvs.scale * ccvs.sinh);
-			var px = (x0 *  ccvs.cosv + y0 * ccvs.sinv) + this._gridxpos;
-			var py = (x0 * -ccvs.sinv + y0 * ccvs.cosv) + this._gridypos;
+			var px = (x0 *  ccvs.cosv + y0 * ccvs.sinv) + x;
+			var py = (x0 * -ccvs.sinv + y0 * ccvs.cosv) + y;
 			// タッチ位置描画
 			ccvs.context.fillStyle = "rgba(0, 0, 0, 0.5)";
 			ccvs.context.beginPath();

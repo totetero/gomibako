@@ -7,6 +7,7 @@ import "../util/Util.jsx";
 import "./MyPage.jsx";
 import "./WorldPage.jsx";
 import "./game/GamePage.jsx";
+import "./ChatPage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -45,6 +46,7 @@ abstract class Page extends EventPlayer{
 			var nextPage : Page = null;
 			// ページの選定
 			if(currentHash.indexOf("game") == 1){nextPage = new GamePage();}
+			else if(currentHash.indexOf("chat") == 1){nextPage = new ChatPage();}
 			else if(currentHash.indexOf("world") == 1){nextPage = new WorldPage();}
 			else{nextPage = new MyPage();}
 			if(Page.current == null || Page.current.name != nextPage.name){
@@ -87,7 +89,10 @@ class SECloadPage extends EventCartridge{
 		// ページ情報ロード開始
 		Loader.loadxhr(url, request, function(response : variant) : void{
 			// ページ情報ロード成功 画像ロードテスト
-			Loader.loadImg({player: "img/character/player0/dot.png"}, function() : void{
+			Loader.loadImg({
+				player: "img/character/player0/dot.png",
+				grid: "img/gridField/test.png"
+			}, function() : void{
 				// 画像ロード成功
 				successFunc(response);
 				this.exist = false;

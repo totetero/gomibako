@@ -12,7 +12,8 @@ import "./Page.jsx";
 class WorldPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="btn">テストステージ</div>
+		<div class="btn" style="top:80px;">テストステージ</div>
+		<div class="btn" style="top:140px;">チャットステージ</div>
 	""";
 
 	// 初期化
@@ -48,7 +49,8 @@ class SECworldPageMain extends EventCartridge{
 	// コンストラクタ
 	function constructor(page : WorldPage){
 		this._page = page;
-		this._btnList["btn"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
+		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
+		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("btn").item(1) as HTMLDivElement);
 		this._btnList["back"] = new PageButton(Page.backDiv);
 		this._btnList["menu"] = new PageButton(Page.menuDiv);
 	}
@@ -61,9 +63,14 @@ class SECworldPageMain extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc();}
 
-		if(this._btnList["btn"].trigger){
-			this._btnList["btn"].trigger = false;
+		if(this._btnList["btn1"].trigger){
+			this._btnList["btn1"].trigger = false;
 			Page.transitionsPage("game");
+		}
+
+		if(this._btnList["btn2"].trigger){
+			this._btnList["btn2"].trigger = false;
+			Page.transitionsPage("chat");
 		}
 
 		if(this._btnList["back"].trigger){

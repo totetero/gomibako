@@ -63,14 +63,16 @@ class Ccvs{
 // キャンバスコントローラーカートリッジ 継承して使う
 abstract class SECctrlCanvas extends EventCartridge{
 	var ccvs : Ccvs;
+	var _scale : number;
 	// 内部演算用 マウス移動量差分を求める変数
 	var _tempmdn : boolean;
 	var _tempmx : int = 0;
 	var _tempmy : int = 0;
 
 	// コンストラクタ
-	function constructor(ccvs : Ccvs){
+	function constructor(ccvs : Ccvs, scale : number){
 		this.ccvs = ccvs;
+		this._scale = scale;
 	}
 
 	// 初期化
@@ -117,8 +119,7 @@ abstract class SECctrlCanvas extends EventCartridge{
 			this.ccvs.cosh = Math.cos(this.ccvs.roth);
 		}
 		// 拡大縮小
-		var scale = 2.5;
-		this.ccvs.scale += (scale - this.ccvs.scale) * 0.1;
+		this.ccvs.scale += (this._scale - this.ccvs.scale) * 0.1;
 
 		return true;
 	}
