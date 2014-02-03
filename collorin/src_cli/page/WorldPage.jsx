@@ -22,6 +22,8 @@ class WorldPage extends Page{
 		this.name = "ワールド";
 		this.depth = 2;
 		this.headerType = 2;
+		this.lctrlType = 0;
+		this.rctrlType = 0;
 	}
 
 	// 初期化

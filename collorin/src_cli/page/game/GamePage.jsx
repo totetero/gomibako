@@ -24,6 +24,8 @@ class GamePage extends Page{
 		this.name = "すごろく";
 		this.depth = 3;
 		this.headerType = 0;
+		this.lctrlType = 1;
+		this.rctrlType = 1;
 	}
 
 	// キャンバス情報

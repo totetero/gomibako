@@ -28,6 +28,8 @@ class MyPage extends Page{
 		this.name = "マイページ";
 		this.depth = 1;
 		this.headerType = 1;
+		this.lctrlType = 0;
+		this.rctrlType = 0;
 	}
 
 	// 初期化

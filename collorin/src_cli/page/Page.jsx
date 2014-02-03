@@ -70,6 +70,8 @@ abstract class Page extends EventPlayer{
 	var name : string;
 	var depth : int = 0; // 深度 画面遷移時の演出に影響
 	var headerType : int = 0;
+	var lctrlType : int = 0;
+	var rctrlType : int = 0;
 
 	// 開始直前の初期化処理
 	function init() : void{}
@@ -154,6 +156,8 @@ class SECtransitionsPage extends EventCartridge{
 		}else{
 			// 一番最初はヘッダを隠しておく
 			Util.cssTranslate(Page.headerDiv, 0, -48);
+			Util.cssTranslate(Ctrl.lDiv, -144, 0);
+			Util.cssTranslate(Ctrl.rDiv, 144, 0);
 		}
 	}
 
@@ -165,7 +169,20 @@ class SECtransitionsPage extends EventCartridge{
 	// 描画
 	override function draw() : void{
 		var num = this._action / 10;
+		this.drawHeader(num);
+		this.drawLctrl(num);
+		this.drawRctrl(num);
+		if(this._currentPage != null){
+			// ページの遷移演出
+			if(this._next){
+				Util.cssTranslate(this._nextPage.div, 320 * (1 - num * num), 0);
+			}else{
+				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
+			}
+		}
+	}
 
+	function drawHeader(num : number) : void{
 		// ヘッダの存在確認
 		var isBeforeHeader = (this._currentPage != null && this._currentPage.headerType > 0);
 		var isAfterHeader = (this._nextPage.headerType > 0);
@@ -191,14 +208,49 @@ class SECtransitionsPage extends EventCartridge{
 			// ヘッダの収納演出
 			Util.cssTranslate(Page.headerDiv, 0, -48 * (num * num));
 		}
+	}
 
-		if(this._currentPage != null){
-			// ページの遷移演出
-			if(this._next){
-				Util.cssTranslate(this._nextPage.div, 320 * (1 - num * num), 0);
+	function drawLctrl(num : number) : void{
+		// 左コントローラーの存在確認
+		var isBeforeLctrl = (this._currentPage != null && this._currentPage.lctrlType > 0);
+		var isAfterLctrl = (this._nextPage.lctrlType > 0);
+		// 左コントローラーの形成
+		if(this._action == 1){
+		}else if(this._action == 10){
+			if(isAfterLctrl){
+				Util.cssTranslate(Ctrl.lDiv, 0, 0);
 			}else{
-				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
+				Util.cssTranslate(Ctrl.lDiv, -144, 0);
 			}
+		}
+		if(!isBeforeLctrl && isAfterLctrl){
+			// 左コントローラーの展開演出
+			Util.cssTranslate(Ctrl.lDiv, -144 * (1 - num * num), 0);
+		}else if(isBeforeLctrl && !isAfterLctrl){
+			// 左コントローラーの収納演出
+			Util.cssTranslate(Ctrl.lDiv, -144 * (num * num), 0);
+		}
+	}
+
+	function drawRctrl(num : number) : void{
+		// 左コントローラーの存在確認
+		var isBeforeRctrl = (this._currentPage != null && this._currentPage.rctrlType > 0);
+		var isAfterRctrl = (this._nextPage.rctrlType > 0);
+		// 左コントローラーの形成
+		if(this._action == 1){
+		}else if(this._action == 10){
+			if(isAfterRctrl){
+				Util.cssTranslate(Ctrl.rDiv, 0, 0);
+			}else{
+				Util.cssTranslate(Ctrl.rDiv, 144, 0);
+			}
+		}
+		if(!isBeforeRctrl && isAfterRctrl){
+			// 左コントローラーの展開演出
+			Util.cssTranslate(Ctrl.rDiv, 144 * (1 - num * num), 0);
+		}else if(isBeforeRctrl && !isAfterRctrl){
+			// 左コントローラーの収納演出
+			Util.cssTranslate(Ctrl.rDiv, 144 * (num * num), 0);
 		}
 	}
 

@@ -24,6 +24,8 @@ class ChatPage extends Page{
 		this.name = "チャット";
 		this.depth = 3;
 		this.headerType = 0;
+		this.lctrlType = 1;
+		this.rctrlType = 1;
 	}
 
 	// キャンバス情報
