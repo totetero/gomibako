@@ -25,7 +25,6 @@ native class SocketNamespace{
 	function to(room : string) : SocketNamespace;
 	function emit(event : string, arg0 : variant, arg1 : variant) : void;
 	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant) : void;
-	
 }
 
 native class Socket{
