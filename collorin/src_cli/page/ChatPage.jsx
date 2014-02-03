@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../util/Loader.jsx";
 import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
+import "../util/Socket.jsx";
 import "../bb3d/Ccvs.jsx";
 import "../bb3d/Character.jsx";
 import "../bb3d/GridField.jsx";
@@ -77,6 +78,7 @@ class ChatPage extends Page{
 
 class SECchatPageMain extends SECctrlCanvas{
 	var _page : ChatPage;
+	var _socket : SocketIOClientSocket;
 
 	// コンストラクタ
 	function constructor(page : ChatPage){
@@ -86,6 +88,10 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 初期化
 	override function init() : void{
+		// ソケットテスト
+		//this._socket = SocketIOClient.connect("/chat");
+		//this._socket.on("hoge", function():void{log "socket!!";});
+		//this._socket.emit("test");
 	}
 
 	// 計算
@@ -103,7 +109,6 @@ class SECchatPageMain extends SECctrlCanvas{
 			this._page.player.talk("");
 		}
 
-
 		return true;
 	}
 
@@ -114,6 +119,8 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 破棄
 	override function dispose() : void{
+		//this._socket.close();
+		//this._socket.disconnect();
 	}
 }
 

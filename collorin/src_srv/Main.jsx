@@ -2,10 +2,13 @@ import "require/nodejs.jsx";
 import "require/express.jsx";
 import "require/mongo.jsx";
 import "require/passport.jsx";
+import "require/socket.io.jsx";
 
-import "ImageServer.jsx";
-import "Auth.jsx";
+import "work/Auth.jsx";
+import "work/ImageServer.jsx";
 import "page/*.jsx";
+
+import "models/User.jsx";
 
 import "data/CharacterDrawInfo.jsx";
 
@@ -49,6 +52,28 @@ class _Main{
 			});
 		});
 
+		// socket.ioサーバ設定
+		var io = SocketIO.listen(srv);
+		io.configure(function() : void{
+			io.enable("browser client minification");
+			// socket.ioグローバル認証
+			io.set("authorization", function(handshakeData : variant, callback : function(err:variant,success:boolean):void) : void{
+				var cookie = handshakeData["headers"]["cookie"] as string;
+				if(!cookie){callback("cookieが見つかりませんでした", false); return;}
+				var cookie = SocketUtil.parse1(String.decodeURIComponent(cookie))["connect.sid"];
+				var sessionID = SocketUtil.parse2(cookie, app.get("secretKey") as string);
+				mongoStore.get(sessionID, function(err : variant, session : variant) : void{
+					if(err){callback("sessionが見つかりませんでした", false); return;}
+					UserModel.findById(session["passport"]["user"] as string, function(err : variant, user : UserModel) : void{
+						if(err){callback("userが見つかりませんでした", false); return;}
+						log "認証成功DAYO!!";
+						handshakeData["session"] = session;
+						callback(null, true);
+					});
+				});
+			});
+		});
+
 		// passport認証設定
 		AuthPage.setPassport();
 		// 認証ページ
@@ -64,7 +89,7 @@ class _Main{
 		MyPage.setPage(app);
 		WorldPage.setPage(app);
 		GamePage.setPage(app);
-		ChatPage.setPage(app);
+		ChatPage.setPage(app, io);
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";

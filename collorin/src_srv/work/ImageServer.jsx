@@ -1,5 +1,5 @@
-import "require/nodejs.jsx";
-import "require/express.jsx";
+import "../require/nodejs.jsx";
+import "../require/express.jsx";
 
 // 画像配信クラス
 class ImageServer{

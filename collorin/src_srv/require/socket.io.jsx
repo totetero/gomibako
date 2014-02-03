@@ -10,10 +10,11 @@ native class SocketUtil{
 
 native class SocketIO {
 	static function listen(server : HTTPServer) : SocketManager;
-} = " require('socket.io') ";
+} = "require('socket.io') ";
 
 native class SocketManager{
 	__readonly__ var sockets : SocketNamespace;
+	function of(namespace : string) : SocketNamespace;
 	function set(key : string, value : variant) : SocketManager;
 	function enable(key : string) : SocketManager;
 	function configure(callback : function():void) : SocketManager;
@@ -24,6 +25,7 @@ native class SocketNamespace{
 	function to(room : string) : SocketNamespace;
 	function emit(event : string, arg0 : variant, arg1 : variant) : void;
 	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant) : void;
+	
 }
 
 native class Socket{

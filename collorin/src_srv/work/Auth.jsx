@@ -1,8 +1,8 @@
-import "require/nodejs.jsx";
-import "require/express.jsx";
-import "require/passport.jsx";
+import "../require/nodejs.jsx";
+import "../require/express.jsx";
+import "../require/passport.jsx";
 
-import "models/User.jsx";
+import "../models/User.jsx";
 
 // 認証ページ
 class AuthPage{
