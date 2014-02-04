@@ -19,8 +19,8 @@ class ChatPage extends Page{
 		<canvas></canvas>
 	""";
 
-	// ソケット
-	var _socket : SocketIOClientSocket;
+	// チャットソケット
+	var socket : ChatSocket;
 	// キャンバス情報
 	var ccvs : Ccvs;
 	// キャラクター
@@ -48,6 +48,8 @@ class ChatPage extends Page{
 		// キャンバス
 		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 		this.ccvs.scale = 2;
+		// ソケット
+		this.socket = new ChatSocket();
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{
@@ -55,12 +57,6 @@ class ChatPage extends Page{
 			this.field = new GridField(this.ccvs, Loader.imgs["grid"], response["grid"] as int[][]);
 			// キャラクター
 			this.player = new ChatCharacter(this, response["charaInfo"]);
-		}));
-		this.serialPush(new ECcalcOne(function() : void{
-			// ソケットテスト
-			this._socket = SocketIOClient.connect("/chat");
-			this._socket.on("hoge", function():void{log "socket!!";});
-			this._socket.emit("test");
 		}));
 		this.serialPush(new ECdrawOne(function() : void{
 			// 初期描画
@@ -84,9 +80,7 @@ class ChatPage extends Page{
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		// ソケット切断
-		this._socket.disconnect();
-		this._socket.removeAllListeners();
+		this.socket.dispose();
 	}
 }
 
@@ -128,6 +122,29 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 破棄
 	override function dispose() : void{
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+class ChatSocket{
+	// ソケット
+	var _socket : SocketIOClientSocket;
+
+	// コンストラクタ
+	function constructor(){
+		this._socket = SocketIOClient.connect("/chat");
+		this._socket.on("hoge", function():void{log "socket!!";});
+		this._socket.emit("test");
+	}
+
+	// 破棄
+	function dispose() : void{
+		// ソケット切断
+		this._socket.disconnect();
+		this._socket.removeAllListeners();
 	}
 }
 
