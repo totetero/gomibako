@@ -12,16 +12,21 @@ native class SocketIOClient{
 }''';
 
 native class SocketIOClientSocket{
-	function on(event : string, listener : function():void) : void;
-	function on(event : string, listener : function(arg0:variant):void) : void;
-	function on(event : string, listener : function(arg0:variant,arg1:variant):void) : void;
-	function on(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : void;
-	function emit(event : string) : void;
-	function emit(event : string, arg0 : variant) : void;
-	function emit(event : string, arg0 : variant, arg1 : variant) : void;
-	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant, arg3 : variant, arg4 : variant) : void;
-	//function close() : SocketIOClientSocket;
-	//function disconnect() : SocketIOClientSocket;
+	function on(event : string, listener : function():void) : SocketIOClientSocket;
+	function on(event : string, listener : function(arg0:variant):void) : SocketIOClientSocket;
+	function on(event : string, listener : function(arg0:variant,arg1:variant):void) : SocketIOClientSocket;
+	function on(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : SocketIOClientSocket;
+	function emit(event : string) : boolean;
+	function emit(event : string, arg0 : variant) : boolean;
+	function emit(event : string, arg0 : variant, arg1 : variant) : boolean;
+	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant) : boolean;
+	function removeListener(event : string, listener : function():void) : SocketIOClientSocket;
+	function removeListener(event : string, listener : function(arg0:variant):void) : SocketIOClientSocket;
+	function removeListener(event : string, listener : function(arg0:variant,arg1:variant):void) : SocketIOClientSocket;
+	function removeListener(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : SocketIOClientSocket;
+	function removeAllListeners() : SocketIOClientSocket;
+	function removeAllListeners(event : string) : SocketIOClientSocket;
+	function disconnect() : SocketIOClientSocket;
 }
 
 // ----------------------------------------------------------------

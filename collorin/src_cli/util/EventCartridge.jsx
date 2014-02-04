@@ -195,8 +195,8 @@ class ECwait extends EventCartridge{
 	}
 }
 
-// 1フレームイベント
-class ECone extends EventCartridge{
+// 1フレーム計算イベント
+class ECcalcOne extends EventCartridge{
 	var _func : function():void;
 	// コンストラクタ
 	function constructor(func : function():void){
@@ -209,8 +209,8 @@ class ECone extends EventCartridge{
 	}
 }
 
-// 永続イベント
-class ECfix extends EventCartridge{
+// 1フレーム描画イベント
+class ECdrawOne extends EventCartridge{
 	var _func : function():void;
 	// コンストラクタ
 	function constructor(func : function():void){
@@ -218,8 +218,31 @@ class ECfix extends EventCartridge{
 	}
 	// 計算
 	override function calc() : boolean{
+		return false;
+	}
+	// 描画
+	override function draw() : void{
 		this._func();
+	}
+}
+
+// 永続イベント
+class ECfix extends EventCartridge{
+	var _calcFunc : function():void;
+	var _drawFunc : function():void;
+	// コンストラクタ
+	function constructor(calcFunc : function():void, drawFunc : function():void){
+		this._calcFunc = calcFunc;
+		this._drawFunc = drawFunc;
+	}
+	// 計算
+	override function calc() : boolean{
+		this._calcFunc();
 		return true;
+	}
+	// 描画
+	override function draw() : void{
+		this._drawFunc();
 	}
 }
 

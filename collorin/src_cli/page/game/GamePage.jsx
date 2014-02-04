@@ -18,6 +18,14 @@ class GamePage extends Page{
 		<canvas></canvas>
 	""";
 
+	// キャンバス情報
+	var ccvs : Ccvs;
+	// キャラクター
+	var field : HexField;
+	var player : GameCharacter;
+	var clist : DrawUnit[] = new DrawUnit[];
+	var slist : DrawUnit[] = new DrawUnit[];
+
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
@@ -27,14 +35,6 @@ class GamePage extends Page{
 		this.lctrlType = 1;
 		this.rctrlType = 1;
 	}
-
-	// キャンバス情報
-	var ccvs : Ccvs;
-	// キャラクター
-	var field : HexField;
-	var player : GameCharacter;
-	var clist : DrawUnit[] = new DrawUnit[];
-	var slist : DrawUnit[] = new DrawUnit[];
 
 	// 初期化
 	override function init() : void{
@@ -52,11 +52,15 @@ class GamePage extends Page{
 			// キャラクター
 			var charaInfoList = response["charaInfo"] as variant[][];
 			this.player = new GameCharacter(this, charaInfoList[0][0]);
-
-			//this.canvasDraw();
-			this.serialPush(new SECgamePageMain(this));
+		}));
+		this.serialPush(new ECdrawOne(function() : void{
+			// 初期描画
+			this.ccvs.cx = this.player.x;
+			this.ccvs.cy = this.player.y;
+			this.canvasDraw();
 		}));
 		this.serialPush(new SECtransitionsPage(this));
+		this.serialPush(new SECgamePageMain(this));
 	}
 
 	// キャンバス描画

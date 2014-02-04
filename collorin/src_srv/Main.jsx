@@ -55,7 +55,7 @@ class _Main{
 		// socket.ioサーバ設定
 		var io = SocketIO.listen(srv);
 		io.configure(function() : void{
-			io.enable("browser client minification");
+			//io.enable("browser client minification");
 			// socket.ioグローバル認証
 			io.set("authorization", function(handshakeData : variant, callback : function(err:variant,success:boolean):void) : void{
 				var cookie = handshakeData["headers"]["cookie"] as string;

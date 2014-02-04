@@ -19,6 +19,16 @@ class ChatPage extends Page{
 		<canvas></canvas>
 	""";
 
+	// ソケット
+	var _socket : SocketIOClientSocket;
+	// キャンバス情報
+	var ccvs : Ccvs;
+	// キャラクター
+	var field : GridField;
+	var player : ChatCharacter;
+	var clist : DrawUnit[] = new DrawUnit[];
+	var slist : DrawUnit[] = new DrawUnit[];
+
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
@@ -28,14 +38,6 @@ class ChatPage extends Page{
 		this.lctrlType = 1;
 		this.rctrlType = 1;
 	}
-
-	// キャンバス情報
-	var ccvs : Ccvs;
-	// キャラクター
-	var field : GridField;
-	var player : ChatCharacter;
-	var clist : DrawUnit[] = new DrawUnit[];
-	var slist : DrawUnit[] = new DrawUnit[];
 
 	// 初期化
 	override function init() : void{
@@ -49,15 +51,25 @@ class ChatPage extends Page{
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{
-			// フィールドテスト
+			// フィールド
 			this.field = new GridField(this.ccvs, Loader.imgs["grid"], response["grid"] as int[][]);
-			// キャラクターテスト
+			// キャラクター
 			this.player = new ChatCharacter(this, response["charaInfo"]);
-
-			//this.canvasDraw();
-			this.serialPush(new SECchatPageMain(this));
+		}));
+		this.serialPush(new ECcalcOne(function() : void{
+			// ソケットテスト
+			this._socket = SocketIOClient.connect("/chat");
+			this._socket.on("hoge", function():void{log "socket!!";});
+			this._socket.emit("test");
+		}));
+		this.serialPush(new ECdrawOne(function() : void{
+			// 初期描画
+			this.ccvs.cx = (this.ccvs.cxmax + this.ccvs.cxmin) * 0.5;
+			this.ccvs.cy = (this.ccvs.cymax + this.ccvs.cymin) * 0.5;
+			this.canvasDraw();
 		}));
 		this.serialPush(new SECtransitionsPage(this));
+		this.serialPush(new SECchatPageMain(this));
 	}
 
 	// キャンバス描画
@@ -72,13 +84,14 @@ class ChatPage extends Page{
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		//this.ccvs.dispose();
+		// ソケット切断
+		this._socket.disconnect();
+		this._socket.removeAllListeners();
 	}
 }
 
 class SECchatPageMain extends SECctrlCanvas{
 	var _page : ChatPage;
-	var _socket : SocketIOClientSocket;
 
 	// コンストラクタ
 	function constructor(page : ChatPage){
@@ -88,10 +101,6 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 初期化
 	override function init() : void{
-		// ソケットテスト
-		//this._socket = SocketIOClient.connect("/chat");
-		//this._socket.on("hoge", function():void{log "socket!!";});
-		//this._socket.emit("test");
 	}
 
 	// 計算
@@ -119,8 +128,6 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 破棄
 	override function dispose() : void{
-		//this._socket.close();
-		//this._socket.disconnect();
 	}
 }
 
@@ -182,8 +189,8 @@ class ChatCharacter{
 		}else{
 			this.motion = "stand";
 		}
-		ccvs.cx = this.x;
-		ccvs.cy = this.y;
+		ccvs.cx -= (ccvs.cx - this.x) * 0.1;
+		ccvs.cy -= (ccvs.cy - this.y) * 0.1;
 	}
 
 	// ----------------------------------------------------------------

@@ -83,39 +83,48 @@ abstract class Page extends EventPlayer{
 
 // ページ情報読み込み
 class SECloadPage extends EventCartridge{
-	var exist : boolean;
-	
+	var _exist : boolean;
+	var _url : string;
+	var _request : variant;
+	var _callback : function(response:variant):void;
+
 	// コンストラクタ
-	function constructor(url : string, request : variant, successFunc : function(response:variant):void){
-		this.exist = true;
-		// ページ情報ロード開始
-		Loader.loadxhr(url, request, function(response : variant) : void{
-			// ページ情報ロード成功 画像ロード
-			Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
-				// 画像ロード成功
-				successFunc(response);
-				this.exist = false;
-			}, function():void{
-				// 画像ロード失敗
-			});
-		}, function() : void{
-			// ページ情報ロード失敗
-		});
+	function constructor(url : string, request : variant, callback : function(response:variant):void){
+		this._exist = false;
+		this._url = url;
+		this._request = request;
+		this._callback = callback;
 	}
 
 	// 初期化
 	override function init() : void{
+		if(!this._exist){
+			this._exist = true;
+			// ページ情報ロード開始
+			Loader.loadxhr(this._url, this._request, function(response : variant) : void{
+				// ページ情報ロード成功 画像ロード
+				Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
+					// 画像ロード成功
+					this._callback(response);
+					this._exist = false;
+				}, function():void{
+					// 画像ロード失敗
+				});
+			}, function() : void{
+				// ページ情報ロード失敗
+			});
+		}
 	}
 
 	// 計算
 	override function calc() : boolean{
-		return this.exist;
+		return this._exist;
 	}
 
 	// 描画
 	override function draw() : void{
 		// ロード画面描画
-		var display = this.exist ? "block" : "none";
+		var display = this._exist ? "block" : "none";
 		if(Page.loadingDiv.style.display != display){
 			Page.loadingDiv.style.display = display;
 		}
