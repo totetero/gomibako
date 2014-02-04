@@ -180,6 +180,22 @@ body{
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
+
+	&::before{
+		content: attr(txt);
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 80px;
+		height: 30px;
+		line-height: 32px;
+		margin-left: -40px;
+		margin-top: -15px;
+		text-align: center;
+		color: white;
+		background-color: black;
+	}
+
 }
 
 /* -------------------------------- */
