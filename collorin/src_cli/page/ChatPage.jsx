@@ -157,9 +157,9 @@ class ChatCharacter{
 		page.clist.push(this._character);
 		page.clist.push(this._balloon);
 		page.slist.push(this._shadow);
-		this.x = charaInfo["x"] as number;;
-		this.y = charaInfo["y"] as number;;
-		this.r = charaInfo["r"] as number;;
+		this.x = charaInfo["x"] as number;
+		this.y = charaInfo["y"] as number;
+		this.r = charaInfo["r"] as number;
 	}
 
 	// ----------------------------------------------------------------
