@@ -135,19 +135,14 @@ class GridField{
 
 		// 選択テスト
 		if(select){
-			// キャンバスタッチ位置から座標獲得
-			var x0 = (ccvs.mx - ccvs.width * 0.5) / ccvs.scale;
-			var y0 = (ccvs.my - ccvs.height * 0.5) / (ccvs.scale * ccvs.sinh);
-			var px = (x0 *  ccvs.cosv + y0 * ccvs.sinv) + x;
-			var py = (x0 * -ccvs.sinv + y0 * ccvs.cosv) + y;
 			// タッチ位置描画
 			ccvs.context.fillStyle = "rgba(0, 0, 0, 0.5)";
 			ccvs.context.beginPath();
-			ccvs.context.arc(px, py, 6, 0, Math.PI*2, false);
+			ccvs.context.arc(ccvs.tx, ccvs.ty, 6, 0, Math.PI*2, false);
 			ccvs.context.fill();
 			// 座標をグリッド中心座に変換
-			var cx = Math.floor(px / 16);
-			var cy = Math.floor(py / 16);
+			var cx = Math.floor(ccvs.tx / 16);
+			var cy = Math.floor(ccvs.ty / 16);
 			if(this.getGridFromIndex(cx, cy) > 0){
 				ccvs.context.fillRect(cx * 16, cy * 16, 16, 16);
 			}

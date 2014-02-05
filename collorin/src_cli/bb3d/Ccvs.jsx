@@ -18,6 +18,9 @@ class Ccvs{
 	var mdn : boolean;
 	var mx : int;
 	var my : int;
+	// ゲーム画面キャンバス タッチ位置
+	var tx : number;
+	var ty : number;
 	// ゲーム画面キャンバス カメラ位置
 	var cx : number;
 	var cy : number;
@@ -81,9 +84,15 @@ abstract class SECctrlCanvas extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
+		// キャンバスからみたマウス位置を確認
 		var box = this.ccvs.canvas.getBoundingClientRect();
 		this.ccvs.mx = Ctrl.mx + Ctrl.sx - box.left;
 		this.ccvs.my = Ctrl.my + Ctrl.sy - box.top;
+		// マウス位置をゲーム座標タッチ位置に変換
+		var x0 = (this.ccvs.mx - this.ccvs.width * 0.5) / this.ccvs.scale;
+		var y0 = (this.ccvs.my - this.ccvs.height * 0.5) / (this.ccvs.scale * this.ccvs.sinh);
+		this.ccvs.tx = (x0 *  this.ccvs.cosv + y0 * this.ccvs.sinv) + this.ccvs.cx;
+		this.ccvs.ty = (x0 * -this.ccvs.sinv + y0 * this.ccvs.cosv) + this.ccvs.cy;
 
 		// キャンバス内でクリック開始したかの確認
 		if(this._tempmdn != Ctrl.mdn){
