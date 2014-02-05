@@ -18,6 +18,7 @@ class Ccvs{
 	var mdn : boolean;
 	var mx : int;
 	var my : int;
+	var _tempmdn : boolean;
 	// ゲーム画面キャンバス タッチ位置
 	var tx : number;
 	var ty : number;
@@ -61,6 +62,24 @@ class Ccvs{
 		this.sinh = Math.sin(this.roth);
 		this.cosh = Math.cos(this.roth);
 	}
+
+	// マウス状態とタッチ状態の計算
+	function calc(clickable : boolean) : void{
+		// キャンバスからみたマウス位置を確認
+		var box = this.canvas.getBoundingClientRect();
+		this.mx = Ctrl.mx + Ctrl.sx - box.left;
+		this.my = Ctrl.my + Ctrl.sy - box.top;
+		// マウス位置をゲーム座標タッチ位置に変換
+		var x0 = (this.mx - this.width * 0.5) / this.scale;
+		var y0 = (this.my - this.height * 0.5) / (this.scale * this.sinh);
+		this.tx = (x0 *  this.cosv + y0 * this.sinv) + this.cx;
+		this.ty = (x0 * -this.sinv + y0 * this.cosv) + this.cy;
+		// キャンバス内でクリック開始したかの確認
+		if(this._tempmdn != Ctrl.mdn){
+			this._tempmdn = Ctrl.mdn;
+			this.mdn = (clickable && this._tempmdn && 0 < this.mx && this.mx < this.width && 0 < this.my && this.my < this.height);
+		}
+	}
 }
 
 // キャンバスコントローラーカートリッジ 継承して使う
@@ -68,7 +87,6 @@ abstract class SECctrlCanvas extends EventCartridge{
 	var ccvs : Ccvs;
 	var _scale : number;
 	// 内部演算用 マウス移動量差分を求める変数
-	var _tempmdn : boolean;
 	var _tempmx : int = 0;
 	var _tempmy : int = 0;
 
@@ -84,22 +102,6 @@ abstract class SECctrlCanvas extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		// キャンバスからみたマウス位置を確認
-		var box = this.ccvs.canvas.getBoundingClientRect();
-		this.ccvs.mx = Ctrl.mx + Ctrl.sx - box.left;
-		this.ccvs.my = Ctrl.my + Ctrl.sy - box.top;
-		// マウス位置をゲーム座標タッチ位置に変換
-		var x0 = (this.ccvs.mx - this.ccvs.width * 0.5) / this.ccvs.scale;
-		var y0 = (this.ccvs.my - this.ccvs.height * 0.5) / (this.ccvs.scale * this.ccvs.sinh);
-		this.ccvs.tx = (x0 *  this.ccvs.cosv + y0 * this.ccvs.sinv) + this.ccvs.cx;
-		this.ccvs.ty = (x0 * -this.ccvs.sinv + y0 * this.ccvs.cosv) + this.ccvs.cy;
-
-		// キャンバス内でクリック開始したかの確認
-		if(this._tempmdn != Ctrl.mdn){
-			this._tempmdn = Ctrl.mdn;
-			this.ccvs.mdn = (this._tempmdn && 0 < this.ccvs.mx && this.ccvs.mx < this.ccvs.width && 0 < this.ccvs.my && this.ccvs.my < this.ccvs.height);
-		}
-
 		if(this.ccvs.mdn && Ctrl.mmv){
 			// 舞台回転処理
 			var x0 = this._tempmx - this.ccvs.width * 0.5;

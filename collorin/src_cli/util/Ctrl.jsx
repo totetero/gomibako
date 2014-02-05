@@ -200,6 +200,8 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// ルート要素 マウスを押す
 	static function root_mdnfn(e : Event) : void{
+		if((e.target as Element).tagName.toLowerCase() == "input"){return;}
+
 		Ctrl.mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX) - Ctrl.sx;
 		Ctrl.my = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientY : (e as MouseEvent).clientY) - Ctrl.sy;
 		if(0 <= Ctrl.mx && Ctrl.mx <= Ctrl.sw && 0 <= Ctrl.my && Ctrl.my <= Ctrl.sh){
@@ -224,10 +226,10 @@ class Ctrl{
 				var y = Ctrl._tempmy - Ctrl.my;
 				Ctrl.mmv = (x * x + y * y > 10);
 			}
+			// 上位ノードイベントキャンセル
+			e.preventDefault();
+			e.stopPropagation();
 		}
-		// 上位ノードイベントキャンセル
-		e.preventDefault();
-		e.stopPropagation();
 	}
 
 	// ----------------------------------------------------------------
@@ -237,10 +239,10 @@ class Ctrl{
 			Ctrl.mdn = false;
 			Ctrl.mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX) - Ctrl.sx;
 			Ctrl.my = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientY : (e as MouseEvent).clientY) - Ctrl.sy;
+			// 上位ノードイベントキャンセル
+			e.preventDefault();
+			e.stopPropagation();
 		}
-		// 上位ノードイベントキャンセル
-		e.preventDefault();
-		e.stopPropagation();
 	}
 
 	// ----------------------------------------------------------------

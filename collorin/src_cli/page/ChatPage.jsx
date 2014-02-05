@@ -17,6 +17,8 @@ class ChatPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<canvas></canvas>
+		<input type="text">
+		<div class="btn">送信</div>
 	""";
 
 	// チャットソケット
@@ -37,7 +39,7 @@ class ChatPage extends Page{
 		this.depth = 3;
 		this.headerType = 0;
 		this.lctrlType = 1;
-		this.rctrlType = 1;
+		this.rctrlType = 0;
 	}
 
 	// 初期化
@@ -76,7 +78,7 @@ class ChatPage extends Page{
 	// キャンバス描画
 	function canvasDraw() : void{
 		this.ccvs.context.clearRect(0, 0, this.ccvs.width, this.ccvs.height);
-		this.field.draw(this.ccvs, this.ccvs.cx, this.ccvs.cy, Ctrl.mdn && !Ctrl.mmv);
+		this.field.draw(this.ccvs, this.ccvs.cx, this.ccvs.cy, this.ccvs.mdn && !Ctrl.mmv);
 		this.player.preDraw(this.ccvs);
 		for(var i = 0; i < this.friend.length; i++){this.friend[i].preDraw(this.ccvs);}
 		DrawUnit.drawList(this.ccvs, this.slist);
@@ -92,11 +94,15 @@ class ChatPage extends Page{
 
 class SECchatPageMain extends SECctrlCanvas{
 	var _page : ChatPage;
+	var _input : HTMLInputElement;
+	var _btnList = {} : Map.<PageButton>;
 
 	// コンストラクタ
 	function constructor(page : ChatPage){
 		super(page.ccvs, 1);
 		this._page = page;
+		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
+		this._btnList["btn"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
 	}
 
 	// 初期化
@@ -105,19 +111,24 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 計算
 	override function calc() : boolean{
+		var clickable = true;
+		if(!this.ccvs.mdn){
+			for(var name in this._btnList){
+				this._btnList[name].calc();
+				clickable = clickable && !this._btnList[name].active;
+			}
+		}
+		this.ccvs.calc(clickable);
 		super.calc();
+
 		this._page.player.calc(this.ccvs);
 		this.ccvs.cx -= (this.ccvs.cx - this._page.player.x) * 0.1;
 		this.ccvs.cy -= (this.ccvs.cy - this._page.player.y) * 0.1;
 
-		if(Ctrl.trigger_zb){
-			Ctrl.trigger_zb = false;
-			this._page.player.talk("キツネ大好き");
-		}
-
-		if(Ctrl.trigger_xb){
-			Ctrl.trigger_xb = false;
-			this._page.player.talk("");
+		if(this._btnList["btn"].trigger){
+			this._btnList["btn"].trigger = false;
+			this._page.player.talk(this._input.value);
+			this._input.value = "";
 		}
 
 		return true;
@@ -126,6 +137,7 @@ class SECchatPageMain extends SECctrlCanvas{
 	// 描画
 	override function draw() : void{
 		this._page.canvasDraw();
+		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
 	// 破棄

@@ -94,6 +94,7 @@ class SECgamePageMain extends SECctrlCanvas{
 
 	// 計算
 	override function calc() : boolean{
+		this.ccvs.calc(true);
 		super.calc();
 		this._page.player.calc(this.ccvs);
 		return true;
