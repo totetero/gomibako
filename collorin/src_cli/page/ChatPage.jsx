@@ -102,6 +102,25 @@ class SECchatPageMain extends SECctrlCanvas{
 		super.calc();
 		this._page.player.calc(this.ccvs);
 
+		if(!this._page.player.isMoving){
+			var r = 0;
+			if     (Ctrl.krt && Ctrl.kup){r = 7 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.klt && Ctrl.kup){r = 5 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.klt && Ctrl.kdn){r = 3 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.krt && Ctrl.kdn){r = 1 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.krt){r = 0 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.kup){r = 6 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.klt){r = 4 - 8 * this.ccvs.rotv / Math.PI;}
+			else if(Ctrl.kdn){r = 2 - 8 * this.ccvs.rotv / Math.PI;}
+			else{}
+			while(r < 0){r += 8;}
+			while(r >= 8){r -= 8;}
+			log Math.round(r);
+		}
+
+		this.ccvs.cx -= (this.ccvs.cx - this._page.player.x) * 0.1;
+		this.ccvs.cy -= (this.ccvs.cy - this._page.player.y) * 0.1;
+
 		if(Ctrl.trigger_zb){
 			Ctrl.trigger_zb = false;
 			this._page.player.talk("キツネ大好き");
@@ -110,6 +129,11 @@ class SECchatPageMain extends SECctrlCanvas{
 		if(Ctrl.trigger_xb){
 			Ctrl.trigger_xb = false;
 			this._page.player.talk("");
+		}
+
+		if(Ctrl.trigger_cb){
+			Ctrl.trigger_cb = false;
+			this._page.player.move(Math.floor(10 * Math.random()), Math.floor(10 * Math.random()));
 		}
 
 		return true;
@@ -157,18 +181,19 @@ class ChatCharacter{
 	var _character : DrawCharacter;
 	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
+	var _dstList = new int[][];
 	var x : number;
 	var y : number;
 	var r : number;
-	var motion : string;
 	var action : int;
+	var isMoving : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : ChatPage, charaInfo : variant){
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
-		this._character = new DrawCharacter(Loader.imgs["dot_player0"], drawInfo, size);
+		this._character = new DrawCharacter(Loader.imgs["dot_" + charaInfo["id"] as string], drawInfo, size);
 		this._balloon = new DrawBalloon();
 		this._shadow = new DrawShadow(size);
 		page.clist.push(this._character);
@@ -180,6 +205,12 @@ class ChatCharacter{
 	}
 
 	// ----------------------------------------------------------------
+	// 移動
+	function move(x : int, y : int) : void{
+		this._dstList.push([x, y]);
+	}
+
+	// ----------------------------------------------------------------
 	// 会話
 	function talk(message : string) : void{
 		this._balloon.setText(message, -1);
@@ -188,26 +219,25 @@ class ChatCharacter{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc(ccvs : Ccvs) : void{
-		this.action++;
-		if     (Ctrl.krt && Ctrl.kup){this.r = Math.PI * 1.74 - ccvs.rotv;}
-		else if(Ctrl.klt && Ctrl.kup){this.r = Math.PI * 1.26 - ccvs.rotv;}
-		else if(Ctrl.klt && Ctrl.kdn){this.r = Math.PI * 0.74 - ccvs.rotv;}
-		else if(Ctrl.krt && Ctrl.kdn){this.r = Math.PI * 0.26 - ccvs.rotv;}
-		else if(Ctrl.krt){this.r = Math.PI * 0.00 - ccvs.rotv;}
-		else if(Ctrl.kup){this.r = Math.PI * 1.50 - ccvs.rotv;}
-		else if(Ctrl.klt){this.r = Math.PI * 1.00 - ccvs.rotv;}
-		else if(Ctrl.kdn){this.r = Math.PI * 0.50 - ccvs.rotv;}
-		else{this.action = 0;}
-		if(this.action > 0){
-			var speed = 3;
-			this.x += speed * Math.cos(this.r);
-			this.y += speed * Math.sin(this.r);
-			this.motion = "walk";
-		}else{
-			this.motion = "stand";
+		this.isMoving = (this._dstList.length > 0);
+		if(this.isMoving){
+			// グリッド目的地に向かう
+			this.action++;
+			var dx = this._dstList[0][0] * 16 + 8;
+			var dy = this._dstList[0][1] * 16 + 8;
+			var x = dx - this.x;
+			var y = dy - this.y;
+			var speed = 3.0;
+			if(x * x + y * y < speed * speed){
+				this.x = dx;
+				this.y = dy;
+				this._dstList.shift();
+			}else{
+				this.r = Math.atan2(y, x);
+				this.x += speed * Math.cos(this.r);
+				this.y += speed * Math.sin(this.r);
+			}
 		}
-		ccvs.cx -= (ccvs.cx - this.x) * 0.1;
-		ccvs.cy -= (ccvs.cy - this.y) * 0.1;
 	}
 
 	// ----------------------------------------------------------------
@@ -217,9 +247,10 @@ class ChatCharacter{
 		var y = this.y - ccvs.cy;
 		this._balloon.preDraw(ccvs, x, y, 35, 1.0);
 		this._shadow.preDraw(ccvs, x, y, 0);
-		switch(this.motion){
-			case "walk": this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
-			default: this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0); break;
+		if(this.isMoving){
+			this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk"));
+		}else{
+			this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0);
 		}
 	}
 }

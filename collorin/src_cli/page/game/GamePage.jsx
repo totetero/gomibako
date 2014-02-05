@@ -130,7 +130,7 @@ class GameCharacter{
 		var size = charaInfo["size"] as number;
 		var hexx = charaInfo["x"] as int;
 		var hexy = charaInfo["y"] as int;
-		this._character = new DrawCharacter(Loader.imgs["dot_player0"], drawInfo, size);
+		this._character = new DrawCharacter(Loader.imgs["dot_" + charaInfo["id"] as string], drawInfo, size);
 		this._shadow = new DrawShadow(size);
 		page.clist.push(this._character);
 		page.slist.push(this._shadow);
