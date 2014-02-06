@@ -125,7 +125,8 @@ class SECchatPageMain extends SECctrlCanvas{
 		this.ccvs.cx -= (this.ccvs.cx - this._page.player.x) * 0.1;
 		this.ccvs.cy -= (this.ccvs.cy - this._page.player.y) * 0.1;
 
-		if(this._btnList["btn"].trigger){
+		if(Ctrl.trigger_enter || this._btnList["btn"].trigger){
+			Ctrl.trigger_enter = false;
 			this._btnList["btn"].trigger = false;
 			this._page.player.talk(this._input.value);
 			this._input.value = "";

@@ -47,6 +47,7 @@ class Ctrl{
 	static var trigger_xb : boolean;
 	static var trigger_cb : boolean;
 	static var trigger_sb : boolean;
+	static var trigger_enter : boolean;
 	static var _mkup : boolean = false;
 	static var _mkdn : boolean = false;
 	static var _mkrt : boolean = false;
@@ -137,9 +138,9 @@ class Ctrl{
 					Ctrl.rctrl_mupfn(e);
 				}
 			});
-			dom.document.addEventListener("keydown", Ctrl.kdnfn);
-			dom.document.addEventListener("keyup", Ctrl.kupfn);
 		}
+		dom.document.addEventListener("keydown", Ctrl.kdnfn);
+		dom.document.addEventListener("keyup", Ctrl.kupfn);
 	}
 
 	// ----------------------------------------------------------------
@@ -153,8 +154,8 @@ class Ctrl{
 			Ctrl.wh = wh;
 			Ctrl.sw = 320;
 			Ctrl.sh = Math.min(Math.max(Ctrl.wh, 240), 480);
-			Ctrl.sx = Math.floor((Ctrl.ww - Ctrl.sw) * 0.5);
-			Ctrl.sy = Math.floor((Ctrl.wh - Ctrl.sh) * 0.5);
+			Ctrl.sx = Math.floor(Math.max(0, (Ctrl.ww - Ctrl.sw) * 0.5));
+			Ctrl.sy = Math.floor(Math.max(0, (Ctrl.wh - Ctrl.sh) * 0.5));
 			Ctrl._update_screen = true;
 		}
 
@@ -200,7 +201,11 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// ルート要素 マウスを押す
 	static function root_mdnfn(e : Event) : void{
+		// input要素フォーカス処理
 		if((e.target as Element).tagName.toLowerCase() == "input"){return;}
+		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
+			(dom.document.activeElement as HTMLInputElement).blur();
+		}
 
 		Ctrl.mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX) - Ctrl.sx;
 		Ctrl.my = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientY : (e as MouseEvent).clientY) - Ctrl.sy;
@@ -290,20 +295,21 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// キーを押す
 	static function kdnfn(e : Event) : void{
-		var getkey = true;
-		switch((e as KeyboardEvent).keyCode){
-			case 37: Ctrl._kklt = true; break;
-			case 38: Ctrl._kkup = true; break;
-			case 39: Ctrl._kkrt = true; break;
-			case 40: Ctrl._kkdn = true; break;
-			case 88: Ctrl._kk_x = true; break;
-			case 90: Ctrl._kk_z = true; break;
-			case 67: Ctrl._kk_c = true; break;
-			case 32: Ctrl._kk_s = true; break;
-			default: getkey = false;
-		}
-		// キーイベント終了
-		if(getkey){
+		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
+			// インプットモード
+		}else{
+			// コントローラーモード
+			switch((e as KeyboardEvent).keyCode){
+				case 37: Ctrl._kklt = true; break;
+				case 38: Ctrl._kkup = true; break;
+				case 39: Ctrl._kkrt = true; break;
+				case 40: Ctrl._kkdn = true; break;
+				case 88: Ctrl._kk_x = true; break;
+				case 90: Ctrl._kk_z = true; break;
+				case 67: Ctrl._kk_c = true; break;
+				case 32: Ctrl._kk_s = true; break;
+			}
+			// キーイベント終了
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -312,20 +318,25 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// キーを離す
 	static function kupfn(e : Event) : void{
-		var getkey = true;
-		switch((e as KeyboardEvent).keyCode){
-			case 37: Ctrl._kklt = false; Ctrl.trigger_lt = true; break;
-			case 38: Ctrl._kkup = false; Ctrl.trigger_up = true; break;
-			case 39: Ctrl._kkrt = false; Ctrl.trigger_rt = true; break;
-			case 40: Ctrl._kkdn = false; Ctrl.trigger_dn = true; break;
-			case 88: Ctrl._kk_x = false; Ctrl.trigger_xb = true; break;
-			case 90: Ctrl._kk_z = false; Ctrl.trigger_zb = true; break;
-			case 67: Ctrl._kk_c = false; Ctrl.trigger_cb = true; break;
-			case 32: Ctrl._kk_s = false; Ctrl.trigger_sb = true; break;
-			default: getkey = false;
-		}
-		// キーイベント終了
-		if(getkey){
+		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
+			// インプットモード
+			if((e as KeyboardEvent).keyCode == 13){
+				Ctrl.trigger_enter = true;
+				(dom.document.activeElement as HTMLInputElement).blur();
+			}
+		}else{
+			// コントローラーモード
+			switch((e as KeyboardEvent).keyCode){
+				case 37: Ctrl._kklt = false; Ctrl.trigger_lt = true; break;
+				case 38: Ctrl._kkup = false; Ctrl.trigger_up = true; break;
+				case 39: Ctrl._kkrt = false; Ctrl.trigger_rt = true; break;
+				case 40: Ctrl._kkdn = false; Ctrl.trigger_dn = true; break;
+				case 88: Ctrl._kk_x = false; Ctrl.trigger_xb = true; break;
+				case 90: Ctrl._kk_z = false; Ctrl.trigger_zb = true; break;
+				case 67: Ctrl._kk_c = false; Ctrl.trigger_cb = true; break;
+				case 32: Ctrl._kk_s = false; Ctrl.trigger_sb = true; break;
+			}
+			// キーイベント終了
 			e.preventDefault();
 			e.stopPropagation();
 		}
