@@ -23,7 +23,7 @@ class ChatPage extends Page{
 
 	// チャットソケット
 	var socket : ChatSocket;
-	// キャンバス情報
+	// キャンバス
 	var ccvs : ChatCanvas;
 
 	// コンストラクタ
@@ -94,6 +94,7 @@ class SECchatPageMain extends SECctrlCanvas{ // TODO 継承をやめたい
 			}
 		}
 		this.ccvs.calc(clickable);
+
 		super.calc();
 
 		this._page.ccvs.player.calc(this.ccvs);
@@ -126,8 +127,8 @@ class SECchatPageMain extends SECctrlCanvas{ // TODO 継承をやめたい
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// ソケット
 class ChatSocket{
-	// ソケット
 	var _socket : SocketIOClientSocket;
 
 	// コンストラクタ
@@ -149,8 +150,8 @@ class ChatSocket{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// キャンバス
 class ChatCanvas extends Ccvs{
-	// キャラクター
 	var field : GridField;
 	var player : ChatPlayer;
 	var friend = new ChatCharacter[];
@@ -277,9 +278,10 @@ class ChatCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : ChatCanvas, charaInfo : variant){
+		var img = Loader.imgs["dot_" + charaInfo["id"] as string];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
-		this._character = new DrawCharacter(Loader.imgs["dot_" + charaInfo["id"] as string], drawInfo, size);
+		this._character = new DrawCharacter(img, drawInfo, size);
 		this._balloon = new DrawBalloon();
 		this._shadow = new DrawShadow(size);
 		ccvs.clist.push(this._character);

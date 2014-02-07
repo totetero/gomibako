@@ -18,13 +18,8 @@ class GamePage extends Page{
 		<canvas></canvas>
 	""";
 
-	// キャンバス情報
-	var ccvs : Ccvs;
-	// キャラクター
-	var field : HexField;
-	var player : GameCharacter;
-	var clist : DrawUnit[] = new DrawUnit[];
-	var slist : DrawUnit[] = new DrawUnit[];
+	// キャンバス
+	var ccvs : GameCanvas;
 
 	// コンストラクタ
 	function constructor(){
@@ -43,39 +38,24 @@ class GamePage extends Page{
 		this.div.className = "page game";
 		this.div.innerHTML = this._htmlTag;
 		// キャンバス
-		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
+		this.ccvs = new GameCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/game", null, function(response : variant) : void{
-			// フィールド
-			this.field = new HexField(this.ccvs, response["hex"] as HexFieldCell[]);
-			// キャラクター
-			var charaInfoList = response["charaInfo"] as variant[][];
-			this.player = new GameCharacter(this, charaInfoList[0][0]);
+			// データの形成
+			this.ccvs.init(response);
 		}));
 		this.serialPush(new ECdrawOne(function() : void{
-			// 初期描画
-			this.ccvs.cx = this.player.x;
-			this.ccvs.cy = this.player.y;
-			this.canvasDraw();
+			// ページ遷移前描画
+			this.ccvs.draw();
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECgamePageMain(this));
 	}
 
-	// キャンバス描画
-	function canvasDraw() : void{
-		this.ccvs.context.clearRect(0, 0, this.ccvs.width, this.ccvs.height);
-		this.field.draw(this.ccvs, this.ccvs.cx, this.ccvs.cy, Ctrl.mdn && !Ctrl.mmv);
-		if(this.player != null){this.player.preDraw(this.ccvs);}
-		DrawUnit.drawList(this.ccvs, this.slist);
-		DrawUnit.drawList(this.ccvs, this.clist);
-	}
-
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-		//this.ccvs.dispose();
 	}
 }
 
@@ -96,17 +76,57 @@ class SECgamePageMain extends SECctrlCanvas{
 	override function calc() : boolean{
 		this.ccvs.calc(true);
 		super.calc();
-		this._page.player.calc(this.ccvs);
+		this._page.ccvs.player.calc(this.ccvs);
 		return true;
 	}
 
 	// 描画
 	override function draw() : void{
-		this._page.canvasDraw();
+		this._page.ccvs.draw();
 	}
 
 	// 破棄
 	override function dispose() : void{
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// キャンバス
+class GameCanvas extends Ccvs{
+	var field : HexField;
+	var player : GameCharacter;
+	var clist : DrawUnit[] = new DrawUnit[];
+	var slist : DrawUnit[] = new DrawUnit[];
+
+	// コンストラクタ
+	function constructor(canvas : HTMLCanvasElement){
+		super(320, 480, canvas);
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	function init(response : variant) : void{
+		// フィールド
+		this.field = new HexField(this, response["hex"] as HexFieldCell[]);
+		// キャラクター
+		var charaInfoList = response["charaInfo"] as variant[][];
+		this.player = new GameCharacter(this, charaInfoList[0][0]);
+		// 初期カメラ位置
+		this.cx = this.player.x;
+		this.cy = this.player.y;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	function draw() : void{
+		this.context.clearRect(0, 0, this.width, this.height);
+		this.field.draw(this, this.cx, this.cy, Ctrl.mdn && !Ctrl.mmv);
+		this.player.preDraw(this);
+		DrawUnit.drawList(this, this.slist);
+		DrawUnit.drawList(this, this.clist);
 	}
 }
 
@@ -126,17 +146,18 @@ class GameCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : GamePage, charaInfo : variant){
+	function constructor(ccvs : GameCanvas, charaInfo : variant){
+		var img = Loader.imgs["dot_" + charaInfo["id"] as string];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		var hexx = charaInfo["x"] as int;
 		var hexy = charaInfo["y"] as int;
-		this._character = new DrawCharacter(Loader.imgs["dot_" + charaInfo["id"] as string], drawInfo, size);
+		this._character = new DrawCharacter(img, drawInfo, size);
 		this._shadow = new DrawShadow(size);
-		page.clist.push(this._character);
-		page.slist.push(this._shadow);
-		this.x = page.field.calcHexCoordx(hexx, hexy);
-		this.y = page.field.calcHexCoordy(hexx, hexy);
+		ccvs.clist.push(this._character);
+		ccvs.slist.push(this._shadow);
+		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
+		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
 		this.r = charaInfo["r"] as number;
 	}
 
