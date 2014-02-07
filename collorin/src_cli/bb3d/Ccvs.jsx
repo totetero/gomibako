@@ -16,8 +16,10 @@ class Ccvs{
 	var context : CanvasRenderingContext2D;
 	// マウス状態 キャンバスとの相対位置
 	var mdn : boolean;
-	var mx : int;
-	var my : int;
+	var mx : int = 0;
+	var my : int = 0;
+	var prevmx : int;
+	var prevmy : int;
 	var _tempmdn : boolean;
 	// ゲーム画面キャンバス タッチ位置
 	var tx : number;
@@ -66,6 +68,8 @@ class Ccvs{
 	// マウス状態とタッチ状態の計算
 	function calc(clickable : boolean) : void{
 		// キャンバスからみたマウス位置を確認
+		this.prevmx = this.mx;
+		this.prevmy = this.my;
 		var box = this.canvas.getBoundingClientRect();
 		this.mx = Ctrl.mx + Ctrl.sx - box.left;
 		this.my = Ctrl.my + Ctrl.sy - box.top;
@@ -87,8 +91,6 @@ abstract class SECctrlCanvas extends EventCartridge{
 	var ccvs : Ccvs;
 	var _scale : number;
 	// 内部演算用 マウス移動量差分を求める変数
-	var _tempmx : int = 0;
-	var _tempmy : int = 0;
 
 	// コンストラクタ
 	function constructor(ccvs : Ccvs, scale : number){
@@ -104,8 +106,8 @@ abstract class SECctrlCanvas extends EventCartridge{
 	override function calc() : boolean{
 		if(this.ccvs.mdn && Ctrl.mmv){
 			// 舞台回転処理
-			var x0 = this._tempmx - this.ccvs.width * 0.5;
-			var y0 = this._tempmy - this.ccvs.height * 0.5;
+			var x0 = this.ccvs.prevmx - this.ccvs.width * 0.5;
+			var y0 = this.ccvs.prevmy - this.ccvs.height * 0.5;
 			var r0 = Math.sqrt(x0 * x0 + y0 * y0);
 			var x1 = this.ccvs.mx - this.ccvs.width * 0.5;
 			var y1 = this.ccvs.my - this.ccvs.height * 0.5;
@@ -119,8 +121,6 @@ abstract class SECctrlCanvas extends EventCartridge{
 				this.ccvs.cosv = Math.cos(this.ccvs.rotv);
 			}
 		}
-		this._tempmx = this.ccvs.mx;
-		this._tempmy = this.ccvs.my;
 
 		// 水平角度
 		var drh = this.ccvs.roth - Math.PI / 180 * 30;
