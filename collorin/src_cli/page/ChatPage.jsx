@@ -87,11 +87,9 @@ class SECchatPageMain extends SECctrlCanvas{ // TODO 継承をやめたい
 	// 計算
 	override function calc() : boolean{
 		var clickable = true;
-		if(!this.ccvs.mdn){
-			for(var name in this._btnList){
-				this._btnList[name].calc();
-				clickable = clickable && !this._btnList[name].active;
-			}
+		for(var name in this._btnList){
+			this._btnList[name].calc(!this.ccvs.mdn);
+			clickable = clickable && !this._btnList[name].active;
 		}
 		this.ccvs.calc(clickable);
 

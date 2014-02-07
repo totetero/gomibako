@@ -67,7 +67,7 @@ class SECworldPageMain extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc();}
+		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		if(this._btnList["btn1"].trigger){
 			this._btnList["btn1"].trigger = false;

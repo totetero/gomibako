@@ -289,14 +289,14 @@ class PageButton{
 	}
 
 	// 計算
-	function calc() : void{
+	function calc(clickable : boolean) : void{
 		if(Ctrl.mdn){
 			var box = this.div.getBoundingClientRect();
 			var x0 = box.left - Ctrl.sx;
 			var y0 = box.top - Ctrl.sy;
 			var x1 = x0 + box.width;
 			var y1 = y0 + box.height;
-			this.active = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+			this.active = (clickable && x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
 		}else if(this.active){
 			this.active = false;
 			this.trigger = true;
