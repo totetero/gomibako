@@ -24,13 +24,7 @@ class ChatPage extends Page{
 	// チャットソケット
 	var socket : ChatSocket;
 	// キャンバス情報
-	var ccvs : Ccvs;
-	// キャラクター
-	var field : GridField;
-	var player : ChatPlayer;
-	var friend = new ChatCharacter[];
-	var clist = new DrawUnit[];
-	var slist = new DrawUnit[];
+	var ccvs : ChatCanvas;
 
 	// コンストラクタ
 	function constructor(){
@@ -48,41 +42,22 @@ class ChatPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chat";
 		this.div.innerHTML = this._htmlTag;
-		// キャンバス
-		this.ccvs = new Ccvs(320, 480, this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
-		this.ccvs.scale = 2;
-		this.ccvs.rotv = Math.PI / 180 * 45;
-		this.ccvs.sinv = Math.sin(this.ccvs.rotv);
-		this.ccvs.cosv = Math.cos(this.ccvs.rotv);
 		// ソケット
 		this.socket = new ChatSocket();
+		// キャンバス
+		this.ccvs = new ChatCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
 		// イベント設定
 		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{
-			// フィールド
-			this.field = new GridField(this.ccvs, Loader.imgs["grid"], response["grid"] as int[][]);
-			// キャラクター
-			this.player = new ChatPlayer(this, response["charaInfo"]);
-			this.friend.push(new ChatCharacter(this, response["charaInfo"]));
+			// データの形成
+			this.ccvs.init(response);
 		}));
 		this.serialPush(new ECdrawOne(function() : void{
-			// 初期描画
-			this.ccvs.cx = (this.ccvs.cxmax + this.ccvs.cxmin) * 0.5;
-			this.ccvs.cy = (this.ccvs.cymax + this.ccvs.cymin) * 0.5;
-			this.canvasDraw();
+			// ページ遷移前描画
+			this.ccvs.draw();
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECchatPageMain(this));
-	}
-
-	// キャンバス描画
-	function canvasDraw() : void{
-		this.ccvs.context.clearRect(0, 0, this.ccvs.width, this.ccvs.height);
-		this.field.draw(this.ccvs, this.ccvs.cx, this.ccvs.cy, this.ccvs.mdn && !Ctrl.mmv);
-		this.player.preDraw(this.ccvs);
-		for(var i = 0; i < this.friend.length; i++){this.friend[i].preDraw(this.ccvs);}
-		DrawUnit.drawList(this.ccvs, this.slist);
-		DrawUnit.drawList(this.ccvs, this.clist);
 	}
 
 	// 破棄
@@ -92,7 +67,7 @@ class ChatPage extends Page{
 	}
 }
 
-class SECchatPageMain extends SECctrlCanvas{
+class SECchatPageMain extends SECctrlCanvas{ // TODO 継承をやめたい
 	var _page : ChatPage;
 	var _input : HTMLInputElement;
 	var _btnList = {} : Map.<PageButton>;
@@ -121,14 +96,15 @@ class SECchatPageMain extends SECctrlCanvas{
 		this.ccvs.calc(clickable);
 		super.calc();
 
-		this._page.player.calc(this.ccvs);
-		this.ccvs.cx -= (this.ccvs.cx - this._page.player.x) * 0.1;
-		this.ccvs.cy -= (this.ccvs.cy - this._page.player.y) * 0.1;
+		this._page.ccvs.player.calc(this.ccvs);
+		this.ccvs.cx -= (this.ccvs.cx - this._page.ccvs.player.x) * 0.1;
+		this.ccvs.cy -= (this.ccvs.cy - this._page.ccvs.player.y) * 0.1;
 
+		// メッセージの投稿
 		if(Ctrl.trigger_enter || this._btnList["btn"].trigger){
 			Ctrl.trigger_enter = false;
 			this._btnList["btn"].trigger = false;
-			this._page.player.talk(this._input.value);
+			this._page.ccvs.player.talk(this._input.value);
 			this._input.value = "";
 		}
 
@@ -137,7 +113,7 @@ class SECchatPageMain extends SECctrlCanvas{
 
 	// 描画
 	override function draw() : void{
-		this._page.canvasDraw();
+		this._page.ccvs.draw();
 		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
@@ -173,22 +149,68 @@ class ChatSocket{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+class ChatCanvas extends Ccvs{
+	// キャラクター
+	var field : GridField;
+	var player : ChatPlayer;
+	var friend = new ChatCharacter[];
+	var clist = new DrawUnit[];
+	var slist = new DrawUnit[];
+
+	// コンストラクタ
+	function constructor(canvas : HTMLCanvasElement){
+		super(320, 480, canvas);
+		this.scale = 2;
+		this.rotv = Math.PI / 180 * 45;
+		this.sinv = Math.sin(this.rotv);
+		this.cosv = Math.cos(this.rotv);
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	function init(response : variant) : void{
+		// フィールド
+		this.field = new GridField(this, Loader.imgs["grid"], response["grid"] as int[][]);
+		// キャラクター
+		this.player = new ChatPlayer(this, response["charaInfo"]);
+		this.friend.push(new ChatCharacter(this, response["charaInfo"]));
+		// 初期カメラ位置
+		this.cx = (this.cxmax + this.cxmin) * 0.5;
+		this.cy = (this.cymax + this.cymin) * 0.5;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	function draw() : void{
+		this.context.clearRect(0, 0, this.width, this.height);
+		this.field.draw(this, this.cx, this.cy, this.mdn && !Ctrl.mmv);
+		this.player.preDraw(this);
+		for(var i = 0; i < this.friend.length; i++){this.friend[i].preDraw(this);}
+		DrawUnit.drawList(this, this.slist);
+		DrawUnit.drawList(this, this.clist);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 // プレイヤークラス
 class ChatPlayer extends ChatCharacter{
-	var _page : ChatPage;
+	var _ccvs : ChatCanvas;
 	var _mdn : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : ChatPage, charaInfo : variant){
-		super(page, charaInfo);
-		this._page = page;
+	function constructor(ccvs : ChatCanvas, charaInfo : variant){
+		super(ccvs, charaInfo);
+		this._ccvs = ccvs;
 	}
 
 	// ----------------------------------------------------------------
 	// 移動
 	function ctrlMove(x : int, y : int) : void{
-		if(this._page.field.getGridFromIndex(x, y) > 0){
+		if(this._ccvs.field.getGridFromIndex(x, y) > 0){
 			this._dstList.length = 0;
 			this._dstList.push([x, y]);
 		}
@@ -254,15 +276,15 @@ class ChatCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : ChatPage, charaInfo : variant){
+	function constructor(ccvs : ChatCanvas, charaInfo : variant){
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(Loader.imgs["dot_" + charaInfo["id"] as string], drawInfo, size);
 		this._balloon = new DrawBalloon();
 		this._shadow = new DrawShadow(size);
-		page.clist.push(this._character);
-		page.clist.push(this._balloon);
-		page.slist.push(this._shadow);
+		ccvs.clist.push(this._character);
+		ccvs.clist.push(this._balloon);
+		ccvs.slist.push(this._shadow);
 		this.x = charaInfo["x"] as number;
 		this.y = charaInfo["y"] as number;
 		this.r = charaInfo["r"] as number;
