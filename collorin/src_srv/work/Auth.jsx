@@ -25,69 +25,67 @@ class AuthPage{
 
 		// ローカル用設定
 		passport.use(new LocalStrategy({
-				usernameField: "user",
-				passwordField: "password"
-			}, function(name : string, pass : string, done : function(err:variant,user:UserModel,info:variant):void){
-				process.nextTick(function(){
-					UserModel.findOne({domain: "local", uname: name}, function(err : variant, user : UserModel){
-						if(err){done(err, null, null);}
-						else if(user){
-							if(AuthPage.getHash(pass) == user.uid){
-								// 認証成功 データベース更新
-								user.count++;
-								user.save(function(err : variant) : void{
-									done(null, user, null);
-								});
-							}else{
-								done(null, null, {message: "パスワードが間違っています。"});
-							}
+			usernameField: "user",
+			passwordField: "password"
+		}, function(name : string, pass : string, done : function(err:variant,user:UserModel,info:variant):void){
+			process.nextTick(function(){
+				UserModel.findOne({domain: "local", uname: name}, function(err : variant, user : UserModel){
+					if(err){done(err, null, null);}
+					else if(user){
+						if(AuthPage.getHash(pass) == user.uid){
+							// 認証成功 データベース更新
+							user.count++;
+							user.save(function(err : variant) : void{
+								done(null, user, null);
+							});
 						}else{
-							var testFlag = (name == "test01" || name == "test02" || name == "test03");
-							if(testFlag){
-								// テストユーザーのデータベース登録
-								user = new UserModel();
-								user.domain = "local";
-								user.uid = AuthPage.getHash(pass);
-								user.uname = name;
-								user.imgurl = "";
-								user.count = 1;
-								user.save(function(err : variant) : void{
-									done(null, user, null);
-								});
-							}else{
-								done(null, null, {message: "ユーザーが見つかりませんでした。"});
-							}
+							done(null, null, {message: "パスワードが間違っています。"});
 						}
-					});
+					}else{
+						var testFlag = (name == "test01" || name == "test02" || name == "test03");
+						if(testFlag){
+							// テストユーザーのデータベース登録
+							user = new UserModel();
+							user.domain = "local";
+							user.uid = AuthPage.getHash(pass);
+							user.uname = name;
+							user.imgurl = "";
+							user.count = 1;
+							user.save(function(err : variant) : void{
+								done(null, user, null);
+							});
+						}else{
+							done(null, null, {message: "ユーザーが見つかりませんでした。"});
+						}
+					}
 				});
-			}
-		));
+			});
+		}));
 
 		// twitter用設定
 		if(strategies["twitter"] != null){
 			passport.use(new TwitterStrategy(strategies["twitter"], function(token:string, tokenSecret : string, profile : TwitterProfile, done : function(err:variant,user:UserModel,info:variant):void){
-					process.nextTick(function(){
-						UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err : variant, user : UserModel){
-							if(err){done(err, null, null);}
-							else if(user){
-								// データベース更新
-								user.count++;
-							}else{
-								// データベース登録
-								user = new UserModel();
-								user.domain = "twitter.com";
-								user.uid = profile.id;
-								user.uname = profile.username;
-								user.imgurl = profile._json["profile_image_url"] as string;
-								user.count = 1;
-							}
-							user.save(function(err : variant) : void{
-								done(null, user, null);
-							});
+				process.nextTick(function(){
+					UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err : variant, user : UserModel){
+						if(err){done(err, null, null);}
+						else if(user){
+							// データベース更新
+							user.count++;
+						}else{
+							// データベース登録
+							user = new UserModel();
+							user.domain = "twitter.com";
+							user.uid = profile.id;
+							user.count = 1;
+						}
+						user.uname = profile.username;
+						user.imgurl = profile._json["profile_image_url"] as string;
+						user.save(function(err : variant) : void{
+							done(null, user, null);
 						});
 					});
-				}
-			));
+				});
+			}));
 		}
 	}
 
@@ -101,32 +99,21 @@ class AuthPage{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
+		// passportログイン関数
+		var authenticate = function(strategy : string, options : variant) : function(req:ExRequest,res:ExResponse,next:function():void) : void{
+			return function(req : ExRequest, res : ExResponse, next : function():void) : void{
+				if(req.isAuthenticated()){
+					next();
+				}else{
+					passport.authenticate(strategy, options)(req, res, next);
+				}
+			};
+		};
 		// ローカルログイン
-		app.post("/auth/local", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			if(req.isAuthenticated()){
-				next();
-			}else{
-				passport.authenticate("local", {successRedirect: "/", failureRedirect: "/auth/fail"})(req, res, next);
-			}
-		});
-
+		app.post("/auth/local", authenticate("local", {successRedirect: "/", failureRedirect: "/auth/fail"}));
 		// twitterでのログイン
-		app.get("/auth/twitter", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			if(req.isAuthenticated()){
-				next();
-			}else{
-				passport.authenticate("twitter")(req, res, next);
-			}
-		});
-
-		// twitterでのログインから戻ってきたとき
-		app.get("/auth/twitter/callback", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			if(req.isAuthenticated()){
-				next();
-			}else{
-				passport.authenticate("twitter", {successRedirect: "/", failureRedirect: "/"})(req, res, next);
-			}
-		});
+		app.get("/auth/twitter", authenticate("twitter", null));
+		app.get("/auth/twitter/callback", authenticate("twitter", {successRedirect: "/", failureRedirect: "/"}));
 
 		// ログイン失敗
 		app.get("/auth/fail", function(req : ExRequest, res : ExResponse, next : function():void) : void{
