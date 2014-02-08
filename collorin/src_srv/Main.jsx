@@ -21,18 +21,17 @@ class _Main{
 		// データ初期化
 		CharacterDrawInfo.init();
 
-		// ゲーム情報管理データベース接続
+		// データベース接続 mongo
 		mongoose.connect("mongodb://localhost/totetest");
-		// セッション管理データベース接続
-		var redisOption = {
-			host: "127.0.0.1",
-			port: 6379
-		};
-		var sessionStore = new RedisStore(redisOption);
+		// データベース接続 redis
+		var redisPort = 6379;
+		var redisHost = "127.0.0.1";
+		//var redisClient = redis.createClient(redisPort, redisHost, null);
+		var sessionStore = new RedisStore({host: redisHost, port: redisPort});
 		var socketStore = new SocketRedisStore({
-			redisPub: redisOption,
-			redisSub: redisOption,
-			redisClient: redisOption
+			redisPub: {host: redisHost, port: redisPort},
+			redisSub: {host: redisHost, port: redisPort},
+			redisClient: {host: redisHost, port: redisPort}
 		});
 
 		// expressサーバ設定
@@ -94,7 +93,13 @@ class _Main{
 		});
 
 		// passport認証設定
-		AuthPage.setPassport();
+		AuthPage.setPassport({
+			twitter: {
+				consumerKey: "qHPj2nZHSawplrhmx3BQ",
+				consumerSecret: "pU2ssiGpZXuOZ20djoya3h15LORnuL6XJ7IxD0egk",
+				callbackURL: "http://127.0.0.1:10080/auth/twitter/callback"
+			}
+		});
 
 		// 認証ページ
 		AuthPage.setPage(app);
@@ -105,6 +110,7 @@ class _Main{
 		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("main/index.ejs");});
 		// 画像サーバ
 		ImageServer.setPage("/img", app.get("views") as string, app);
+
 		// 各ページ設定
 		MyPage.setPage(app);
 		WorldPage.setPage(app);

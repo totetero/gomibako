@@ -5,6 +5,7 @@
     "express": "~3.4.2",
     "ejs": "~0.8.4",
     "mongoose": "~3.6.20",
+    "redis": "~0.10.0",
     "connect-redis": "~1.4.6",
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",

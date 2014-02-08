@@ -8,7 +8,7 @@ import "../models/User.jsx";
 class AuthPage{
 	// ----------------------------------------------------------------
 	// passportの設定
-	static function setPassport() : void{
+	static function setPassport(strategies : variant) : void{
 		// passportのsessionをセットアップ
 		passport.serializeUser(
 			function(user : UserModel, done : function(err:variant,id:string):void){
@@ -64,33 +64,31 @@ class AuthPage{
 		));
 
 		// twitter用設定
-		passport.use(new TwitterStrategy({
-				consumerKey: "qHPj2nZHSawplrhmx3BQ",
-				consumerSecret: "pU2ssiGpZXuOZ20djoya3h15LORnuL6XJ7IxD0egk",
-				callbackURL: "http://127.0.0.1:10080/auth/twitter/callback"
-			}, function(token:string, tokenSecret : string, profile : TwitterProfile, done : function(err:variant,user:UserModel,info:variant):void){
-				process.nextTick(function(){
-					UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err : variant, user : UserModel){
-						if(err){done(err, null, null);}
-						else if(user){
-							// データベース更新
-							user.count++;
-						}else{
-							// データベース登録
-							user = new UserModel();
-							user.domain = "twitter.com";
-							user.uid = profile.id;
-							user.uname = profile.username;
-							user.imgurl = profile._json["profile_image_url"] as string;
-							user.count = 1;
-						}
-						user.save(function(err : variant) : void{
-							done(null, user, null);
+		if(strategies["twitter"] != null){
+			passport.use(new TwitterStrategy(strategies["twitter"], function(token:string, tokenSecret : string, profile : TwitterProfile, done : function(err:variant,user:UserModel,info:variant):void){
+					process.nextTick(function(){
+						UserModel.findOne({domain: "twitter.com", uid: profile.id}, function(err : variant, user : UserModel){
+							if(err){done(err, null, null);}
+							else if(user){
+								// データベース更新
+								user.count++;
+							}else{
+								// データベース登録
+								user = new UserModel();
+								user.domain = "twitter.com";
+								user.uid = profile.id;
+								user.uname = profile.username;
+								user.imgurl = profile._json["profile_image_url"] as string;
+								user.count = 1;
+							}
+							user.save(function(err : variant) : void{
+								done(null, user, null);
+							});
 						});
 					});
-				});
-			}
-		));
+				}
+			));
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -126,7 +124,7 @@ class AuthPage{
 			if(req.isAuthenticated()){
 				next();
 			}else{
-				passport.authenticate("twitter", {successRedirect: "/", failureRedirect: "/auth/fail"})(req, res, next);
+				passport.authenticate("twitter", {successRedirect: "/", failureRedirect: "/"})(req, res, next);
 			}
 		});
 
