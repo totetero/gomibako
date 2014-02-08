@@ -65,26 +65,31 @@ class _Main{
 
 		// socket.ioサーバ設定
 		var io = SocketIO.listen(10081);
-		//var io = SocketIO.listen(srv);
 		io.configure(function() : void{
 			io.enable("browser client minification");
 			io.set("store", socketStore);
 			// socket.ioグローバル認証
-			io.set("authorization", function(handshakeData : variant, callback : function(err:variant,success:boolean):void) : void{
-				callback(null, true);
-				/*var cookie = handshakeData["headers"]["cookie"] as string;
-				if(!cookie){callback("cookieが見つかりませんでした", false); return;}
-				var cookie = SocketUtil.parse1(String.decodeURIComponent(cookie))["connect.sid"];
+			io.set("authorization", function(handshakeData : SocketHandshake, callback : function(err:variant,success:boolean):void) : void{
+				var errMsg = "cookieが見つかりませんでした";
+				if(handshakeData == null){callback(errMsg, false); return;}
+				if(handshakeData.headers == null){callback(errMsg, false); return;}
+				var rowCookie = handshakeData.headers["cookie"] as string;
+				var cookie = SocketUtil.parse1(String.decodeURIComponent(rowCookie))["connect.sid"];
+				if(cookie == null){callback(errMsg, false); return;}
 				var sessionID = SocketUtil.parse2(cookie, app.get("secretKey") as string);
-				sessionStore.get(sessionID, function(err : variant, session : variant) : void{
-					if(err){callback("sessionが見つかりませんでした", false); return;}
-					UserModel.findById(session["passport"]["user"] as string, function(err : variant, user : UserModel) : void{
+				sessionStore.get(sessionID, function(err : variant, session : ExSession) : void{
+					var errMsg = "sessionが見つかりませんでした";
+					if(err){callback(errMsg, false); return;}
+					if(session == null){callback(errMsg, false); return;}
+					if(session.passport == null){callback(errMsg, false); return;}
+					var userID = session.passport["user"] as string;
+					UserModel.findById(userID, function(err : variant, user : UserModel) : void{
 						if(err){callback("userが見つかりませんでした", false); return;}
-						log "認証成功DAYO!!";
-						handshakeData["session"] = session;
+						handshakeData.session = session;
+						handshakeData.user = user;
 						callback(null, true);
 					});
-				});*/
+				});
 			});
 		});
 

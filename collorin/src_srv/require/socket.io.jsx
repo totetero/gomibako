@@ -1,4 +1,6 @@
 import "nodejs.jsx";
+import "express.jsx";
+import "../models/User.jsx";
 
 native class SocketIO {
 	static function listen(port : int) : SocketManager;
@@ -22,6 +24,7 @@ native class SocketNamespace{
 
 native class Socket{
 	var id : string;
+	var handshake : SocketHandshake;
 	function on(event : string, listener : function():void) : void;
 	function on(event : string, listener : function(arg0:variant):void) : void;
 	function on(event : string, listener : function(arg0:variant,arg1:variant):void) : void;
@@ -38,6 +41,12 @@ native class Socket{
 	var json : Socket;
 	function disconnect() : Socket;
 } = "require('socket.io').Socket";
+
+native class SocketHandshake{
+	var headers : variant;
+	var session : ExSession;
+	var user : UserModel;
+}
 
 native class SocketUtil{
 	static function parse1(cookie : string) : Map.<string>;

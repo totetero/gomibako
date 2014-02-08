@@ -45,6 +45,7 @@ native class ExRequest{
 	var url : string;
 	var params : variant;
 	var body : variant;
+	var session : ExSession;
 	var user : UserModel;
 	function logout() : void;
 	function isAuthenticated() : boolean;
@@ -58,5 +59,9 @@ native class ExResponse{
 	function render(path : string) : ExResponse;
 	function render(path : string, options : variant) : ExResponse;
 	function contentType(type : string) : ExResponse;
+}
+
+native class ExSession{
+	var passport : Map.<string>;
 }
 
