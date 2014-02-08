@@ -59,12 +59,11 @@ class GamePage extends Page{
 	}
 }
 
-class SECgamePageMain extends SECctrlCanvas{
+class SECgamePageMain extends EventCartridge{
 	var _page : GamePage;
 
 	// コンストラクタ
 	function constructor(page : GamePage){
-		super(page.ccvs, 2.5);
 		this._page = page;
 	}
 
@@ -74,9 +73,10 @@ class SECgamePageMain extends SECctrlCanvas{
 
 	// 計算
 	override function calc() : boolean{
-		this.ccvs.calc(true);
-		super.calc();
-		this._page.ccvs.player.calc(this.ccvs);
+		this._page.ccvs.calcTouchCoordinate(true);
+		this._page.ccvs.calcTouchRotate();
+		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 2.5);
+		this._page.ccvs.player.calc(this._page.ccvs);
 		return true;
 	}
 
@@ -103,7 +103,7 @@ class GameCanvas extends Ccvs{
 
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
-		super(320, 480, canvas);
+		super(canvas, 320, 480, Math.PI / 180 * 30, Math.PI / 180 * 45, 1);
 	}
 
 	// ----------------------------------------------------------------

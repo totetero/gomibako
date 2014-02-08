@@ -67,14 +67,13 @@ class ChatPage extends Page{
 	}
 }
 
-class SECchatPageMain extends SECctrlCanvas{ // TODO 継承をやめたい
+class SECchatPageMain extends EventCartridge{
 	var _page : ChatPage;
 	var _input : HTMLInputElement;
 	var _btnList = {} : Map.<PageButton>;
 
 	// コンストラクタ
 	function constructor(page : ChatPage){
-		super(page.ccvs, 1);
 		this._page = page;
 		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
 		this._btnList["btn"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
@@ -88,16 +87,16 @@ class SECchatPageMain extends SECctrlCanvas{ // TODO 継承をやめたい
 	override function calc() : boolean{
 		var clickable = true;
 		for(var name in this._btnList){
-			this._btnList[name].calc(!this.ccvs.mdn);
+			this._btnList[name].calc(!this._page.ccvs.mdn);
 			clickable = clickable && !this._btnList[name].active;
 		}
-		this.ccvs.calc(clickable);
+		this._page.ccvs.calcTouchCoordinate(clickable);
+		this._page.ccvs.calcTouchRotate();
+		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 1);
 
-		super.calc();
-
-		this._page.ccvs.player.calc(this.ccvs);
-		this.ccvs.cx -= (this.ccvs.cx - this._page.ccvs.player.x) * 0.1;
-		this.ccvs.cy -= (this.ccvs.cy - this._page.ccvs.player.y) * 0.1;
+		this._page.ccvs.player.calc(this._page.ccvs);
+		this._page.ccvs.cx -= (this._page.ccvs.cx - this._page.ccvs.player.x) * 0.1;
+		this._page.ccvs.cy -= (this._page.ccvs.cy - this._page.ccvs.player.y) * 0.1;
 
 		// メッセージの投稿
 		if(Ctrl.trigger_enter || this._btnList["btn"].trigger){
@@ -162,11 +161,7 @@ class ChatCanvas extends Ccvs{
 
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
-		super(320, 480, canvas);
-		this.scale = 2;
-		this.rotv = Math.PI / 180 * 45;
-		this.sinv = Math.sin(this.rotv);
-		this.cosv = Math.cos(this.rotv);
+		super(canvas, 320, 480, Math.PI / 180 * 45, Math.PI / 180 * 45, 2);
 	}
 
 	// ----------------------------------------------------------------
