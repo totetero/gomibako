@@ -1,6 +1,7 @@
 import "require/nodejs.jsx";
 import "require/express.jsx";
 import "require/mongo.jsx";
+import "require/redis.jsx";
 import "require/passport.jsx";
 import "require/socket.io.jsx";
 
@@ -20,9 +21,19 @@ class _Main{
 		// データ初期化
 		CharacterDrawInfo.init();
 
-		// データベース接続
+		// ゲーム情報管理データベース接続
 		mongoose.connect("mongodb://localhost/totetest");
-		var mongoStore = new MongoStore({db: mongoose.connections[0]["db"]});
+		// セッション管理データベース接続
+		var redisOption = {
+			host: "127.0.0.1",
+			port: 6379
+		};
+		var sessionStore = new RedisStore(redisOption);
+		var socketStore = new SocketRedisStore({
+			redisPub: redisOption,
+			redisSub: redisOption,
+			redisClient: redisOption
+		});
 
 		// expressサーバ設定
 		var app = express.create();
@@ -38,7 +49,7 @@ class _Main{
 			app.use(express.cookieParser());
 			app.use(express.session({
 				secret: app.get("secretKey"),
-				store: mongoStore,
+				store: sessionStore,
 				cookie: {httpOnly: false, maxAge: 30 * 24 * 60 * 60 * 1000}
 			}));
 			app.use(passport.initialize());
@@ -53,16 +64,19 @@ class _Main{
 		});
 
 		// socket.ioサーバ設定
-		var io = SocketIO.listen(srv);
+		var io = SocketIO.listen(10081);
+		//var io = SocketIO.listen(srv);
 		io.configure(function() : void{
-			//io.enable("browser client minification");
+			io.enable("browser client minification");
+			io.set("store", socketStore);
 			// socket.ioグローバル認証
 			io.set("authorization", function(handshakeData : variant, callback : function(err:variant,success:boolean):void) : void{
-				var cookie = handshakeData["headers"]["cookie"] as string;
+				callback(null, true);
+				/*var cookie = handshakeData["headers"]["cookie"] as string;
 				if(!cookie){callback("cookieが見つかりませんでした", false); return;}
 				var cookie = SocketUtil.parse1(String.decodeURIComponent(cookie))["connect.sid"];
 				var sessionID = SocketUtil.parse2(cookie, app.get("secretKey") as string);
-				mongoStore.get(sessionID, function(err : variant, session : variant) : void{
+				sessionStore.get(sessionID, function(err : variant, session : variant) : void{
 					if(err){callback("sessionが見つかりませんでした", false); return;}
 					UserModel.findById(session["passport"]["user"] as string, function(err : variant, user : UserModel) : void{
 						if(err){callback("userが見つかりませんでした", false); return;}
@@ -70,12 +84,13 @@ class _Main{
 						handshakeData["session"] = session;
 						callback(null, true);
 					});
-				});
+				});*/
 			});
 		});
 
 		// passport認証設定
 		AuthPage.setPassport();
+
 		// 認証ページ
 		AuthPage.setPage(app);
 		// トップページ

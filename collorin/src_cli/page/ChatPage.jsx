@@ -131,16 +131,20 @@ class ChatSocket{
 
 	// コンストラクタ
 	function constructor(){
-		this._socket = SocketIOClient.connect("/chat");
-		this._socket.on("hoge", function():void{log "socket!!";});
-		this._socket.emit("test");
+		SocketIOClient.connect("chat", function(socket : SocketIOClientSocket) : void{
+			this._socket = socket;
+			this._socket.on("hoge", function():void{log "socket!!";});
+			this._socket.emit("test");
+		});
 	}
 
 	// 破棄
 	function dispose() : void{
-		// ソケット切断
-		this._socket.disconnect();
-		this._socket.removeAllListeners();
+		if(this._socket != null){
+			// ソケット切断
+			this._socket.disconnect();
+			this._socket.removeAllListeners();
+		}
 	}
 }
 

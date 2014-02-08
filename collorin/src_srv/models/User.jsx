@@ -1,21 +1,20 @@
-import "../require/mongo.jsx";
-
-native class UserModel extends mongooseModel{
+native class UserModel{
+	var _id: string;
 	var domain: string;
 	var uid: string;
 	var uname: string;
 	var imgurl: string;
 	var count: number;
-	var gamestat: boolean;
+	function save(callback : function(err:variant):void) : void;
+	function remove(callback : function(err:variant):void) : void;
 	static function find(conditions : variant, callback : function(err:variant,models:UserModel[]):void) : void;
 	static function findOne(conditions : variant, callback : function(err:variant,model:UserModel):void) : void;
 	static function findById(id : string, callback : function(err:variant,model:UserModel):void) : void;
 } = '''require("mongoose").model("User", new require("mongoose").Schema({
-	domain: String,
-	uid: String,
-	uname: String,
-	imgurl: String,
-	count: Number,
-	gamestat: Boolean,
+	domain: {type: String},
+	uid: {type: String},
+	uname: {type: String},
+	imgurl: {type: String},
+	count: {type: Number},
 }))''';
 

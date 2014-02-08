@@ -15,6 +15,10 @@ SRC_CLI_DIR = src_cli
 test: game.js public/main/index.js public/main/index.css
 	node game.js
 
+db:
+	mongod &
+	redis-server &
+
 clean:
 	rm game.js public/main/index.js public/main/index.css
 

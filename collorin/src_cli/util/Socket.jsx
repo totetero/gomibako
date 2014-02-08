@@ -6,9 +6,20 @@ import "js/web.jsx";
 // socket.io.jsラッパクラス
 
 native class SocketIOClient{
-	static function connect(url : string) : SocketIOClientSocket;
+	static function connect(namespace : string, callback : function(socket:SocketIOClientSocket):void) : void;
 } = '''{
-	connect: io.connect
+	connect: function(namespace, callback){
+		var url = "http://" + document.domain + ":10081";
+		if(!window.io){
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = url + "/socket.io/socket.io.js";
+			script.onload = function(e){callback(window.io.connect(url + "/" + namespace));}
+			document.head.appendChild(script);
+		}else{
+			callback(window.io.connect(url + "/" + namespace));
+		}
+	}
 }''';
 
 native class SocketIOClientSocket{

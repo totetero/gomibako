@@ -1,14 +1,7 @@
 import "nodejs.jsx";
 
-native class SocketUtil{
-	static function parse1(cookie : string) : Map.<string>;
-	static function parse2(cookie : string, key : string) : string;
-} = '''{
-	parse1: require("express/node_modules/cookie").parse,
-	parse2: require("express/node_modules/connect").utils.parseSignedCookie,
-}''';
-
 native class SocketIO {
+	static function listen(port : int) : SocketManager;
 	static function listen(server : HTTPServer) : SocketManager;
 } = "require('socket.io') ";
 
@@ -45,4 +38,17 @@ native class Socket{
 	var json : Socket;
 	function disconnect() : Socket;
 } = "require('socket.io').Socket";
+
+native class SocketUtil{
+	static function parse1(cookie : string) : Map.<string>;
+	static function parse2(cookie : string, key : string) : string;
+} = '''{
+	parse1: require("express/node_modules/cookie").parse,
+	parse2: require("express/node_modules/connect").utils.parseSignedCookie,
+}''';
+
+native class SocketRedisStore{
+	function constructor();
+	function constructor(options : variant);
+} = 'require("socket.io/lib/stores/redis")';
 

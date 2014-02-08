@@ -2,10 +2,10 @@
   "name": "collorin",
   "version": "0.0.1",
   "dependencies": {
-    "connect-mongo": "~0.3.3",
     "express": "~3.4.2",
     "ejs": "~0.8.4",
     "mongoose": "~3.6.20",
+    "connect-redis": "~1.4.6",
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
     "passport-twitter": "~1.0.2",
