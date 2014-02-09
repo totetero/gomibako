@@ -16,23 +16,35 @@ native class SocketManager{
 } = "require('socket.io').Manager";
 
 native class SocketNamespace{
-	function on(event : string, callback: function(socket:Socket):void): void;
+	function on(event : string, callback: function(socket:Socket):void): SocketNamespace;
+	function emit(event : string) : boolean;
+	function emit(event : string, arg0 : variant) : boolean;
+	function emit(event : string, arg0 : variant, arg1 : variant) : boolean;
+	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant) : boolean;
 	function to(room : string) : SocketNamespace;
-	function emit(event : string, arg0 : variant, arg1 : variant) : void;
-	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant) : void;
 }
 
 native class Socket{
 	var id : string;
 	var handshake : SocketHandshake;
-	function on(event : string, listener : function():void) : void;
-	function on(event : string, listener : function(arg0:variant):void) : void;
-	function on(event : string, listener : function(arg0:variant,arg1:variant):void) : void;
-	function on(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : void;
-	function emit(event : string) : void;
-	function emit(event : string, arg0 : variant) : void;
-	function emit(event : string, arg0 : variant, arg1 : variant) : void;
-	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant, arg3 : variant, arg4 : variant) : void;
+	function on(event : string, listener : function():void) : Socket;
+	function on(event : string, listener : function(arg0:variant):void) : Socket;
+	function on(event : string, listener : function(arg0:variant,arg1:variant):void) : Socket;
+	function on(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : Socket;
+	function once(event : string, listener : function():void) : Socket;
+	function once(event : string, listener : function(arg0:variant):void) : Socket;
+	function once(event : string, listener : function(arg0:variant,arg1:variant):void) : Socket;
+	function once(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : Socket;
+	function removeListener(event : string, listener : function():void) : Socket;
+	function removeListener(event : string, listener : function(arg0:variant):void) : Socket;
+	function removeListener(event : string, listener : function(arg0:variant,arg1:variant):void) : Socket;
+	function removeListener(event : string, listener : function(arg0:variant,arg1:variant,arg2:variant):void) : Socket;
+	function removeAllListeners() : Socket;
+	function removeAllListeners(event : string) : Socket;
+	function emit(event : string) : boolean;
+	function emit(event : string, arg0 : variant) : boolean;
+	function emit(event : string, arg0 : variant, arg1 : variant) : boolean;
+	function emit(event : string, arg0 : variant, arg1 : variant, arg2 : variant) : boolean;
 	function to(room : string) : Socket;
 	function join(name : string) : Socket;
 	function leave(name : string) : Socket;

@@ -9,7 +9,7 @@ import "js/web.jsx";
 native __fake__ class _socketio{
 	function on(command : string, f : function():void) : void;
 	function on(command : string, f : function(id : string, users : Map.<SocketUserData>):void) : void;
-	function on(command : string, f : function(id : string, name : string, imgname : string, x : number, y : number):void) : void;
+	function on(command : string, f : function(id : string, uinfo : variant):void) : void;
 	function on(command : string, f : function(id : string, x : number, y : number):void) : void;
 	function on(command : string, f : function(id : string, serif : string):void) : void;
 	function on(command : string, f : function(id : string):void) : void;
@@ -107,14 +107,13 @@ class Socket{
 			});
 
 			// ユーザー新規接続
-			Socket.socket.on('add', function(id : string, name : string, imgname : string, x : number, y : number){
-				log "新規 " + name + ": ";
-				
+			Socket.socket.on('add', function(id : string, uinfo : variant){
+				log "新規 " + uinfo["name"] as string + ": ";
 				var user = new SocketUserData();
-				user.name = name;
-				user.imgname = imgname;
-				user.dstx = x;
-				user.dsty = y;
+				user.name = uinfo["name"] as string;
+				user.imgname = uinfo["imgname"] as string;
+				user.dstx = uinfo["dstx"] as number;
+				user.dsty = uinfo["dsty"] as number;
 				user.serif = "";
 				Socket.users[id] = user;
 			});

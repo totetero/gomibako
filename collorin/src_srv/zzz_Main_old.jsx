@@ -1,6 +1,7 @@
 import "require/nodejs.jsx";
 import "require/express.jsx";
 import "require/mongo.jsx";
+import "require/redis.jsx";
 import "require/passport.jsx";
 
 import "zzz_pages_old/*.jsx";
@@ -17,7 +18,7 @@ class _Main{
 
 		// データベース接続
 		mongoose.connect("mongodb://localhost/totetest");
-		var mongoStore = new MongoStore({db: mongoose.connections[0]["db"]});
+		var sessionStore = new RedisStore();
 
 		// expressサーバ設定
 		var app = express.create();
@@ -33,7 +34,7 @@ class _Main{
 			app.use(express.cookieParser());
 			app.use(express.session({
 				secret: app.get("secretKey"),
-				store: mongoStore,
+				store: sessionStore,
 				cookie: {httpOnly: false, maxAge: 30 * 24 * 60 * 60 * 1000}
 			}));
 			app.use(passport.initialize());
@@ -57,7 +58,7 @@ class _Main{
 		MyPage.setPage(app);
 		StagePage.setPage(app);
 		ChatPage.setPage(app);
-		ChatPage.setSocket(app, srv, mongoStore);
+		ChatPage.setSocket(app, srv, sessionStore);
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";

@@ -42,8 +42,8 @@ class ChatPage{
 				id: id,
 				drawInfo: CharacterDrawInfo.data["human"],
 				size: 1.2,
-				x: 4 * 16 + 8,
-				y : 4 * 16 + 8,
+				x: Math.floor(16 * Math.random()) * 16 + 8,
+				y: Math.floor(16 * Math.random()) * 16 + 8,
 				r: Math.PI * 0.5
 			};
 
@@ -53,7 +53,7 @@ class ChatPage{
 
 		// -------- socket.io接続 --------
 		io.of("/chat").on("connection", function(client : Socket) : void{
-			client.on("test", function() : void{
+			client.on("entry", function(room : variant, charaInfo : variant) : void{
 				client.emit("hoge");
 			});
 		});

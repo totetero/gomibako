@@ -7,6 +7,8 @@ import "../data/CharacterDrawInfo.jsx";
 
 // ゲームページ
 class GamePage{
+	static var gamestat = false; // TEST
+
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
@@ -94,21 +96,24 @@ class GamePage{
 	// ----------------------------------------------------------------
 	// ゲームの初期化
 	static function init(user : UserModel, stage : string) : void{
-		user.gamestat = true;
+		//user.gamestat = true;
+		GamePage.gamestat = true;
 		user.save(function(err:variant):void{});
 	}
 
 	// ----------------------------------------------------------------
 	// ゲームの中断
 	static function exit(user : UserModel) : void{
-		user.gamestat = false;
+		//user.gamestat = false;
+		GamePage.gamestat = false;
 		user.save(function(err:variant):void{});
 	}
 
 	// ----------------------------------------------------------------
 	// ゲームプレイ中確認
 	static function isPlay(user : UserModel) : boolean{
-		return user.gamestat;
+		//return user.gamestat;
+		return GamePage.gamestat;
 	}
 
 	// ----------------------------------------------------------------

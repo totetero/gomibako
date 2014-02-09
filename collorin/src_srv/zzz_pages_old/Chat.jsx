@@ -3,6 +3,7 @@ import 'timer.jsx';
 import "../require/nodejs.jsx";
 import "../require/express.jsx";
 import "../require/mongo.jsx";
+import "../require/redis.jsx";
 import "../require/socket.io.jsx";
 import "../zzz_util_old/File.jsx";
 
@@ -26,7 +27,7 @@ class ChatUserPublicInfo{
 class ChatPage{
 	// ----------------------------------------------------------------
 	// ソケットの設定
-	static function setSocket(app : ExApplication, srv : HTTPServer, store : MongoStore) : void{
+	static function setSocket(app : ExApplication, srv : HTTPServer, store : RedisStore) : void{
 		var io = SocketIO.listen(srv);
 		var users = {} : Map.<Map.<ChatUserPublicInfo>>;
 
@@ -59,9 +60,9 @@ class ChatPage{
 				// 認証
 				var cookie = SocketUtil.parse1(String.decodeURIComponent(arg_cookie as string))["connect.sid"];
 				var sessionID = SocketUtil.parse2(cookie, app.get("secretKey") as string);
-				store.get(sessionID, function(err : variant, session : variant) : void{
+				store.get(sessionID, function(err : variant, session : ExSession) : void{
 					if(err){client.disconnect(); return;}
-					UserModel.findById(session["passport"]["user"] as string, function(err : variant, user : UserModel) : void{
+					UserModel.findById(session.passport["user"] as string, function(err : variant, user : UserModel) : void{
 						if(err){client.disconnect(); return;}
 						// ユーザー作成 プライベート情報
 						uinfo1 = new ChatUserPrivateInfo();
@@ -81,7 +82,13 @@ class ChatPage{
 						client.join(uinfo1.room);
 						// 情報送信
 						client.emit("entry", uinfo1.id, users[uinfo1.room]);
-						client.broadcast.to(uinfo1.room).emit("add", uinfo1.id, uinfo2.name, uinfo2.imgname, uinfo2.dstx, uinfo2.dsty);
+						client.broadcast.to(uinfo1.room).emit("add", {
+							id: uinfo1.id,
+							name: uinfo2.name,
+							imgname: uinfo2.imgname,
+							dstx: uinfo2.dstx,
+							dsty: uinfo2.dsty
+						});
 					});
 				});
 			});

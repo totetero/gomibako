@@ -50,6 +50,7 @@ class ChatPage extends Page{
 		// イベント設定
 		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{
 			// データの形成
+			this.socket.init(response);
 			this.ccvs.init(response);
 		}));
 		this.serialPush(new ECdrawOne(function() : void{
@@ -128,12 +129,18 @@ class SECchatPageMain extends EventCartridge{
 class ChatSocket{
 	var _socket : SocketIOClientSocket;
 
-	// コンストラクタ
-	function constructor(){
+	// ----------------------------------------------------------------
+	// 初期化
+	function init(response : variant) : void{
 		SocketIOClient.connect("chat", function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
 			this._socket.on("hoge", function():void{log "socket!!";});
-			this._socket.emit("test");
+			this._socket.emit("entry", "room0", {
+				id: response["charaInfo"]["id"],
+				x: response["charaInfo"]["x"],
+				y: response["charaInfo"]["y"],
+				r: response["charaInfo"]["r"],
+			});
 		});
 	}
 
