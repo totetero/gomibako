@@ -1,5 +1,6 @@
 import "../require/nodejs.jsx";
 import "../require/express.jsx";
+import "../require/redis.jsx";
 import "../require/socket.io.jsx";
 
 import "../models/User.jsx";
@@ -9,7 +10,7 @@ import "../data/CharacterDrawInfo.jsx";
 class ChatPage{
 	// ----------------------------------------------------------------
 	// ページの設定
-	static function setPage(app : ExApplication, io : SocketManager) : void{
+	static function setPage(app : ExApplication, rcli : RedisClient, io : SocketManager) : void{
 		app.get("/chat", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
 			var imgs = {} : Map.<string>;
@@ -51,10 +52,27 @@ class ChatPage{
 			res.send(JSON.stringify(jdat));
 		});
 
+		// test
+		rcli.set(["hoge", "1"], function(err : variant, result : string) : void{log result;});
+		rcli.get(["hoge"], function(err : variant, result : string) : void{log result;});
+		rcli.incr(["hoge"], function(err : variant, result : string) : void{log result;});
+
 		// -------- socket.io接続 --------
 		io.of("/chat").on("connection", function(client : Socket) : void{
+			var uinfo_id : string = "";
+			var uinfo_room : string = "";
+			
 			client.on("entry", function(room : variant, charaInfo : variant) : void{
-				client.emit("hoge");
+				uinfo_id = client.id;
+				uinfo_room = room as string;
+				rcli.sadd(["chat:" + uinfo_room, uinfo_id], function(err : variant, result : string) : void{});
+				rcli.incr(["chat:nextUserId"], function(err : variant, result : string) : void{
+					client.emit("entry", result);
+				});
+			});
+
+			client.on("disconnect", function() : void{
+				rcli.srem(["chat:" + uinfo_room, uinfo_id], function(err : variant, result : string) : void{});
 			});
 		});
 	}

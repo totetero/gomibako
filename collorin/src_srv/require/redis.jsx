@@ -5,8 +5,12 @@ native class redis{
 } = 'require("redis")';
 
 native class RedisClient{
-	function set(key : string, val : string) : void;
-	function get(key : string, callback : function(err:variant,val:string):void) : void;
+	function set(value : string[], callback : function(err:variant,result:string):void) : void;
+	function get(value : string[], callback : function(err:variant,result:string):void) : void;
+	function incr(value : string[], callback : function(err:variant,result:string):void) : void;
+
+	function sadd(value : string[], callback : function(err:variant,result:string):void) : void;
+	function srem(value : string[], callback : function(err:variant,result:string):void) : void;
 }
 
 native class RedisStore{

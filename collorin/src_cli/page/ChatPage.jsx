@@ -134,7 +134,9 @@ class ChatSocket{
 	function init(response : variant) : void{
 		SocketIOClient.connect("chat", function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
-			this._socket.on("hoge", function():void{log "socket!!";});
+			this._socket.on("entry", function(id : variant):void{
+				log "socket!! " + id as string;
+			});
 			this._socket.emit("entry", "room0", {
 				id: response["charaInfo"]["id"],
 				x: response["charaInfo"]["x"],

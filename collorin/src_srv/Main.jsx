@@ -26,7 +26,7 @@ class _Main{
 		// データベース接続 redis
 		var redisPort = 6379;
 		var redisHost = "127.0.0.1";
-		//var redisClient = redis.createClient(redisPort, redisHost, null);
+		var rcli = redis.createClient(redisPort, redisHost, null);
 		var sessionStore = new RedisStore({host: redisHost, port: redisPort});
 		var socketStore = new SocketRedisStore({
 			redisPub: {host: redisHost, port: redisPort},
@@ -115,7 +115,7 @@ class _Main{
 		MyPage.setPage(app);
 		WorldPage.setPage(app);
 		GamePage.setPage(app);
-		ChatPage.setPage(app, io);
+		ChatPage.setPage(app, rcli, io);
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";
