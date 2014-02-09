@@ -58,7 +58,7 @@ class ChatPage{
 		rcli.incr(["hoge"], function(err : variant, result : string) : void{log result;});
 
 		// -------- socket.io接続 --------
-		io.of("/chat").on("connection", function(client : Socket) : void{
+		io.of("chat").on("connection", function(client : Socket) : void{
 			var uinfo_id : string = "";
 			var uinfo_room : string = "";
 			

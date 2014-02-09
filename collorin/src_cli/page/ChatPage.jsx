@@ -128,16 +128,18 @@ class SECchatPageMain extends EventCartridge{
 // ソケット
 class ChatSocket{
 	var _socket : SocketIOClientSocket;
+	var _socketof : SocketIOClientSocket;
 
 	// ----------------------------------------------------------------
 	// 初期化
 	function init(response : variant) : void{
-		SocketIOClient.connect("chat", function(socket : SocketIOClientSocket) : void{
+		SocketIOClient.connect(function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
-			this._socket.on("entry", function(id : variant):void{
+			this._socketof = this._socket.of("chat");
+			this._socketof.on("entry", function(id : variant):void{
 				log "socket!! " + id as string;
 			});
-			this._socket.emit("entry", "room0", {
+			this._socketof.emit("entry", "room0", {
 				id: response["charaInfo"]["id"],
 				x: response["charaInfo"]["x"],
 				y: response["charaInfo"]["y"],
@@ -151,7 +153,7 @@ class ChatSocket{
 		if(this._socket != null){
 			// ソケット切断
 			this._socket.disconnect();
-			this._socket.removeAllListeners();
+			this._socketof.removeAllListeners();
 		}
 	}
 }
