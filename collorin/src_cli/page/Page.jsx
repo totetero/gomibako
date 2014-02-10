@@ -87,6 +87,7 @@ class SECloadPage extends EventCartridge{
 	var _url : string;
 	var _request : variant;
 	var _callback : function(response:variant):void;
+	var _action = 0;
 
 	// コンストラクタ
 	function constructor(url : string, request : variant, callback : function(response:variant):void){
@@ -118,15 +119,23 @@ class SECloadPage extends EventCartridge{
 
 	// 計算
 	override function calc() : boolean{
-		return this._exist;
+		this._action++;
+		return this._exist || (5 < this._action && this._action < 15);
 	}
 
 	// 描画
 	override function draw() : void{
-		// ロード画面描画
-		var display = this._exist ? "block" : "none";
-		if(Page.loadingDiv.style.display != display){
-			Page.loadingDiv.style.display = display;
+		// ロード画面表示
+		var display = ((this._exist || this._action < 15) && 5 < this._action) ? "block" : "none";
+		if(Page.loadingDiv.style.display != display){Page.loadingDiv.style.display = display;}
+		// ロード文字列描画
+		if(this._action % 10 == 0){
+			switch(this._action / 10 % 4){
+				case 0: Page.loadingDiv.setAttribute("txt", "loading"); break;
+				case 1: Page.loadingDiv.setAttribute("txt", "loading."); break;
+				case 2: Page.loadingDiv.setAttribute("txt", "loading.."); break;
+				case 3: Page.loadingDiv.setAttribute("txt", "loading..."); break;
+			}
 		}
 	}
 
