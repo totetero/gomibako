@@ -9,6 +9,7 @@ native class RedisClient{
 	function get(value : string[], callback : function(err:variant,result:string):void) : void;
 	function del(value : string[], callback : function(err:variant,result:string):void) : void;
 	function incr(value : string[], callback : function(err:variant,result:string):void) : void;
+	function keys(value : string[], callback : function(err:variant,results:string[]):void) : void;
 
 	function sadd(value : string[], callback : function(err:variant,result:string):void) : void;
 	function srem(value : string[], callback : function(err:variant,result:string):void) : void;

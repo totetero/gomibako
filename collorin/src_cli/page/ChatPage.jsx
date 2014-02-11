@@ -26,6 +26,7 @@ class ChatPage extends Page{
 	// キャンバス
 	var ccvs : ChatCanvas;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
@@ -36,6 +37,7 @@ class ChatPage extends Page{
 		this.rctrlType = 0;
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		// ページ要素作成
@@ -50,8 +52,8 @@ class ChatPage extends Page{
 		// イベント設定
 		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{
 			// データの形成
-			this.socket.init(response);
 			this.ccvs.init(response);
+			this.socket.init(this.ccvs);
 		}));
 		this.serialPush(new ECdrawOne(function() : void{
 			// ページ遷移前描画
@@ -61,6 +63,7 @@ class ChatPage extends Page{
 		this.serialPush(new SECchatPageMain(this));
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
@@ -73,6 +76,7 @@ class SECchatPageMain extends EventCartridge{
 	var _input : HTMLInputElement;
 	var _btnList = {} : Map.<PageButton>;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : ChatPage){
 		this._page = page;
@@ -80,10 +84,12 @@ class SECchatPageMain extends EventCartridge{
 		this._btnList["btn"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 	}
 
+	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
 		var clickable = true;
@@ -95,27 +101,31 @@ class SECchatPageMain extends EventCartridge{
 		this._page.ccvs.calcTouchRotate();
 		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 1);
 
-		this._page.ccvs.player.calc(this._page.ccvs);
-		this._page.ccvs.cx -= (this._page.ccvs.cx - this._page.ccvs.player.x) * 0.1;
-		this._page.ccvs.cy -= (this._page.ccvs.cy - this._page.ccvs.player.y) * 0.1;
+		if(this._page.ccvs.player != null){
+			this._page.ccvs.player.calc(this._page.ccvs);
+			this._page.ccvs.cx -= (this._page.ccvs.cx - this._page.ccvs.player.x) * 0.1;
+			this._page.ccvs.cy -= (this._page.ccvs.cy - this._page.ccvs.player.y) * 0.1;
+		}
 
 		// メッセージの投稿
 		if(Ctrl.trigger_enter || this._btnList["btn"].trigger){
 			Ctrl.trigger_enter = false;
 			this._btnList["btn"].trigger = false;
-			this._page.ccvs.player.talk(this._input.value);
+			this._page.socket.sendTalk(this._input.value);
 			this._input.value = "";
 		}
 
 		return true;
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
 		this._page.ccvs.draw();
 		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 	}
@@ -132,36 +142,66 @@ class ChatSocket{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	function init(response : variant) : void{
+	function init(ccvs : ChatCanvas) : void{
 		SocketIOClient.connect(function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
 			this._socketof = this._socket.of("chat");
 
-			this._socketof.on("entry", function(id : variant, uinfo : variant):void{
-				log "自分 " + id as string;
+			// ゲーム情報獲得
+			this._socketof.on("entry", function(uid : variant, uinfo : variant):void{
 				var uinfoList = uinfo as variant[];
 				for(var i = 0; i < uinfoList.length; i++){
-					log "継続 " + uinfoList[i]["id"] as string, uinfoList[i];
+					if(uid == uinfoList[i]["uid"]){
+						log "自分 " + uinfoList[i]["uid"] as string;
+						ccvs.player = new ChatPlayer(ccvs, uinfoList[i]);
+						ccvs.member.push(ccvs.player);
+					}else{
+						log "継続 " + uinfoList[i]["uid"] as string + " " + uinfoList[i]["serif"] as string;
+						ccvs.member.push(new ChatCharacter(ccvs, uinfoList[i]));
+					}
 				}
 			});
 
+			// ユーザー新規接続
 			this._socketof.on("add", function(uinfo : variant):void{
-				log "新規 " + uinfo["id"] as string, uinfo;
+				log "新規 " + uinfo["uid"] as string;
+				ccvs.member.push(new ChatCharacter(ccvs, uinfo));
 			});
 
-			this._socketof.on("kill", function(id : variant):void{
-				log "退出 " + id as string;
+			// ユーザー台詞更新
+			this._socketof.on("talk", function(uid : variant, serif : variant):void{
+				log "発言 " + uid as string + " " + serif as string;
+				for(var i = 0; i < ccvs.member.length; i++){
+					if(uid == ccvs.member[i].uid){
+						ccvs.member[i].talk(serif as string);
+					}
+				}
 			});
 
-			this._socketof.emit("entry", "room0", {
-				code: response["charaInfo"]["code"],
-				x: response["charaInfo"]["x"],
-				y: response["charaInfo"]["y"],
-				r: response["charaInfo"]["r"],
+			// ユーザー退出
+			this._socketof.on("kill", function(uid : variant):void{
+				log "退出 " + uid as string;
+				for(var i = 0; i < ccvs.member.length; i++){
+					if(uid == ccvs.member[i].uid){
+						ccvs.member[i].dispose();
+						ccvs.member.splice(i--, 1);
+					}
+				}
 			});
+
+			this._socketof.emit("entry");
 		});
 	}
 
+	// ----------------------------------------------------------------
+	// 台詞送信
+	function sendTalk(str : string) : void{
+		if(this._socket != null){
+			this._socketof.emit("talk", str);
+		}
+	}
+
+	// ----------------------------------------------------------------
 	// 破棄
 	function dispose() : void{
 		if(this._socket != null){
@@ -180,10 +220,11 @@ class ChatSocket{
 class ChatCanvas extends Ccvs{
 	var field : GridField;
 	var player : ChatPlayer;
-	var friend = new ChatCharacter[];
+	var member = new ChatCharacter[];
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
 		super(canvas, 320, 480, Math.PI / 180 * 45, Math.PI / 180 * 45, 2);
@@ -194,9 +235,6 @@ class ChatCanvas extends Ccvs{
 	function init(response : variant) : void{
 		// フィールド
 		this.field = new GridField(this, Loader.imgs["grid"], response["grid"] as int[][]);
-		// キャラクター
-		this.player = new ChatPlayer(this, response["charaInfo"]);
-		this.friend.push(new ChatCharacter(this, response["charaInfo"]));
 		// 初期カメラ位置
 		this.cx = (this.cxmax + this.cxmin) * 0.5;
 		this.cy = (this.cymax + this.cymin) * 0.5;
@@ -207,8 +245,7 @@ class ChatCanvas extends Ccvs{
 	function draw() : void{
 		this.context.clearRect(0, 0, this.width, this.height);
 		this.field.draw(this, this.cx, this.cy, this.mdn && !Ctrl.mmv);
-		this.player.preDraw(this);
-		for(var i = 0; i < this.friend.length; i++){this.friend[i].preDraw(this);}
+		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 	}
@@ -292,6 +329,7 @@ class ChatCharacter{
 	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
 	var _dstList = new int[][];
+	var uid : int;
 	var x : number;
 	var y : number;
 	var r : number;
@@ -309,9 +347,11 @@ class ChatCharacter{
 		ccvs.clist.push(this._character);
 		ccvs.clist.push(this._balloon);
 		ccvs.slist.push(this._shadow);
+		this.uid = charaInfo["uid"] as int;
 		this.x = charaInfo["x"] as number;
 		this.y = charaInfo["y"] as number;
 		this.r = charaInfo["r"] as number;
+		this.talk(charaInfo["serif"] as string);
 	}
 
 	// ----------------------------------------------------------------
@@ -361,6 +401,14 @@ class ChatCharacter{
 		}else{
 			this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0);
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	function dispose() : void{
+		this._character.exist = false;
+		this._balloon.exist = false;
+		this._shadow.exist = false;
 	}
 }
 
