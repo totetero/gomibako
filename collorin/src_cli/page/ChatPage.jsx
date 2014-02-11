@@ -136,11 +136,25 @@ class ChatSocket{
 		SocketIOClient.connect(function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
 			this._socketof = this._socket.of("chat");
-			this._socketof.on("entry", function(id : variant):void{
-				log "socket!! " + id as string;
+
+			this._socketof.on("entry", function(id : variant, uinfo : variant):void{
+				log "自分 " + id as string;
+				var uinfoList = uinfo as variant[];
+				for(var i = 0; i < uinfoList.length; i++){
+					log "継続 " + uinfoList[i]["id"] as string, uinfoList[i];
+				}
 			});
+
+			this._socketof.on("add", function(uinfo : variant):void{
+				log "新規 " + uinfo["id"] as string, uinfo;
+			});
+
+			this._socketof.on("kill", function(id : variant):void{
+				log "退出 " + id as string;
+			});
+
 			this._socketof.emit("entry", "room0", {
-				id: response["charaInfo"]["id"],
+				code: response["charaInfo"]["code"],
 				x: response["charaInfo"]["x"],
 				y: response["charaInfo"]["y"],
 				r: response["charaInfo"]["r"],
@@ -286,7 +300,7 @@ class ChatCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : ChatCanvas, charaInfo : variant){
-		var img = Loader.imgs["dot_" + charaInfo["id"] as string];
+		var img = Loader.imgs["dot_" + charaInfo["code"] as string];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);

@@ -147,7 +147,7 @@ class GameCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : GameCanvas, charaInfo : variant){
-		var img = Loader.imgs["dot_" + charaInfo["id"] as string];
+		var img = Loader.imgs["dot_" + charaInfo["code"] as string];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		var hexx = charaInfo["x"] as int;

@@ -44,19 +44,19 @@ class GamePage{
 			// キャラクター情報
 			var charaInfoList = [[
 				// プレイヤー情報
-				{id: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 1, y : 7, r: Math.PI * 1.5},
-				{id: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 7, r: Math.PI * 1.5},
+				{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 1, y : 7, r: Math.PI * 1.5},
+				{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 7, r: Math.PI * 1.5},
 			],[
 				// 敵情報
-				{id: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 4, r: Math.PI * 0.5},
+				{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 4, r: Math.PI * 0.5},
 			]];
 
 			// キャラクター情報の画像読み込み
 			for(var i = 0; i < charaInfoList.length; i++){
 				for(var j = 0; j < charaInfoList[i].length; j++){
-					var id = charaInfoList[i][j]["id"] as string;
-					imgs["dot_" + id] = "img/character/" + id + "/dot.png";
-					if(i == 0){imgs["b64_bust_" + id] = "img/character/" + id + "/bust.png";}
+					var code = charaInfoList[i][j]["code"] as string;
+					imgs["dot_" + code] = "img/character/" + code + "/dot.png";
+					if(i == 0){imgs["b64_bust_" + code] = "img/character/" + code + "/bust.png";}
 				}
 			}
 
