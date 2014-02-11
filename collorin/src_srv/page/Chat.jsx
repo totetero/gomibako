@@ -65,10 +65,6 @@ class ChatPage{
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 			];
 
-			// test
-			imgs["dot_player0"] = "img/character/player0/dot.png";
-			jdat["imgs"] = imgs;
-
 			// IDの発行
 			rcli.incr([rhead + "nextUserId"], function(err : variant, result : string) : void{
 				// セッションとIDの結び付け
@@ -83,6 +79,7 @@ class ChatPage{
 					r: Math.PI * 2 * Math.random(),
 					serif: "",
 				}))], function(err : variant, result : string) : void{
+					jdat["imgs"] = imgs;
 					res.send(JSON.stringify(jdat));
 				});
 			});
@@ -95,8 +92,10 @@ class ChatPage{
 
 			// 接続開始時
 			client.on("entry", function() : void{
-				var data : variant = null;
-				var dataList = new variant[];
+				var newData : variant = null;
+				var allData = new variant[];
+				var newImgs = {} : Map.<string>;
+				var allImgs = {} : Map.<string>;
 				var step = {} : Map.<function():void>;
 				// ユーザー情報の確認
 				step["getuinfo"] = function() : void{
@@ -116,12 +115,21 @@ class ChatPage{
 						for(var i = 0; i < results.length; i++){
 							rcli.get([rhead + "uinfo:" + results[i]], function(err : variant, result : string) : void{
 								// メンバー情報の形成
-								var temp = JSON.parse(result);
-								temp["drawInfo"] = CharacterDrawInfo.data["human"];
-								temp["size"] = 1.2;
-								delete temp["room"];
-								dataList.push(temp);
-								if(uinfo.uid == temp["uid"]){data = temp;}
+								var tmpdata = JSON.parse(result);
+								tmpdata["drawInfo"] = CharacterDrawInfo.data["human"];
+								tmpdata["size"] = 1.2;
+								delete tmpdata["room"];
+								// 画像情報の確認
+								var tmpimgs = {} : Map.<string>;
+								var code = tmpdata["code"] as string;
+								tmpimgs["dot_" + code] = "img/character/" + code + "/dot.png";
+								// 情報の一時保存
+								allData.push(tmpdata);
+								for(var tag in tmpimgs){allImgs[tag] = tmpimgs[tag];}
+								if(uinfo.uid == tmpdata["uid"]){
+									newData = tmpdata;
+									for(var tag in tmpimgs){newImgs[tag] = tmpimgs[tag];}
+								}
 								if(--count == 0){step["send"]();}
 							});
 						}
@@ -130,8 +138,8 @@ class ChatPage{
 				// データの送信
 				step["send"] = function() : void{
 					client.join(uinfo.room);
-					client.emit("entry", uinfo.uid, dataList);
-					client.broadcast.to(uinfo.room).emit("add", data);
+					client.emit("entry", uinfo.uid, allData, allImgs);
+					client.broadcast.to(uinfo.room).emit("add", newData, newImgs);
 				};
 				// プログラムステップ開始
 				step["getuinfo"]();

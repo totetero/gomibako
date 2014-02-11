@@ -139,6 +139,7 @@ class SECchatPageMain extends EventCartridge{
 class ChatSocket{
 	var _socket : SocketIOClientSocket;
 	var _socketof : SocketIOClientSocket;
+	var _strayPacket = new variant[];
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -148,49 +149,93 @@ class ChatSocket{
 			this._socketof = this._socket.of("chat");
 
 			// ゲーム情報獲得
-			this._socketof.on("entry", function(uid : variant, uinfo : variant):void{
-				var uinfoList = uinfo as variant[];
-				for(var i = 0; i < uinfoList.length; i++){
-					if(uid == uinfoList[i]["uid"]){
-						log "自分 " + uinfoList[i]["uid"] as string;
-						ccvs.player = new ChatPlayer(ccvs, uinfoList[i]);
-						ccvs.member.push(ccvs.player);
-					}else{
-						log "継続 " + uinfoList[i]["uid"] as string + " " + uinfoList[i]["serif"] as string;
-						ccvs.member.push(new ChatCharacter(ccvs, uinfoList[i]));
+			this._socketof.on("entry", function(uid : variant, uinfoListData : variant, imgs : variant):void{
+				Loader.loadImg(imgs as Map.<string>, function() : void{
+					// 画像ロード完了
+					var uinfoList = uinfoListData as variant[];
+					for(var i = 0; i < uinfoList.length; i++){
+						var uinfo = uinfoList[i];
+						this._strayPacketCheck(uinfo);
+						if(uinfo["exist"] as boolean){
+							if(uid == uinfo["uid"]){
+								log "自分 " + uinfo["uid"] as string;
+								ccvs.player = new ChatPlayer(ccvs, uinfo);
+								ccvs.member.push(ccvs.player);
+							}else{
+								log "接続 " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
+								ccvs.member.push(new ChatCharacter(ccvs, uinfo));
+							}
+						}
 					}
-				}
+				}, function():void{
+					// 画像ロード失敗
+				});
 			});
 
 			// ユーザー新規接続
-			this._socketof.on("add", function(uinfo : variant):void{
-				log "新規 " + uinfo["uid"] as string;
-				ccvs.member.push(new ChatCharacter(ccvs, uinfo));
+			this._socketof.on("add", function(uinfo : variant, imgs : variant):void{
+				Loader.loadImg(imgs as Map.<string>, function() : void{
+					// 画像ロード完了
+					this._strayPacketCheck(uinfo);
+					if(uinfo["exist"] as boolean){
+						log "新規 " + uinfo["uid"] as string;
+						ccvs.member.push(new ChatCharacter(ccvs, uinfo));
+					}
+				}, function():void{
+					// 画像ロード失敗
+				});
 			});
 
 			// ユーザー台詞更新
 			this._socketof.on("talk", function(uid : variant, serif : variant):void{
 				log "発言 " + uid as string + " " + serif as string;
+				var isUse = false;
 				for(var i = 0; i < ccvs.member.length; i++){
 					if(uid == ccvs.member[i].uid){
 						ccvs.member[i].talk(serif as string);
+						isUse = true;
 					}
 				}
+				// 迷子パケット
+				if(!isUse){this._strayPacket.push({type: "talk", uid: uid, serif: serif});}
 			});
 
 			// ユーザー退出
 			this._socketof.on("kill", function(uid : variant):void{
 				log "退出 " + uid as string;
+				var isUse = false;
 				for(var i = 0; i < ccvs.member.length; i++){
 					if(uid == ccvs.member[i].uid){
 						ccvs.member[i].dispose();
 						ccvs.member.splice(i--, 1);
+						isUse = true;
 					}
 				}
+				// 迷子パケット
+				if(!isUse){this._strayPacket.push({type: "kill", uid: uid});}
 			});
 
 			this._socketof.emit("entry");
 		});
+	}
+
+	// ----------------------------------------------------------------
+	// 迷子パケットの適用確認
+	function _strayPacketCheck(uinfo : variant) : void{
+		uinfo["exist"] = true;
+		for(var i = 0; i < this._strayPacket.length; i++){
+			if(uinfo["uid"] == this._strayPacket[i]["uid"]){
+				var type = this._strayPacket[i]["type"] as string;
+				if(type == "talk"){
+					// 発言
+					uinfo["serif"] = this._strayPacket[i]["serif"];
+				}else if(type == "kill"){
+					// 退出
+					uinfo["exist"] = false;
+				}else{continue;}
+				this._strayPacket.splice(i--, 1);
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
