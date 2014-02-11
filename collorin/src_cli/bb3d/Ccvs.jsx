@@ -112,9 +112,9 @@ class Ccvs{
 	// 角度拡縮結果の計算
 	function calcRotate(rotv : number, roth : number, scale : number) : void{
 		// 垂直角度
-		while(this.rotv < -Math.PI){this.rotv += Math.PI * 2;}
-		while(this.rotv > Math.PI){this.rotv -= Math.PI * 2;}
 		var drv = this.rotv - rotv;
+		while(drv < -Math.PI){drv += Math.PI * 2;}
+		while(drv > Math.PI){drv -= Math.PI * 2;}
 		if(Math.abs(drv) > 0.01){
 			this.rotv -= drv * 0.1;
 			this.sinv = Math.sin(this.rotv);

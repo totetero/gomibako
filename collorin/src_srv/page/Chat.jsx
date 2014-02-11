@@ -147,6 +147,7 @@ class ChatPage{
 
 			// 台詞受信時
 			client.on("talk", function(str : variant) : void{
+				if(uinfo == null){return;}
 				// 台詞データ送信
 				sockets.to(uinfo.room).emit("talk", uinfo.uid, str);
 				// 台詞データ保存
@@ -156,10 +157,12 @@ class ChatPage{
 
 			// 自分ユーザーデータの削除
 			client.on("disconnect", function() : void{
+				if(uinfo == null){return;}
 				client.broadcast.to(uinfo.room).emit("kill", uinfo.uid);
 				rcli.srem([rhead + "room:" + uinfo.room, uinfo.uid], function(err : variant, result : string) : void{});
 				rcli.del([rhead + "uinfo:" + uinfo.uid], function(err : variant, result : string) : void{});
 				rcli.del([rhead + "uid:" + client.handshake.session.passport["user"] as string], function(err : variant, result : string) : void{});
+				uinfo = null;
 			});
 		});
 	}
