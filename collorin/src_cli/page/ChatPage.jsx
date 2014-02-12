@@ -101,8 +101,14 @@ class SECchatPageMain extends EventCartridge{
 		this._page.ccvs.calcTouchRotate();
 		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 1);
 
+		// キャラクター計算
+		for(var i = 0; i < this._page.ccvs.member.length; i++){
+			this._page.ccvs.member[i].calc(this._page.ccvs);
+			if(!this._page.ccvs.member[i].exist){this._page.ccvs.member.splice(i--,1);}
+		}
+
+		// カメラ位置をプレイヤーに
 		if(this._page.ccvs.player != null){
-			this._page.ccvs.player.calc(this._page.ccvs);
 			this._page.ccvs.cx -= (this._page.ccvs.cx - this._page.ccvs.player.x) * 0.1;
 			this._page.ccvs.cy -= (this._page.ccvs.cy - this._page.ccvs.player.y) * 0.1;
 		}
@@ -154,18 +160,7 @@ class ChatSocket{
 					// 画像ロード完了
 					var uinfoList = uinfoListData as variant[];
 					for(var i = 0; i < uinfoList.length; i++){
-						var uinfo = uinfoList[i];
-						this._strayPacketCheck(uinfo);
-						if(uinfo["exist"] as boolean){
-							if(uid == uinfo["uid"]){
-								log "自分 " + uinfo["uid"] as string;
-								ccvs.player = new ChatPlayer(ccvs, uinfo);
-								ccvs.member.push(ccvs.player);
-							}else{
-								log "接続 " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
-								ccvs.member.push(new ChatCharacter(ccvs, uinfo));
-							}
-						}
+						this._create(ccvs, uid, uinfoList[i]);
 					}
 				}, function():void{
 					// 画像ロード失敗
@@ -176,11 +171,7 @@ class ChatSocket{
 			this._socketof.on("add", function(uinfo : variant, imgs : variant):void{
 				Loader.loadImg(imgs as Map.<string>, function() : void{
 					// 画像ロード完了
-					this._strayPacketCheck(uinfo);
-					if(uinfo["exist"] as boolean){
-						log "新規 " + uinfo["uid"] as string;
-						ccvs.member.push(new ChatCharacter(ccvs, uinfo));
-					}
+					this._create(ccvs, null, uinfo);
 				}, function():void{
 					// 画像ロード失敗
 				});
@@ -203,14 +194,7 @@ class ChatSocket{
 			// ユーザー退出
 			this._socketof.on("kill", function(uid : variant):void{
 				log "退出 " + uid as string;
-				var isUse = false;
-				for(var i = 0; i < ccvs.member.length; i++){
-					if(uid == ccvs.member[i].uid){
-						ccvs.member[i].dispose();
-						ccvs.member.splice(i--, 1);
-						isUse = true;
-					}
-				}
+				var isUse = this._kill(ccvs, uid);
 				// 迷子パケット
 				if(!isUse){this._strayPacket.push({type: "kill", uid: uid});}
 			});
@@ -220,9 +204,35 @@ class ChatSocket{
 	}
 
 	// ----------------------------------------------------------------
+	// キャラクターを作成
+	function _create(ccvs : ChatCanvas, uid : variant, uinfo : variant) : void{
+		if(!this._strayPacketCheck(uinfo)){return;} // 迷子パケットの適用確認
+		this._kill(ccvs, uinfo["uid"]); // uidが重複しているキャラクターがいたら除去
+		var isPlayer = (uid == uinfo["uid"]);
+		var type = (isPlayer ? "自分" : ((uid == null) ? "新規" : "継続"));
+		log type + " " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
+		if(isPlayer){ccvs.member.push(ccvs.player = new ChatPlayer(ccvs, uinfo));} // プレイヤー追加
+		else{ccvs.member.push(new ChatCharacter(ccvs, uinfo));} // キャラクター追加
+	}
+
+	// ----------------------------------------------------------------
+	// 指定したuidのキャラクターを除去
+	function _kill(ccvs : ChatCanvas, uid : variant) : boolean{
+		var isUse = false;
+		for(var i = 0; i < ccvs.member.length; i++){
+			if(uid == ccvs.member[i].uid){
+				ccvs.member[i].dispose();
+				ccvs.member.splice(i--, 1);
+				isUse = true;
+			}
+		}
+		return isUse;
+	}
+
+	// ----------------------------------------------------------------
 	// 迷子パケットの適用確認
-	function _strayPacketCheck(uinfo : variant) : void{
-		uinfo["exist"] = true;
+	function _strayPacketCheck(uinfo : variant) : boolean{
+		var exist = true;
 		for(var i = 0; i < this._strayPacket.length; i++){
 			if(uinfo["uid"] == this._strayPacket[i]["uid"]){
 				var type = this._strayPacket[i]["type"] as string;
@@ -231,11 +241,12 @@ class ChatSocket{
 					uinfo["serif"] = this._strayPacket[i]["serif"];
 				}else if(type == "kill"){
 					// 退出
-					uinfo["exist"] = false;
+					exist = false;
 				}else{continue;}
 				this._strayPacket.splice(i--, 1);
 			}
 		}
+		return exist;
 	}
 
 	// ----------------------------------------------------------------
@@ -374,6 +385,7 @@ class ChatCharacter{
 	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
 	var _dstList = new int[][];
+	var exist : boolean;
 	var uid : int;
 	var x : number;
 	var y : number;
@@ -392,6 +404,7 @@ class ChatCharacter{
 		ccvs.clist.push(this._character);
 		ccvs.clist.push(this._balloon);
 		ccvs.slist.push(this._shadow);
+		this.exist = true;
 		this.uid = charaInfo["uid"] as int;
 		this.x = charaInfo["x"] as number;
 		this.y = charaInfo["y"] as number;
@@ -451,6 +464,7 @@ class ChatCharacter{
 	// ----------------------------------------------------------------
 	// 破棄
 	function dispose() : void{
+		this.exist = false;
 		this._character.exist = false;
 		this._balloon.exist = false;
 		this._shadow.exist = false;

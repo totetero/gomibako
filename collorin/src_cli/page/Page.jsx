@@ -148,7 +148,7 @@ class SECloadPage extends EventCartridge{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// ページ遷移エフェクト
+// ページ遷移エフェクト 直前ページの後片付けもこのカートリッジをトリガーにして行う
 class SECtransitionsPage extends EventCartridge{
 	var _currentPage : Page;
 	var _nextPage : Page;
@@ -160,12 +160,19 @@ class SECtransitionsPage extends EventCartridge{
 		this._currentPage = Page.current;
 		this._nextPage = nextPage;
 
+		if(this._currentPage != null){
+			// 進行方向の確認
+			this._next = (this._currentPage.depth <= this._nextPage.depth);
+			// 直前ページのオブジェクト後片付け
+			this._currentPage.dispose();
+		}
+
 		// ページのdivを配置、設定
 		Page.containerDiv.appendChild(this._nextPage.div);
 		if(this._currentPage != null){
-			this._next = (this._currentPage.depth <= this._nextPage.depth);
 			if(this._next){
 				// 進む場合は初期位置の変更
+				Util.cssTranslate(this._currentPage.div, 0, 0);
 				Util.cssTranslate(this._nextPage.div, 320, 0);
 			}else{
 				// 戻る場合は重ね順を考慮して配置しなおし
@@ -275,8 +282,7 @@ class SECtransitionsPage extends EventCartridge{
 	// 破棄
 	override function dispose() : void{
 		if(this._currentPage != null){
-			// 遷移後に元いたページの後片付け
-			this._currentPage.dispose();
+			// 直前ページのDOM後片付け
 			Page.containerDiv.removeChild(this._currentPage.div);
 		}
 	}

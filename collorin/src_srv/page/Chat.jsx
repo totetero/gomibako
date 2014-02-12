@@ -35,7 +35,7 @@ class ChatPage{
 		var rhead = "chat:";
 		rcli.keys([rhead + "*"], function(err : variant, results : string[]) : void{
 			for(var i = 0; i < results.length; i++){
-				rcli.del([results[i]], function(err : variant, result : string) : void{});
+				rcli.del([results[i]], function(err : variant, result : Nullable.<string>) : void{});
 			}
 		});
 
@@ -65,24 +65,50 @@ class ChatPage{
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 			];
 
-			// IDの発行
-			rcli.incr([rhead + "nextUserId"], function(err : variant, result : string) : void{
-				// セッションとIDの結び付け
-				rcli.set([rhead + "uid:" + req.session.passport["user"] as string, result], function(err : variant, result : string) : void{});
-				// キャラクター情報
-				rcli.set([rhead + "uinfo:" + result, JSON.stringify(new ChatUserInfo({
-					uid: result,
-					room: "room0",
-					code: "player0",
-					x: Math.floor(16 * Math.random()) * 16 + 8,
-					y: Math.floor(16 * Math.random()) * 16 + 8,
-					r: Math.PI * 2 * Math.random(),
-					serif: "",
-				}))], function(err : variant, result : string) : void{
+			// キャラクター情報
+			var uinfo = new ChatUserInfo({
+				room: "room0",
+				code: "player0",
+				x: Math.floor(16 * Math.random()) * 16 + 8,
+				y: Math.floor(16 * Math.random()) * 16 + 8,
+				r: Math.PI * 2 * Math.random(),
+				serif: "",
+			});
+
+			// ソケット情報の作成
+			var uid = "";
+			var step = {} : Map.<function():void>;
+			// UIDの発行
+			step["getuid"] = function() : void{
+				var uidkey = rhead + "uid:" + req.session.passport["user"] as string;
+				rcli.get([uidkey], function(err : variant, result : Nullable.<string>) : void{
+					if(result == null){
+						// 新しいUIDの発行
+						rcli.incr([rhead + "nextUserId"], function(err : variant, result : Nullable.<string>) : void{
+							uid = result;
+							rcli.set([uidkey, uid], function(err : variant, result : Nullable.<string>) : void{
+								step["send"]();
+							});
+						});
+					}else{
+						// UIDの再利用
+						uid = result;
+						step["send"]();
+					}
+				});
+			};
+			// キャラクター情報登録とページ情報送信
+			step["send"] = function() : void{
+				uinfo.uid = uid;
+				log JSON.stringify(uinfo);
+				rcli.set([rhead + "uinfo:" + uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{
+					// ページ情報送信
 					jdat["imgs"] = imgs;
 					res.send(JSON.stringify(jdat));
 				});
-			});
+			};
+			// プログラムステップ開始
+			step["getuid"]();
 		});
 
 		// -------- socket.io接続 --------
@@ -99,21 +125,21 @@ class ChatPage{
 				var step = {} : Map.<function():void>;
 				// ユーザー情報の確認
 				step["getuinfo"] = function() : void{
-					rcli.get([rhead + "uid:" + client.handshake.session.passport["user"] as string], function(err : variant, result : string) : void{
-						rcli.get([rhead + "uinfo:" + result], function(err : variant, result : string) : void{
+					rcli.get([rhead + "uid:" + client.handshake.session.passport["user"] as string], function(err : variant, result : Nullable.<string>) : void{
+						rcli.get([rhead + "uinfo:" + result], function(err : variant, result : Nullable.<string>) : void{
 							uinfo = new ChatUserInfo(JSON.parse(result));
 							step["setuinfo"]();
 						});
 					});
 				};
 				// ユーザー情報の登録
-				step["setuinfo"] = function() : void{rcli.sadd([rhead + "room:" + uinfo.room, uinfo.uid], function(err : variant, result : string) : void{step["member"]();});};
+				step["setuinfo"] = function() : void{rcli.sadd([rhead + "room:" + uinfo.room, uinfo.uid], function(err : variant, result : Nullable.<string>) : void{step["member"]();});};
 				// メンバー情報の確認
 				step["member"] = function() : void{
 					rcli.smembers([rhead + "room:" + uinfo.room], function(err : variant, results : string[]) : void{
 						var count = results.length;
 						for(var i = 0; i < results.length; i++){
-							rcli.get([rhead + "uinfo:" + results[i]], function(err : variant, result : string) : void{
+							rcli.get([rhead + "uinfo:" + results[i]], function(err : variant, result : Nullable.<string>) : void{
 								// メンバー情報の形成
 								var tmpdata = JSON.parse(result);
 								tmpdata["drawInfo"] = CharacterDrawInfo.data["human"];
@@ -152,16 +178,16 @@ class ChatPage{
 				sockets.to(uinfo.room).emit("talk", uinfo.uid, str);
 				// 台詞データ保存
 				uinfo.serif = str as string;
-				rcli.set([rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : string) : void{});
+				rcli.set([rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{});
 			});
 
 			// 自分ユーザーデータの削除
 			client.on("disconnect", function() : void{
 				if(uinfo == null){return;}
 				client.broadcast.to(uinfo.room).emit("kill", uinfo.uid);
-				rcli.srem([rhead + "room:" + uinfo.room, uinfo.uid], function(err : variant, result : string) : void{});
-				rcli.del([rhead + "uinfo:" + uinfo.uid], function(err : variant, result : string) : void{});
-				rcli.del([rhead + "uid:" + client.handshake.session.passport["user"] as string], function(err : variant, result : string) : void{});
+				rcli.srem([rhead + "room:" + uinfo.room, uinfo.uid], function(err : variant, result : Nullable.<string>) : void{});
+				rcli.del([rhead + "uinfo:" + uinfo.uid], function(err : variant, result : Nullable.<string>) : void{});
+				rcli.del([rhead + "uid:" + client.handshake.session.passport["user"] as string], function(err : variant, result : Nullable.<string>) : void{});
 				uinfo = null;
 			});
 		});
