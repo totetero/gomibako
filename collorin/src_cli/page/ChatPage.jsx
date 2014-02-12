@@ -315,21 +315,13 @@ class ChatCanvas extends Ccvs{
 class ChatPlayer extends ChatCharacter{
 	var _ccvs : ChatCanvas;
 	var _mdn : boolean;
+	var _arrow : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : ChatCanvas, charaInfo : variant){
 		super(ccvs, charaInfo);
 		this._ccvs = ccvs;
-	}
-
-	// ----------------------------------------------------------------
-	// 移動
-	function ctrlMove(x : int, y : int) : void{
-		if(this._ccvs.field.getGridFromIndex(x, y) > 0){
-			this._dstList.length = 0;
-			this._dstList.push([x, y]);
-		}
 	}
 
 	// ----------------------------------------------------------------
@@ -343,39 +335,63 @@ class ChatPlayer extends ChatCharacter{
 				// 画面クリックでの移動
 				var x = Math.floor(ccvs.tx / 16);
 				var y = Math.floor(ccvs.ty / 16);
-				this.ctrlMove(x, y);
+				var r = this._calcRotID(Math.atan2(ccvs.ty - this.y, ccvs.tx - this.x));
+				this._checkMove(x, y, r);
+				this._arrow = false;
 			}
 		}
 
-		if(this._dstList.length == 0){
+		if(this.dstList.length == 0 || !this._arrow){
 			// 十字キーでの移動
 			var r = 0;
 			var isMove = true;
-			if     (Ctrl.krt && Ctrl.kup){r = 7 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.klt && Ctrl.kup){r = 5 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.klt && Ctrl.kdn){r = 3 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.krt && Ctrl.kdn){r = 1 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.krt){r = 0 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.kup){r = 6 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.klt){r = 4 - 4 * ccvs.rotv / Math.PI;}
-			else if(Ctrl.kdn){r = 2 - 4 * ccvs.rotv / Math.PI;}
+			if     (Ctrl.krt && Ctrl.kup){r = Math.PI * 1.74 - ccvs.rotv;}
+			else if(Ctrl.klt && Ctrl.kup){r = Math.PI * 1.26 - ccvs.rotv;}
+			else if(Ctrl.klt && Ctrl.kdn){r = Math.PI * 0.74 - ccvs.rotv;}
+			else if(Ctrl.krt && Ctrl.kdn){r = Math.PI * 0.26 - ccvs.rotv;}
+			else if(Ctrl.krt){r = Math.PI * 0.00 - ccvs.rotv;}
+			else if(Ctrl.kup){r = Math.PI * 1.50 - ccvs.rotv;}
+			else if(Ctrl.klt){r = Math.PI * 1.00 - ccvs.rotv;}
+			else if(Ctrl.kdn){r = Math.PI * 0.50 - ccvs.rotv;}
 			else{isMove = false;}
 			if(isMove){
 				var x = Math.floor(this.x / 16);
 				var y = Math.floor(this.y / 16);
-				while(r < 0){r += 8;}
-				switch(Math.round(r) % 8){
-					case 0: this.ctrlMove(x + 1, y + 0); break;
-					case 1: this.ctrlMove(x + 1, y + 1); break;
-					case 2: this.ctrlMove(x + 0, y + 1); break;
-					case 3: this.ctrlMove(x - 1, y + 1); break;
-					case 4: this.ctrlMove(x - 1, y + 0); break;
-					case 5: this.ctrlMove(x - 1, y - 1); break;
-					case 6: this.ctrlMove(x + 0, y - 1); break;
-					case 7: this.ctrlMove(x + 1, y - 1); break;
+				switch(this._calcRotID(r)){
+					case 0: this._checkMove(x + 1, y + 0, 0); break;
+					case 1: this._checkMove(x + 1, y + 1, 1); break;
+					case 2: this._checkMove(x + 0, y + 1, 2); break;
+					case 3: this._checkMove(x - 1, y + 1, 3); break;
+					case 4: this._checkMove(x - 1, y + 0, 4); break;
+					case 5: this._checkMove(x - 1, y - 1, 5); break;
+					case 6: this._checkMove(x + 0, y - 1, 6); break;
+					case 7: this._checkMove(x + 1, y - 1, 7); break;
 				}
+				this._arrow = true;
 			}
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 移動確認
+	function _checkMove(x : int, y : int, r : int) : void{
+		if(this._ccvs.field.getGridFromIndex(x, y) > 0){
+			// 移動
+			this.dstList = [[x, y, r]];
+		}else if(r != this._calcRotID(this.r)){
+			// 方向転換
+			x = Math.floor(this.x / 16);
+			y = Math.floor(this.y / 16);
+			this.dstList = [[x, y, r]];
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 角度を整数にする
+	function _calcRotID(r : number) : int{
+		r = 4 * r / Math.PI;
+		while(r < 0){r += 8;}
+		return Math.round(r) % 8;
 	}
 }
 
@@ -384,7 +400,7 @@ class ChatCharacter{
 	var _character : DrawCharacter;
 	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
-	var _dstList = new int[][];
+	var dstList = new int[][];
 	var exist : boolean;
 	var uid : int;
 	var x : number;
@@ -413,12 +429,6 @@ class ChatCharacter{
 	}
 
 	// ----------------------------------------------------------------
-	// 移動
-	function move(x : int, y : int) : void{
-		this._dstList.push([x, y]);
-	}
-
-	// ----------------------------------------------------------------
 	// 会話
 	function talk(message : string) : void{
 		this._balloon.setText(message, -1);
@@ -427,18 +437,19 @@ class ChatCharacter{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc(ccvs : Ccvs) : void{
-		if(this._dstList.length > 0){
+		if(this.dstList.length > 0){
 			// グリッド目的地に向かう
 			this.action++;
-			var dx = this._dstList[0][0] * 16 + 8;
-			var dy = this._dstList[0][1] * 16 + 8;
+			var dx = this.dstList[0][0] * 16 + 8;
+			var dy = this.dstList[0][1] * 16 + 8;
 			var x = dx - this.x;
 			var y = dy - this.y;
 			var speed = 3.0;
 			if(x * x + y * y < speed * speed){
 				this.x = dx;
 				this.y = dy;
-				this._dstList.shift();
+				this.r = this.dstList[0][2] * Math.PI * 0.25;
+				this.dstList.shift();
 			}else{
 				this.r = Math.atan2(y, x);
 				this.x += speed * Math.cos(this.r);
@@ -454,7 +465,7 @@ class ChatCharacter{
 		var y = this.y - ccvs.cy;
 		this._balloon.preDraw(ccvs, x, y, 35, 1.0);
 		this._shadow.preDraw(ccvs, x, y, 0);
-		if(this._dstList.length > 0){
+		if(this.dstList.length > 0){
 			this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk"));
 		}else{
 			this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0);
