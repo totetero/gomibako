@@ -46,7 +46,8 @@ class DrawCharacter extends DrawUnit{
 	var _size : number;
 
 	// パーツ描画用変数
-	var img : HTMLImageElement;
+	var _img : HTMLImageElement;
+	var canvas : HTMLCanvasElement;
 	var drX0 : number;
 	var drY0 : number;
 	var drZ0 : number;
@@ -60,9 +61,14 @@ class DrawCharacter extends DrawUnit{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(img : HTMLImageElement, drawInfo : DrawInfo, size : number){
-		this.img = img;
+		this._img = img;
 		this._pose = drawInfo.pose;
 		this._size = size;
+		// キャラクター画像彩色用キャンバス設定
+		this.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+		this.canvas.width = this._img.width;
+		this.canvas.height = this._img.height;
+		this.setColor("");
 
 		// パーツの登録
 		for(var i in drawInfo.parts){
@@ -85,6 +91,20 @@ class DrawCharacter extends DrawUnit{
 		if(drawInfo.weapon != ""){
 			this._weapon = new DrawCharacterWeapon(this, drawInfo.weapon);
 			this._duList.push(this._weapon);
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 色設定
+	function setColor(color : string) : void{
+		var context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+		context.drawImage(this._img, 0, 0);
+		if(color != ""){
+			context.save();
+			context.globalCompositeOperation = "source-atop";
+			context.fillStyle = color;
+			context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+			context.restore();
 		}
 	}
 
@@ -246,10 +266,10 @@ class DrawCharacterParts extends DrawUnit{
 			ccvs.context.translate(rx, ry);
 			ccvs.context.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
 			ccvs.context.translate(-rx, -ry);
-			ccvs.context.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
+			ccvs.context.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
 			ccvs.context.restore();
 		}else{
-			ccvs.context.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
+			ccvs.context.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
 		}
 	}
 }
