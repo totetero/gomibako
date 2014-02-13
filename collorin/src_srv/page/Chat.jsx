@@ -10,18 +10,18 @@ class ChatUserInfo{
 	var uid : string;
 	var room : string;
 	var code : string;
-	var x : number;
-	var y : number;
-	var r : number;
+	var x : int;
+	var y : int;
+	var r : int;
 	var serif : string;
 	// コンストラクタ
 	function constructor(dat : variant) {
 		this.uid = dat["uid"] as string;
 		this.room = dat["room"] as string;
 		this.code = dat["code"] as string;
-		this.x = dat["x"] as number;
-		this.y = dat["y"] as number;
-		this.r = dat["r"] as number;
+		this.x = dat["x"] as int;
+		this.y = dat["y"] as int;
+		this.r = dat["r"] as int;
 		this.serif = dat["serif"] as string;
     }
 }
@@ -69,9 +69,9 @@ class ChatPage{
 			var uinfo = new ChatUserInfo({
 				room: "room0",
 				code: "player0",
-				x: Math.floor(16 * Math.random()) * 16 + 8,
-				y: Math.floor(16 * Math.random()) * 16 + 8,
-				r: Math.PI * 2 * Math.random(),
+				x: Math.floor(16 * Math.random()),
+				y: Math.floor(16 * Math.random()),
+				r: Math.floor(8 * Math.random()),
 				serif: "",
 			});
 
@@ -171,13 +171,25 @@ class ChatPage{
 				step["getuinfo"]();
 			});
 
+			// 位置受信時
+			client.on("walk", function(dst : variant) : void{
+				if(uinfo == null){return;}
+				// 位置データ送信
+				client.broadcast.to(uinfo.room).emit("walk", uinfo.uid, dst);
+				// 位置データ保存
+				uinfo.x = dst[0] as int;
+				uinfo.y = dst[1] as int;
+				uinfo.r = dst[2] as int;
+				rcli.set([rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{});
+			});
+
 			// 台詞受信時
-			client.on("talk", function(str : variant) : void{
+			client.on("talk", function(serif : variant) : void{
 				if(uinfo == null){return;}
 				// 台詞データ送信
-				sockets.to(uinfo.room).emit("talk", uinfo.uid, str);
+				sockets.to(uinfo.room).emit("talk", uinfo.uid, serif);
 				// 台詞データ保存
-				uinfo.serif = str as string;
+				uinfo.serif = serif as string;
 				rcli.set([rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{});
 			});
 

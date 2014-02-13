@@ -117,7 +117,7 @@ class SECchatPageMain extends EventCartridge{
 		if(Ctrl.trigger_enter || this._btnList["btn"].trigger){
 			Ctrl.trigger_enter = false;
 			this._btnList["btn"].trigger = false;
-			this._page.socket.sendTalk(this._input.value);
+			this._page.socket.sendSerif(this._input.value);
 			this._input.value = "";
 		}
 
@@ -146,6 +146,8 @@ class ChatSocket{
 	var _socket : SocketIOClientSocket;
 	var _socketof : SocketIOClientSocket;
 	var _strayPacket = new variant[];
+	var _sendDst : int[];
+	var _sendSerif : string;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -175,6 +177,20 @@ class ChatSocket{
 				}, function():void{
 					// 画像ロード失敗
 				});
+			});
+
+			// ユーザー位置更新
+			this._socketof.on("walk", function(uid : variant, dst : variant):void{
+				log "移動 " + uid as string + " " + dst[0] as string + " " + dst[1] as string + " " + dst[2] as string;
+				var isUse = false;
+				for(var i = 0; i < ccvs.member.length; i++){
+					if(uid == ccvs.member[i].uid){
+						ccvs.member[i].dstList = [dst as int[]];
+						isUse = true;
+					}
+				}
+				// 迷子パケット
+				if(!isUse){this._strayPacket.push({type: "talk", dst: dst});}
 			});
 
 			// ユーザー台詞更新
@@ -211,7 +227,7 @@ class ChatSocket{
 		var isPlayer = (uid == uinfo["uid"]);
 		var type = (isPlayer ? "自分" : ((uid == null) ? "新規" : "継続"));
 		log type + " " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
-		if(isPlayer){ccvs.member.push(ccvs.player = new ChatPlayer(ccvs, uinfo));} // プレイヤー追加
+		if(isPlayer){ccvs.member.push(ccvs.player = new ChatPlayer(this, ccvs, uinfo));} // プレイヤー追加
 		else{ccvs.member.push(new ChatCharacter(ccvs, uinfo));} // キャラクター追加
 	}
 
@@ -236,7 +252,12 @@ class ChatSocket{
 		for(var i = 0; i < this._strayPacket.length; i++){
 			if(uinfo["uid"] == this._strayPacket[i]["uid"]){
 				var type = this._strayPacket[i]["type"] as string;
-				if(type == "talk"){
+				if(type == "walk"){
+					// 移動
+					uinfo["x"] = this._strayPacket[i]["dst"][0];
+					uinfo["y"] = this._strayPacket[i]["dst"][1];
+					uinfo["r"] = this._strayPacket[i]["dst"][2];
+				}else if(type == "talk"){
 					// 発言
 					uinfo["serif"] = this._strayPacket[i]["serif"];
 				}else if(type == "kill"){
@@ -250,10 +271,24 @@ class ChatSocket{
 	}
 
 	// ----------------------------------------------------------------
-	// 台詞送信
-	function sendTalk(str : string) : void{
+	// 位置送信
+	function sendDestination(dst : int[]) : void{
 		if(this._socket != null){
-			this._socketof.emit("talk", str);
+			if(this._sendDst != dst){
+				this._sendDst = dst;
+				this._socketof.emit("walk", dst);
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 台詞送信
+	function sendSerif(serif : string) : void{
+		if(this._socket != null){
+			if(this._sendSerif != serif){
+				this._sendSerif = serif;
+				this._socketof.emit("talk", serif);
+			}
 		}
 	}
 
@@ -313,14 +348,18 @@ class ChatCanvas extends Ccvs{
 
 // プレイヤークラス
 class ChatPlayer extends ChatCharacter{
+	var _socket : ChatSocket;
 	var _ccvs : ChatCanvas;
 	var _mdn : boolean;
 	var _arrow : boolean;
+	var _socketCounter : int = 0;
+	var _dst : int[];
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(ccvs : ChatCanvas, charaInfo : variant){
+	function constructor(socket : ChatSocket, ccvs : ChatCanvas, charaInfo : variant){
 		super(ccvs, charaInfo);
+		this._socket = socket;
 		this._ccvs = ccvs;
 	}
 
@@ -370,6 +409,11 @@ class ChatPlayer extends ChatCharacter{
 				this._arrow = true;
 			}
 		}
+
+		// 一定間隔毎に位置の通信
+		if((this._socketCounter++) % 30 == 0){
+			this._socket.sendDestination(this._dst);
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -377,12 +421,12 @@ class ChatPlayer extends ChatCharacter{
 	function _checkMove(x : int, y : int, r : int) : void{
 		if(this._ccvs.field.getGridFromIndex(x, y) > 0){
 			// 移動
-			this.dstList = [[x, y, r]];
+			this.dstList = [this._dst = [x, y, r]];
 		}else if(r != this._calcRotID(this.r)){
 			// 方向転換
 			x = Math.floor(this.x / 16);
 			y = Math.floor(this.y / 16);
-			this.dstList = [[x, y, r]];
+			this.dstList = [this._dst = [x, y, r]];
 		}
 	}
 
@@ -422,9 +466,9 @@ class ChatCharacter{
 		ccvs.slist.push(this._shadow);
 		this.exist = true;
 		this.uid = charaInfo["uid"] as int;
-		this.x = charaInfo["x"] as number;
-		this.y = charaInfo["y"] as number;
-		this.r = charaInfo["r"] as number;
+		this.x = charaInfo["x"] as int * 16 + 8;
+		this.y = charaInfo["y"] as int * 16 + 8;
+		this.r = charaInfo["r"] as int * Math.PI * 0.25;
 		this.talk(charaInfo["serif"] as string);
 	}
 
