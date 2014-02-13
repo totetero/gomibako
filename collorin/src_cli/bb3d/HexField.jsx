@@ -14,9 +14,9 @@ class HexField{
 	// スゴロクマップ情報
 	var _hex : HexFieldCell[];
 	// グリッド情報
-	var _grid : HexFieldCell[][];
-	var _gridxsize : int;
-	var _gridysize : int;
+	var grid : HexFieldCell[][];
+	var gridxsize : int;
+	var gridysize : int;
 	// グリッド定数
 	static const _marginx : int = 10;
 	static const _marginy : int = 10;
@@ -29,37 +29,37 @@ class HexField{
 		this._hex = hex;
 
 		// グリッドサイズ計算
-		this._gridxsize = 0;
-		this._gridysize = 0;
+		this.gridxsize = 0;
+		this.gridysize = 0;
 		for(var i = 0; i < this._hex.length; i++){
-			if(this._gridxsize < this._hex[i].x + 1){this._gridxsize = this._hex[i].x + 1;}
-			if(this._gridysize < this._hex[i].y + 1){this._gridysize = this._hex[i].y + 1;}
+			if(this.gridxsize < this._hex[i].x + 1){this.gridxsize = this._hex[i].x + 1;}
+			if(this.gridysize < this._hex[i].y + 1){this.gridysize = this._hex[i].y + 1;}
 		}
 
 		// グリッド作成
-		this._grid = new HexFieldCell[][];
-		for(var j = 0; j < this._gridysize; j++){
-			this._grid[j] = new HexFieldCell[];
-			for(var i = 0; i < this._gridxsize; i++){
-				this._grid[j][i] = new HexFieldCell(i, j, 0);
+		this.grid = new HexFieldCell[][];
+		for(var j = 0; j < this.gridysize; j++){
+			this.grid[j] = new HexFieldCell[];
+			for(var i = 0; i < this.gridxsize; i++){
+				this.grid[j][i] = new HexFieldCell(i, j, 0);
 			}
 		}
 		// グリッド情報挿入
 		for(var i = 0; i < this._hex.length; i++){
-			this._grid[this._hex[i].y][this._hex[i].x] = this._hex[i];
+			this.grid[this._hex[i].y][this._hex[i].x] = this._hex[i];
 		}
 
 		// クラス内部キャンバスに描画
 		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
-		this._canvas.width = HexField._size * (this._gridxsize + (this._gridysize - 1) * 0.5) * 0.86602540378 * 2 * HexField._draft + HexField._marginx * 2;
-		this._canvas.height = HexField._size * (this._gridysize * 1.5 + 0.5) * HexField._draft + HexField._marginy * 2;
+		this._canvas.width = HexField._size * (this.gridxsize + (this.gridysize - 1) * 0.5) * 0.86602540378 * 2 * HexField._draft + HexField._marginx * 2;
+		this._canvas.height = HexField._size * (this.gridysize * 1.5 + 0.5) * HexField._draft + HexField._marginy * 2;
 		if(false){
 			// 基準マス描画
 			this._context.fillStyle = "yellow";
 			this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
-			for(var i = 0; i < this._gridxsize; i++){
-				for(var j = 0; j < this._gridysize; j++){
+			for(var i = 0; i < this.gridxsize; i++){
+				for(var j = 0; j < this.gridysize; j++){
 					var cx = this.calcHexCoordx(i, j);
 					var cy = this.calcHexCoordy(i, j);
 					// 六角形
@@ -166,9 +166,9 @@ class HexField{
 	// ----------------------------------------------------------------
 	// インデックスからヘックス情報獲得
 	function getHexFromIndex(i : int, j : int) : HexFieldCell{
-		if(i < 0 || this._gridxsize <= i){return new HexFieldCell(i, j, 0);}
-		if(j < 0 || this._gridysize <= j){return new HexFieldCell(i, j, 0);}
-		return this._grid[j][i];
+		if(i < 0 || this.gridxsize <= i){return new HexFieldCell(i, j, 0);}
+		if(j < 0 || this.gridysize <= j){return new HexFieldCell(i, j, 0);}
+		return this.grid[j][i];
 	}
 }
 

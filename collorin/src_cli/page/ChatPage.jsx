@@ -185,7 +185,9 @@ class ChatSocket{
 				var isUse = false;
 				for(var i = 0; i < ccvs.member.length; i++){
 					if(uid == ccvs.member[i].uid){
-						ccvs.member[i].dstList = [dst as int[]];
+						var sx = Math.floor(ccvs.member[i].x / 16);
+						var sy = Math.floor(ccvs.member[i].y / 16);
+						ccvs.member[i].dstList = ccvs.pathFinder.getDstList(sx, sy, dst as int[]);
 						isUse = true;
 					}
 				}
@@ -314,6 +316,7 @@ class ChatCanvas extends Ccvs{
 	var member = new ChatCharacter[];
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
+	var pathFinder : ChatPathFinder;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -326,6 +329,7 @@ class ChatCanvas extends Ccvs{
 	function init(response : variant) : void{
 		// フィールド
 		this.field = new GridField(this, Loader.imgs["grid"], response["grid"] as int[][]);
+		this.pathFinder = new ChatPathFinder(this.field);
 		// 初期カメラ位置
 		this.cx = (this.cxmax + this.cxmin) * 0.5;
 		this.cy = (this.cymax + this.cymin) * 0.5;
@@ -375,8 +379,8 @@ class ChatPlayer extends ChatCharacter{
 				var x = Math.floor(ccvs.tx / 16);
 				var y = Math.floor(ccvs.ty / 16);
 				var r = this._calcRotID(Math.atan2(ccvs.ty - this.y, ccvs.tx - this.x));
-				this._checkMove(x, y, r);
 				this._arrow = false;
+				this._checkMove(x, y, r);
 			}
 		}
 
@@ -396,6 +400,7 @@ class ChatPlayer extends ChatCharacter{
 			if(isMove){
 				var x = Math.floor(this.x / 16);
 				var y = Math.floor(this.y / 16);
+				this._arrow = true;
 				switch(this._calcRotID(r)){
 					case 0: this._checkMove(x + 1, y + 0, 0); break;
 					case 1: this._checkMove(x + 1, y + 1, 1); break;
@@ -406,7 +411,6 @@ class ChatPlayer extends ChatCharacter{
 					case 6: this._checkMove(x + 0, y - 1, 6); break;
 					case 7: this._checkMove(x + 1, y - 1, 7); break;
 				}
-				this._arrow = true;
 			}
 		}
 
@@ -419,14 +423,17 @@ class ChatPlayer extends ChatCharacter{
 	// ----------------------------------------------------------------
 	// 移動確認
 	function _checkMove(x : int, y : int, r : int) : void{
+		var sx : int = Math.floor(this.x / 16);
+		var sy : int = Math.floor(this.y / 16);
 		if(this._ccvs.field.getGridFromIndex(x, y) > 0){
 			// 移動
-			this.dstList = [this._dst = [x, y, r]];
+			this._dst = [x, y, r];
+			if(this._arrow){this.dstList = [this._dst];}
+			else{this.dstList = this._ccvs.pathFinder.getDstList(sx, sy, this._dst);}
 		}else if(r != this._calcRotID(this.r)){
 			// 方向転換
-			x = Math.floor(this.x / 16);
-			y = Math.floor(this.y / 16);
-			this.dstList = [this._dst = [x, y, r]];
+			this._dst = [sx, sy, r];
+			this.dstList = [this._dst];
 		}
 	}
 
@@ -492,7 +499,7 @@ class ChatCharacter{
 			if(x * x + y * y < speed * speed){
 				this.x = dx;
 				this.y = dy;
-				this.r = this.dstList[0][2] * Math.PI * 0.25;
+				if(this.dstList[0][2] >= 0){this.r = this.dstList[0][2] * Math.PI * 0.25;}
 				this.dstList.shift();
 			}else{
 				this.r = Math.atan2(y, x);
@@ -523,6 +530,110 @@ class ChatCharacter{
 		this._character.exist = false;
 		this._balloon.exist = false;
 		this._shadow.exist = false;
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// 経路探索クラス
+class ChatPathFinder{
+	var _map : GridField;
+	var _openList = new int[];
+	var _parents = new int[];
+	var _costs = new int[];
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(map : GridField){
+		this._map = map;
+	}
+
+	// ----------------------------------------------------------------
+	// スタートノードのリセット
+	function _snode(sx : int, sy : int) : void{
+		// 全ノード初期化
+		this._openList.length = 0;
+		for(var i = 0; i < this._map.gridxsize * this._map.gridysize; i++){
+			this._parents[i] = -1;
+			this._costs[i] = 0;
+		}
+		// スタートノード登録
+		var snode = this._map.gridxsize * sy + sx;
+		this._parents[snode] = snode;
+		this._openList.push(snode);
+	}
+
+	// ----------------------------------------------------------------
+	// ゴールノードまでへの経路探索
+	function _gnode(gx : int, gy : int) : void{
+		// ゴールノード
+		var gnode = this._map.gridxsize * gy + gx;
+		// ダイクストラ法
+		for(var loop = 0; loop < 9999; loop++){
+			// openリストが空ならば終了
+			if(this._openList.length == 0){break;}
+			// openリストのうち最小コストのノードを取り出す
+			var index = -1;
+			var cnode = -1;
+			var ccost = -1;
+			for(var i = 0; i < this._openList.length; i++){
+				if(i == 0 || this._costs[this._openList[i]] < ccost){
+					index = i;
+					cnode = this._openList[i];
+					ccost = this._costs[cnode];
+				}
+			}
+			// ゴールノードにたどり着いていたら終了
+			if(cnode == gnode){break;}
+			this._openList.splice(index, 1);
+			// 隣接しているノードを調べる
+			var cx : int = cnode % this._map.gridxsize;
+			var cy : int = cnode / this._map.gridxsize;
+			this._checkNode(cnode, cx + 1, cy);
+			this._checkNode(cnode, cx - 1, cy);
+			this._checkNode(cnode, cx, cy + 1);
+			this._checkNode(cnode, cx, cy - 1);
+			this._checkNode(cnode, cx + 1, cy + 1);
+			this._checkNode(cnode, cx - 1, cy + 1);
+			this._checkNode(cnode, cx + 1, cy - 1);
+			this._checkNode(cnode, cx - 1, cy - 1);
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// ノードへのコストを調べる
+	function _checkNode(parent : int, tx : int, ty : int) : void{
+		// マップチップの確認
+		var mapchip = this._map.getGridFromIndex(tx, ty);
+		if(mapchip <= 0){return;}
+		// 既チェックの確認
+		var tnode = this._map.gridxsize * ty + tx;
+		if(this._parents[tnode] >= 0){return;}
+		// コストの登録
+		this._costs[tnode] = this._costs[parent] + 1;
+		this._parents[tnode] = parent;
+		this._openList.push(tnode);
+	}
+
+	// ----------------------------------------------------------------
+	// 経路を調べる
+	function getDstList(sx : int, sy : int, dst : int[]) : int[][]{
+		var gx = dst[0];
+		var gy = dst[1];
+		this._snode(sx, sy);
+		this._gnode(gx, gy);
+		var node = this._map.gridxsize * gy + gx;
+		var dstList = [dst];
+		for(var i = 0; i < 9999; i++){
+			if(this._costs[node] == 0){break;}
+			var x : int = node % this._map.gridxsize;
+			var y : int = node / this._map.gridxsize;
+			dstList.unshift([x, y, -1]);
+			node = this._parents[node];
+		}
+		return dstList;
 	}
 }
 

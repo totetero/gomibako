@@ -13,26 +13,26 @@ class GridField{
 	var _canvas : HTMLCanvasElement;
 	var _context : CanvasRenderingContext2D;
 	// グリッド情報
-	var _grid : int[][];
-	var _gridxsize : int;
-	var _gridysize : int;
+	var grid : int[][];
+	var gridxsize : int;
+	var gridysize : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : Ccvs, img : HTMLImageElement, map : int[][]){
 		this._img = img;
-		this._grid = map;
+		this.grid = map;
 
 		// グリッドサイズ計算 
-		this._gridxsize = this._grid[0].length;
-		this._gridysize = this._grid.length;
+		this.gridxsize = this.grid[0].length;
+		this.gridysize = this.grid.length;
 		
 		// 海岸線自動補正地形作成
 		var exmap = new int[][];
-		for(var j = 0; j < this._gridysize; j++){
+		for(var j = 0; j < this.gridysize; j++){
 			exmap[j * 2 + 0] = new int[];
 			exmap[j * 2 + 1] = new int[];
-			for(var i = 0; i < this._gridxsize; i++){
+			for(var i = 0; i < this.gridxsize; i++){
 				var m = this.getGridFromIndex(i + 0, j + 0);
 				var m00 = this.getGridFromIndex(i - 1, j - 1); var m00f = (m00 == m || m00 == -1);
 				var m01 = this.getGridFromIndex(i + 0, j - 1); var m01f = (m01 == m || m01 == -1);
@@ -69,10 +69,10 @@ class GridField{
 		// クラス内部キャンバスに描画
 		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
-		this._canvas.width = 16 * this._gridxsize;
-		this._canvas.height = 16 * this._gridysize;
-		for(var i = 0; i < this._gridxsize * 2; i++){
-			for(var j = 0; j < this._gridysize * 2; j++){
+		this._canvas.width = 16 * this.gridxsize;
+		this._canvas.height = 16 * this.gridysize;
+		for(var i = 0; i < this.gridxsize * 2; i++){
+			for(var j = 0; j < this.gridysize * 2; j++){
 				var u = (exmap[j][i] % 32) * 8;
 				var v = ((exmap[j][i] / 32) as int) * 8;
 				this._context.drawImage(this._img, u, v, 8, 8, i * 8, j * 8, 8, 8);
@@ -81,22 +81,22 @@ class GridField{
 
 		// グリッド
 		this._context.strokeStyle = "rgba(0,0,0,0.1)";
-		for(var i = 0; i < this._gridxsize + 1; i++){
+		for(var i = 0; i < this.gridxsize + 1; i++){
 			this._context.beginPath();
 			this._context.moveTo(i * 16, 0);
-			this._context.lineTo(i * 16, this._gridysize * 16);
+			this._context.lineTo(i * 16, this.gridysize * 16);
 			this._context.stroke();
 		}
-		for(var i = 0; i < this._gridysize + 1; i++){
+		for(var i = 0; i < this.gridysize + 1; i++){
 			this._context.beginPath();
 			this._context.moveTo(0, i * 16);
-			this._context.lineTo(this._gridxsize * 16, i * 16);
+			this._context.lineTo(this.gridxsize * 16, i * 16);
 			this._context.stroke();
 		}
 
 		// 穴の部分をクリア
-		for(var i = 0; i < this._gridxsize; i++){
-			for(var j = 0; j < this._gridysize; j++){
+		for(var i = 0; i < this.gridxsize; i++){
+			for(var j = 0; j < this.gridysize; j++){
 				if(this.getGridFromIndex(i, j) == 0){
 					this._context.clearRect(i * 16, j * 16, 16, 16);
 				}
@@ -108,8 +108,8 @@ class GridField{
 		ccvs.cymax = 0;
 		ccvs.cxmin = this._canvas.width;
 		ccvs.cymin = this._canvas.height;
-		for(var i = 0; i < this._gridxsize; i++){
-			for(var j = 0; j < this._gridysize; j++){
+		for(var i = 0; i < this.gridxsize; i++){
+			for(var j = 0; j < this.gridysize; j++){
 				if(this.getGridFromIndex(i, j) > 0){
 					ccvs.cxmax = Math.max(ccvs.cxmax, (i + 1) * 16);
 					ccvs.cymax = Math.max(ccvs.cymax, (j + 1) * 16);
@@ -155,9 +155,9 @@ class GridField{
 	// ----------------------------------------------------------------
 	// インデックスからグリッド情報獲得
 	function getGridFromIndex(x : int, y : int) : int{
-		if(x < 0 || this._gridxsize <= x){return -1;}
-		if(y < 0 || this._gridysize <= y){return -1;}
-		return this._grid[y][x];
+		if(x < 0 || this.gridxsize <= x){return -1;}
+		if(y < 0 || this.gridysize <= y){return -1;}
+		return this.grid[y][x];
 	}
 }
 
