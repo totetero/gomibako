@@ -92,25 +92,52 @@ class SECchatPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
+		var ccvs = this._page.ccvs;
 		var clickable = true;
+		// ボタン押下確認
 		for(var name in this._btnList){
-			this._btnList[name].calc(!this._page.ccvs.mdn);
+			this._btnList[name].calc(!ccvs.mdn);
 			clickable = clickable && !this._btnList[name].active;
 		}
-		this._page.ccvs.calcTouchCoordinate(clickable);
-		this._page.ccvs.calcTouchRotate();
-		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 1);
+		// キャンバス座標確認
+		ccvs.calcTouchCoordinate(clickable);
+
+		// キャラクター押下確認 (テスト中)
+		var depth = 0;
+		var index = -1;
+		for(var i = 0; i < ccvs.member.length; i++){
+			var cdepth = ccvs.member[i]._character.drz; // TODO プライベート変数のアクセス はよなんとかしる！
+			if(index < 0 || depth < cdepth){
+				var x0 = ccvs.member[i].x - ccvs.cx;
+				var y0 = ccvs.member[i].y - ccvs.cy;
+				var x1 = ccvs.width * 0.5 + (x0 * ccvs.cosv + y0 * -ccvs.sinv) * ccvs.scale;
+				var y1 = ccvs.height * 0.5 + (x0 * ccvs.sinv + y0 * ccvs.cosv) * (ccvs.scale * ccvs.sinh);
+				if(ccvs.mdn && !Ctrl.mmv && x1 - 15 < ccvs.mx && ccvs.mx < x1 + 15 && y1 - 25 < ccvs.my && ccvs.my < y1 + 5){
+					depth = cdepth;
+					ccvs.touch = false;
+					index = i;
+				}
+			}
+		}
+		for(var i = 0; i < ccvs.member.length; i++){
+			ccvs.member[i].setColor((i == index) ? "rgba(255, 255, 255, 0.5)" : "");
+		}
+
+		// キャンバス回転確認
+		ccvs.calcTouchRotate();
+		ccvs.calcRotate(ccvs.rotv, Math.PI / 180 * 30, 1);
+		ccvs.touch = ccvs.mdn && !Ctrl.mmv;
 
 		// キャラクター計算
-		for(var i = 0; i < this._page.ccvs.member.length; i++){
-			this._page.ccvs.member[i].calc(this._page.ccvs);
-			if(!this._page.ccvs.member[i].exist){this._page.ccvs.member.splice(i--,1);}
+		for(var i = 0; i < ccvs.member.length; i++){
+			ccvs.member[i].calc(ccvs);
+			if(!ccvs.member[i].exist){ccvs.member.splice(i--,1);}
 		}
 
 		// カメラ位置をプレイヤーに
-		if(this._page.ccvs.player != null){
-			this._page.ccvs.cx -= (this._page.ccvs.cx - this._page.ccvs.player.x) * 0.1;
-			this._page.ccvs.cy -= (this._page.ccvs.cy - this._page.ccvs.player.y) * 0.1;
+		if(ccvs.player != null){
+			ccvs.cx -= (ccvs.cx - ccvs.player.x) * 0.1;
+			ccvs.cy -= (ccvs.cy - ccvs.player.y) * 0.1;
 		}
 
 		// メッセージの投稿
@@ -317,6 +344,7 @@ class ChatCanvas extends Ccvs{
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
 	var pathFinder : ChatPathFinder;
+	var touch : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -339,7 +367,7 @@ class ChatCanvas extends Ccvs{
 	// 描画
 	function draw() : void{
 		this.context.clearRect(0, 0, this.width, this.height);
-		this.field.draw(this, this.cx, this.cy, this.mdn && !Ctrl.mmv);
+		this.field.draw(this, this.cx, this.cy, this.touch);
 		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
@@ -372,8 +400,8 @@ class ChatPlayer extends ChatCharacter{
 	override function calc(ccvs : Ccvs) : void{
 		super.calc(ccvs);
 
-		if(this._mdn != ccvs.mdn){
-			this._mdn = ccvs.mdn;
+		if(this._mdn != this._ccvs.touch){
+			this._mdn = this._ccvs.touch;
 			if(!this._mdn && !Ctrl.mmv){
 				// 画面クリックでの移動
 				var x = Math.floor(ccvs.tx / 16);
@@ -458,6 +486,7 @@ class ChatCharacter{
 	var y : number;
 	var r : number;
 	var action : int;
+	var _color : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -477,6 +506,14 @@ class ChatCharacter{
 		this.y = charaInfo["y"] as int * 16 + 8;
 		this.r = charaInfo["r"] as int * Math.PI * 0.25;
 		this.talk(charaInfo["serif"] as string);
+	}
+
+	// ----------------------------------------------------------------
+	// 色設定
+	function setColor(color : string) : void{
+		if(this._color == color){return;}
+		this._color = color;
+		this._character.setColor(color);
 	}
 
 	// ----------------------------------------------------------------
