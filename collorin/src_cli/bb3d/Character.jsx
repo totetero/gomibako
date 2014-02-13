@@ -42,12 +42,11 @@ class DrawCharacter extends DrawUnit{
 	var _duList = new DrawUnit[];
 	var _parts = {} : Map.<DrawCharacterParts[]>;
 	var _pose : Map.<Map.<number[]>[]>;
+	var _weapon : DrawCharacterWeapon;
 	var _size : number;
-	var weapon : DrawCharacterWeapon;
 
 	// パーツ描画用変数
 	var img : HTMLImageElement;
-	var color = "";
 	var drX0 : number;
 	var drY0 : number;
 	var drZ0 : number;
@@ -82,9 +81,10 @@ class DrawCharacter extends DrawUnit{
 			}
 		}
 
-		// 武器の作成
+		// 武器の登録
 		if(drawInfo.weapon != ""){
-			this.weapon = new DrawCharacterWeapon(this, drawInfo.weapon);
+			this._weapon = new DrawCharacterWeapon(this, drawInfo.weapon);
+			this._duList.push(this._weapon);
 		}
 	}
 
@@ -118,7 +118,7 @@ class DrawCharacter extends DrawUnit{
 		for(var i in pose){
 			if(i == "weapon"){
 				// 特殊パーツ 武器
-				this.weapon.preDraw(ccvs, pose[i]);
+				this._weapon.preDraw(ccvs, pose[i]);
 			}else{
 				// 体のパーツ
 				for(var j in this._parts[i]){
@@ -131,34 +131,7 @@ class DrawCharacter extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		// オフスクリーンにキャラクター描画
-		ccvs.offminx = ccvs.width;
-		ccvs.offminy = ccvs.height;
-		ccvs.offmaxx = 0;
-		ccvs.offmaxy = 0;
 		DrawUnit.drawList(ccvs, this._duList);
-		var x = Math.max(0, ccvs.offminx);
-		var y = Math.max(0, ccvs.offminy);
-		var w = Math.min(ccvs.width - x, ccvs.offmaxx - ccvs.offminx);
-		var h = Math.min(ccvs.height - y, ccvs.offmaxy - ccvs.offminy);
-		if(w > 0 && h > 0){
-			if(this.color != ""){
-				// オフスクリーンキャラクターに影を落とす
-				ccvs.offctx.save();
-				ccvs.offctx.globalCompositeOperation = "source-atop";
-				ccvs.offctx.fillStyle = this.color;
-				ccvs.offctx.fillRect(x, y, w, h);
-				ccvs.offctx.restore();
-			}
-			// オフスクリーンを画面に描画
-			var tx = x * ccvs.pixelRatio;
-			var ty = y * ccvs.pixelRatio;
-			var tw = w * ccvs.pixelRatio;
-			var th = h * ccvs.pixelRatio;
-			ccvs.context.drawImage(ccvs.offcvs, tx, ty, tw, th, x, y, w, h);
-			// オフスクリーンのクリア
-			ccvs.offctx.clearRect(x, y, w, h);
-		}
 	}
 }
 
@@ -262,31 +235,21 @@ class DrawCharacterParts extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var s2 = (this._uvsize * this._character.drScale) as int;
-		var s1 = (s2 * 0.5) as int;
-		var xc = (this._drx + ccvs.width * 0.5) as int;
-		var yc = (this._dry + ccvs.height * 0.5) as int;
-		var xm = xc - s1;
-		var ym = yc - s1;
-		var xp = xc + s1;
-		var yp = yc + s1;
-		if(0 < xp || xm < ccvs.width || 0 < yp || ym < ccvs.height){
-			// 描画範囲の記憶
-			if(ccvs.offminx > xm){ccvs.offminx = xm;}
-			if(ccvs.offminy > ym){ccvs.offminy = ym;}
-			if(ccvs.offmaxx < xp){ccvs.offmaxx = xp;}
-			if(ccvs.offmaxy < yp){ccvs.offmaxy = yp;}
-			// 描画
-			if(this._yswap || this._zswap){
-				ccvs.offctx.save();
-				ccvs.offctx.translate(xc, yc);
-				ccvs.offctx.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
-				ccvs.offctx.translate(-xc, -yc);
-				ccvs.offctx.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
-				ccvs.offctx.restore();
-			}else{
-				ccvs.offctx.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
-			}
+		var ps = (this._uvsize * this._character.drScale) as int;
+		var px = (this._drx - ps * 0.5 + ccvs.width * 0.5) as int;
+		var py = (this._dry - ps * 0.5 + ccvs.height * 0.5) as int;
+		if(px + ps < 0 || px - ps > ccvs.width || py + ps < 0 || py - ps > ccvs.height){
+		}else if(this._yswap || this._zswap){
+			var rx = px + ps * 0.5;
+			var ry = py + ps * 0.5;
+			ccvs.context.save();
+			ccvs.context.translate(rx, ry);
+			ccvs.context.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
+			ccvs.context.translate(-rx, -ry);
+			ccvs.context.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
+			ccvs.context.restore();
+		}else{
+			ccvs.context.drawImage(this._character.img, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
 		}
 	}
 }
