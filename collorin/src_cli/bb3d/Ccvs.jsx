@@ -14,6 +14,14 @@ class Ccvs{
 	var height : int;
 	var canvas : HTMLCanvasElement;
 	var context : CanvasRenderingContext2D;
+	var pixelRatio : number;
+	// キャラクター描画用オフスクリーン
+	var offcvs : HTMLCanvasElement;
+	var offctx : CanvasRenderingContext2D;
+	var offminx : int;
+	var offminy : int;
+	var offmaxx : int;
+	var offmaxy : int;
 	// マウス状態 キャンバスとの相対位置
 	var mdn : boolean;
 	var mx : int = 0;
@@ -47,15 +55,18 @@ class Ccvs{
 		// DOM獲得
 		this.canvas = canvas;
 		this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+		this.offcvs = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+		this.offctx = this.offcvs.getContext("2d") as CanvasRenderingContext2D;
 		// ピクセルレシオ設定
-		var PixelRatio = dom.window.devicePixelRatio;
-		if(PixelRatio == 1){
-			this.canvas.width = this.width;
-			this.canvas.height = this.height;
+		this.pixelRatio = dom.window.devicePixelRatio;
+		if(this.pixelRatio == 1){
+			this.canvas.width = this.offcvs.width = this.width;
+			this.canvas.height = this.offcvs.height = this.height;
 		}else{
-			this.canvas.width = Math.floor(this.width * PixelRatio);
-			this.canvas.height = Math.floor(this.height * PixelRatio);
-			this.context.scale(PixelRatio, PixelRatio);
+			this.canvas.width = this.offcvs.width = Math.floor(this.width * this.pixelRatio);
+			this.canvas.height = this.offcvs.height = Math.floor(this.height * this.pixelRatio);
+			this.context.scale(this.pixelRatio, this.pixelRatio);
+			this.offctx.scale(this.pixelRatio, this.pixelRatio);
 		}
 
 		// パラメーター初期化

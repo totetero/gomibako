@@ -138,6 +138,7 @@ class GameCanvas extends Ccvs{
 class GameCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
+	var exist : boolean;
 	var x : number;
 	var y : number;
 	var r : number;
@@ -156,6 +157,8 @@ class GameCharacter{
 		this._shadow = new DrawShadow(size);
 		ccvs.clist.push(this._character);
 		ccvs.slist.push(this._shadow);
+		if(this._character.weapon){ccvs.clist.push(this._character.weapon);}
+		this.exist = true;
 		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
 		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
 		this.r = charaInfo["r"] as number;
@@ -196,6 +199,15 @@ class GameCharacter{
 			case "walk": this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
 			default: this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0); break;
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	function dispose() : void{
+		this.exist = false;
+		this._character.exist = false;
+		this._shadow.exist = false;
+		if(this._character.weapon){this._character.weapon.exist = false;}
 	}
 }
 

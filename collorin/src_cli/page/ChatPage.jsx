@@ -471,6 +471,7 @@ class ChatCharacter{
 		ccvs.clist.push(this._character);
 		ccvs.clist.push(this._balloon);
 		ccvs.slist.push(this._shadow);
+		if(this._character.weapon){ccvs.clist.push(this._character.weapon);}
 		this.exist = true;
 		this.uid = charaInfo["uid"] as int;
 		this.x = charaInfo["x"] as int * 16 + 8;
@@ -530,6 +531,7 @@ class ChatCharacter{
 		this._character.exist = false;
 		this._balloon.exist = false;
 		this._shadow.exist = false;
+		if(this._character.weapon){this._character.weapon.exist = false;}
 	}
 }
 
