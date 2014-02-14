@@ -7,6 +7,7 @@ native class redis{
 native class RedisClient{
 	function set(value : string[], callback : function(err:variant,result:Nullable.<string>):void) : void;
 	function get(value : string[], callback : function(err:variant,result:Nullable.<string>):void) : void;
+	function getset(value : string[], callback : function(err:variant,result:Nullable.<string>):void) : void;
 	function del(value : string[], callback : function(err:variant,result:Nullable.<string>):void) : void;
 	function incr(value : string[], callback : function(err:variant,result:Nullable.<string>):void) : void;
 	function keys(value : string[], callback : function(err:variant,results:string[]):void) : void;
