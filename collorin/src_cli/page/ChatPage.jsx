@@ -13,6 +13,7 @@ import "Page.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// チャットページクラス
 class ChatPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
@@ -71,10 +72,21 @@ class ChatPage extends Page{
 	}
 }
 
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// チャットページメインイベントカートリッジ
 class SECchatPageMain extends EventCartridge{
 	var _page : ChatPage;
 	var _input : HTMLInputElement;
 	var _btnList = {} : Map.<PageButton>;
+
+	var _tappedCharacter : int = -1;
+
+	var _socketCounter : int = 0;
+	var _arrow : boolean;
+	var _dst : int[];
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -94,39 +106,17 @@ class SECchatPageMain extends EventCartridge{
 	override function calc() : boolean{
 		var ccvs = this._page.ccvs;
 		var clickable = true;
+
 		// ボタン押下確認
 		for(var name in this._btnList){
 			this._btnList[name].calc(!ccvs.mdn);
 			clickable = clickable && !this._btnList[name].active;
 		}
-		// キャンバス座標確認
+
+		// キャンバス座標回転と押下確認
 		ccvs.calcTouchCoordinate(clickable);
-
-		// キャラクター押下確認 (テスト中)
-		var depth = 0;
-		var index = -1;
-		for(var i = 0; i < ccvs.member.length; i++){
-			var cdepth = ccvs.member[i]._character.drz; // TODO プライベート変数のアクセス はよなんとかしる！
-			if(index < 0 || depth < cdepth){
-				var x0 = ccvs.member[i].x - ccvs.cx;
-				var y0 = ccvs.member[i].y - ccvs.cy;
-				var x1 = ccvs.width * 0.5 + (x0 * ccvs.cosv + y0 * -ccvs.sinv) * ccvs.scale;
-				var y1 = ccvs.height * 0.5 + (x0 * ccvs.sinv + y0 * ccvs.cosv) * (ccvs.scale * ccvs.sinh);
-				if(ccvs.mdn && !Ctrl.mmv && x1 - 15 < ccvs.mx && ccvs.mx < x1 + 15 && y1 - 25 < ccvs.my && ccvs.my < y1 + 5){
-					depth = cdepth;
-					ccvs.touch = false;
-					index = i;
-				}
-			}
-		}
-		for(var i = 0; i < ccvs.member.length; i++){
-			ccvs.member[i].setColor((i == index) ? "rgba(255, 255, 255, 0.5)" : "");
-		}
-
-		// キャンバス回転確認
 		ccvs.calcTouchRotate();
 		ccvs.calcRotate(ccvs.rotv, Math.PI / 180 * 30, 1);
-		ccvs.touch = ccvs.mdn && !Ctrl.mmv;
 
 		// キャラクター計算
 		for(var i = 0; i < ccvs.member.length; i++){
@@ -134,10 +124,58 @@ class SECchatPageMain extends EventCartridge{
 			if(!ccvs.member[i].exist){ccvs.member.splice(i--,1);}
 		}
 
-		// カメラ位置をプレイヤーに
 		if(ccvs.player != null){
+			// カメラ位置をプレイヤーに
 			ccvs.cx -= (ccvs.cx - ccvs.player.x) * 0.1;
 			ccvs.cy -= (ccvs.cy - ccvs.player.y) * 0.1;
+
+			// 十字キーでの移動確認
+			if(ccvs.player.dstList.length == 0 || !this._arrow){
+				var r = 0;
+				var isMove = true;
+				if     (Ctrl.krt && Ctrl.kup){r = Math.PI * 1.74 - ccvs.rotv;}
+				else if(Ctrl.klt && Ctrl.kup){r = Math.PI * 1.26 - ccvs.rotv;}
+				else if(Ctrl.klt && Ctrl.kdn){r = Math.PI * 0.74 - ccvs.rotv;}
+				else if(Ctrl.krt && Ctrl.kdn){r = Math.PI * 0.26 - ccvs.rotv;}
+				else if(Ctrl.krt){r = Math.PI * 0.00 - ccvs.rotv;}
+				else if(Ctrl.kup){r = Math.PI * 1.50 - ccvs.rotv;}
+				else if(Ctrl.klt){r = Math.PI * 1.00 - ccvs.rotv;}
+				else if(Ctrl.kdn){r = Math.PI * 0.50 - ccvs.rotv;}
+				else{isMove = false;}
+				if(isMove){
+					var x = Math.floor(ccvs.player.x / 16);
+					var y = Math.floor(ccvs.player.y / 16);
+					this._arrow = true;
+					switch(this._calcRotID(r)){
+						case 0: this._checkMove(x + 1, y + 0, 0); break;
+						case 1: this._checkMove(x + 1, y + 1, 1); break;
+						case 2: this._checkMove(x + 0, y + 1, 2); break;
+						case 3: this._checkMove(x - 1, y + 1, 3); break;
+						case 4: this._checkMove(x - 1, y + 0, 4); break;
+						case 5: this._checkMove(x - 1, y - 1, 5); break;
+						case 6: this._checkMove(x + 0, y - 1, 6); break;
+						case 7: this._checkMove(x + 1, y - 1, 7); break;
+					}
+				}
+			}
+		}
+
+		// キャラクターフィールド押下確認
+		if(ccvs.trigger_mup){
+			ccvs.trigger_mup = false;
+			if(this._tappedCharacter < 0){
+				if(ccvs.player != null){
+					// フィールド押下による移動
+					var x = Math.floor(ccvs.tx / 16);
+					var y = Math.floor(ccvs.ty / 16);
+					var r = this._calcRotID(Math.atan2(ccvs.ty - ccvs.player.y, ccvs.tx - ccvs.player.x));
+					this._arrow = false;
+					this._checkMove(x, y, r);
+				}
+			}else{
+				// キャラクター押下
+				log "chara";
+			}
 		}
 
 		// メッセージの投稿
@@ -148,7 +186,64 @@ class SECchatPageMain extends EventCartridge{
 			this._input.value = "";
 		}
 
+		// キャラクタータップ確認
+		if(ccvs.mdn && !Ctrl.mmv){
+			var index = -1;
+			var depth = 0;
+			for(var i = 0; i < ccvs.member.length; i++){
+				var cdepth = ccvs.member[i].getDepth();
+				if(index < 0 || depth < cdepth){
+					var x0 = ccvs.member[i].x - ccvs.cx;
+					var y0 = ccvs.member[i].y - ccvs.cy;
+					var x1 = ccvs.width * 0.5 + (x0 * ccvs.cosv + y0 * -ccvs.sinv) * ccvs.scale;
+					var y1 = ccvs.height * 0.5 + (x0 * ccvs.sinv + y0 * ccvs.cosv) * (ccvs.scale * ccvs.sinh);
+					if(x1 - 15 < ccvs.mx && ccvs.mx < x1 + 15 && y1 - 25 < ccvs.my && ccvs.my < y1 + 5){
+						depth = cdepth;
+						this._tappedCharacter = index = i;
+					}
+				}
+			}
+		}else{
+			this._tappedCharacter = -1;
+		}
+
+		// キャラクター描画設定
+		for(var i = 0; i < ccvs.member.length; i++){ccvs.member[i].setColor((this._tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
+		// フィールド描画設定
+		ccvs.tapped = (ccvs.mdn && !Ctrl.mmv && this._tappedCharacter < 0);
+
+		// 一定間隔毎に位置の通信
+		if((this._socketCounter++) % 30 == 0){
+			this._page.socket.sendDestination(this._dst);
+		}
+
 		return true;
+	}
+
+	// ----------------------------------------------------------------
+	// プレイヤーの移動確認
+	function _checkMove(x : int, y : int, r : int) : void{
+		var ccvs = this._page.ccvs;
+		var sx : int = Math.floor(ccvs.player.x / 16);
+		var sy : int = Math.floor(ccvs.player.y / 16);
+		if(ccvs.field.getGridFromIndex(x, y) > 0){
+			// 移動
+			this._dst = [x, y, r];
+			if(this._arrow){ccvs.player.dstList = [this._dst];}
+			else{ccvs.player.dstList = ccvs.pathFinder.getDstList(sx, sy, this._dst);}
+		}else if(r != this._calcRotID(ccvs.player.r)){
+			// 方向転換
+			this._dst = [sx, sy, r];
+			ccvs.player.dstList = [this._dst];
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 角度を整数にする
+	function _calcRotID(r : number) : int{
+		r = 4 * r / Math.PI;
+		while(r < 0){r += 8;}
+		return Math.round(r) % 8;
 	}
 
 	// ----------------------------------------------------------------
@@ -228,7 +323,7 @@ class ChatSocket{
 				var isUse = false;
 				for(var i = 0; i < ccvs.member.length; i++){
 					if(uid == ccvs.member[i].uid){
-						ccvs.member[i].talk(serif as string);
+						ccvs.member[i].setTalk(serif as string);
 						isUse = true;
 					}
 				}
@@ -256,8 +351,10 @@ class ChatSocket{
 		var isPlayer = (uid == uinfo["uid"]);
 		var type = (isPlayer ? "自分" : ((uid == null) ? "新規" : "継続"));
 		log type + " " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
-		if(isPlayer){ccvs.member.push(ccvs.player = new ChatPlayer(this, ccvs, uinfo));} // プレイヤー追加
-		else{ccvs.member.push(new ChatCharacter(ccvs, uinfo));} // キャラクター追加
+		// キャラクター作成
+		var character = new ChatCharacter(ccvs, uinfo);
+		ccvs.member.push(character);
+		if(isPlayer){ccvs.player = character;}
 	}
 
 	// ----------------------------------------------------------------
@@ -339,12 +436,12 @@ class ChatSocket{
 // キャンバス
 class ChatCanvas extends Ccvs{
 	var field : GridField;
-	var player : ChatPlayer;
+	var player : ChatCharacter;
 	var member = new ChatCharacter[];
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
 	var pathFinder : ChatPathFinder;
-	var touch : boolean;
+	var tapped : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -367,7 +464,7 @@ class ChatCanvas extends Ccvs{
 	// 描画
 	function draw() : void{
 		this.context.clearRect(0, 0, this.width, this.height);
-		this.field.draw(this, this.cx, this.cy, this.touch);
+		this.field.draw(this, this.cx, this.cy, this.tapped);
 		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
@@ -377,102 +474,6 @@ class ChatCanvas extends Ccvs{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
-
-// プレイヤークラス
-class ChatPlayer extends ChatCharacter{
-	var _socket : ChatSocket;
-	var _ccvs : ChatCanvas;
-	var _mdn : boolean;
-	var _arrow : boolean;
-	var _socketCounter : int = 0;
-	var _dst : int[];
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(socket : ChatSocket, ccvs : ChatCanvas, charaInfo : variant){
-		super(ccvs, charaInfo);
-		this._socket = socket;
-		this._ccvs = ccvs;
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc(ccvs : Ccvs) : void{
-		super.calc(ccvs);
-
-		if(this._mdn != this._ccvs.touch){
-			this._mdn = this._ccvs.touch;
-			if(!this._mdn && !Ctrl.mmv){
-				// 画面クリックでの移動
-				var x = Math.floor(ccvs.tx / 16);
-				var y = Math.floor(ccvs.ty / 16);
-				var r = this._calcRotID(Math.atan2(ccvs.ty - this.y, ccvs.tx - this.x));
-				this._arrow = false;
-				this._checkMove(x, y, r);
-			}
-		}
-
-		if(this.dstList.length == 0 || !this._arrow){
-			// 十字キーでの移動
-			var r = 0;
-			var isMove = true;
-			if     (Ctrl.krt && Ctrl.kup){r = Math.PI * 1.74 - ccvs.rotv;}
-			else if(Ctrl.klt && Ctrl.kup){r = Math.PI * 1.26 - ccvs.rotv;}
-			else if(Ctrl.klt && Ctrl.kdn){r = Math.PI * 0.74 - ccvs.rotv;}
-			else if(Ctrl.krt && Ctrl.kdn){r = Math.PI * 0.26 - ccvs.rotv;}
-			else if(Ctrl.krt){r = Math.PI * 0.00 - ccvs.rotv;}
-			else if(Ctrl.kup){r = Math.PI * 1.50 - ccvs.rotv;}
-			else if(Ctrl.klt){r = Math.PI * 1.00 - ccvs.rotv;}
-			else if(Ctrl.kdn){r = Math.PI * 0.50 - ccvs.rotv;}
-			else{isMove = false;}
-			if(isMove){
-				var x = Math.floor(this.x / 16);
-				var y = Math.floor(this.y / 16);
-				this._arrow = true;
-				switch(this._calcRotID(r)){
-					case 0: this._checkMove(x + 1, y + 0, 0); break;
-					case 1: this._checkMove(x + 1, y + 1, 1); break;
-					case 2: this._checkMove(x + 0, y + 1, 2); break;
-					case 3: this._checkMove(x - 1, y + 1, 3); break;
-					case 4: this._checkMove(x - 1, y + 0, 4); break;
-					case 5: this._checkMove(x - 1, y - 1, 5); break;
-					case 6: this._checkMove(x + 0, y - 1, 6); break;
-					case 7: this._checkMove(x + 1, y - 1, 7); break;
-				}
-			}
-		}
-
-		// 一定間隔毎に位置の通信
-		if((this._socketCounter++) % 30 == 0){
-			this._socket.sendDestination(this._dst);
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// 移動確認
-	function _checkMove(x : int, y : int, r : int) : void{
-		var sx : int = Math.floor(this.x / 16);
-		var sy : int = Math.floor(this.y / 16);
-		if(this._ccvs.field.getGridFromIndex(x, y) > 0){
-			// 移動
-			this._dst = [x, y, r];
-			if(this._arrow){this.dstList = [this._dst];}
-			else{this.dstList = this._ccvs.pathFinder.getDstList(sx, sy, this._dst);}
-		}else if(r != this._calcRotID(this.r)){
-			// 方向転換
-			this._dst = [sx, sy, r];
-			this.dstList = [this._dst];
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// 角度を整数にする
-	function _calcRotID(r : number) : int{
-		r = 4 * r / Math.PI;
-		while(r < 0){r += 8;}
-		return Math.round(r) % 8;
-	}
-}
 
 // キャラクタークラス
 class ChatCharacter{
@@ -505,7 +506,13 @@ class ChatCharacter{
 		this.x = charaInfo["x"] as int * 16 + 8;
 		this.y = charaInfo["y"] as int * 16 + 8;
 		this.r = charaInfo["r"] as int * Math.PI * 0.25;
-		this.talk(charaInfo["serif"] as string);
+		this.setTalk(charaInfo["serif"] as string);
+	}
+
+	// ----------------------------------------------------------------
+	// 表示深度獲得
+	function getDepth() : number{
+		return this._character.drz;
 	}
 
 	// ----------------------------------------------------------------
@@ -517,8 +524,8 @@ class ChatCharacter{
 	}
 
 	// ----------------------------------------------------------------
-	// 会話
-	function talk(message : string) : void{
+	// 会話設定
+	function setTalk(message : string) : void{
 		this._balloon.setText(message, -1);
 	}
 

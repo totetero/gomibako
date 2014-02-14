@@ -20,6 +20,7 @@ class Ccvs{
 	var my : int = 0;
 	var prevmx : int;
 	var prevmy : int;
+	var trigger_mup : boolean;
 	var _tempmdn : boolean;
 	// ゲーム画面キャンバス タッチ位置
 	var tx : number;
@@ -84,6 +85,7 @@ class Ccvs{
 		// キャンバス内でクリック開始したかの確認
 		if(this._tempmdn != Ctrl.mdn){
 			this._tempmdn = Ctrl.mdn;
+			if(this.mdn && !Ctrl.mdn && !Ctrl.mmv){this.trigger_mup = true;}
 			this.mdn = (clickable && this._tempmdn && 0 < this.mx && this.mx < this.width && 0 < this.my && this.my < this.height);
 		}
 	}
