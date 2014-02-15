@@ -5,8 +5,8 @@ import "require/redis.jsx";
 import "require/passport.jsx";
 import "require/socket.io.jsx";
 
-import "work/Auth.jsx";
-import "work/ImageServer.jsx";
+import "util/Auth.jsx";
+import "util/ImageServer.jsx";
 import "page/*.jsx";
 
 import "models/User.jsx";

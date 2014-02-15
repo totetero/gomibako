@@ -111,6 +111,7 @@ class SECchatPageMain extends EventCartridge{
 	override function calc() : boolean{
 		var ccvs = this._page.ccvs;
 		var clickable = true;
+		var exist = true;
 
 		// ボタン押下確認
 		for(var name in this._btnList){
@@ -180,7 +181,8 @@ class SECchatPageMain extends EventCartridge{
 					}
 				}else{
 					// キャラクター押下によるポップアップ表示
-					this._page.serialCutting(new SECchatPagePopup(this._page, ccvs.member[this._tappedCharacter]));
+					this._page.serialPush(new SECchatPagePopup(this._page, ccvs.member[this._tappedCharacter]));
+					exist = false;
 				}
 			}
 		}
@@ -229,7 +231,7 @@ class SECchatPageMain extends EventCartridge{
 			this._page.socket.sendDestination(this._dst);
 		}
 
-		return true;
+		return exist;
 	}
 
 	// ----------------------------------------------------------------
@@ -335,6 +337,7 @@ class SECchatPagePopup extends EventCartridge{
 
 		// 閉じるボタン
 		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
+			this._page.serialPush(new SECchatPageMain(this._page));
 			return false;
 		}
 
@@ -498,7 +501,7 @@ class ChatSocket{
 	// 位置送信
 	function sendDestination(dst : int[]) : void{
 		if(this._socket != null){
-			if(this._sendDst != dst){
+			if(dst != null && this._sendDst != dst){
 				this._sendDst = dst;
 				this._socketof.emit("walk", dst);
 			}
