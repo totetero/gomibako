@@ -153,22 +153,23 @@ class ChatPage{
 			// 位置受信時
 			client.on("walk", function(dst : variant) : void{
 				if(uinfo == null){return;}
-				// 位置データ送信
-				client.broadcast.to(uinfo.room).emit("walk", uinfo.uid, dst);
-				// 位置データ保存
 				uinfo.x = dst[0] as int;
 				uinfo.y = dst[1] as int;
 				uinfo.r = dst[2] as int;
+				// 位置データ送信
+				client.broadcast.to(uinfo.room).emit("walk", uinfo.uid, [uinfo.x, uinfo.y, uinfo.r]);
+				// 位置データ保存
 				ChatPage._rcli.set([ChatPage._rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{});
 			});
 
 			// 台詞受信時
 			client.on("talk", function(serif : variant) : void{
 				if(uinfo == null){return;}
-				// 台詞データ送信
-				ChatPage._sockets.to(uinfo.room).emit("talk", uinfo.uid, serif);
-				// 台詞データ保存
 				uinfo.serif = serif as string;
+				if(uinfo.serif.length > 20){uinfo.serif = uinfo.serif.substring(0, 20);}
+				// 台詞データ送信
+				ChatPage._sockets.to(uinfo.room).emit("talk", uinfo.uid, uinfo.serif);
+				// 台詞データ保存
 				ChatPage._rcli.set([ChatPage._rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{});
 			});
 

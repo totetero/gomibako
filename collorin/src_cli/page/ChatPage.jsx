@@ -18,7 +18,7 @@ class ChatPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<canvas></canvas>
-		<input type="text">
+		<input type="text" maxlength="20">
 		<div class="btn">送信</div>
 	""";
 
