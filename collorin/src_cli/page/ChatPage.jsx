@@ -19,7 +19,9 @@ class ChatPage extends Page{
 	var _htmlTag = """
 		<canvas></canvas>
 		<input type="text" maxlength="20">
-		<div class="btn">送信</div>
+		<div class="core-btn send">送信</div>
+		<div class="core-btn exit">退出</div>
+		<div class="core-popup"></div>
 	""";
 
 	// チャットソケット
@@ -92,13 +94,16 @@ class SECchatPageMain extends EventCartridge{
 	// コンストラクタ
 	function constructor(page : ChatPage){
 		this._page = page;
-		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
-		this._btnList["btn"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
+		this._btnList["send"] = new PageButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement);
+		this._btnList["exit"] = new PageButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement);
+		this._page.ccvs.trigger_mup = false;
+		Ctrl.trigger_enter = false;
 	}
 
 	// ----------------------------------------------------------------
@@ -163,27 +168,34 @@ class SECchatPageMain extends EventCartridge{
 		// キャラクターフィールド押下確認
 		if(ccvs.trigger_mup){
 			ccvs.trigger_mup = false;
-			if(this._tappedCharacter < 0){
-				if(ccvs.player != null){
-					// フィールド押下による移動
-					var x = Math.floor(ccvs.tx / 16);
-					var y = Math.floor(ccvs.ty / 16);
-					var r = this._calcRotID(Math.atan2(ccvs.ty - ccvs.player.y, ccvs.tx - ccvs.player.x));
-					this._arrow = false;
-					this._checkMove(x, y, r);
+			if(!Ctrl.mmv){
+				if(this._tappedCharacter < 0){
+					if(ccvs.player != null){
+						// フィールド押下による移動
+						var x = Math.floor(ccvs.tx / 16);
+						var y = Math.floor(ccvs.ty / 16);
+						var r = this._calcRotID(Math.atan2(ccvs.ty - ccvs.player.y, ccvs.tx - ccvs.player.x));
+						this._arrow = false;
+						this._checkMove(x, y, r);
+					}
+				}else{
+					// キャラクター押下によるポップアップ表示
+					this._page.serialCutting(new SECchatPagePopup(this._page, ccvs.member[this._tappedCharacter]));
 				}
-			}else{
-				// キャラクター押下
-				log "chara";
 			}
 		}
 
 		// メッセージの投稿
-		if(Ctrl.trigger_enter || this._btnList["btn"].trigger){
+		if(Ctrl.trigger_enter || this._btnList["send"].trigger){
 			Ctrl.trigger_enter = false;
-			this._btnList["btn"].trigger = false;
+			this._btnList["send"].trigger = false;
 			this._page.socket.sendSerif(this._input.value);
 			this._input.value = "";
+		}
+
+		// 退出ボタン
+		if(this._btnList["exit"].trigger){
+			Page.transitionsPage("world");
 		}
 
 		// キャラクタータップ確認
@@ -258,6 +270,104 @@ class SECchatPageMain extends EventCartridge{
 	override function dispose() : void{
 	}
 }
+
+// チャットページポップアップイベントカートリッジ
+class SECchatPagePopup extends EventCartridge{
+	// HTMLタグ
+	var _htmlTag = """
+		<div class="core-background"></div>
+		<div class="core-window">
+			<div class="name"></div>
+			<div class="chara">キャラ画像</div>
+			<div class="core-btn close">閉じる</div>
+		</div>
+	""";
+
+	var _page : ChatPage;
+	var _chara : ChatCharacter;
+	var _popup : HTMLDivElement;
+	var _window : HTMLDivElement;
+	var _btnList = {} : Map.<PageButton>;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : ChatPage, chara : ChatCharacter){
+		this._page = page;
+		this._chara = chara;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		this._popup = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
+		this._popup.innerHTML = this._htmlTag;
+		this._window = this._popup.getElementsByClassName("core-window").item(0) as HTMLDivElement;
+		(this._window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name as string;
+		this._btnList["close"] = new PageButton(this._window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement);
+		Ctrl.trigger_mup = false;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		var ccvs = this._page.ccvs;
+
+		// ボタン押下確認
+		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		// キャンバス座標回転と押下確認
+		ccvs.calcTouchCoordinate(false);
+		ccvs.calcTouchRotate();
+		ccvs.calcRotate(ccvs.rotv, Math.PI / 180 * 30, 1);
+
+		// キャラクター計算
+		for(var i = 0; i < ccvs.member.length; i++){
+			ccvs.member[i].calc(ccvs);
+			if(!ccvs.member[i].exist){ccvs.member.splice(i--,1);}
+		}
+
+		if(ccvs.player != null){
+			// カメラ位置をプレイヤーに
+			ccvs.cx -= (ccvs.cx - ccvs.player.x) * 0.1;
+			ccvs.cy -= (ccvs.cy - ccvs.player.y) * 0.1;
+		}
+
+		// 閉じるボタン
+		if(this._btnList["close"].trigger){
+			return false;
+		}
+
+		// ウインドウ外タップ確認
+		if(Ctrl.trigger_mup){
+			Ctrl.trigger_mup = false;
+			var box = this._window.getBoundingClientRect();
+			var x0 = box.left - Ctrl.sx;
+			var y0 = box.top - Ctrl.sy;
+			var x1 = x0 + box.width;
+			var y1 = y0 + box.height;
+			if(Ctrl.mx < x0 || x1 < Ctrl.mx || Ctrl.my < y0 || y1 < Ctrl.my){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		this._page.ccvs.draw();
+		for(var name in this._btnList){this._btnList[name].draw();}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		this._popup.innerHTML = "";
+	}
+}
+
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -478,16 +588,20 @@ class ChatCanvas extends Ccvs{
 // キャラクタークラス
 class ChatCharacter{
 	var _character : DrawCharacter;
-	var _name : DrawTest;
+	var _nametag : DrawText;
 	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
-	var dstList = new int[][];
-	var exist : boolean;
+
 	var uid : int;
+	var name : string;
+
+	var exist : boolean;
 	var x : number;
 	var y : number;
 	var r : number;
 	var action : int;
+	var dstList = new int[][];
+
 	var _color : string;
 
 	// ----------------------------------------------------------------
@@ -496,19 +610,23 @@ class ChatCharacter{
 		var img = Loader.imgs["dot_" + charaInfo["code"] as string];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
-		this._character = new DrawCharacter(img, drawInfo, size);
-		this._name = new DrawTest(charaInfo["name"] as string);
-		this._balloon = new DrawBalloon();
-		this._shadow = new DrawShadow(size);
-		ccvs.clist.push(this._character);
-		ccvs.clist.push(this._name);
-		ccvs.clist.push(this._balloon);
-		ccvs.slist.push(this._shadow);
-		this.exist = true;
+
 		this.uid = charaInfo["uid"] as int;
+		this.name = charaInfo["name"] as string;
 		this.x = charaInfo["x"] as int * 16 + 8;
 		this.y = charaInfo["y"] as int * 16 + 8;
 		this.r = charaInfo["r"] as int * Math.PI * 0.25;
+
+		this._character = new DrawCharacter(img, drawInfo, size);
+		this._nametag = new DrawText(this.name);
+		this._balloon = new DrawBalloon();
+		this._shadow = new DrawShadow(size);
+		ccvs.clist.push(this._character);
+		ccvs.clist.push(this._nametag);
+		ccvs.clist.push(this._balloon);
+		ccvs.slist.push(this._shadow);
+
+		this.exist = true;
 		this.setTalk(charaInfo["serif"] as string);
 	}
 
@@ -561,7 +679,7 @@ class ChatCharacter{
 	function preDraw(ccvs : Ccvs) : void{
 		var x = this.x - ccvs.cx;
 		var y = this.y - ccvs.cy;
-		this._name.preDraw(ccvs, x, y, 40, 1.0);
+		this._nametag.preDraw(ccvs, x, y, 40, 1.0);
 		this._balloon.preDraw(ccvs, x, y, 50, 1.0);
 		this._shadow.preDraw(ccvs, x, y, 0);
 		if(this.dstList.length > 0){
@@ -576,7 +694,7 @@ class ChatCharacter{
 	function dispose() : void{
 		this.exist = false;
 		this._character.exist = false;
-		this._name.exist = false;
+		this._nametag.exist = false;
 		this._balloon.exist = false;
 		this._shadow.exist = false;
 	}

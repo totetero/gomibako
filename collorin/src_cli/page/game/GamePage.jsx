@@ -21,6 +21,7 @@ class GamePage extends Page{
 	// キャンバス
 	var ccvs : GameCanvas;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
@@ -31,6 +32,7 @@ class GamePage extends Page{
 		this.rctrlType = 1;
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		// ページ要素作成
@@ -53,24 +55,32 @@ class GamePage extends Page{
 		this.serialPush(new SECgamePageMain(this));
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
 	}
 }
 
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 class SECgamePageMain extends EventCartridge{
 	var _page : GamePage;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : GamePage){
 		this._page = page;
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 	}
 
+	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
 		this._page.ccvs.calcTouchCoordinate(true);
@@ -80,11 +90,13 @@ class SECgamePageMain extends EventCartridge{
 		return true;
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
 		this._page.ccvs.draw();
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 	}
@@ -138,6 +150,7 @@ class GameCanvas extends Ccvs{
 class GameCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
+
 	var x : number;
 	var y : number;
 	var r : number;
@@ -152,13 +165,15 @@ class GameCharacter{
 		var size = charaInfo["size"] as number;
 		var hexx = charaInfo["x"] as int;
 		var hexy = charaInfo["y"] as int;
+
+		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
+		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
+		this.r = charaInfo["r"] as number;
+
 		this._character = new DrawCharacter(img, drawInfo, size);
 		this._shadow = new DrawShadow(size);
 		ccvs.clist.push(this._character);
 		ccvs.slist.push(this._shadow);
-		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
-		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
-		this.r = charaInfo["r"] as number;
 	}
 
 	// ----------------------------------------------------------------

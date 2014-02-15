@@ -12,10 +12,11 @@ import "./Page.jsx";
 class WorldPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="btn" style="top:80px;">テストステージ</div>
-		<div class="btn" style="top:140px;">チャットステージ</div>
+		<div class="core-btn b1">テストステージ</div>
+		<div class="core-btn b2">チャットステージ</div>
 	""";
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
@@ -26,6 +27,7 @@ class WorldPage extends Page{
 		this.rctrlType = 0;
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		// ページ要素作成
@@ -42,29 +44,37 @@ class WorldPage extends Page{
 		this.serialPush(new SECworldPageMain(this));
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
 	}
 }
 
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 class SECworldPageMain extends EventCartridge{
 	var _page : WorldPage;
 	var _btnList = {} : Map.<PageButton>;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : WorldPage){
 		this._page = page;
-		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("btn").item(0) as HTMLDivElement);
-		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("btn").item(1) as HTMLDivElement);
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement);
+		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement);
 		this._btnList["back"] = new PageButton(Page.backDiv);
 		this._btnList["menu"] = new PageButton(Page.menuDiv);
 	}
 
-	// 初期化
-	override function init() : void{
-	}
-
+	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
@@ -87,11 +97,13 @@ class SECworldPageMain extends EventCartridge{
 		return true;
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
 		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 	}

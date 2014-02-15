@@ -13,15 +13,16 @@ class MyPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="navi">
-			<div class="b1">ワールド</div>
-			<div class="b2">クエスト</div>
-			<div class="b3">キャラクター</div>
-			<div class="b4">アイテム</div>
+			<div class="core-btn b1">ワールド</div>
+			<div class="core-btn b2">クエスト</div>
+			<div class="core-btn b3">キャラクター</div>
+			<div class="core-btn b4">アイテム</div>
 		</div>
 
 		<div class="footer">おしらせバナースペース</div>
 	""";
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
@@ -32,6 +33,7 @@ class MyPage extends Page{
 		this.rctrlType = 0;
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		// ページ要素作成
@@ -48,31 +50,39 @@ class MyPage extends Page{
 		this.serialPush(new SECmyPageMain(this));
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
 	}
 }
 
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 class SECmyPageMain extends EventCartridge{
 	var _page : MyPage;
 	var _btnList = {} : Map.<PageButton>;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : MyPage){
 		this._page = page;
-		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("b1").item(0) as HTMLDivElement);
-		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("b2").item(0) as HTMLDivElement);
-		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("b3").item(0) as HTMLDivElement);
-		this._btnList["b4"] = new PageButton(this._page.div.getElementsByClassName("b4").item(0) as HTMLDivElement);
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement);
+		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement);
+		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("core-btn b3").item(0) as HTMLDivElement);
+		this._btnList["b4"] = new PageButton(this._page.div.getElementsByClassName("core-btn b4").item(0) as HTMLDivElement);
 		this._btnList["back"] = new PageButton(Page.backDiv);
 		this._btnList["menu"] = new PageButton(Page.menuDiv);
 	}
 
-	// 初期化
-	override function init() : void{
-	}
-
+	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
@@ -91,11 +101,13 @@ class SECmyPageMain extends EventCartridge{
 		return true;
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
 		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 	}

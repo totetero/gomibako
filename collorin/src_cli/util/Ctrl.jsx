@@ -26,6 +26,7 @@ class Ctrl{
 	static var mmv : boolean;
 	static var mx : int = 0;
 	static var my : int = 0;
+	static var trigger_mup : boolean;
 	static var _tempmx : int;
 	static var _tempmy : int;
 	static var _lmdn : boolean;
@@ -244,6 +245,7 @@ class Ctrl{
 			Ctrl.mdn = false;
 			Ctrl.mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX) - Ctrl.sx;
 			Ctrl.my = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientY : (e as MouseEvent).clientY) - Ctrl.sy;
+			Ctrl.trigger_mup = true;
 			// 上位ノードイベントキャンセル
 			e.preventDefault();
 			e.stopPropagation();

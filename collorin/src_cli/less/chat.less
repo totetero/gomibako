@@ -23,32 +23,48 @@
 		height: 20px;
 	}
 
-	.btn{
-		position: absolute;
+	.core-btn.send{
 		right: 5px;
 		top: 5px;
 		width: 50px;
 		height: 26px;
 		line-height: 30px;
 		text-align: center;
-		border: solid 3px white;
-		border-radius: 12px;
-		background-color: rgba(255, 255, 255, 0.5);
 	}
 
-	.btn::before{
-		content: '';
-		position: absolute;
-		left: -2px;
-		top: -2px;
-		width: 100%;
-		height: 100%;
-		border: solid 2px black;
-		border-radius: 12px;
+	.core-btn.exit{
+		right: 5px;
+		bottom: 5px;
+		width: 80px;
+		height: 26px;
+		line-height: 30px;
+		text-align: center;
 	}
 
-	.btn.active{
-		background-color: rgba(0, 0, 0, 0.5);
+	.core-popup{
+		.name{
+			position: absolute;
+			left: 120px;
+			top: 10px;
+		}
+
+		.chara{
+			position: absolute;
+			left: 10px;
+			top: 10px;
+			width: 100px;
+			height: 200px;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		.core-btn.close{
+			right: 5px;
+			bottom: 5px;
+			width: 80px;
+			height: 26px;
+			line-height: 30px;
+			text-align: center;
+		}
 	}
 }
 

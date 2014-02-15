@@ -445,7 +445,7 @@ class DrawShadow extends DrawUnit{
 // ----------------------------------------------------------------
 
 // 文字列クラス
-class DrawTest extends DrawUnit{
+class DrawText extends DrawUnit{
 	var _canvas : HTMLCanvasElement = null;
 
 	var _drx : number;
