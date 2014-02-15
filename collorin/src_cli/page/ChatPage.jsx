@@ -478,6 +478,7 @@ class ChatCanvas extends Ccvs{
 // キャラクタークラス
 class ChatCharacter{
 	var _character : DrawCharacter;
+	var _name : DrawTest;
 	var _balloon : DrawBalloon;
 	var _shadow : DrawShadow;
 	var dstList = new int[][];
@@ -496,9 +497,11 @@ class ChatCharacter{
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);
+		this._name = new DrawTest(charaInfo["name"] as string);
 		this._balloon = new DrawBalloon();
 		this._shadow = new DrawShadow(size);
 		ccvs.clist.push(this._character);
+		ccvs.clist.push(this._name);
 		ccvs.clist.push(this._balloon);
 		ccvs.slist.push(this._shadow);
 		this.exist = true;
@@ -558,7 +561,8 @@ class ChatCharacter{
 	function preDraw(ccvs : Ccvs) : void{
 		var x = this.x - ccvs.cx;
 		var y = this.y - ccvs.cy;
-		this._balloon.preDraw(ccvs, x, y, 35, 1.0);
+		this._name.preDraw(ccvs, x, y, 40, 1.0);
+		this._balloon.preDraw(ccvs, x, y, 50, 1.0);
 		this._shadow.preDraw(ccvs, x, y, 0);
 		if(this.dstList.length > 0){
 			this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk"));
@@ -572,6 +576,7 @@ class ChatCharacter{
 	function dispose() : void{
 		this.exist = false;
 		this._character.exist = false;
+		this._name.exist = false;
 		this._balloon.exist = false;
 		this._shadow.exist = false;
 	}

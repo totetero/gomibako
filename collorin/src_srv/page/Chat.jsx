@@ -10,6 +10,7 @@ class ChatUserInfo{
 	var uid : string;
 	var room : string;
 	var code : string;
+	var name : string;
 	var x : int;
 	var y : int;
 	var r : int;
@@ -19,6 +20,7 @@ class ChatUserInfo{
 		this.uid = dat["uid"] as string;
 		this.room = dat["room"] as string;
 		this.code = dat["code"] as string;
+		this.name = dat["name"] as string;
 		this.x = dat["x"] as int;
 		this.y = dat["y"] as int;
 		this.r = dat["r"] as int;
@@ -75,6 +77,7 @@ class ChatPage{
 			var uinfo = new ChatUserInfo({
 				room: "room0",
 				code: "player0",
+				name: req.user.uname,
 				x: Math.floor(16 * Math.random()),
 				y: Math.floor(16 * Math.random()),
 				r: Math.floor(8 * Math.random()),
