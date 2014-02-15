@@ -1,8 +1,9 @@
 native class UserModel{
 	var _id: string;
 	var domain: string;
-	var uid: string;
-	var uname: string;
+	var name: string;
+	var pass: string;
+	var nickname: string;
 	var imgurl: string;
 	var count: number;
 	function save(callback : function(err:variant):void) : void;
@@ -12,8 +13,9 @@ native class UserModel{
 	static function findById(id : string, callback : function(err:variant,model:UserModel):void) : void;
 } = '''require("mongoose").model("User", new require("mongoose").Schema({
 	domain: {type: String},
-	uid: {type: String},
-	uname: {type: String},
+	name: {type: String},
+	pass: {type: String},
+	nickname: {type: String},
 	imgurl: {type: String},
 	count: {type: Number},
 }))''';

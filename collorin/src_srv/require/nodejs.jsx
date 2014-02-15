@@ -30,10 +30,10 @@ native class Buffer{
 // ----------------------------------------------------------------
 
 native class http{
-	static function Server(app : ExApplication) : HTTPServer;
+	static function Server(app : ExApplication) : HttpServer;
 } = 'require("http")';
 
-native class HTTPServer{
+native class HttpServer{
 	function listen(port : int) : void;
 }
 

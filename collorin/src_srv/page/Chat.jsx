@@ -77,7 +77,7 @@ class ChatPage{
 			var uinfo = new ChatUserInfo({
 				room: "room0",
 				code: "player0",
-				name: req.user.uname,
+				name: req.user.nickname,
 				x: Math.floor(16 * Math.random()),
 				y: Math.floor(16 * Math.random()),
 				r: Math.floor(8 * Math.random()),

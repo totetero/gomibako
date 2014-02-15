@@ -38,6 +38,7 @@ native class TwitterStrategy{
 native class TwitterProfile{
 	var id : string;
 	var username : string;
+	var displayName : string;
 	var _json : variant;
 }
 

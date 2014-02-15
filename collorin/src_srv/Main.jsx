@@ -5,7 +5,6 @@ import "require/redis.jsx";
 import "require/passport.jsx";
 import "require/socket.io.jsx";
 
-import "util/Auth.jsx";
 import "util/ImageServer.jsx";
 import "page/*.jsx";
 
@@ -105,7 +104,7 @@ class _Main{
 		AuthPage.setPage(app);
 		// トップページ
 		app.get("/", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.redirect("/top");});
-		app.get("/top", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("top/top.ejs");});
+		app.get("/top", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("top/top.ejs");}); // TODO ログインしていないのに入れちゃう
 		// メインページ
 		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("main/index.ejs");});
 		// 画像サーバ

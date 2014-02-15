@@ -4,7 +4,7 @@ import "../models/User.jsx";
 
 native class SocketIO {
 	static function listen(port : int) : SocketManager;
-	static function listen(server : HTTPServer) : SocketManager;
+	static function listen(server : HttpServer) : SocketManager;
 } = "require('socket.io') ";
 
 native class SocketManager{
