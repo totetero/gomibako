@@ -73,6 +73,7 @@ class Ctrl{
 	static var _xbDiv : HTMLDivElement;
 	static var _cbDiv : HTMLDivElement;
 	static var _sbDiv : HTMLDivElement;
+	static var _keydownCode : int;
 	// 描画フラグ
 	static var _update_screen : boolean;
 	static var _update_up : boolean;
@@ -299,6 +300,7 @@ class Ctrl{
 	static function _kdnfn(e : Event) : void{
 		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
 			// インプットモード
+			Ctrl._keydownCode = (e as KeyboardEvent).keyCode;
 		}else{
 			// コントローラーモード
 			switch((e as KeyboardEvent).keyCode){
@@ -322,7 +324,7 @@ class Ctrl{
 	static function _kupfn(e : Event) : void{
 		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
 			// インプットモード
-			if((e as KeyboardEvent).keyCode == 13){
+			if((e as KeyboardEvent).keyCode == 13 && Ctrl._keydownCode == 13){
 				Ctrl.trigger_enter = true;
 				(dom.document.activeElement as HTMLInputElement).blur();
 			}
