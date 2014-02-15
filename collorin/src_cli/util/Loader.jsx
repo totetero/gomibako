@@ -18,7 +18,7 @@ class Loader{
 		var count = 0;
 		for(var tag in request){
 			var isBase64 = (tag.indexOf("b64_") == 0);
-			if(isBase64 && Loader.b64imgs[tag.substring(4)] != null){
+			if(isBase64 && Loader.b64imgs[tag] != null){
 				delete request[tag];
 			}else if(!isBase64 && Loader.imgs[tag] != null){
 				delete request[tag];
@@ -97,7 +97,7 @@ class Loader{
 							for(var tag in b64imgs){
 								if(tag.indexOf("b64_") == 0){
 									// css用画像
-									Loader.b64imgs[tag.substring(4)] = b64imgs[tag];
+									Loader.b64imgs[tag] = b64imgs[tag];
 									if(--count == 0){successFunc();}
 								}else{
 									// canvas用画像

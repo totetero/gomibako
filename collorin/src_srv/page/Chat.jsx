@@ -128,6 +128,7 @@ class ChatPage{
 								var tmpimgs = {} : Map.<string>;
 								var code = tmpdata["code"] as string;
 								tmpimgs["dot_" + code] = "img/character/" + code + "/dot.png";
+								tmpimgs["b64_bust_" + code] = "img/character/" + code + "/bust.png";
 								// 情報の一時保存
 								allData.push(tmpdata);
 								for(var tag in tmpimgs){allImgs[tag] = tmpimgs[tag];}

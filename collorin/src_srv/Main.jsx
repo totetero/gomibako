@@ -49,7 +49,7 @@ class _Main{
 			app.use(express.session({
 				secret: app.get("secretKey"),
 				store: sessionStore,
-				cookie: {httpOnly: false, maxAge: 30 * 24 * 60 * 60 * 1000}
+				cookie: {maxAge: 30 * 24 * 60 * 60 * 1000}
 			}));
 			app.use(passport.initialize());
 			app.use(passport.session());

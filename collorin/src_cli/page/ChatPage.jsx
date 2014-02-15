@@ -279,8 +279,9 @@ class SECchatPagePopup extends EventCartridge{
 	var _htmlTag = """
 		<div class="core-background"></div>
 		<div class="core-window">
+			<div class="sidebar"></div>
 			<div class="name"></div>
-			<div class="chara">キャラ画像</div>
+			<div class="chara"></div>
 			<div class="core-btn close">閉じる</div>
 		</div>
 	""";
@@ -304,7 +305,8 @@ class SECchatPagePopup extends EventCartridge{
 		this._popup = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
 		this._popup.innerHTML = this._htmlTag;
 		this._window = this._popup.getElementsByClassName("core-window").item(0) as HTMLDivElement;
-		(this._window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name as string;
+		(this._window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
+		(this._window.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + this._chara.bust + ")";
 		this._btnList["close"] = new PageButton(this._window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PageButton(this._window, false);
 		Ctrl.trigger_mup = false;
@@ -585,6 +587,7 @@ class ChatCharacter{
 
 	var uid : int;
 	var name : string;
+	var bust : string;
 
 	var exist : boolean;
 	var x : number;
@@ -604,6 +607,7 @@ class ChatCharacter{
 
 		this.uid = charaInfo["uid"] as int;
 		this.name = charaInfo["name"] as string;
+		this.bust = Loader.b64imgs["b64_bust_" + charaInfo["code"] as string];
 		this.x = charaInfo["x"] as int * 16 + 8;
 		this.y = charaInfo["y"] as int * 16 + 8;
 		this.r = charaInfo["r"] as int * Math.PI * 0.25;
