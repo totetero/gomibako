@@ -297,10 +297,12 @@ class PageButton{
 	var div : HTMLDivElement;
 	var active : boolean;
 	var trigger : boolean;
+	var _inner : boolean;
 
 	// コンストラクタ
-	function constructor(div : HTMLDivElement){
+	function constructor(div : HTMLDivElement, inner : boolean){
 		this.div = div;
+		this._inner = inner;
 	}
 
 	// 計算
@@ -311,7 +313,8 @@ class PageButton{
 			var y0 = box.top - Ctrl.sy;
 			var x1 = x0 + box.width;
 			var y1 = y0 + box.height;
-			this.active = (clickable && x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+			var inner = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+			this.active = (clickable && (inner == this._inner));
 		}else if(this.active){
 			this.active = false;
 			this.trigger = true;

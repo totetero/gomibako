@@ -100,8 +100,8 @@ class SECchatPageMain extends EventCartridge{
 	// 初期化
 	override function init() : void{
 		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
-		this._btnList["send"] = new PageButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement);
-		this._btnList["exit"] = new PageButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement);
+		this._btnList["send"] = new PageButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement, true);
+		this._btnList["exit"] = new PageButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement, true);
 		this._page.ccvs.trigger_mup = false;
 		Ctrl.trigger_enter = false;
 	}
@@ -303,7 +303,8 @@ class SECchatPagePopup extends EventCartridge{
 		this._popup.innerHTML = this._htmlTag;
 		this._window = this._popup.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 		(this._window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name as string;
-		this._btnList["close"] = new PageButton(this._window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement);
+		this._btnList["close"] = new PageButton(this._window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["outer"] = new PageButton(this._window, false);
 		Ctrl.trigger_mup = false;
 	}
 
@@ -333,21 +334,8 @@ class SECchatPagePopup extends EventCartridge{
 		}
 
 		// 閉じるボタン
-		if(this._btnList["close"].trigger){
+		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
 			return false;
-		}
-
-		// ウインドウ外タップ確認
-		if(Ctrl.trigger_mup){
-			Ctrl.trigger_mup = false;
-			var box = this._window.getBoundingClientRect();
-			var x0 = box.left - Ctrl.sx;
-			var y0 = box.top - Ctrl.sy;
-			var x1 = x0 + box.width;
-			var y1 = y0 + box.height;
-			if(Ctrl.mx < x0 || x1 < Ctrl.mx || Ctrl.my < y0 || y1 < Ctrl.my){
-				return false;
-			}
 		}
 
 		return true;

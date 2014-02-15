@@ -104,44 +104,44 @@ class Ctrl{
 		var rdiv = dom.document.getElementById("root") as HTMLDivElement;
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
 		if(Ctrl.isTouch){
-			rdiv.addEventListener("touchstart", Ctrl.root_mdnfn);
-			rdiv.addEventListener("touchmove", Ctrl.root_mmvfn);
-			rdiv.addEventListener("touchend", Ctrl.root_mupfn);
-			rdiv.addEventListener("touchcancel", Ctrl.root_mupfn);
-			Ctrl.lDiv.addEventListener("touchstart", Ctrl.lctrl_mdnfn);
-			Ctrl.lDiv.addEventListener("touchmove", Ctrl.lctrl_mmvfn);
-			Ctrl.lDiv.addEventListener("touchend", Ctrl.lctrl_mupfn);
-			Ctrl.lDiv.addEventListener("touchcancel", Ctrl.lctrl_mupfn);
-			Ctrl.rDiv.addEventListener("touchstart", Ctrl.rctrl_mdnfn);
-			Ctrl.rDiv.addEventListener("touchmove", Ctrl.rctrl_mmvfn);
-			Ctrl.rDiv.addEventListener("touchend", Ctrl.rctrl_mupfn);
-			Ctrl.rDiv.addEventListener("touchcancel", Ctrl.rctrl_mupfn);
+			rdiv.addEventListener("touchstart", Ctrl._root_mdnfn);
+			rdiv.addEventListener("touchmove", Ctrl._root_mmvfn);
+			rdiv.addEventListener("touchend", Ctrl._root_mupfn);
+			rdiv.addEventListener("touchcancel", Ctrl._root_mupfn);
+			Ctrl.lDiv.addEventListener("touchstart", Ctrl._lctrl_mdnfn);
+			Ctrl.lDiv.addEventListener("touchmove", Ctrl._lctrl_mmvfn);
+			Ctrl.lDiv.addEventListener("touchend", Ctrl._lctrl_mupfn);
+			Ctrl.lDiv.addEventListener("touchcancel", Ctrl._lctrl_mupfn);
+			Ctrl.rDiv.addEventListener("touchstart", Ctrl._rctrl_mdnfn);
+			Ctrl.rDiv.addEventListener("touchmove", Ctrl._rctrl_mmvfn);
+			Ctrl.rDiv.addEventListener("touchend", Ctrl._rctrl_mupfn);
+			Ctrl.rDiv.addEventListener("touchcancel", Ctrl._rctrl_mupfn);
 		}else{
-			rdiv.addEventListener("mousedown", Ctrl.root_mdnfn);
-			Ctrl.lDiv.addEventListener("mousedown", Ctrl.lctrl_mdnfn);
-			Ctrl.rDiv.addEventListener("mousedown", Ctrl.rctrl_mdnfn);
+			rdiv.addEventListener("mousedown", Ctrl._root_mdnfn);
+			Ctrl.lDiv.addEventListener("mousedown", Ctrl._lctrl_mdnfn);
+			Ctrl.rDiv.addEventListener("mousedown", Ctrl._rctrl_mdnfn);
 			rdiv.addEventListener("mousemove", function(e : Event) : void{
-				Ctrl.root_mmvfn(e);
-				Ctrl.lctrl_mmvfn(e);
-				Ctrl.rctrl_mmvfn(e);
+				Ctrl._root_mmvfn(e);
+				Ctrl._lctrl_mmvfn(e);
+				Ctrl._rctrl_mmvfn(e);
 			});
 			rdiv.addEventListener("mouseup", function(e : Event) : void{
-				Ctrl.root_mupfn(e);
-				Ctrl.lctrl_mupfn(e);
-				Ctrl.rctrl_mupfn(e);
+				Ctrl._root_mupfn(e);
+				Ctrl._lctrl_mupfn(e);
+				Ctrl._rctrl_mupfn(e);
 			});
 			rdiv.addEventListener("mouseout", function(e : Event) : void{
 				var x = (e as MouseEvent).clientX;
 				var y = (e as MouseEvent).clientY;
 				if(x <= 0 || Ctrl.ww <= x || y <= 0 || Ctrl.wh <= y){
-					Ctrl.root_mupfn(e);
-					Ctrl.lctrl_mupfn(e);
-					Ctrl.rctrl_mupfn(e);
+					Ctrl._root_mupfn(e);
+					Ctrl._lctrl_mupfn(e);
+					Ctrl._rctrl_mupfn(e);
 				}
 			});
 		}
-		dom.document.addEventListener("keydown", Ctrl.kdnfn);
-		dom.document.addEventListener("keyup", Ctrl.kupfn);
+		dom.document.addEventListener("keydown", Ctrl._kdnfn);
+		dom.document.addEventListener("keyup", Ctrl._kupfn);
 	}
 
 	// ----------------------------------------------------------------
@@ -201,7 +201,7 @@ class Ctrl{
 
 	// ----------------------------------------------------------------
 	// ルート要素 マウスを押す
-	static function root_mdnfn(e : Event) : void{
+	static function _root_mdnfn(e : Event) : void{
 		// input要素フォーカス処理
 		if((e.target as Element).tagName.toLowerCase() == "input"){return;}
 		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
@@ -223,7 +223,7 @@ class Ctrl{
 
 	// ----------------------------------------------------------------
 	// ルート要素 マウス移動
-	static function root_mmvfn(e : Event) : void{
+	static function _root_mmvfn(e : Event) : void{
 		if(Ctrl.mdn){
 			Ctrl.mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX) - Ctrl.sx;
 			Ctrl.my = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientY : (e as MouseEvent).clientY) - Ctrl.sy;
@@ -240,7 +240,7 @@ class Ctrl{
 
 	// ----------------------------------------------------------------
 	// ルート要素 マウスを離す
-	static function root_mupfn(e : Event) : void{
+	static function _root_mupfn(e : Event) : void{
 		if(Ctrl.mdn){
 			Ctrl.mdn = false;
 			Ctrl.mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX) - Ctrl.sx;
@@ -254,16 +254,16 @@ class Ctrl{
 
 	// ----------------------------------------------------------------
 	// コントローラー要素 マウス状態関数
-	static function lctrl_mdnfn(e : Event) : void{Ctrl._lmdn = true; Ctrl.btnfn(e, true, false);}
-	static function rctrl_mdnfn(e : Event) : void{Ctrl._rmdn = true; Ctrl.btnfn(e, false, false);}
-	static function lctrl_mmvfn(e : Event) : void{if(Ctrl._lmdn){Ctrl.btnfn(e, true, false);}}
-	static function rctrl_mmvfn(e : Event) : void{if(Ctrl._rmdn){Ctrl.btnfn(e, false, false);}}
-	static function lctrl_mupfn(e : Event) : void{if(Ctrl._lmdn){Ctrl._lmdn = false; Ctrl.btnfn(e, true, true);}}
-	static function rctrl_mupfn(e : Event) : void{if(Ctrl._rmdn){Ctrl._rmdn = false; Ctrl.btnfn(e, false, true);}}
+	static function _lctrl_mdnfn(e : Event) : void{Ctrl._lmdn = true; Ctrl._btnfn(e, true, false);}
+	static function _rctrl_mdnfn(e : Event) : void{Ctrl._rmdn = true; Ctrl._btnfn(e, false, false);}
+	static function _lctrl_mmvfn(e : Event) : void{if(Ctrl._lmdn){Ctrl._btnfn(e, true, false);}}
+	static function _rctrl_mmvfn(e : Event) : void{if(Ctrl._rmdn){Ctrl._btnfn(e, false, false);}}
+	static function _lctrl_mupfn(e : Event) : void{if(Ctrl._lmdn){Ctrl._lmdn = false; Ctrl._btnfn(e, true, true);}}
+	static function _rctrl_mupfn(e : Event) : void{if(Ctrl._rmdn){Ctrl._rmdn = false; Ctrl._btnfn(e, false, true);}}
 
 	// ----------------------------------------------------------------
 	// ボタン関数
-	static function btnfn(e : Event, arrow : boolean, trigger : boolean) : void{
+	static function _btnfn(e : Event, arrow : boolean, trigger : boolean) : void{
 		var mx = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientX : (e as MouseEvent).clientX);
 		var my = (Ctrl.isTouch ? (e as TouchEvent).changedTouches[0].clientY : (e as MouseEvent).clientY);
 		if(arrow){
@@ -296,7 +296,7 @@ class Ctrl{
 
 	// ----------------------------------------------------------------
 	// キーを押す
-	static function kdnfn(e : Event) : void{
+	static function _kdnfn(e : Event) : void{
 		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
 			// インプットモード
 		}else{
@@ -319,7 +319,7 @@ class Ctrl{
 	
 	// ----------------------------------------------------------------
 	// キーを離す
-	static function kupfn(e : Event) : void{
+	static function _kupfn(e : Event) : void{
 		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
 			// インプットモード
 			if((e as KeyboardEvent).keyCode == 13){
