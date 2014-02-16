@@ -58,6 +58,9 @@ class DrawCharacter extends DrawUnit{
 	var drAngv1 : number;
 	var drAngv2 : number;
 
+	// 変更変数
+	var _color = "none";
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(img : HTMLImageElement, drawInfo : DrawInfo, size : number){
@@ -97,15 +100,16 @@ class DrawCharacter extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 色設定
 	function setColor(color : string) : void{
+		if(this._color == color){return;}
+		this._color = color;
 		var context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 		context.drawImage(this._img, 0, 0);
-		if(color != ""){
-			context.save();
-			context.globalCompositeOperation = "source-atop";
-			context.fillStyle = color;
-			context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-			context.restore();
-		}
+		if(color == ""){return;}
+		context.save();
+		context.globalCompositeOperation = "source-atop";
+		context.fillStyle = color;
+		context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+		context.restore();
 	}
 
 	// ----------------------------------------------------------------

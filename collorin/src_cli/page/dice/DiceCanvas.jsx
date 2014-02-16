@@ -13,9 +13,10 @@ import "../../bb3d/HexField.jsx";
 // キャンバス
 class DiceCanvas extends Ccvs{
 	var field : HexField;
-	var player : DiceCharacter;
+	var member = new DiceCharacter[];
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
+	var tapped : boolean;
 
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
@@ -29,18 +30,18 @@ class DiceCanvas extends Ccvs{
 		this.field = new HexField(this, response["hex"] as HexFieldCell[]);
 		// キャラクター
 		var charaInfoList = response["charaInfo"] as variant[][];
-		this.player = new DiceCharacter(this, charaInfoList[0][0]);
+		this.member.push(new DiceCharacter(this, charaInfoList[0][0]));
 		// 初期カメラ位置
-		this.cx = this.player.x;
-		this.cy = this.player.y;
+		this.cx = this.member[0].x;
+		this.cy = this.member[0].y;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
 		this.context.clearRect(0, 0, this.width, this.height);
-		this.field.draw(this, this.cx, this.cy, Ctrl.mdn && !Ctrl.mmv);
-		this.player.preDraw(this);
+		this.field.draw(this, this.cx, this.cy, this.tapped);
+		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}	
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 	}
@@ -55,11 +56,13 @@ class DiceCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
 
+	var exist = true;
 	var x : number;
 	var y : number;
 	var r : number;
 	var motion : string;
 	var action : int;
+	var dstList = new int[][];
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -81,33 +84,45 @@ class DiceCharacter{
 	}
 
 	// ----------------------------------------------------------------
+	// 表示深度獲得
+	function getDepth() : number{
+		return this._character.drz;
+	}
+
+	// ----------------------------------------------------------------
+	// 色設定
+	function setColor(color : string) : void{
+		this._character.setColor(color);
+	}
+
+	// ----------------------------------------------------------------
 	// 計算
-	function calc(ccvs : Ccvs) : void{
-		this.action++;
-		if     (Ctrl.krt && Ctrl.kup){this.r = Math.PI * 1.74 - ccvs.rotv;}
-		else if(Ctrl.klt && Ctrl.kup){this.r = Math.PI * 1.26 - ccvs.rotv;}
-		else if(Ctrl.klt && Ctrl.kdn){this.r = Math.PI * 0.74 - ccvs.rotv;}
-		else if(Ctrl.krt && Ctrl.kdn){this.r = Math.PI * 0.26 - ccvs.rotv;}
-		else if(Ctrl.krt){this.r = Math.PI * 0.00 - ccvs.rotv;}
-		else if(Ctrl.kup){this.r = Math.PI * 1.50 - ccvs.rotv;}
-		else if(Ctrl.klt){this.r = Math.PI * 1.00 - ccvs.rotv;}
-		else if(Ctrl.kdn){this.r = Math.PI * 0.50 - ccvs.rotv;}
-		else{this.action = 0;}
-		if(this.action > 0){
-			var speed = 3;
-			this.x += speed * Math.cos(this.r);
-			this.y += speed * Math.sin(this.r);
-			this.motion = "walk";
-		}else{
-			this.motion = "stand";
+	function calc(ccvs : DiceCanvas) : void{
+		if(this.dstList.length > 0){
+			// ヘックス目的地に向かう
+			var dx = ccvs.field.calcHexCoordx(this.dstList[0][0], this.dstList[0][1]);
+			var dy = ccvs.field.calcHexCoordy(this.dstList[0][0], this.dstList[0][1]);
+			var x = dx - this.x;
+			var y = dy - this.y;
+			var speed = 3.0;
+			if(x * x + y * y < speed * speed){
+				this.x = dx;
+				this.y = dy;
+				this.dstList.shift();
+			}else{
+				this.r = Math.atan2(y, x);
+				this.x += speed * Math.cos(this.r);
+				this.y += speed * Math.sin(this.r);
+				
+			}
+			this.motion = (this.dstList.length > 0) ? "walk" : "stand";
+			this.action++;
 		}
-		ccvs.cx = this.x;
-		ccvs.cy = this.y;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	function preDraw(ccvs : Ccvs) : void{
+	function preDraw(ccvs : DiceCanvas) : void{
 		var x = this.x - ccvs.cx;
 		var y = this.y - ccvs.cy;
 		this._shadow.preDraw(ccvs, x, y, 0);
@@ -115,6 +130,14 @@ class DiceCharacter{
 			case "walk": this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
 			default: this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0); break;
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	function dispose() : void{
+		this.exist = false;
+		this._character.exist = false;
+		this._shadow.exist = false;
 	}
 }
 
