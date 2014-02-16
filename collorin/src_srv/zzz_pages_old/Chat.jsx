@@ -27,7 +27,7 @@ class ChatUserPublicInfo{
 class ChatPage{
 	// ----------------------------------------------------------------
 	// ソケットの設定
-	static function setSocket(app : ExApplication, srv : HTTPServer, store : RedisStore) : void{
+	static function setSocket(app : ExApplication, srv : HttpServer, store : RedisStore) : void{
 		var io = SocketIO.listen(srv);
 		var users = {} : Map.<Map.<ChatUserPublicInfo>>;
 
@@ -71,7 +71,7 @@ class ChatPage{
 						uinfo1.heartbeatCounter = 0;
 						// ユーザー作成 パブリック情報
 						uinfo2 = new ChatUserPublicInfo();
-						uinfo2.name = user.uname;
+						uinfo2.name = user.nickname;
 						uinfo2.imgname = arg_imgname as string;
 						uinfo2.dstx = Math.floor(maxx * Math.random() * 10) / 10;
 						uinfo2.dsty = Math.floor(maxy * Math.random() * 10) / 10;
