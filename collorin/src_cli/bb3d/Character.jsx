@@ -57,6 +57,11 @@ class DrawCharacter extends DrawUnit{
 	var drCos : number;
 	var drAngv1 : number;
 	var drAngv2 : number;
+	// 描画範囲
+	var minx : int;
+	var miny : int;
+	var maxx : int;
+	var maxy : int;
 
 	// 変更変数
 	var _color = "none";
@@ -155,7 +160,13 @@ class DrawCharacter extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
+		this.minx = ccvs.width;
+		this.miny = ccvs.height;
+		this.maxx = 0;
+		this.maxy = 0;
 		DrawUnit.drawList(ccvs, this._duList);
+		//ccvs.context.strokeRect(this.minx, this.miny, this.maxx - this.minx, this.maxy - this.miny);
+		//ccvs.context.beginPath(); for(var i = 0; i <= 20; i++){ccvs.context.lineTo(((this.maxx + this.minx) + (this.maxx - this.minx) * Math.cos(Math.PI * (i / 10))) * 0.5, ((this.maxy + this.miny) + (this.maxy - this.miny) * Math.sin(Math.PI * (i / 10))) * 0.5);} ccvs.context.stroke();
 	}
 }
 
@@ -259,21 +270,31 @@ class DrawCharacterParts extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var ps = (this._uvsize * this._character.drScale) as int;
-		var px = (this._drx - ps * 0.5 + ccvs.width * 0.5) as int;
-		var py = (this._dry - ps * 0.5 + ccvs.height * 0.5) as int;
-		if(px + ps < 0 || px - ps > ccvs.width || py + ps < 0 || py - ps > ccvs.height){
-		}else if(this._yswap || this._zswap){
-			var rx = px + ps * 0.5;
-			var ry = py + ps * 0.5;
-			ccvs.context.save();
-			ccvs.context.translate(rx, ry);
-			ccvs.context.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
-			ccvs.context.translate(-rx, -ry);
-			ccvs.context.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
-			ccvs.context.restore();
-		}else{
-			ccvs.context.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, px, py, ps, ps);
+		var s2 = (this._uvsize * this._character.drScale) as int;
+		var s1 = (s2 * 0.5) as int;
+		var xc = (this._drx + ccvs.width * 0.5) as int;
+		var yc = (this._dry + ccvs.height * 0.5) as int;
+		var xm = xc - s1;
+		var ym = yc - s1;
+		var xp = xc + s1;
+		var yp = yc + s1;
+		if(0 < xp || xm < ccvs.width || 0 < yp || ym < ccvs.height){
+			// 描画範囲の記憶
+			if(this._character.minx > xm){this._character.minx = xm;}
+			if(this._character.miny > ym){this._character.miny = ym;}
+			if(this._character.maxx < xp){this._character.maxx = xp;}
+			if(this._character.maxy < yp){this._character.maxy = yp;}
+			// 描画
+			if(this._yswap || this._zswap){
+				ccvs.context.save();
+				ccvs.context.translate(xc, yc);
+				ccvs.context.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
+				ccvs.context.translate(-xc, -yc);
+				ccvs.context.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
+				ccvs.context.restore();
+			}else{
+				ccvs.context.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
+			}
 		}
 	}
 }

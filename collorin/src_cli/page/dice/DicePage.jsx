@@ -158,15 +158,9 @@ class SECdiceTest extends EventCartridge{
 			var depth = 0;
 			for(var i = 0; i < ccvs.member.length; i++){
 				var cdepth = ccvs.member[i].getDepth();
-				if(index < 0 || depth < cdepth){
-					var x0 = ccvs.member[i].x - ccvs.cx;
-					var y0 = ccvs.member[i].y - ccvs.cy;
-					var x1 = ccvs.width * 0.5 + (x0 * ccvs.cosv + y0 * -ccvs.sinv) * ccvs.scale;
-					var y1 = ccvs.height * 0.5 + (x0 * ccvs.sinv + y0 * ccvs.cosv) * (ccvs.scale * ccvs.sinh);
-					if(x1 - 30 < ccvs.mx && ccvs.mx < x1 + 30 && y1 - 60 < ccvs.my && ccvs.my < y1 + 10){
-						depth = cdepth;
-						this._tappedCharacter = index = i;
-					}
+				if((index < 0 || depth < cdepth) && ccvs.member[i].isOver(ccvs.mx, ccvs.my)){
+					depth = cdepth;
+					this._tappedCharacter = index = i;
 				}
 			}
 		}else{

@@ -98,6 +98,12 @@ class ChatCharacter{
 	}
 
 	// ----------------------------------------------------------------
+	// 範囲内の確認
+	function isOver(x : int, y : int) : boolean{
+		return this._character.minx < x && x < this._character.maxx && this._character.miny < y && y < this._character.maxy;
+	}
+
+	// ----------------------------------------------------------------
 	// 表示深度獲得
 	function getDepth() : number{
 		return this._character.drz;
