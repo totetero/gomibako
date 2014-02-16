@@ -48,7 +48,7 @@ class ChatPage{
 		});
 
 		// -------- expressページ --------
-		app.get("/chat", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+		app.post("/chat", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
 			var imgs = {} : Map.<string>;
 

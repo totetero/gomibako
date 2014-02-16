@@ -43,7 +43,7 @@ class GamePage extends Page{
 		this.ccvs = new GameCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
 		// イベント設定
-		this.serialPush(new SECloadPage("/game", null, function(response : variant) : void{
+		this.serialPush(new SECloadPage("/game", {"stage": "test"}, function(response : variant) : void{
 			// データの形成
 			this.ccvs.init(response);
 		}));

@@ -53,7 +53,7 @@ class ChatPage extends Page{
 		this.ccvs = new ChatCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
 		// イベント設定
-		this.serialPush(new SECloadPage("/chat", null, function(response : variant) : void{
+		this.serialPush(new SECloadPage("/chat", {"stage": "test"}, function(response : variant) : void{
 			// データの形成
 			this.ccvs.init(response);
 			this.socket.init(this.ccvs);

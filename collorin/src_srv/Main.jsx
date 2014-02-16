@@ -113,7 +113,7 @@ class _Main{
 		// 各ページ設定
 		MyPage.setPage(app);
 		WorldPage.setPage(app);
-		GamePage.setPage(app);
+		GamePage.setPage(app, rcli);
 		ChatPage.setPage(app, rcli, io);
 
 		srv.listen(10080);
