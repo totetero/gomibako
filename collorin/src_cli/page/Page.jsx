@@ -6,8 +6,8 @@ import "../util/Ctrl.jsx";
 import "../util/Util.jsx";
 import "./MyPage.jsx";
 import "./WorldPage.jsx";
-import "./game/GamePage.jsx";
-import "./ChatPage.jsx";
+import "./dice/DicePage.jsx";
+import "./chat/ChatPage.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -45,7 +45,7 @@ abstract class Page extends EventPlayer{
 			Page._lastHash = currentHash;
 			var nextPage : Page = null;
 			// ページの選定
-			if(currentHash.indexOf("game") == 1){nextPage = new GamePage();}
+			if(currentHash.indexOf("dice") == 1){nextPage = new DicePage();}
 			else if(currentHash.indexOf("chat") == 1){nextPage = new ChatPage();}
 			else if(currentHash.indexOf("world") == 1){nextPage = new WorldPage();}
 			else{nextPage = new MyPage();}

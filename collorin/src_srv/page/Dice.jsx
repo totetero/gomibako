@@ -6,18 +6,18 @@ import "../models/User.jsx";
 import "../data/CharacterDrawInfo.jsx";
 
 // マイページ
-class GamePage{
+class DicePage{
 	static var _rcli : RedisClient;
-	static const _rhead = "game:";
+	static const _rhead = "dice:";
 
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication, rcli : RedisClient) : void{
-		GamePage._rcli = rcli;
+		DicePage._rcli = rcli;
 
 		// -------- expressページ --------
-		app.post("/game", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			GamePage._entry(function(jdat : Map.<variant>) : void{res.send(JSON.stringify(jdat));});
+		app.post("/dice", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			DicePage._entry(function(jdat : Map.<variant>) : void{res.send(JSON.stringify(jdat));});
 		});
 	}
 

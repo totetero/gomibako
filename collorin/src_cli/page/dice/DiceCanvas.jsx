@@ -1,115 +1,19 @@
 import "js/web.jsx";
 
 import "../../util/Loader.jsx";
-import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
 import "../../bb3d/Character.jsx";
 import "../../bb3d/HexField.jsx";
-import "../Page.jsx";
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-class GamePage extends Page{
-	// HTMLタグ
-	var _htmlTag = """
-		<canvas></canvas>
-	""";
-
-	// キャンバス
-	var ccvs : GameCanvas;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(){
-		// プロパティ設定
-		this.name = "すごろく";
-		this.depth = 3;
-		this.headerType = 0;
-		this.lctrlType = 1;
-		this.rctrlType = 1;
-	}
-
-	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : void{
-		// ページ要素作成
-		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "page game";
-		this.div.innerHTML = this._htmlTag;
-		// キャンバス
-		this.ccvs = new GameCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
-
-		// イベント設定
-		this.serialPush(new SECloadPage("/game", {"stage": "test"}, function(response : variant) : void{
-			// データの形成
-			this.ccvs.init(response);
-		}));
-		this.serialPush(new ECdrawOne(function() : void{
-			// ページ遷移前描画
-			this.ccvs.draw();
-		}));
-		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECgamePageMain(this));
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-		super.dispose();
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-class SECgamePageMain extends EventCartridge{
-	var _page : GamePage;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(page : GamePage){
-		this._page = page;
-	}
-
-	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : void{
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc() : boolean{
-		this._page.ccvs.calcTouchCoordinate(true);
-		this._page.ccvs.calcTouchRotate();
-		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 2.5);
-		this._page.ccvs.player.calc(this._page.ccvs);
-		return true;
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		this._page.ccvs.draw();
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-	}
-}
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
 // キャンバス
-class GameCanvas extends Ccvs{
+class DiceCanvas extends Ccvs{
 	var field : HexField;
-	var player : GameCharacter;
+	var player : DiceCharacter;
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
 
@@ -125,7 +29,7 @@ class GameCanvas extends Ccvs{
 		this.field = new HexField(this, response["hex"] as HexFieldCell[]);
 		// キャラクター
 		var charaInfoList = response["charaInfo"] as variant[][];
-		this.player = new GameCharacter(this, charaInfoList[0][0]);
+		this.player = new DiceCharacter(this, charaInfoList[0][0]);
 		// 初期カメラ位置
 		this.cx = this.player.x;
 		this.cy = this.player.y;
@@ -147,7 +51,7 @@ class GameCanvas extends Ccvs{
 // ----------------------------------------------------------------
 
 // キャラクタークラス
-class GameCharacter{
+class DiceCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
 
@@ -159,7 +63,7 @@ class GameCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(ccvs : GameCanvas, charaInfo : variant){
+	function constructor(ccvs : DiceCanvas, charaInfo : variant){
 		var img = Loader.imgs["dot_" + charaInfo["code"] as string];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;

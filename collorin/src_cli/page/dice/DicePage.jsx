@@ -1,30 +1,33 @@
 import "js/web.jsx";
 
-import "../util/Loader.jsx";
-import "../util/EventCartridge.jsx";
-import "../util/Ctrl.jsx";
-import "./Page.jsx";
+import "../../util/EventCartridge.jsx";
+import "../../util/Ctrl.jsx";
+import "../Page.jsx";
+
+import "DiceCanvas.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class WorldPage extends Page{
+class DicePage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="core-btn b1">テストステージ</div>
-		<div class="core-btn b2">チャットステージ</div>
+		<canvas></canvas>
 	""";
+
+	// キャンバス
+	var ccvs : DiceCanvas;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "ワールド";
-		this.depth = 2;
-		this.headerType = 2;
-		this.lctrlType = 0;
-		this.rctrlType = 0;
+		this.name = "すごろく";
+		this.depth = 3;
+		this.headerType = 0;
+		this.lctrlType = 1;
+		this.rctrlType = 1;
 	}
 
 	// ----------------------------------------------------------------
@@ -32,16 +35,22 @@ class WorldPage extends Page{
 	override function init() : void{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "page world";
+		this.div.className = "page dice";
 		this.div.innerHTML = this._htmlTag;
+		// キャンバス
+		this.ccvs = new DiceCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
 		// イベント設定
-		this.serialPush(new SECloadPage("/world", null, function(response : variant) : void{
+		this.serialPush(new SECloadPage("/dice", {"stage": "test"}, function(response : variant) : void{
 			// データの形成
-			log response;
+			this.ccvs.init(response);
+		}));
+		this.serialPush(new ECdrawOne(function() : void{
+			// ページ遷移前描画
+			this.ccvs.draw();
 		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECworldPageMain(this));
+		this.serialPush(new SECdicePageMain(this));
 	}
 
 	// ----------------------------------------------------------------
@@ -55,52 +64,34 @@ class WorldPage extends Page{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECworldPageMain extends EventCartridge{
-	var _page : WorldPage;
-	var _btnList = {} : Map.<PageButton>;
+class SECdicePageMain extends EventCartridge{
+	var _page : DicePage;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : WorldPage){
+	function constructor(page : DicePage){
 		this._page = page;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
-		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
-
-		if(this._btnList["btn1"].trigger){
-			this._btnList["btn1"].trigger = false;
-			Page.transitionsPage("dice");
-		}
-
-		if(this._btnList["btn2"].trigger){
-			this._btnList["btn2"].trigger = false;
-			Page.transitionsPage("chat");
-		}
-
-		if(this._btnList["back"].trigger){
-			this._btnList["back"].trigger = false;
-			Page.transitionsPage("mypage");
-		}
-
+		this._page.ccvs.calcTouchCoordinate(true);
+		this._page.ccvs.calcTouchRotate();
+		this._page.ccvs.calcRotate(this._page.ccvs.rotv, Math.PI / 180 * 30, 2.5);
+		this._page.ccvs.player.calc(this._page.ccvs);
 		return true;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		for(var name in this._btnList){this._btnList[name].draw();}
+		this._page.ccvs.draw();
 	}
 
 	// ----------------------------------------------------------------
