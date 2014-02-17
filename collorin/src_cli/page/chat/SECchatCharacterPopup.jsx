@@ -48,7 +48,10 @@ class SECchatCharacterPopup extends EventCartridge{
 		(this._window.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + this._chara.bust + ")";
 		this._btnList["close"] = new PageButton(this._window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PageButton(this._window, false);
+		// トリガーリセット
 		Ctrl.trigger_mup = false;
+		// コントローラーを隠す
+		this._page.parallelPush(new PECopenLctrl(false));
 	}
 
 	// ----------------------------------------------------------------

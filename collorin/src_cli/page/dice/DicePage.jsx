@@ -49,6 +49,8 @@ class DicePage extends Page{
 		}));
 		this.serialPush(new ECcalcOne(function() : void{
 			this.parallelPush(new PECopenHeader(this.name, 0));
+			this.parallelPush(new PECopenLctrl(true));
+			this.parallelPush(new PECopenRctrl("ほげ", "", "", ""));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 	}

@@ -48,6 +48,8 @@ class MyPage extends Page{
 		}));
 		this.serialPush(new ECcalcOne(function() : void{
 			this.parallelPush(new PECopenHeader(this.name, 1));
+			this.parallelPush(new PECopenLctrl(false));
+			this.parallelPush(new PECopenRctrl("", "", "", ""));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECmyPageMain(this));

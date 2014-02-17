@@ -34,8 +34,11 @@ class SECchatMain extends EventCartridge{
 		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
 		this._btnList["send"] = new PageButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement, true);
 		this._btnList["exit"] = new PageButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement, true);
+		// トリガーリセット
 		this._page.ccvs.trigger_mup = false;
 		Ctrl.trigger_enter = false;
+		// コントローラーを表示
+		this._page.parallelPush(new PECopenLctrl(true));
 	}
 
 	// ----------------------------------------------------------------

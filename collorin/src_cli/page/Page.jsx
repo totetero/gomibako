@@ -38,8 +38,8 @@ abstract class Page extends EventPlayer{
 		Page.loadingDiv = dom.document.getElementById("loading") as HTMLDivElement;
 		// 一番最初はヘッダを隠しておく
 		Util.cssTranslate(Page.headerDiv, 0, PECopenHeader.hide);
-		Util.cssTranslate(Ctrl.lDiv, -144, 0);
-		Util.cssTranslate(Ctrl.rDiv, 144, 0);
+		Util.cssTranslate(Ctrl.lDiv, PECopenLctrl.hide, 0);
+		Util.cssTranslate(Ctrl.rDiv, PECopenRctrl.hide, 0);
 	}
 
 	// ページ機能の監視
@@ -200,60 +200,14 @@ class SECtransitionsPage extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		var num = this._action / 10;
-		this.drawLctrl(num);
-		this.drawRctrl(num);
 		if(this._currentPage != null){
 			// ページの遷移演出
+			var num = this._action / 10;
 			if(this._next){
 				Util.cssTranslate(this._nextPage.div, 320 * (1 - num * num), 0);
 			}else{
 				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
 			}
-		}
-	}
-
-	function drawLctrl(num : number) : void{
-		// 左コントローラーの存在確認
-		var isBeforeLctrl = (this._currentPage != null && this._currentPage.lctrlType > 0);
-		var isAfterLctrl = (this._nextPage.lctrlType > 0);
-		// 左コントローラーの形成
-		if(this._action == 1){
-		}else if(this._action == 10){
-			if(isAfterLctrl){
-				Util.cssTranslate(Ctrl.lDiv, 0, 0);
-			}else{
-				Util.cssTranslate(Ctrl.lDiv, -144, 0);
-			}
-		}
-		if(!isBeforeLctrl && isAfterLctrl){
-			// 左コントローラーの展開演出
-			Util.cssTranslate(Ctrl.lDiv, -144 * (1 - num * num), 0);
-		}else if(isBeforeLctrl && !isAfterLctrl){
-			// 左コントローラーの収納演出
-			Util.cssTranslate(Ctrl.lDiv, -144 * (num * num), 0);
-		}
-	}
-
-	function drawRctrl(num : number) : void{
-		// 左コントローラーの存在確認
-		var isBeforeRctrl = (this._currentPage != null && this._currentPage.rctrlType > 0);
-		var isAfterRctrl = (this._nextPage.rctrlType > 0);
-		// 左コントローラーの形成
-		if(this._action == 1){
-		}else if(this._action == 10){
-			if(isAfterRctrl){
-				Util.cssTranslate(Ctrl.rDiv, 0, 0);
-			}else{
-				Util.cssTranslate(Ctrl.rDiv, 144, 0);
-			}
-		}
-		if(!isBeforeRctrl && isAfterRctrl){
-			// 左コントローラーの展開演出
-			Util.cssTranslate(Ctrl.rDiv, 144 * (1 - num * num), 0);
-		}else if(isBeforeRctrl && !isAfterRctrl){
-			// 左コントローラーの収納演出
-			Util.cssTranslate(Ctrl.rDiv, 144 * (num * num), 0);
 		}
 	}
 
@@ -295,10 +249,6 @@ class PECopenHeader extends EventCartridge{
 		// 位置記録
 		this._start = PECopenHeader._position;
 		this._goal = (this._type > 0) ? 0 : PECopenHeader.hide;
-		// 初期形成
-		Page.titleDiv.innerHTML = "";
-		Page.backDiv.innerHTML = "";
-		Page.menuDiv.innerHTML = "";
 	}
 
 	// ----------------------------------------------------------------
@@ -316,8 +266,11 @@ class PECopenHeader extends EventCartridge{
 	override function draw() : void{
 		if(this._exist){
 			if(this._start != this._goal){Util.cssTranslate(Page.headerDiv, 0, PECopenHeader._position);}
-			if(this._action == 10){
-				// 最終形成
+			if(this._action == 1){
+				Page.titleDiv.innerHTML = "";
+				Page.backDiv.innerHTML = "";
+				Page.menuDiv.innerHTML = "";
+			}else if(this._action == 10 && this._type > 0){
 				Page.titleDiv.innerHTML = this._name;
 				Page.backDiv.innerHTML = (this._type == 1) ? "top" : "back";
 				Page.menuDiv.innerHTML = "menu";
@@ -329,6 +282,160 @@ class PECopenHeader extends EventCartridge{
 	// 破棄
 	override function dispose() : void{
 		if(PECopenHeader._current == this){PECopenHeader._current = null;}
+	}
+}
+
+// 左コントローラの展開
+class PECopenLctrl extends EventCartridge{
+	static const hide = -144;
+	static var _current : PECopenLctrl;
+	static var _position = PECopenLctrl.hide;
+	var _open : boolean;
+	var _start : int;
+	var _goal : int;
+	var _action : int = 0;
+	var _exist = true;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(open : boolean){
+		this._open = open;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		// 動作重複禁止
+		if(PECopenLctrl._current != null){PECopenLctrl._current._exist = false;}
+		PECopenLctrl._current = this;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		if(this._exist){
+			if(this._action == 0){
+				// 前半位置記録
+				this._start = PECopenLctrl._position;
+				this._goal = !this._open ? PECopenLctrl.hide : this._start;
+			}else if(this._action == 8){
+				// 後半位置記録
+				this._start = PECopenLctrl._position;
+				this._goal = this._open ? 0 : PECopenLctrl.hide;
+			}
+			this._action++;
+			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
+			PECopenLctrl._position = this._start + (this._goal - this._start) * num;
+			return (this._action < 16);
+		}else{return false;}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		if(this._exist){
+			if(this._start != this._goal){Util.cssTranslate(Ctrl.lDiv, PECopenLctrl._position, 0);}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		if(PECopenLctrl._current == this){PECopenLctrl._current = null;}
+	}
+}
+
+// 右コントローラの展開
+class PECopenRctrl extends EventCartridge{
+	static const hide = 144;
+	static var _current : PECopenRctrl;
+	static var _position = PECopenRctrl.hide;
+	var _zbtn : string;
+	var _xbtn : string;
+	var _cbtn : string;
+	var _sbtn : string;
+	var _open : boolean;
+	var _change : boolean;
+	var _start : int;
+	var _goal : int;
+	var _action : int = 0;
+	var _exist = true;
+	var _zdiv : HTMLDivElement;
+	var _xdiv : HTMLDivElement;
+	var _cdiv : HTMLDivElement;
+	var _sdiv : HTMLDivElement;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(zbtn : string, xbtn : string, cbtn : string, sbtn : string){
+		this._zbtn = zbtn;
+		this._xbtn = xbtn;
+		this._cbtn = cbtn;
+		this._sbtn = sbtn;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		// 動作重複禁止
+		if(PECopenRctrl._current != null){PECopenRctrl._current._exist = false;}
+		PECopenRctrl._current = this;
+		// DOM獲得
+		this._zdiv = Ctrl.rDiv.getElementsByClassName("zb").item(0) as HTMLDivElement;
+		this._xdiv = Ctrl.rDiv.getElementsByClassName("xb").item(0) as HTMLDivElement;
+		this._cdiv = Ctrl.rDiv.getElementsByClassName("cb").item(0) as HTMLDivElement;
+		this._sdiv = Ctrl.rDiv.getElementsByClassName("sb").item(0) as HTMLDivElement;
+		// 展開確認
+		this._open = (this._zbtn != "") || (this._xbtn != "") || (this._cbtn != "") || (this._sbtn != "");
+		this._change = false;
+		this._change = this._change || (this._zdiv.innerHTML != this._zbtn);
+		this._change = this._change || (this._xdiv.innerHTML != this._xbtn);
+		this._change = this._change || (this._cdiv.innerHTML != this._cbtn);
+		this._change = this._change || (this._sdiv.innerHTML != this._sbtn);
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		if(this._exist){
+			if(this._action == 0){
+				// 前半位置記録
+				this._start = PECopenRctrl._position;
+				this._goal = (!this._open || this._change) ? PECopenRctrl.hide : this._start;
+			}else if(this._action == 8){
+				// 後半位置記録
+				this._start = PECopenRctrl._position;
+				this._goal = this._open ? 0 : PECopenRctrl.hide;
+			}
+			this._action++;
+			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
+			PECopenRctrl._position = this._start + (this._goal - this._start) * num;
+			return (this._action < 16);
+		}else{return false;}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		if(this._exist){
+			if(this._start != this._goal){Util.cssTranslate(Ctrl.rDiv, PECopenRctrl._position, 0);}
+			if(this._action == 8 && this._change){
+				this._zdiv.innerHTML = this._zbtn;
+				this._xdiv.innerHTML = this._xbtn;
+				this._cdiv.innerHTML = this._cbtn;
+				this._sdiv.innerHTML = this._sbtn;
+				this._zdiv.style.display = (this._zbtn != "") ? "block" : "none";
+				this._xdiv.style.display = (this._xbtn != "") ? "block" : "none";
+				this._cdiv.style.display = (this._cbtn != "") ? "block" : "none";
+				this._sdiv.style.display = (this._sbtn != "") ? "block" : "none";
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		if(PECopenRctrl._current == this){PECopenRctrl._current = null;}
 	}
 }
 

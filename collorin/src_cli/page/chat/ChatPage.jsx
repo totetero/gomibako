@@ -62,6 +62,7 @@ class ChatPage extends Page{
 		}));
 		this.serialPush(new ECcalcOne(function() : void{
 			this.parallelPush(new PECopenHeader(this.name, 0));
+			this.parallelPush(new PECopenRctrl("", "", "", ""));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECchatMain(this));
