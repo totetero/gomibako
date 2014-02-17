@@ -36,6 +36,10 @@ abstract class Page extends EventPlayer{
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
 		Page.loadingDiv = dom.document.getElementById("loading") as HTMLDivElement;
+		// 一番最初はヘッダを隠しておく
+		Util.cssTranslate(Page.headerDiv, 0, PECopenHeader.hide);
+		Util.cssTranslate(Ctrl.lDiv, -144, 0);
+		Util.cssTranslate(Ctrl.rDiv, 144, 0);
 	}
 
 	// ページ機能の監視
@@ -89,6 +93,7 @@ class SECloadPage extends EventCartridge{
 	var _callback : function(response:variant):void;
 	var _action = 0;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(url : string, request : variant, callback : function(response:variant):void){
 		this._exist = false;
@@ -97,6 +102,7 @@ class SECloadPage extends EventCartridge{
 		this._callback = callback;
 	}
 
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		if(!this._exist){
@@ -117,12 +123,14 @@ class SECloadPage extends EventCartridge{
 		}
 	}
 
+	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
 		this._action++;
 		return this._exist || (5 < this._action && this._action < 15);
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
 		// ロード画面表示
@@ -139,6 +147,7 @@ class SECloadPage extends EventCartridge{
 		}
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 	}
@@ -155,6 +164,7 @@ class SECtransitionsPage extends EventCartridge{
 	var _next : boolean;
 	var _action : int = 0;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(nextPage : Page){
 		this._currentPage = Page.current;
@@ -178,23 +188,19 @@ class SECtransitionsPage extends EventCartridge{
 				// 戻る場合は重ね順を考慮して配置しなおし
 				Page.containerDiv.appendChild(this._currentPage.div);
 			}
-		}else{
-			// 一番最初はヘッダを隠しておく
-			Util.cssTranslate(Page.headerDiv, 0, -48);
-			Util.cssTranslate(Ctrl.lDiv, -144, 0);
-			Util.cssTranslate(Ctrl.rDiv, 144, 0);
 		}
 	}
 
+	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
 		return (++this._action < 10);
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
 		var num = this._action / 10;
-		this.drawHeader(num);
 		this.drawLctrl(num);
 		this.drawRctrl(num);
 		if(this._currentPage != null){
@@ -204,34 +210,6 @@ class SECtransitionsPage extends EventCartridge{
 			}else{
 				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
 			}
-		}
-	}
-
-	function drawHeader(num : number) : void{
-		// ヘッダの存在確認
-		var isBeforeHeader = (this._currentPage != null && this._currentPage.headerType > 0);
-		var isAfterHeader = (this._nextPage.headerType > 0);
-		// ヘッダの形成
-		if(this._action == 1){
-			Page.titleDiv.innerHTML = "";
-			Page.backDiv.innerHTML = "";
-			Page.menuDiv.innerHTML = "";
-		}else if(this._action == 10){
-			if(isAfterHeader){
-				Page.titleDiv.innerHTML = this._nextPage.name;
-				Page.backDiv.innerHTML = (this._nextPage.headerType == 1) ? "top" : "back";
-				Page.menuDiv.innerHTML = "menu";
-				Util.cssTranslate(Page.headerDiv, 0, 0);
-			}else{
-				Util.cssTranslate(Page.headerDiv, 0, -48);
-			}
-		}
-		if(!isBeforeHeader && isAfterHeader){
-			// ヘッダの展開演出
-			Util.cssTranslate(Page.headerDiv, 0, -48 * (1 - num * num));
-		}else if(isBeforeHeader && !isAfterHeader){
-			// ヘッダの収納演出
-			Util.cssTranslate(Page.headerDiv, 0, -48 * (num * num));
 		}
 	}
 
@@ -279,12 +257,78 @@ class SECtransitionsPage extends EventCartridge{
 		}
 	}
 
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		if(this._currentPage != null){
 			// 直前ページのDOM後片付け
 			Page.containerDiv.removeChild(this._currentPage.div);
 		}
+	}
+}
+
+// ヘッダの展開
+class PECopenHeader extends EventCartridge{
+	static const hide = -48;
+	static var _current : PECopenHeader;
+	static var _position = PECopenHeader.hide;
+	var _name : string;
+	var _type : int;
+	var _start : int;
+	var _goal : int;
+	var _action : int = 0;
+	var _exist = true;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(name : string, type : int){
+		this._name = name;
+		this._type = type;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		// 動作重複禁止
+		if(PECopenHeader._current != null){PECopenHeader._current._exist = false;}
+		PECopenHeader._current = this;
+		// 位置記録
+		this._start = PECopenHeader._position;
+		this._goal = (this._type > 0) ? 0 : PECopenHeader.hide;
+		// 初期形成
+		Page.titleDiv.innerHTML = "";
+		Page.backDiv.innerHTML = "";
+		Page.menuDiv.innerHTML = "";
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		if(this._exist){
+			this._action++;
+			PECopenHeader._position = this._start + (this._goal - this._start) * (this._action / 10);
+			return (this._action < 10);
+		}else{return false;}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		if(this._exist){
+			if(this._start != this._goal){Util.cssTranslate(Page.headerDiv, 0, PECopenHeader._position);}
+			if(this._action == 10){
+				// 最終形成
+				Page.titleDiv.innerHTML = this._name;
+				Page.backDiv.innerHTML = (this._type == 1) ? "top" : "back";
+				Page.menuDiv.innerHTML = "menu";
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		if(PECopenHeader._current == this){PECopenHeader._current = null;}
 	}
 }
 
@@ -299,12 +343,14 @@ class PageButton{
 	var trigger : boolean;
 	var _inner : boolean;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(div : HTMLDivElement, inner : boolean){
 		this.div = div;
 		this._inner = inner;
 	}
 
+	// ----------------------------------------------------------------
 	// 計算
 	function calc(clickable : boolean) : void{
 		if(Ctrl.mdn){
@@ -321,6 +367,7 @@ class PageButton{
 		}
 	}
 
+	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
 		var isActive = this.div.className.indexOf(" active") >= 0;

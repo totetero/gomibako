@@ -40,6 +40,9 @@ class WorldPage extends Page{
 			// データの形成
 			log response;
 		}));
+		this.serialPush(new ECcalcOne(function() : void{
+			this.parallelPush(new PECopenHeader(this.name, 2));
+		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECworldPageMain(this));
 	}

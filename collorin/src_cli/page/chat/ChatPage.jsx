@@ -60,6 +60,9 @@ class ChatPage extends Page{
 			// ページ遷移前描画
 			this.ccvs.draw();
 		}));
+		this.serialPush(new ECcalcOne(function() : void{
+			this.parallelPush(new PECopenHeader(this.name, 0));
+		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECchatMain(this));
 	}
