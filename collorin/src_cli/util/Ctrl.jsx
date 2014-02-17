@@ -15,9 +15,8 @@ class Ctrl{
 	static var sy : int;
 	static var sw : int;
 	static var sh : int;
-	static var sdiv : HTMLDivElement;
+	static var sDiv : HTMLDivElement;
 	// コントローラー要素
-	static var cDiv : HTMLDivElement; // キャラクターdiv 後で作る
 	static var lDiv : HTMLDivElement;
 	static var rDiv : HTMLDivElement;
 	// マウス状態
@@ -69,10 +68,10 @@ class Ctrl{
 	static var _dnDiv : HTMLDivElement;
 	static var _rtDiv : HTMLDivElement;
 	static var _ltDiv : HTMLDivElement;
-	static var _zbDiv : HTMLDivElement;
-	static var _xbDiv : HTMLDivElement;
-	static var _cbDiv : HTMLDivElement;
-	static var _sbDiv : HTMLDivElement;
+	static var zbDiv : HTMLDivElement;
+	static var xbDiv : HTMLDivElement;
+	static var cbDiv : HTMLDivElement;
+	static var sbDiv : HTMLDivElement;
 	static var _keydownCode : int;
 	// 描画フラグ
 	static var _update_screen : boolean;
@@ -89,17 +88,17 @@ class Ctrl{
 	// 初期化
 	static function init() : void{
 		// DOM獲得
-		Ctrl.sdiv = dom.document.getElementById("screen") as HTMLDivElement;
+		Ctrl.sDiv = dom.document.getElementById("screen") as HTMLDivElement;
 		Ctrl.lDiv = dom.document.getElementById("lctrl") as HTMLDivElement;
 		Ctrl.rDiv = dom.document.getElementById("rctrl") as HTMLDivElement;
 		Ctrl._upDiv = Ctrl.lDiv.getElementsByClassName("up").item(0) as HTMLDivElement;
 		Ctrl._dnDiv = Ctrl.lDiv.getElementsByClassName("dn").item(0) as HTMLDivElement;
 		Ctrl._rtDiv = Ctrl.lDiv.getElementsByClassName("rt").item(0) as HTMLDivElement;
 		Ctrl._ltDiv = Ctrl.lDiv.getElementsByClassName("lt").item(0) as HTMLDivElement;
-		Ctrl._zbDiv = Ctrl.rDiv.getElementsByClassName("zb").item(0) as HTMLDivElement;
-		Ctrl._xbDiv = Ctrl.rDiv.getElementsByClassName("xb").item(0) as HTMLDivElement;
-		Ctrl._cbDiv = Ctrl.rDiv.getElementsByClassName("cb").item(0) as HTMLDivElement;
-		Ctrl._sbDiv = Ctrl.rDiv.getElementsByClassName("sb").item(0) as HTMLDivElement;
+		Ctrl.zbDiv = Ctrl.rDiv.getElementsByClassName("zb").item(0) as HTMLDivElement;
+		Ctrl.xbDiv = Ctrl.rDiv.getElementsByClassName("xb").item(0) as HTMLDivElement;
+		Ctrl.cbDiv = Ctrl.rDiv.getElementsByClassName("cb").item(0) as HTMLDivElement;
+		Ctrl.sbDiv = Ctrl.rDiv.getElementsByClassName("sb").item(0) as HTMLDivElement;
 
 		// リスナー追加
 		var rdiv = dom.document.getElementById("root") as HTMLDivElement;
@@ -185,19 +184,19 @@ class Ctrl{
 	static function draw() : void{
 		if(Ctrl._update_screen){
 			Ctrl._update_screen = false;
-			Ctrl.sdiv.style.left = Ctrl.sx + "px";
-			Ctrl.sdiv.style.top = Ctrl.sy + "px";
-			Ctrl.sdiv.style.width = Ctrl.sw + "px";
-			Ctrl.sdiv.style.height = Ctrl.sh + "px";
+			Ctrl.sDiv.style.left = Ctrl.sx + "px";
+			Ctrl.sDiv.style.top = Ctrl.sy + "px";
+			Ctrl.sDiv.style.width = Ctrl.sw + "px";
+			Ctrl.sDiv.style.height = Ctrl.sh + "px";
 		}
 		if(Ctrl._update_up){Ctrl._update_up = false; Ctrl._upDiv.className = Ctrl.kup ? "up active" : "up";}
 		if(Ctrl._update_dn){Ctrl._update_dn = false; Ctrl._dnDiv.className = Ctrl.kdn ? "dn active" : "dn";}
 		if(Ctrl._update_rt){Ctrl._update_rt = false; Ctrl._rtDiv.className = Ctrl.krt ? "rt active" : "rt";}
 		if(Ctrl._update_lt){Ctrl._update_lt = false; Ctrl._ltDiv.className = Ctrl.klt ? "lt active" : "lt";}
-		if(Ctrl._update_zb){Ctrl._update_zb = false; Ctrl._zbDiv.className = Ctrl.k_z ? "zb active" : "zb";}
-		if(Ctrl._update_xb){Ctrl._update_xb = false; Ctrl._xbDiv.className = Ctrl.k_x ? "xb active" : "xb";}
-		if(Ctrl._update_cb){Ctrl._update_cb = false; Ctrl._cbDiv.className = Ctrl.k_c ? "cb active" : "cb";}
-		if(Ctrl._update_sb){Ctrl._update_sb = false; Ctrl._sbDiv.className = Ctrl.k_s ? "sb active" : "sb";}
+		if(Ctrl._update_zb){Ctrl._update_zb = false; Ctrl.zbDiv.className = Ctrl.k_z ? "zb active" : "zb";}
+		if(Ctrl._update_xb){Ctrl._update_xb = false; Ctrl.xbDiv.className = Ctrl.k_x ? "xb active" : "xb";}
+		if(Ctrl._update_cb){Ctrl._update_cb = false; Ctrl.cbDiv.className = Ctrl.k_c ? "cb active" : "cb";}
+		if(Ctrl._update_sb){Ctrl._update_sb = false; Ctrl.sbDiv.className = Ctrl.k_s ? "sb active" : "sb";}
 	}
 
 	// ----------------------------------------------------------------

@@ -33,9 +33,6 @@ class ChatPage extends Page{
 		// プロパティ設定
 		this.name = "チャット";
 		this.depth = 3;
-		this.headerType = 0;
-		this.lctrlType = 1;
-		this.rctrlType = 0;
 	}
 
 	// ----------------------------------------------------------------
@@ -63,6 +60,7 @@ class ChatPage extends Page{
 		this.serialPush(new ECcalcOne(function() : void{
 			this.parallelPush(new PECopenHeader(this.name, 0));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
+			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECchatMain(this));

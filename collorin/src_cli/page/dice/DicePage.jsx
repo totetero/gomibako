@@ -26,9 +26,6 @@ class DicePage extends Page{
 		// プロパティ設定
 		this.name = "すごろく";
 		this.depth = 3;
-		this.headerType = 0;
-		this.lctrlType = 1;
-		this.rctrlType = 1;
 	}
 
 	// ----------------------------------------------------------------
@@ -51,6 +48,7 @@ class DicePage extends Page{
 			this.parallelPush(new PECopenHeader(this.name, 0));
 			this.parallelPush(new PECopenLctrl(true));
 			this.parallelPush(new PECopenRctrl("ほげ", "", "", ""));
+			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 	}

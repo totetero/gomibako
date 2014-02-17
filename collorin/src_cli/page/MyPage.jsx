@@ -28,9 +28,6 @@ class MyPage extends Page{
 		// プロパティ設定
 		this.name = "マイページ";
 		this.depth = 1;
-		this.headerType = 1;
-		this.lctrlType = 0;
-		this.rctrlType = 0;
 	}
 
 	// ----------------------------------------------------------------
@@ -50,6 +47,7 @@ class MyPage extends Page{
 			this.parallelPush(new PECopenHeader(this.name, 1));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
+			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECmyPageMain(this));

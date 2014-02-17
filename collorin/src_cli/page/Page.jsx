@@ -24,22 +24,26 @@ abstract class Page extends EventPlayer{
 	static var titleDiv : HTMLDivElement;
 	static var backDiv : HTMLDivElement;
 	static var menuDiv : HTMLDivElement;
+	// キャラクター要素
+	static var characterDiv : HTMLDivElement;
 	// ロード画面要素
 	static var loadingDiv : HTMLDivElement;
 
 	// ページ機能の初期化
 	static function init() : void{
 		// DOM獲得
-		Page.containerDiv = Ctrl.sdiv.getElementsByClassName("pageContainer").item(0) as HTMLDivElement;
-		Page.headerDiv = Ctrl.sdiv.getElementsByClassName("header").item(0) as HTMLDivElement;
+		Page.containerDiv = Ctrl.sDiv.getElementsByClassName("pageContainer").item(0) as HTMLDivElement;
+		Page.headerDiv = Ctrl.sDiv.getElementsByClassName("header").item(0) as HTMLDivElement;
 		Page.titleDiv = Page.headerDiv.getElementsByClassName("title").item(0) as HTMLDivElement;
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
+		Page.characterDiv = dom.document.getElementById("character") as HTMLDivElement;
 		Page.loadingDiv = dom.document.getElementById("loading") as HTMLDivElement;
 		// 一番最初はヘッダを隠しておく
 		Util.cssTranslate(Page.headerDiv, 0, PECopenHeader.hide);
 		Util.cssTranslate(Ctrl.lDiv, PECopenLctrl.hide, 0);
 		Util.cssTranslate(Ctrl.rDiv, PECopenRctrl.hide, 0);
+		Util.cssTranslate(Page.characterDiv, PECopenCharacter.hide, 0);
 	}
 
 	// ページ機能の監視
@@ -73,9 +77,6 @@ abstract class Page extends EventPlayer{
 	// プロパティ
 	var name : string;
 	var depth : int = 0; // 深度 画面遷移時の演出に影響
-	var headerType : int = 0;
-	var lctrlType : int = 0;
-	var rctrlType : int = 0;
 
 	// 開始直前の初期化処理
 	function init() : void{}
@@ -360,10 +361,6 @@ class PECopenRctrl extends EventCartridge{
 	var _goal : int;
 	var _action : int = 0;
 	var _exist = true;
-	var _zdiv : HTMLDivElement;
-	var _xdiv : HTMLDivElement;
-	var _cdiv : HTMLDivElement;
-	var _sdiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -380,18 +377,13 @@ class PECopenRctrl extends EventCartridge{
 		// 動作重複禁止
 		if(PECopenRctrl._current != null){PECopenRctrl._current._exist = false;}
 		PECopenRctrl._current = this;
-		// DOM獲得
-		this._zdiv = Ctrl.rDiv.getElementsByClassName("zb").item(0) as HTMLDivElement;
-		this._xdiv = Ctrl.rDiv.getElementsByClassName("xb").item(0) as HTMLDivElement;
-		this._cdiv = Ctrl.rDiv.getElementsByClassName("cb").item(0) as HTMLDivElement;
-		this._sdiv = Ctrl.rDiv.getElementsByClassName("sb").item(0) as HTMLDivElement;
 		// 展開確認
 		this._open = (this._zbtn != "") || (this._xbtn != "") || (this._cbtn != "") || (this._sbtn != "");
 		this._change = false;
-		this._change = this._change || (this._zdiv.innerHTML != this._zbtn);
-		this._change = this._change || (this._xdiv.innerHTML != this._xbtn);
-		this._change = this._change || (this._cdiv.innerHTML != this._cbtn);
-		this._change = this._change || (this._sdiv.innerHTML != this._sbtn);
+		this._change = this._change || (Ctrl.zbDiv.innerHTML != this._zbtn);
+		this._change = this._change || (Ctrl.xbDiv.innerHTML != this._xbtn);
+		this._change = this._change || (Ctrl.cbDiv.innerHTML != this._cbtn);
+		this._change = this._change || (Ctrl.sbDiv.innerHTML != this._sbtn);
 	}
 
 	// ----------------------------------------------------------------
@@ -420,14 +412,14 @@ class PECopenRctrl extends EventCartridge{
 		if(this._exist){
 			if(this._start != this._goal){Util.cssTranslate(Ctrl.rDiv, PECopenRctrl._position, 0);}
 			if(this._action == 8 && this._change){
-				this._zdiv.innerHTML = this._zbtn;
-				this._xdiv.innerHTML = this._xbtn;
-				this._cdiv.innerHTML = this._cbtn;
-				this._sdiv.innerHTML = this._sbtn;
-				this._zdiv.style.display = (this._zbtn != "") ? "block" : "none";
-				this._xdiv.style.display = (this._xbtn != "") ? "block" : "none";
-				this._cdiv.style.display = (this._cbtn != "") ? "block" : "none";
-				this._sdiv.style.display = (this._sbtn != "") ? "block" : "none";
+				Ctrl.zbDiv.innerHTML = this._zbtn;
+				Ctrl.xbDiv.innerHTML = this._xbtn;
+				Ctrl.cbDiv.innerHTML = this._cbtn;
+				Ctrl.sbDiv.innerHTML = this._sbtn;
+				Ctrl.zbDiv.style.display = (this._zbtn != "") ? "block" : "none";
+				Ctrl.xbDiv.style.display = (this._xbtn != "") ? "block" : "none";
+				Ctrl.cbDiv.style.display = (this._cbtn != "") ? "block" : "none";
+				Ctrl.sbDiv.style.display = (this._sbtn != "") ? "block" : "none";
 			}
 		}
 	}
@@ -436,6 +428,79 @@ class PECopenRctrl extends EventCartridge{
 	// 破棄
 	override function dispose() : void{
 		if(PECopenRctrl._current == this){PECopenRctrl._current = null;}
+	}
+}
+
+// キャラクターの展開
+class PECopenCharacter extends EventCartridge{
+	static const hide = -160;
+	static var _current : PECopenCharacter;
+	static var _position = PECopenCharacter.hide;
+	static var _code : string;
+	var _code : string;
+	var _type : int;
+	var _open : boolean;
+	var _change : boolean;
+	var _start : int;
+	var _goal : int;
+	var _action : int = 0;
+	var _exist = true;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(code : string, type : int){
+		this._code = code;
+		this._type = type;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		// 動作重複禁止
+		if(PECopenCharacter._current != null){PECopenCharacter._current._exist = false;}
+		PECopenCharacter._current = this;
+		// 展開確認
+		this._open = (this._code != "");
+		this._change = (PECopenCharacter._code != this._code);
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{		
+		if(this._exist){
+			if(this._action == 0){
+				// 前半位置記録
+				this._start = PECopenCharacter._position;
+				this._goal = (!this._open || this._change) ? PECopenCharacter.hide : this._start;
+			}else if(this._action == 8){
+				// 後半位置記録
+				this._start = PECopenCharacter._position;
+				this._goal = this._open ? 0 : PECopenCharacter.hide;
+			}
+			this._action++;
+			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
+			PECopenCharacter._position = this._start + (this._goal - this._start) * num;
+			return (this._action < 16);
+		}else{return false;}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		if(this._exist){
+			if(this._start != this._goal){Util.cssTranslate(Page.characterDiv, PECopenCharacter._position, 0);}
+			if(this._action == 8){
+				PECopenCharacter._code = this._code;
+				if(this._change){Page.characterDiv.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs["b64_bust_" + this._code] + ")");}
+				Page.characterDiv.style.backgroundPosition = (this._type * -160) + "px 0";
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		if(PECopenCharacter._current == this){PECopenCharacter._current = null;}
 	}
 }
 
