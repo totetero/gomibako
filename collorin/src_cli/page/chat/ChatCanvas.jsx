@@ -83,7 +83,7 @@ class ChatCharacter{
 
 	var uid : int;
 	var name : string;
-	var bust : string;
+	var code : string;
 
 	var exist = true;
 	var x : number;
@@ -96,17 +96,16 @@ class ChatCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : ChatCanvas, charaInfo : variant){
-		var img = Loader.imgs["dot_" + charaInfo["code"] as string];
-		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
-		var size = charaInfo["size"] as number;
-
 		this.uid = charaInfo["uid"] as int;
 		this.name = charaInfo["name"] as string;
-		this.bust = Loader.b64imgs["b64_bust_" + charaInfo["code"] as string];
+		this.code = charaInfo["code"] as string;
 		this.x = charaInfo["x"] as int * 16 + 8;
 		this.y = charaInfo["y"] as int * 16 + 8;
 		this.r = charaInfo["r"] as int * Math.PI * 0.25;
 
+		var img = Loader.imgs["dot_" + this.code];
+		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
+		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);
 		this._nametag = new DrawText(this.name);
 		this._balloon = new DrawBalloon();

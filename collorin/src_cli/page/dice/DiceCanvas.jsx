@@ -56,6 +56,8 @@ class DiceCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
 
+	var code : string;
+
 	var exist = true;
 	var x : number;
 	var y : number;
@@ -67,16 +69,16 @@ class DiceCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(ccvs : DiceCanvas, charaInfo : variant){
-		var img = Loader.imgs["dot_" + charaInfo["code"] as string];
-		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
-		var size = charaInfo["size"] as number;
 		var hexx = charaInfo["x"] as int;
 		var hexy = charaInfo["y"] as int;
-
+		this.code = charaInfo["code"] as string;
 		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
 		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
 		this.r = charaInfo["r"] as number;
 
+		var img = Loader.imgs["dot_" + this.code];
+		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
+		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);
 		this._shadow = new DrawShadow(size);
 		ccvs.clist.push(this._character);

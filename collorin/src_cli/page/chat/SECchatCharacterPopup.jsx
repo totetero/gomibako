@@ -1,9 +1,11 @@
 import "js/web.jsx";
 
+import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
+import "../page/Popup.jsx";
 
 import "ChatPage.jsx";
 import "ChatCanvas.jsx";
@@ -14,7 +16,7 @@ import "SECchatMain.jsx";
 // ----------------------------------------------------------------
 
 // チャットページポップアップイベントカートリッジ
-class SECchatCharacterPopup extends EventCartridge{
+class SECchatCharacterPopup extends SECpopup{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="core-background"></div>
@@ -28,8 +30,6 @@ class SECchatCharacterPopup extends EventCartridge{
 
 	var _page : ChatPage;
 	var _chara : ChatCharacter;
-	var _popup : HTMLDivElement;
-	var _window : HTMLDivElement;
 	var _btnList = {} : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
@@ -41,14 +41,14 @@ class SECchatCharacterPopup extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
-		this._popup = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
-		this._popup.innerHTML = this._htmlTag;
-		this._window = this._popup.getElementsByClassName("core-window").item(0) as HTMLDivElement;
-		(this._window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
-		(this._window.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + this._chara.bust + ")";
-		this._btnList["close"] = new PageButton(this._window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
-		this._btnList["outer"] = new PageButton(this._window, false);
+	override function popupInit() : void{
+		this.popup = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
+		this.popup.innerHTML = this._htmlTag;
+		this.window = this.popup.getElementsByClassName("core-window").item(0) as HTMLDivElement;
+		(this.window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
+		(this.window.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._chara.code] + ")";
+		this._btnList["close"] = new PageButton(this.window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["outer"] = new PageButton(this.window, false);
 		// トリガーリセット
 		Ctrl.trigger_mup = false;
 		// コントローラーを隠す
@@ -57,14 +57,14 @@ class SECchatCharacterPopup extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 計算
-	override function calc() : boolean{
+	override function popupCalc(active : boolean) : boolean{
 		// ボタン押下確認
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 		// キャンバス計算
 		this._page.ccvs.calc(false);
 
 		// 閉じるボタン
-		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
+		if(active && this._btnList["close"].trigger || this._btnList["outer"].trigger){
 			this._page.serialPush(new SECchatMain(this._page));
 			return false;
 		}
@@ -76,8 +76,7 @@ class SECchatCharacterPopup extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 破棄
-	override function dispose() : void{
-		this._popup.innerHTML = "";
+	override function popupDispose() : void{
 	}
 }
 
