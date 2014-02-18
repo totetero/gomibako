@@ -52,15 +52,10 @@ class _Main{
 
 	// メインループ
 	static function mainloop() : void{
-		var page = Page.current;
-
 		// イベント処理
 		Ctrl.calc();
 		Page.calc();
-		if(page != null){page.calcEvent();}
-		Ctrl.draw();
-		if(page != null){page.drawEvent();}
-
+		if(Page.current != null){Page.current.calc();}
 		// 次のフレームへ
 		Timer.setTimeout(_Main.mainloop, 33);
 	}

@@ -58,27 +58,10 @@ class SECchatCharacterPopup extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		var ccvs = this._page.ccvs;
-
 		// ボタン押下確認
 		for(var name in this._btnList){this._btnList[name].calc(true);}
-
-		// キャンバス座標回転と押下確認
-		ccvs.calcTouchCoordinate(false);
-		ccvs.calcTouchRotate();
-		ccvs.calcRotate(ccvs.rotv, Math.PI / 180 * 30, 1);
-
-		// キャラクター計算
-		for(var i = 0; i < ccvs.member.length; i++){
-			ccvs.member[i].calc(ccvs);
-			if(!ccvs.member[i].exist){ccvs.member.splice(i--,1);}
-		}
-
-		if(ccvs.player != null){
-			// カメラ位置をプレイヤーに
-			ccvs.cx -= (ccvs.cx - ccvs.player.x) * 0.1;
-			ccvs.cy -= (ccvs.cy - ccvs.player.y) * 0.1;
-		}
+		// キャンバス計算
+		this._page.ccvs.calc(false);
 
 		// 閉じるボタン
 		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
@@ -86,15 +69,9 @@ class SECchatCharacterPopup extends EventCartridge{
 			return false;
 		}
 
-		return true;
-	}
-
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
+		// キャンバス描画
 		this._page.ccvs.draw();
-		for(var name in this._btnList){this._btnList[name].draw();}
+		return true;
 	}
 
 	// ----------------------------------------------------------------

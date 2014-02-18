@@ -54,23 +54,10 @@ class SECchatMain extends EventCartridge{
 			this._btnList[name].calc(!ccvs.mdn);
 			clickable = clickable && !this._btnList[name].active;
 		}
-
-		// キャンバス座標回転と押下確認
-		ccvs.calcTouchCoordinate(clickable);
-		ccvs.calcTouchRotate();
-		ccvs.calcRotate(ccvs.rotv, Math.PI / 180 * 30, 1);
-
-		// キャラクター計算
-		for(var i = 0; i < ccvs.member.length; i++){
-			ccvs.member[i].calc(ccvs);
-			if(!ccvs.member[i].exist){ccvs.member.splice(i--,1);}
-		}
+		// キャンバス計算
+		ccvs.calc(clickable);
 
 		if(ccvs.player != null){
-			// カメラ位置をプレイヤーに
-			ccvs.cx -= (ccvs.cx - ccvs.player.x) * 0.1;
-			ccvs.cy -= (ccvs.cy - ccvs.player.y) * 0.1;
-
 			// 十字キーでの移動確認
 			if(ccvs.player.dstList.length == 0 || !this._arrow){
 				var r = 0;
@@ -123,19 +110,6 @@ class SECchatMain extends EventCartridge{
 			}
 		}
 
-		// メッセージの投稿
-		if(Ctrl.trigger_enter || this._btnList["send"].trigger){
-			Ctrl.trigger_enter = false;
-			this._btnList["send"].trigger = false;
-			this._page.socket.sendSerif(this._input.value);
-			this._input.value = "";
-		}
-
-		// 退出ボタン
-		if(this._btnList["exit"].trigger){
-			Page.transitionsPage("world");
-		}
-
 		// キャラクタータップ確認
 		if(ccvs.mdn && !Ctrl.mmv){
 			var index = -1;
@@ -151,16 +125,30 @@ class SECchatMain extends EventCartridge{
 			this._tappedCharacter = -1;
 		}
 
-		// キャラクター描画設定
-		for(var i = 0; i < ccvs.member.length; i++){ccvs.member[i].setColor((this._tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
-		// フィールド描画設定
-		ccvs.tapped = (ccvs.mdn && !Ctrl.mmv && this._tappedCharacter < 0);
+		// メッセージの投稿
+		if(Ctrl.trigger_enter || this._btnList["send"].trigger){
+			Ctrl.trigger_enter = false;
+			this._btnList["send"].trigger = false;
+			this._page.socket.sendSerif(this._input.value);
+			this._input.value = "";
+		}
+
+		// 退出ボタン
+		if(this._btnList["exit"].trigger){
+			Page.transitionsPage("world");
+		}
 
 		// 一定間隔毎に位置の通信
 		if((this._socketCounter++) % 30 == 0){
 			this._page.socket.sendDestination(this._dst);
 		}
 
+		// キャラクター描画設定
+		for(var i = 0; i < ccvs.member.length; i++){ccvs.member[i].setColor((this._tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
+		// フィールド描画設定
+		ccvs.tapped = (ccvs.mdn && !Ctrl.mmv && this._tappedCharacter < 0);
+		// キャンバス描画
+		this._page.ccvs.draw();
 		return exist;
 	}
 
@@ -189,13 +177,6 @@ class SECchatMain extends EventCartridge{
 		r = 4 * r / Math.PI;
 		while(r < 0){r += 8;}
 		return Math.round(r) % 8;
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		this._page.ccvs.draw();
-		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
 	// ----------------------------------------------------------------

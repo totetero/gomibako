@@ -37,8 +37,7 @@ class WorldPage extends Page{
 		this.serialPush(new SECloadPage("/world", null, function(response : variant) : void{
 			// データの形成
 			log response;
-		}));
-		this.serialPush(new ECcalcOne(function() : void{
+			// コントローラー展開
 			this.parallelPush(new PECopenHeader(this.name, 2));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
@@ -99,12 +98,6 @@ class SECworldPageMain extends EventCartridge{
 		}
 
 		return true;
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
 	// ----------------------------------------------------------------

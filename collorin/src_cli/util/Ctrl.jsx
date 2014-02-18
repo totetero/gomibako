@@ -73,16 +73,6 @@ class Ctrl{
 	static var cbDiv : HTMLDivElement;
 	static var sbDiv : HTMLDivElement;
 	static var _keydownCode : int;
-	// 描画フラグ
-	static var _update_screen : boolean;
-	static var _update_up : boolean;
-	static var _update_dn : boolean;
-	static var _update_rt : boolean;
-	static var _update_lt : boolean;
-	static var _update_zb : boolean;
-	static var _update_xb : boolean;
-	static var _update_cb : boolean;
-	static var _update_sb : boolean;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -147,7 +137,7 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// 計算
 	static function calc() : void{
-		// ウインドウサイズの変更確認
+		// ウインドウサイズ確認
 		var ww = dom.window.innerWidth;
 		var wh = dom.window.innerHeight;
 		if(Ctrl.ww != ww || Ctrl.wh != wh){
@@ -157,10 +147,13 @@ class Ctrl{
 			Ctrl.sh = Math.min(Math.max(Ctrl.wh, 240), 480);
 			Ctrl.sx = Math.floor(Math.max(0, (Ctrl.ww - Ctrl.sw) * 0.5));
 			Ctrl.sy = Math.floor(Math.max(0, (Ctrl.wh - Ctrl.sh) * 0.5));
-			Ctrl._update_screen = true;
+			Ctrl.sDiv.style.left = Ctrl.sx + "px";
+			Ctrl.sDiv.style.top = Ctrl.sy + "px";
+			Ctrl.sDiv.style.width = Ctrl.sw + "px";
+			Ctrl.sDiv.style.height = Ctrl.sh + "px";
 		}
 
-		// キー状態描画
+		// キー状態確認
 		var kup = Ctrl._mkup || Ctrl._kkup; 
 		var kdn = Ctrl._mkdn || Ctrl._kkdn; 
 		var krt = Ctrl._mkrt || Ctrl._kkrt; 
@@ -169,34 +162,14 @@ class Ctrl{
 		var k_x = Ctrl._mk_x || Ctrl._kk_x; 
 		var k_c = Ctrl._mk_c || Ctrl._kk_c; 
 		var k_s = Ctrl._mk_s || Ctrl._kk_s; 
-		if(Ctrl.kup != kup){Ctrl.kup = kup; Ctrl._update_up = true;}
-		if(Ctrl.kdn != kdn){Ctrl.kdn = kdn; Ctrl._update_dn = true;}
-		if(Ctrl.krt != krt){Ctrl.krt = krt; Ctrl._update_rt = true;}
-		if(Ctrl.klt != klt){Ctrl.klt = klt; Ctrl._update_lt = true;}
-		if(Ctrl.k_z != k_z){Ctrl.k_z = k_z; Ctrl._update_zb = true;}
-		if(Ctrl.k_x != k_x){Ctrl.k_x = k_x; Ctrl._update_xb = true;}
-		if(Ctrl.k_c != k_c){Ctrl.k_c = k_c; Ctrl._update_cb = true;}
-		if(Ctrl.k_s != k_s){Ctrl.k_s = k_s; Ctrl._update_sb = true;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	static function draw() : void{
-		if(Ctrl._update_screen){
-			Ctrl._update_screen = false;
-			Ctrl.sDiv.style.left = Ctrl.sx + "px";
-			Ctrl.sDiv.style.top = Ctrl.sy + "px";
-			Ctrl.sDiv.style.width = Ctrl.sw + "px";
-			Ctrl.sDiv.style.height = Ctrl.sh + "px";
-		}
-		if(Ctrl._update_up){Ctrl._update_up = false; Ctrl._upDiv.className = Ctrl.kup ? "up active" : "up";}
-		if(Ctrl._update_dn){Ctrl._update_dn = false; Ctrl._dnDiv.className = Ctrl.kdn ? "dn active" : "dn";}
-		if(Ctrl._update_rt){Ctrl._update_rt = false; Ctrl._rtDiv.className = Ctrl.krt ? "rt active" : "rt";}
-		if(Ctrl._update_lt){Ctrl._update_lt = false; Ctrl._ltDiv.className = Ctrl.klt ? "lt active" : "lt";}
-		if(Ctrl._update_zb){Ctrl._update_zb = false; Ctrl.zbDiv.className = Ctrl.k_z ? "zb active" : "zb";}
-		if(Ctrl._update_xb){Ctrl._update_xb = false; Ctrl.xbDiv.className = Ctrl.k_x ? "xb active" : "xb";}
-		if(Ctrl._update_cb){Ctrl._update_cb = false; Ctrl.cbDiv.className = Ctrl.k_c ? "cb active" : "cb";}
-		if(Ctrl._update_sb){Ctrl._update_sb = false; Ctrl.sbDiv.className = Ctrl.k_s ? "sb active" : "sb";}
+		if(Ctrl.kup != kup){Ctrl.kup = kup; Ctrl._upDiv.className = Ctrl.kup ? "up active" : "up";}
+		if(Ctrl.kdn != kdn){Ctrl.kdn = kdn; Ctrl._dnDiv.className = Ctrl.kdn ? "dn active" : "dn";}
+		if(Ctrl.krt != krt){Ctrl.krt = krt; Ctrl._rtDiv.className = Ctrl.krt ? "rt active" : "rt";}
+		if(Ctrl.klt != klt){Ctrl.klt = klt; Ctrl._ltDiv.className = Ctrl.klt ? "lt active" : "lt";}
+		if(Ctrl.k_z != k_z){Ctrl.k_z = k_z; Ctrl.zbDiv.className = Ctrl.k_z ? "zb active" : "zb";}
+		if(Ctrl.k_x != k_x){Ctrl.k_x = k_x; Ctrl.xbDiv.className = Ctrl.k_x ? "xb active" : "xb";}
+		if(Ctrl.k_c != k_c){Ctrl.k_c = k_c; Ctrl.cbDiv.className = Ctrl.k_c ? "cb active" : "cb";}
+		if(Ctrl.k_s != k_s){Ctrl.k_s = k_s; Ctrl.sbDiv.className = Ctrl.k_s ? "sb active" : "sb";}
 	}
 
 	// ----------------------------------------------------------------

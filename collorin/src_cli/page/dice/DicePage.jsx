@@ -41,11 +41,10 @@ class DicePage extends Page{
 
 		// イベント設定
 		this.serialPush(new SECloadDice(this, {"stage": "test"}));
-		this.serialPush(new ECdrawOne(function() : void{
+		this.serialPush(new ECone(function() : void{
 			// ページ遷移前描画
 			this.ccvs.draw();
-		}));
-		this.serialPush(new ECcalcOne(function() : void{
+			// コントローラー展開
 			this.parallelPush(new PECopenHeader(this.name, 0));
 			this.parallelPush(new PECopenLctrl(true));
 			this.parallelPush(new PECopenRctrl("ほげ", "", "", ""));
@@ -176,13 +175,9 @@ class SECdiceTest extends EventCartridge{
 		// フィールド描画設定
 		ccvs.tapped = (ccvs.mdn && !Ctrl.mmv && this._tappedCharacter < 0);
 
-		return exist;
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
+		// キャンバス描画
 		this._page.ccvs.draw();
+		return exist;
 	}
 
 	// ----------------------------------------------------------------

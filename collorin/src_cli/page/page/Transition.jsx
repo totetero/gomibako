@@ -48,12 +48,8 @@ class SECtransitionsPage extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		return (++this._action < 10);
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
+		this._action++;
+		// 描画
 		if(this._currentPage != null){
 			// ページの遷移演出
 			var num = this._action / 10;
@@ -63,6 +59,7 @@ class SECtransitionsPage extends EventCartridge{
 				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
 			}
 		}
+		return (this._action < 10);
 	}
 
 	// ----------------------------------------------------------------
@@ -111,14 +108,7 @@ class PECopenHeader extends EventCartridge{
 		if(this._exist){
 			this._action++;
 			PECopenHeader._position = this._start + (this._goal - this._start) * (this._action / 10);
-			return (this._action < 10);
-		}else{return false;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		if(this._exist){
+			// 描画
 			if(this._start != this._goal){Util.cssTranslate(Page.headerDiv, 0, PECopenHeader._position);}
 			if(this._action == 1){
 				Page.titleDiv.innerHTML = "";
@@ -129,7 +119,8 @@ class PECopenHeader extends EventCartridge{
 				Page.backDiv.innerHTML = (this._type == 1) ? "top" : "back";
 				Page.menuDiv.innerHTML = "menu";
 			}
-		}
+			return (this._action < 10);
+		}else{return false;}
 	}
 
 	// ----------------------------------------------------------------
@@ -180,16 +171,10 @@ class PECopenLctrl extends EventCartridge{
 			this._action++;
 			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
 			PECopenLctrl._position = this._start + (this._goal - this._start) * num;
+			// 描画
+			if(this._start != this._goal){Util.cssTranslate(Ctrl.lDiv, PECopenLctrl._position, 0);}
 			return (this._action < 16);
 		}else{return false;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		if(this._exist){
-			if(this._start != this._goal){Util.cssTranslate(Ctrl.lDiv, PECopenLctrl._position, 0);}
-		}
 	}
 
 	// ----------------------------------------------------------------
@@ -255,14 +240,7 @@ class PECopenRctrl extends EventCartridge{
 			this._action++;
 			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
 			PECopenRctrl._position = this._start + (this._goal - this._start) * num;
-			return (this._action < 16);
-		}else{return false;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		if(this._exist){
+			// 描画
 			if(this._start != this._goal){Util.cssTranslate(Ctrl.rDiv, PECopenRctrl._position, 0);}
 			if(this._action == 8 && this._change){
 				Ctrl.zbDiv.innerHTML = this._zbtn;
@@ -274,7 +252,8 @@ class PECopenRctrl extends EventCartridge{
 				Ctrl.cbDiv.style.display = (this._cbtn != "") ? "block" : "none";
 				Ctrl.sbDiv.style.display = (this._sbtn != "") ? "block" : "none";
 			}
-		}
+			return (this._action < 16);
+		}else{return false;}
 	}
 
 	// ----------------------------------------------------------------
@@ -333,21 +312,15 @@ class PECopenCharacter extends EventCartridge{
 			this._action++;
 			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
 			PECopenCharacter._position = this._start + (this._goal - this._start) * num;
-			return (this._action < 16);
-		}else{return false;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		if(this._exist){
+			// 描画
 			if(this._start != this._goal){Util.cssTranslate(Page.characterDiv, PECopenCharacter._position, 0);}
 			if(this._action == 8){
 				PECopenCharacter._code = this._code;
 				if(this._change){Page.characterDiv.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs["b64_bust_" + this._code] + ")");}
 				Page.characterDiv.style.backgroundPosition = (this._type * -160) + "px 0";
 			}
-		}
+			return (this._action < 16);
+		}else{return false;}
 	}
 
 	// ----------------------------------------------------------------

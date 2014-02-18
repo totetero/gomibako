@@ -39,6 +39,27 @@ class ChatCanvas extends Ccvs{
 	}
 
 	// ----------------------------------------------------------------
+	// 計算
+	function calc(clickable : boolean) : void{
+		// キャンバス座標回転と押下確認
+		this.calcTouchCoordinate(clickable);
+		this.calcTouchRotate();
+		this.calcRotate(this.rotv, Math.PI / 180 * 30, 1);
+
+		// キャラクター計算
+		for(var i = 0; i < this.member.length; i++){
+			this.member[i].calc(this);
+			if(!this.member[i].exist){this.member.splice(i--,1);}
+		}
+
+		if(this.player != null){
+			// カメラ位置をプレイヤーに
+			this.cx -= (this.cx - this.player.x) * 0.1;
+			this.cy -= (this.cy - this.player.y) * 0.1;
+		}
+	}
+
+	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
 		this.context.clearRect(0, 0, this.width, this.height);

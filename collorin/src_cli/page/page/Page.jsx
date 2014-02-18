@@ -130,12 +130,6 @@ class SECloadPage extends EventCartridge{
 	// 計算
 	override function calc() : boolean{
 		this._action++;
-		return this._exist || (5 < this._action && this._action < 15);
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
 		// ロード画面表示
 		var display = ((this._exist || this._action < 15) && 5 < this._action) ? "block" : "none";
 		if(Page.loadingDiv.style.display != display){Page.loadingDiv.style.display = display;}
@@ -148,6 +142,7 @@ class SECloadPage extends EventCartridge{
 				case 3: Page.loadingDiv.setAttribute("txt", "loading..."); break;
 			}
 		}
+		return (this._exist || (5 < this._action && this._action < 15));
 	}
 
 	// ----------------------------------------------------------------
@@ -186,14 +181,11 @@ class PageButton{
 			var inner = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
 			this.active = (clickable && (inner == this._inner));
 		}else if(this.active){
+			// ボタンを放した瞬間
 			this.active = false;
 			this.trigger = true;
 		}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画
-	function draw() : void{
+		// 描画
 		var isActive = this.div.className.indexOf(" active") >= 0;
 		if(this.active && !isActive){
 			this.div.className += " active";

@@ -7,7 +7,7 @@ import "js/web.jsx";
 
 native class SocketIOClient{
 	static function connect(callback : function(socket:SocketIOClientSocket):void) : void;
-} = '''{
+} = """{
 	connect: function(callback){
 		var url = "http://" + document.domain + ":10081";
 		var socketConnect = function(){
@@ -25,7 +25,7 @@ native class SocketIOClient{
 			socketConnect();
 		}
 	}
-}''';
+}""";
 
 native class SocketIOClientSocket{
 	function of(namespace : string) : SocketIOClientSocket;

@@ -5,13 +5,11 @@
 
 // イベントカートリッジクラス 継承して使う
 abstract class EventCartridge{
-	// 開始直前の初期化処理
+	// 開始直前の初期化
 	function init() : void{}
-	// イベント処理 返値でtrueを返す間はイベントが続く
+	// 計算 返値でtrueを返す間はイベントが続く
 	function calc() : boolean{return false;}
-	// 描画処理
-	function draw() : void{}
-	// 破棄処理
+	// 破棄
 	function dispose() : void{}
 }
 
@@ -19,9 +17,7 @@ abstract class EventCartridge{
 class EventPlayer{
 	var _serialCurrent : EventCartridge = null;
 	var _serialList = new EventCartridge[];
-	var _serialDisposeList = new EventCartridge[];
 	var _parallelList = new EventCartridge[];
-	var _parallelExistList = new boolean[];
 
 	// --------------------------------
 	// イベントの設定
@@ -34,7 +30,6 @@ class EventPlayer{
 	// 並列イベントの追加
 	function parallelPush(pec : EventCartridge) : void{
 		this._parallelList.push(pec);
-		this._parallelExistList.push(true);
 		pec.init();
 	}
 
@@ -49,63 +44,31 @@ class EventPlayer{
 
 	// --------------------------------
 	// イベントの処理
-	function calcEvent() : boolean{
-		// 使い終わっている直列イベントの破棄
-		if(this._serialDisposeList.length > 0){
-			for(var i = 0; i < this._serialDisposeList.length; i++){
-				this._serialDisposeList[i].dispose();
-			}
-			this._serialDisposeList.length = 0;
-		}
-		// 使い終わっている並列イベントの破棄
-		for(var i = 0; i < this._parallelList.length; i++){
-			if(!this._parallelExistList[i]){
-				this._parallelList[i].dispose();
-				this._parallelList.splice(i, 1);
-				this._parallelExistList.splice(i--, 1);
-			}
-		}
-
+	function calc() : boolean{
 		// 直列イベントの処理
-		this.calcSerialEvent();
+		this.calcSerial();
 		// 並列イベントの処理
 		for(var i = 0; i < this._parallelList.length; i++){
 			if(!this._parallelList[i].calc()){
-				this._parallelExistList[i] = false;
+				this._parallelList[i].dispose();
+				this._parallelList.splice(i--, 1);
 			}
 		}
-
+		// イベントの存在確認
 		return this._serialCurrent != null || this._parallelList.length > 0;
 	}
 	// 直列イベントの処理 再帰関数
-	function calcSerialEvent() : void{
+	function calcSerial() : void{
 		if(this._serialCurrent != null && !this._serialCurrent.calc()){
-			this._serialDisposeList.push(this._serialCurrent);
+			this._serialCurrent.dispose();
 			this._serialCurrent = null;
 		}
 		if(this._serialCurrent == null){
 			if(this._serialList.length > 0){
 				this._serialCurrent = this._serialList.shift();
 				this._serialCurrent.init();
-				this.calcSerialEvent();
+				this.calcSerial();
 			}
-		}
-	}
-
-	// --------------------------------
-	// イベントの描画
-	function drawEvent() : void{
-		// 使い終わっている直列イベントの最後の描画
-		for(var i = 0; i < this._serialDisposeList.length; i++){
-			this._serialDisposeList[i].draw();
-		}
-		// 直列イベントの描画
-		if(this._serialCurrent != null){
-			this._serialCurrent.draw();
-		}
-		// 並列イベントの描画
-		for(var i = 0; i < this._parallelList.length; i++){
-			this._parallelList[i].draw();
 		}
 	}
 
@@ -118,63 +81,8 @@ class EventPlayer{
 		}
 		for(var i = 0; i < this._serialList.length; i++){this._serialList[i].dispose();}
 		for(var i = 0; i < this._parallelList.length; i++){this._parallelList[i].dispose();}
-		for(var i = 0; i < this._serialDisposeList.length; i++){this._serialDisposeList[i].dispose();}
 		this._serialList.length = 0;
-		this._serialDisposeList.length = 0;
 		this._parallelList.length = 0;
-		this._parallelExistList.length = 0;
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-// 内部直列化イベントカートリッジ
-class SerializedEventCartridge extends EventCartridge{
-	var _player : EventPlayer = null;
-	// コンストラクタ
-	function constructor(list : EventCartridge[]){
-		this._player = new EventPlayer();
-		for(var i = 0; i < list.length; i++){
-			this._player.serialPush(list[i]);
-		}
-	}
-	// 計算
-	override function calc() : boolean{
-		return this._player.calcEvent();
-	}
-	// 描画
-	override function draw() : void{
-		this._player.drawEvent();
-	}
-	// 破棄
-	override function dispose() : void{
-		this._player.dispose();
-	}
-}
-
-// 内部平列化イベントカートリッジ
-class ParallelizedEventCartridge extends EventCartridge{
-	var _player : EventPlayer = null;
-	// コンストラクタ
-	function constructor(list : EventCartridge[]){
-		this._player = new EventPlayer();
-		for(var i = 0; i < list.length; i++){
-			this._player.parallelPush(list[i]);
-		}
-	}
-	// 計算
-	override function calc() : boolean{
-		return this._player.calcEvent();
-	}
-	// 描画
-	override function draw() : void{
-		this._player.drawEvent();
-	}
-	// 破棄
-	override function dispose() : void{
-		this._player.dispose();
 	}
 }
 
@@ -195,8 +103,8 @@ class ECwait extends EventCartridge{
 	}
 }
 
-// 1フレーム計算イベント
-class ECcalcOne extends EventCartridge{
+// 1フレームイベント
+class ECone extends EventCartridge{
 	var _func : function():void;
 	// コンストラクタ
 	function constructor(func : function():void){
@@ -206,43 +114,6 @@ class ECcalcOne extends EventCartridge{
 	override function calc() : boolean{
 		this._func();
 		return false;
-	}
-}
-
-// 1フレーム描画イベント
-class ECdrawOne extends EventCartridge{
-	var _func : function():void;
-	// コンストラクタ
-	function constructor(func : function():void){
-		this._func = func;
-	}
-	// 計算
-	override function calc() : boolean{
-		return false;
-	}
-	// 描画
-	override function draw() : void{
-		this._func();
-	}
-}
-
-// 永続イベント
-class ECfix extends EventCartridge{
-	var _calcFunc : function():void;
-	var _drawFunc : function():void;
-	// コンストラクタ
-	function constructor(calcFunc : function():void, drawFunc : function():void){
-		this._calcFunc = calcFunc;
-		this._drawFunc = drawFunc;
-	}
-	// 計算
-	override function calc() : boolean{
-		this._calcFunc();
-		return true;
-	}
-	// 描画
-	override function draw() : void{
-		this._drawFunc();
 	}
 }
 

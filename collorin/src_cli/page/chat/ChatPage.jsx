@@ -53,12 +53,9 @@ class ChatPage extends Page{
 			// データの形成
 			this.ccvs.init(response);
 			this.socket.init(this.ccvs);
-		}));
-		this.serialPush(new ECdrawOne(function() : void{
 			// ページ遷移前描画
 			this.ccvs.draw();
-		}));
-		this.serialPush(new ECcalcOne(function() : void{
+			// コントローラー展開
 			this.parallelPush(new PECopenHeader(this.name, 0));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));
