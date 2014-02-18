@@ -12,7 +12,7 @@ native class express{
 	static function compress() : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function static_(path : string) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function errorHandler(options : variant) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
-} = '''{
+} = """{
 	create: require("express"),
 	logger: require("express").logger,
 	json: require("express").json,
@@ -23,7 +23,7 @@ native class express{
 	compress: require("express").compress,
 	static_: require("express").static,
 	errorHandler: require("express").errorHandler,
-}''';
+}""";
 
 native class ExApplication{
 	function set(name : string, value : variant) : void;
@@ -35,7 +35,7 @@ native class ExApplication{
 	function configure(env : string, callback : function():void) : void;
 	function configure(callback : function():void) : void;
 	function use(callback : function(req:ExRequest,res:ExResponse,next:function():void):void) : void;
-    function all(path : string, ...callback : function(req:ExRequest,res:ExResponse,next:function():void):void) : void;
+	function all(path : string, ...callback : function(req:ExRequest,res:ExResponse,next:function():void):void) : void;
 	function get(path : string, ...callback : function(req:ExRequest,res:ExResponse,next:function():void):void) : void;
 	function post(path : string, ...callback : function(req:ExRequest,res:ExResponse,next:function():void):void) : void;
 	var router : function(req:ExRequest,res:ExResponse,next:function():void) : void;

@@ -5,7 +5,7 @@ import "../models/User.jsx";
 native class SocketIO {
 	static function listen(port : int) : SocketManager;
 	static function listen(server : HttpServer) : SocketManager;
-} = "require('socket.io') ";
+} = """require("socket.io")""";
 
 native class SocketManager{
 	__readonly__ var sockets : SocketNamespace;
@@ -13,7 +13,7 @@ native class SocketManager{
 	function set(key : string, value : variant) : SocketManager;
 	function enable(key : string) : SocketManager;
 	function configure(callback : function():void) : SocketManager;
-} = "require('socket.io').Manager";
+} = """require("socket.io").Manager""";
 
 native class SocketNamespace{
 	function on(event : string, callback: function(socket:Socket):void): SocketNamespace;
@@ -52,7 +52,7 @@ native class Socket{
 	var volatile : Socket;
 	var json : Socket;
 	function disconnect() : Socket;
-} = "require('socket.io').Socket";
+} = """require("socket.io").Socket""";
 
 native class SocketHandshake{
 	var headers : variant;
@@ -63,13 +63,13 @@ native class SocketHandshake{
 native class SocketUtil{
 	static function parse1(cookie : string) : Map.<string>;
 	static function parse2(cookie : string, key : string) : string;
-} = '''{
+} = """{
 	parse1: require("express/node_modules/cookie").parse,
 	parse2: require("express/node_modules/connect").utils.parseSignedCookie,
-}''';
+}""";
 
 native class SocketRedisStore{
 	function constructor();
 	function constructor(options : variant);
-} = 'require("socket.io/lib/stores/redis")';
+} = """require("socket.io/lib/stores/redis")""";
 

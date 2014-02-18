@@ -2,7 +2,7 @@ import "express.jsx";
 
 native class redis{
 	static function createClient(port : int, host : string, options : variant) : RedisClient;
-} = 'require("redis")';
+} = """require("redis")""";
 
 native class RedisClient{
 	function set(value : string[], callback : function(err:variant,result:Nullable.<string>):void) : void;
@@ -21,5 +21,5 @@ native class RedisStore{
 	function constructor();
 	function constructor(options : variant);
 	function get(sid : string, callback : function(err:variant,session:ExSession):void) : void;
-} = 'require("connect-redis")(require("express"))';
+} = """require("connect-redis")(require("express"))""";
 

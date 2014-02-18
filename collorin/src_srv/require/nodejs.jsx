@@ -4,9 +4,9 @@ import "express.jsx";
 
 native class node{
 	static const __dirname : string;
-} = '''{
+} = """{
 	__dirname: __dirname,
-}''';
+}""";
 
 // ----------------------------------------------------------------
 
@@ -31,7 +31,7 @@ native class Buffer{
 
 native class http{
 	static function Server(app : ExApplication) : HttpServer;
-} = 'require("http")';
+} = """require("http")""";
 
 native class HttpServer{
 	function listen(port : int) : void;
@@ -42,13 +42,13 @@ native class HttpServer{
 native class fs{
 	static function readFile(filename : string, callback : function(err:variant,data:Buffer):void) : void;
 	static function readFile(filename : string, encoding : string, callback : function(err:variant,data:string):void) : void;
-} = "require('fs')";
+} = """require("fs")""";
 
 // ----------------------------------------------------------------
 
 native class crypto{
 	static function createHmac(algorithm : string, key : string) : Hmac;
-} = 'require("crypto")';
+} = """require("crypto")""";
 
 native class Hmac{
 	function update(data : string) : Hmac;

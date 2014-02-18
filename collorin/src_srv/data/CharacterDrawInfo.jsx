@@ -5,9 +5,9 @@ class CharacterDrawInfo{
 	// コンストラクタ
 	function constructor(dat : variant) {
 		this.weapon = dat["weapon"] as string;
-		this.parts  = dat["parts"] as Map.<number[][]>;
-		this.pose  = dat["pose"] as Map.<Map.<number[]>[]>;
-    }
+		this.parts = dat["parts"] as Map.<number[][]>;
+		this.pose = dat["pose"] as Map.<Map.<number[]>[]>;
+	}
 
 	static var data : Map.<CharacterDrawInfo> = {} : Map.<CharacterDrawInfo>;
 	static function init() : void{

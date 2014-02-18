@@ -10,7 +10,7 @@ native class passport{
 	static function use(strategy : TwitterStrategy) : void;
 	static function authenticate(strategy : string) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function authenticate(strategy : string, options : variant) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
-} = 'require("passport")';
+} = """require("passport")""";
 
 native class LocalStrategy{
 	function constructor(
@@ -21,7 +21,7 @@ native class LocalStrategy{
 			verified:function(err:variant,user:UserModel,info:variant):void
 		):void
 	);
-} = 'require("passport-local").Strategy';
+} = """require("passport-local").Strategy""";
 
 native class TwitterStrategy{
 	function constructor(
@@ -33,7 +33,7 @@ native class TwitterStrategy{
 			verified:function(err:variant,user:UserModel,info:variant):void
 		):void
 	);
-} = 'require("passport-twitter").Strategy';
+} = """require("passport-twitter").Strategy""";
 
 native class TwitterProfile{
 	var id : string;
