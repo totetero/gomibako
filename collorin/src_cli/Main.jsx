@@ -1,8 +1,8 @@
 import "timer.jsx";
 import "js/web.jsx";
 
-import "./util/Ctrl.jsx";
-import "./page/Page.jsx";
+import "util/Ctrl.jsx";
+import "page/page/Page.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

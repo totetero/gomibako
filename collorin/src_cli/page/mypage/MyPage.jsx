@@ -1,27 +1,34 @@
 import "js/web.jsx";
 
-import "../util/Loader.jsx";
-import "../util/EventCartridge.jsx";
-import "../util/Ctrl.jsx";
-import "./Page.jsx";
+import "../../util/Loader.jsx";
+import "../../util/EventCartridge.jsx";
+import "../../util/Ctrl.jsx";
+import "../page/Page.jsx";
+import "../page/Transition.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class WorldPage extends Page{
+class MyPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="core-btn b1">テストステージ</div>
-		<div class="core-btn b2">チャットステージ</div>
+		<div class="navi">
+			<div class="core-btn b1">ワールド</div>
+			<div class="core-btn b2">クエスト</div>
+			<div class="core-btn b3">キャラクター</div>
+			<div class="core-btn b4">アイテム</div>
+		</div>
+
+		<div class="footer">おしらせバナースペース</div>
 	""";
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "ワールド";
-		this.depth = 2;
+		this.name = "マイページ";
+		this.depth = 1;
 	}
 
 	// ----------------------------------------------------------------
@@ -29,22 +36,22 @@ class WorldPage extends Page{
 	override function init() : void{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "page world";
+		this.div.className = "page mypage";
 		this.div.innerHTML = this._htmlTag;
 
 		// イベント設定
-		this.serialPush(new SECloadPage("/world", null, function(response : variant) : void{
+		this.serialPush(new SECloadPage("/mypage", null, function(response : variant) : void{
 			// データの形成
 			log response;
 		}));
 		this.serialPush(new ECcalcOne(function() : void{
-			this.parallelPush(new PECopenHeader(this.name, 2));
+			this.parallelPush(new PECopenHeader(this.name, 1));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECworldPageMain(this));
+		this.serialPush(new SECmyPageMain(this));
 	}
 
 	// ----------------------------------------------------------------
@@ -58,21 +65,23 @@ class WorldPage extends Page{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECworldPageMain extends EventCartridge{
-	var _page : WorldPage;
+class SECmyPageMain extends EventCartridge{
+	var _page : MyPage;
 	var _btnList = {} : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : WorldPage){
+	function constructor(page : MyPage){
 		this._page = page;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
-		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
+		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
+		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
+		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("core-btn b3").item(0) as HTMLDivElement, true);
+		this._btnList["b4"] = new PageButton(this._page.div.getElementsByClassName("core-btn b4").item(0) as HTMLDivElement, true);
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
 	}
@@ -82,19 +91,15 @@ class SECworldPageMain extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		if(this._btnList["btn1"].trigger){
-			this._btnList["btn1"].trigger = false;
-			Page.transitionsPage("dice");
-		}
-
-		if(this._btnList["btn2"].trigger){
-			this._btnList["btn2"].trigger = false;
-			Page.transitionsPage("chat");
+		if(this._btnList["b1"].trigger){
+			this._btnList["b1"].trigger = false;
+			Page.transitionsPage("world");
 		}
 
 		if(this._btnList["back"].trigger){
 			this._btnList["back"].trigger = false;
-			Page.transitionsPage("mypage");
+			// トップに戻る
+			dom.document.location.href = "/top";
 		}
 
 		return true;

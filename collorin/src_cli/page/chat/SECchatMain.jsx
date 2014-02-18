@@ -2,7 +2,8 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
-import "../Page.jsx";
+import "../page/Page.jsx";
+import "../page/Transition.jsx";
 
 import "ChatPage.jsx";
 import "SECchatCharacterPopup.jsx";

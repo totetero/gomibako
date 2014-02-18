@@ -1,7 +1,8 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
-import "../Page.jsx";
+import "../page/Page.jsx";
+import "../page/Transition.jsx";
 
 import "ChatCanvas.jsx";
 import "ChatSocket.jsx";
