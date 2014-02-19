@@ -6,6 +6,7 @@ import "../page/Page.jsx";
 import "../page/Transition.jsx";
 
 import "DiceCanvas.jsx";
+import "SECdiceMap.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -46,8 +47,8 @@ class DicePage extends Page{
 			this.ccvs.draw();
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader(this.name, 0));
-			this.parallelPush(new PECopenLctrl(true));
-			this.parallelPush(new PECopenRctrl("ほげ", "", "", ""));
+			this.parallelPush(new PECopenLctrl(false));
+			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
@@ -83,21 +84,25 @@ class SECloadDice extends SECloadPage{
 
 class SECdiceTest extends EventCartridge{
 	var _page : DicePage;
-	var _player : DiceCharacter;
-
-	var _tappedCharacter : int = -1;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage){
 		this._page = page;
-		this._player = this._page.ccvs.member[0];
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		// トリガーリセット
+		Ctrl.trigger_zb = false;
+		Ctrl.trigger_cb = false;
+		Ctrl.trigger_sb = false;
 		this._page.ccvs.trigger_mup = false;
+		// コントローラーを表示
+		this._page.parallelPush(new PECopenLctrl(true));
+		this._page.parallelPush(new PECopenRctrl("さいころ", "", "マップ", "メニュー"));
+		this._page.parallelPush(new PECopenCharacter("", 0));
 		return false;
 	}
 
@@ -107,74 +112,44 @@ class SECdiceTest extends EventCartridge{
 		var ccvs = this._page.ccvs;
 		var exist = true;
 
-		// キャンバス座標回転と押下確認
-		ccvs.calcTouchCoordinate(true);
-		ccvs.calcTouchRotate();
-		ccvs.calcRotate(ccvs.rotv, Math.PI / 180 * 30, 2.5);
+		// キャンバス計算
+		ccvs.calc(true, 0, function() : void{
+			// フィールド押下による移動
+			var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
+			ccvs.player.dstList.push([hex.x, hex.y]);
+		}, function(chara : DiceCharacter) : void{
+			// キャラクター押下
+			log chara;
+		});
 
 		// キャラクター計算
-		if(Ctrl.kup || Ctrl.kdn || Ctrl.krt || Ctrl.klt){this._player.dstList.length = 0;}
-		if(this._player.dstList.length > 0){
-			this._player.calc(ccvs);
-		}else{
-			this._player.action++;
-			if     (Ctrl.krt && Ctrl.kup){this._player.r = Math.PI * 1.74 - ccvs.rotv;}
-			else if(Ctrl.klt && Ctrl.kup){this._player.r = Math.PI * 1.26 - ccvs.rotv;}
-			else if(Ctrl.klt && Ctrl.kdn){this._player.r = Math.PI * 0.74 - ccvs.rotv;}
-			else if(Ctrl.krt && Ctrl.kdn){this._player.r = Math.PI * 0.26 - ccvs.rotv;}
-			else if(Ctrl.krt){this._player.r = Math.PI * 0.00 - ccvs.rotv;}
-			else if(Ctrl.kup){this._player.r = Math.PI * 1.50 - ccvs.rotv;}
-			else if(Ctrl.klt){this._player.r = Math.PI * 1.00 - ccvs.rotv;}
-			else if(Ctrl.kdn){this._player.r = Math.PI * 0.50 - ccvs.rotv;}
-			else{this._player.action = 0;}
-			if(this._player.action > 0){
+		if(Ctrl.kup || Ctrl.kdn || Ctrl.krt || Ctrl.klt){ccvs.player.dstList.length = 0;}
+		if(ccvs.player.dstList.length == 0){
+			ccvs.player.action++;
+			if     (Ctrl.krt && Ctrl.kup){ccvs.player.r = Math.PI * 1.74 - ccvs.rotv;}
+			else if(Ctrl.klt && Ctrl.kup){ccvs.player.r = Math.PI * 1.26 - ccvs.rotv;}
+			else if(Ctrl.klt && Ctrl.kdn){ccvs.player.r = Math.PI * 0.74 - ccvs.rotv;}
+			else if(Ctrl.krt && Ctrl.kdn){ccvs.player.r = Math.PI * 0.26 - ccvs.rotv;}
+			else if(Ctrl.krt){ccvs.player.r = Math.PI * 0.00 - ccvs.rotv;}
+			else if(Ctrl.kup){ccvs.player.r = Math.PI * 1.50 - ccvs.rotv;}
+			else if(Ctrl.klt){ccvs.player.r = Math.PI * 1.00 - ccvs.rotv;}
+			else if(Ctrl.kdn){ccvs.player.r = Math.PI * 0.50 - ccvs.rotv;}
+			else{ccvs.player.action = 0;}
+			if(ccvs.player.action > 0){
 				var speed = 3;
-				this._player.x += speed * Math.cos(this._player.r);
-				this._player.y += speed * Math.sin(this._player.r);
-				this._player.motion = "walk";
+				ccvs.player.x += speed * Math.cos(ccvs.player.r);
+				ccvs.player.y += speed * Math.sin(ccvs.player.r);
+				ccvs.player.motion = "walk";
 			}else{
-				this._player.motion = "stand";
+				ccvs.player.motion = "stand";
 			}
 		}
 
-		// カメラ位置をプレイヤーに
-		ccvs.cx = this._player.x;
-		ccvs.cy = this._player.y;
-
-		// キャラクターフィールド押下確認
-		if(ccvs.trigger_mup){
-			ccvs.trigger_mup = false;
-			if(!Ctrl.mmv){
-				if(this._tappedCharacter < 0){
-					// フィールド押下による移動
-					var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
-					this._player.dstList.push([hex.x, hex.y]);
-				}else{
-					// キャラクター押下
-					log "chara " + this._tappedCharacter;
-				}
-			}
+		// もどるボタン
+		if(Ctrl.trigger_cb){
+			this._page.serialPush(new SECdiceMap(this._page, this));
+			exist = false;
 		}
-
-		// キャラクタータップ確認
-		if(ccvs.mdn && !Ctrl.mmv){
-			var index = -1;
-			var depth = 0;
-			for(var i = 0; i < ccvs.member.length; i++){
-				var cdepth = ccvs.member[i].getDepth();
-				if((index < 0 || depth < cdepth) && ccvs.member[i].isOver(ccvs.mx, ccvs.my)){
-					depth = cdepth;
-					this._tappedCharacter = index = i;
-				}
-			}
-		}else{
-			this._tappedCharacter = -1;
-		}
-
-		// キャラクター描画設定
-		for(var i = 0; i < ccvs.member.length; i++){ccvs.member[i].setColor((this._tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
-		// フィールド描画設定
-		ccvs.tapped = (ccvs.mdn && !Ctrl.mmv && this._tappedCharacter < 0);
 
 		// キャンバス描画
 		this._page.ccvs.draw();

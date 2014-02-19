@@ -59,7 +59,7 @@ class SECchatCharacterPopup extends SECpopup{
 		// ボタン押下確認
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 		// キャンバス計算
-		this._page.ccvs.calc(false);
+		this._page.ccvs.calc(false, null, null);
 
 		// 閉じるボタン
 		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){

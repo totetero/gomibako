@@ -13,10 +13,12 @@ import "../../bb3d/HexField.jsx";
 // キャンバス
 class DiceCanvas extends Ccvs{
 	var field : HexField;
+	var player : DiceCharacter;
 	var member = new DiceCharacter[];
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
 	var tapped : boolean;
+	var tappedCharacter : int;
 
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
@@ -31,9 +33,75 @@ class DiceCanvas extends Ccvs{
 		// キャラクター
 		var charaInfoList = response["charaInfo"] as variant[][];
 		this.member.push(new DiceCharacter(this, charaInfoList[0][0]));
+		this.player = this.member[0];
 		// 初期カメラ位置
-		this.cx = this.member[0].x;
-		this.cy = this.member[0].y;
+		this.cx = this.calcx = this.member[0].x;
+		this.cy = this.calcy = this.member[0].y;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	function calc(clickable : boolean, camera : int, pressField : function():void, pressChara : function(chara:DiceCharacter):void) : void{
+		// キャンバス座標回転と押下確認
+		this.calcTouchCoordinate(clickable);
+		if(camera == 1){
+			this.calcTouchMove();
+			this.calcRotv(0, 0.2);
+			this.calcRoth(Math.PI / 180 * 90, 0.1);
+			this.scale -= (this.scale - 1) * 0.1;
+			this.cx -= (this.cx - this.calcx) * 0.5;
+			this.cy -= (this.cy - this.calcy) * 0.5;
+		}else{
+			this.calcTouchRotate();
+			this.calcRotv(this.calcrotv, 0.2);
+			this.calcRoth(Math.PI / 180 * 30, 0.1);
+			this.scale -= (this.scale - 2.5) * 0.1;
+			this.cx -= (this.cx - this.calcx) * 0.2;
+			this.cy -= (this.cy - this.calcy) * 0.2;
+		}
+
+		// キャラクター計算
+		for(var i = 0; i < this.member.length; i++){
+			this.member[i].calc(this);
+			if(!this.member[i].exist){this.member.splice(i--,1);}
+		}
+
+		if(camera != 1){
+			// カメラ位置をプレイヤーに
+			this.calcx = this.player.x;
+			this.calcy = this.player.y;
+		}
+
+		// キャラクターフィールド押下確認
+		if(this.trigger_mup){
+			this.trigger_mup = false;
+			if(!Ctrl.mmv){
+				if(pressChara != null && this.tappedCharacter >= 0){
+					// キャラクター押下
+					pressChara(this.member[this.tappedCharacter]);
+				}else if(pressField != null){
+					// フィールド押下
+					pressField();
+				}
+			}
+		}
+
+		// キャラクタータップ確認
+		this.tappedCharacter = -1;
+		if(this.mdn && !Ctrl.mmv && pressChara != null){
+			for(var i = 0, depth = 0; i < this.member.length; i++){
+				var cdepth = this.member[i].getDepth();
+				if((this.tappedCharacter < 0 || depth < cdepth) && this.member[i].isOver(this.mx, this.my)){
+					depth = cdepth;
+					this.tappedCharacter = i;
+				}
+			}
+		}
+
+		// キャラクター描画設定
+		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this.tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
+		// フィールド描画設定
+		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter < 0);
 	}
 
 	// ----------------------------------------------------------------

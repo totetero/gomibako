@@ -6,6 +6,7 @@ import "../page/Page.jsx";
 import "../page/Transition.jsx";
 
 import "ChatPage.jsx";
+import "ChatCanvas.jsx";
 import "SECchatCharacterPopup.jsx";
 
 // ----------------------------------------------------------------
@@ -55,8 +56,22 @@ class SECchatMain extends EventCartridge{
 			this._btnList[name].calc(!ccvs.mdn);
 			clickable = clickable && !this._btnList[name].active;
 		}
+
 		// キャンバス計算
-		ccvs.calc(clickable);
+		ccvs.calc(clickable, function() : void{
+			if(ccvs.player != null){
+				// フィールド押下による移動
+				var x = Math.floor(ccvs.tx / 16);
+				var y = Math.floor(ccvs.ty / 16);
+				var r = this._calcRotID(Math.atan2(ccvs.ty - ccvs.player.y, ccvs.tx - ccvs.player.x));
+				this._arrow = false;
+				this._checkMove(x, y, r);
+			}
+		}, function(chara : ChatCharacter) : void{
+			// キャラクター押下によるポップアップ表示
+			this._page.serialPush(new SECchatCharacterPopup(this._page, chara));
+			exist = false;
+		});
 
 		if(ccvs.player != null){
 			// 十字キーでの移動確認
@@ -90,42 +105,6 @@ class SECchatMain extends EventCartridge{
 			}
 		}
 
-		// キャラクターフィールド押下確認
-		if(ccvs.trigger_mup){
-			ccvs.trigger_mup = false;
-			if(!Ctrl.mmv){
-				if(this._tappedCharacter < 0){
-					if(ccvs.player != null){
-						// フィールド押下による移動
-						var x = Math.floor(ccvs.tx / 16);
-						var y = Math.floor(ccvs.ty / 16);
-						var r = this._calcRotID(Math.atan2(ccvs.ty - ccvs.player.y, ccvs.tx - ccvs.player.x));
-						this._arrow = false;
-						this._checkMove(x, y, r);
-					}
-				}else{
-					// キャラクター押下によるポップアップ表示
-					this._page.serialPush(new SECchatCharacterPopup(this._page, ccvs.member[this._tappedCharacter]));
-					exist = false;
-				}
-			}
-		}
-
-		// キャラクタータップ確認
-		if(ccvs.mdn && !Ctrl.mmv){
-			var index = -1;
-			var depth = 0;
-			for(var i = 0; i < ccvs.member.length; i++){
-				var cdepth = ccvs.member[i].getDepth();
-				if((index < 0 || depth < cdepth) && ccvs.member[i].isOver(ccvs.mx, ccvs.my)){
-					depth = cdepth;
-					this._tappedCharacter = index = i;
-				}
-			}
-		}else{
-			this._tappedCharacter = -1;
-		}
-
 		// メッセージの投稿
 		if(Ctrl.trigger_enter || this._btnList["send"].trigger){
 			Ctrl.trigger_enter = false;
@@ -144,10 +123,6 @@ class SECchatMain extends EventCartridge{
 			this._page.socket.sendDestination(this._dst);
 		}
 
-		// キャラクター描画設定
-		for(var i = 0; i < ccvs.member.length; i++){ccvs.member[i].setColor((this._tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
-		// フィールド描画設定
-		ccvs.tapped = (ccvs.mdn && !Ctrl.mmv && this._tappedCharacter < 0);
 		// キャンバス描画
 		this._page.ccvs.draw();
 		return exist;

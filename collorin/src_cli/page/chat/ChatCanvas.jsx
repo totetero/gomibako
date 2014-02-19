@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/Loader.jsx";
+import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
 import "../../bb3d/Character.jsx";
 import "../../bb3d/GridField.jsx";
@@ -20,6 +21,7 @@ class ChatCanvas extends Ccvs{
 	var slist = new DrawUnit[];
 	var pathFinder : ChatPathFinder;
 	var tapped : boolean;
+	var tappedCharacter : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -34,17 +36,21 @@ class ChatCanvas extends Ccvs{
 		this.field = new GridField(this, Loader.imgs["grid"], response["grid"] as int[][]);
 		this.pathFinder = new ChatPathFinder(this.field);
 		// 初期カメラ位置
-		this.cx = (this.cxmax + this.cxmin) * 0.5;
-		this.cy = (this.cymax + this.cymin) * 0.5;
+		this.cx = this.calcx = (this.cxmax + this.cxmin) * 0.5;
+		this.cy = this.calcy = (this.cymax + this.cymin) * 0.5;
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
-	function calc(clickable : boolean) : void{
+	function calc(clickable : boolean, pressField : function():void, pressChara : function(chara:ChatCharacter):void) : void{
 		// キャンバス座標回転と押下確認
 		this.calcTouchCoordinate(clickable);
 		this.calcTouchRotate();
-		this.calcRotate(this.rotv, Math.PI / 180 * 30, 1);
+		this.calcRotv(this.calcrotv, 0.2);
+		this.calcRoth(Math.PI / 180 * 30, 0.1);
+		this.scale -= (this.scale - 1) * 0.1;
+		this.cx -= (this.cx - this.calcx) * 0.1;
+		this.cy -= (this.cy - this.calcy) * 0.1;
 
 		// キャラクター計算
 		for(var i = 0; i < this.member.length; i++){
@@ -54,9 +60,40 @@ class ChatCanvas extends Ccvs{
 
 		if(this.player != null){
 			// カメラ位置をプレイヤーに
-			this.cx -= (this.cx - this.player.x) * 0.1;
-			this.cy -= (this.cy - this.player.y) * 0.1;
+			this.calcx = this.player.x;
+			this.calcy = this.player.y;
 		}
+
+		// キャラクターフィールド押下確認
+		if(this.trigger_mup){
+			this.trigger_mup = false;
+			if(!Ctrl.mmv){
+				if(pressChara != null && this.tappedCharacter >= 0){
+					// キャラクター押下
+					pressChara(this.member[this.tappedCharacter]);
+				}else if(pressField != null){
+					// フィールド押下
+					pressField();
+				}
+			}
+		}
+
+		// キャラクタータップ確認
+		this.tappedCharacter = -1;
+		if(this.mdn && !Ctrl.mmv && pressChara != null){
+			for(var i = 0, depth = 0; i < this.member.length; i++){
+				var cdepth = this.member[i].getDepth();
+				if((this.tappedCharacter < 0 || depth < cdepth) && this.member[i].isOver(this.mx, this.my)){
+					depth = cdepth;
+					this.tappedCharacter = i;
+				}
+			}
+		}
+
+		// キャラクター描画設定
+		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this.tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
+		// フィールド描画設定
+		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter < 0);
 	}
 
 	// ----------------------------------------------------------------
