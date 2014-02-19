@@ -96,8 +96,9 @@ class SECdiceTest extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		this._page.ccvs.trigger_mup = false;
+		return false;
 	}
 
 	// ----------------------------------------------------------------

@@ -93,13 +93,14 @@ class PECopenHeader extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		// 動作重複禁止
 		if(PECopenHeader._current != null){PECopenHeader._current._exist = false;}
 		PECopenHeader._current = this;
 		// 位置記録
 		this._start = PECopenHeader._position;
 		this._goal = (this._type > 0) ? 0 : PECopenHeader.hide;
+		return true;
 	}
 
 	// ----------------------------------------------------------------
@@ -149,10 +150,11 @@ class PECopenLctrl extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		// 動作重複禁止
 		if(PECopenLctrl._current != null){PECopenLctrl._current._exist = false;}
 		PECopenLctrl._current = this;
+		return true;
 	}
 
 	// ----------------------------------------------------------------
@@ -211,7 +213,7 @@ class PECopenRctrl extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		// 動作重複禁止
 		if(PECopenRctrl._current != null){PECopenRctrl._current._exist = false;}
 		PECopenRctrl._current = this;
@@ -222,6 +224,7 @@ class PECopenRctrl extends EventCartridge{
 		this._change = this._change || (Ctrl.xbDiv.innerHTML != this._xbtn);
 		this._change = this._change || (Ctrl.cbDiv.innerHTML != this._cbtn);
 		this._change = this._change || (Ctrl.sbDiv.innerHTML != this._sbtn);
+		return true;
 	}
 
 	// ----------------------------------------------------------------
@@ -287,13 +290,14 @@ class PECopenCharacter extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		// 動作重複禁止
 		if(PECopenCharacter._current != null){PECopenCharacter._current._exist = false;}
 		PECopenCharacter._current = this;
 		// 展開確認
 		this._open = (this._code != "");
 		this._change = (PECopenCharacter._code != this._code);
+		return true;
 	}
 
 	// ----------------------------------------------------------------

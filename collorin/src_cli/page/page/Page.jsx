@@ -107,7 +107,7 @@ class SECloadPage extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		if(!this._exist){
 			this._exist = true;
 			// ページ情報ロード開始
@@ -124,6 +124,7 @@ class SECloadPage extends EventCartridge{
 				// ページ情報ロード失敗
 			});
 		}
+		return true;
 	}
 
 	// ----------------------------------------------------------------

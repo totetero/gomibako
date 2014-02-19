@@ -15,8 +15,9 @@ abstract class SECpopup extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		this.popupInit();
+		return false;
 	}
 
 	// ----------------------------------------------------------------

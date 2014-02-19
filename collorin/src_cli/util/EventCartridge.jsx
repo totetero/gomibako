@@ -5,8 +5,8 @@
 
 // イベントカートリッジクラス 継承して使う
 abstract class EventCartridge{
-	// 開始直前の初期化
-	function init() : void{}
+	// 開始直前の初期化 返値でtrueを返したらそのフレーム内でcalcする
+	function init() : boolean{return true;}
 	// 計算 返値でtrueを返す間はイベントが続く
 	function calc() : boolean{return false;}
 	// 破棄
@@ -18,6 +18,7 @@ class EventPlayer{
 	var _serialCurrent : EventCartridge = null;
 	var _serialList = new EventCartridge[];
 	var _parallelList = new EventCartridge[];
+	var _parallelNextList = new EventCartridge[];
 
 	// --------------------------------
 	// イベントの設定
@@ -29,8 +30,11 @@ class EventPlayer{
 
 	// 並列イベントの追加
 	function parallelPush(pec : EventCartridge) : void{
-		this._parallelList.push(pec);
-		pec.init();
+		if(pec.init()){
+			this._parallelList.push(pec);
+		}else{
+			this._parallelNextList.push(pec);
+		}
 	}
 
 	// 直列イベントの割り込み
@@ -54,6 +58,13 @@ class EventPlayer{
 				this._parallelList.splice(i--, 1);
 			}
 		}
+		// 新規並列イベント登録
+		if(this._parallelNextList.length > 0){
+			for(var i = 0; i < this._parallelNextList.length; i++){
+				this._parallelList.push(this._parallelNextList[i]);
+			}
+			this._parallelNextList.length = 0;
+		}
 		// イベントの存在確認
 		return this._serialCurrent != null || this._parallelList.length > 0;
 	}
@@ -66,8 +77,9 @@ class EventPlayer{
 		if(this._serialCurrent == null){
 			if(this._serialList.length > 0){
 				this._serialCurrent = this._serialList.shift();
-				this._serialCurrent.init();
-				this.calcSerial();
+				if(this._serialCurrent.init()){
+					this.calcSerial();
+				}
 			}
 		}
 	}

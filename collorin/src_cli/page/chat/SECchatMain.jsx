@@ -31,7 +31,7 @@ class SECchatMain extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : void{
+	override function init() : boolean{
 		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
 		this._btnList["send"] = new PageButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement, true);
 		this._btnList["exit"] = new PageButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement, true);
@@ -40,6 +40,7 @@ class SECchatMain extends EventCartridge{
 		Ctrl.trigger_enter = false;
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(true));
+		return false;
 	}
 
 	// ----------------------------------------------------------------
