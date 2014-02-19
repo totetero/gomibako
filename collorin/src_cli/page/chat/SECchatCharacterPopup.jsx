@@ -42,15 +42,13 @@ class SECchatCharacterPopup extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function popupInit() : void{
-		this.popup = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
-		this.popup.innerHTML = this._htmlTag;
-		this.window = this.popup.getElementsByClassName("core-window").item(0) as HTMLDivElement;
-		(this.window.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
-		(this.window.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._chara.code] + ")";
-		this._btnList["close"] = new PageButton(this.window.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
-		this._btnList["outer"] = new PageButton(this.window, false);
-		// トリガーリセット
-		Ctrl.trigger_mup = false;
+		this.popupDiv = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
+		this.popupDiv.innerHTML = this._htmlTag;
+		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
+		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
+		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._chara.code] + ")";
+		this._btnList["close"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["outer"] = new PageButton(this.windowDiv, false);
 		// コントローラーを隠す
 		this._page.parallelPush(new PECopenLctrl(false));
 	}
@@ -64,9 +62,13 @@ class SECchatCharacterPopup extends SECpopup{
 		this._page.ccvs.calc(false);
 
 		// 閉じるボタン
-		if(active && this._btnList["close"].trigger || this._btnList["outer"].trigger){
-			this._page.serialPush(new SECchatMain(this._page));
-			return false;
+		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
+			this._btnList["close"].trigger = false;
+			this._btnList["outer"].trigger = false;
+			if(active){
+				this._page.serialPush(new SECchatMain(this._page));
+				return false;
+			}
 		}
 
 		// キャンバス描画
