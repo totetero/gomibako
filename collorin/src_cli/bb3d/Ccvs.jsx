@@ -115,8 +115,8 @@ class Ccvs{
 			var xmin = Math.min(x1, x2, x3, x4);
 			var ymin = Math.min(y1, y2, y3, y4);
 
-			var x0 = (this.calcx * this.cosv + this.calcy * -this.sinv) + (this.prevmx - this.mx);
-			var y0 = (this.calcx * this.sinv + this.calcy *  this.cosv) + (this.prevmy - this.my);
+			var x0 = (this.calcx * this.cosv + this.calcy * -this.sinv) + (this.prevmx - this.mx) / this.scale;
+			var y0 = (this.calcx * this.sinv + this.calcy *  this.cosv) + (this.prevmy - this.my) / (this.scale * this.sinh);
 			if(x0 > xmax){x0 = xmax;}else if(x0 < xmin){x0 = xmin;}
 			if(y0 > ymax){y0 = ymax;}else if(y0 < ymin){y0 = ymin;}
 			this.calcx = x0 *  this.cosv + y0 * this.sinv;
