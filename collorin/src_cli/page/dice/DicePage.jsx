@@ -6,6 +6,7 @@ import "../page/Page.jsx";
 import "../page/Transition.jsx";
 
 import "DiceCanvas.jsx";
+import "SECdiceThrow.jsx";
 import "SECdiceMap.jsx";
 
 // ----------------------------------------------------------------
@@ -143,6 +144,12 @@ class SECdiceTest extends EventCartridge{
 			}else{
 				ccvs.player.motion = "stand";
 			}
+		}
+
+		// さいころボタン
+		if(Ctrl.trigger_zb){
+			this._page.serialPush(new SECdiceThrow(this._page));
+			exist = false;
 		}
 
 		// もどるボタン

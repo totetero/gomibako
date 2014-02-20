@@ -1,6 +1,5 @@
 import "js/web.jsx";
 
-import "../util/EventCartridge.jsx";
 import "../util/Ctrl.jsx";
 
 // Bb3d (billboard base 3d graphic library)

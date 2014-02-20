@@ -5,6 +5,7 @@ import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
 import "../../bb3d/Character.jsx";
 import "../../bb3d/HexField.jsx";
+import "../../bb3d/Dice.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -15,6 +16,7 @@ class DiceCanvas extends Ccvs{
 	var field : HexField;
 	var player : DiceCharacter;
 	var member = new DiceCharacter[];
+	var dices = new DrawDice[];
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
 	var tapped : boolean;
@@ -112,6 +114,10 @@ class DiceCanvas extends Ccvs{
 		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}	
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
+		this.context.save();
+		this.context.translate(this.width * 0.5, this.height * 0.5);
+		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
+		this.context.restore();
 	}
 }
 
