@@ -99,29 +99,28 @@ class Ccvs{
 		}
 	}
 
-	// タッチによる移動の計算 (rotv = 0 限定)
+	// タッチによる移動の計算
 	function calcTouchMove() : void{
 		if(this.mdn && Ctrl.mmv){
-			this.calcx += (this.prevmx - this.mx) / this.scale;
-			this.calcy += (this.prevmy - this.my) / this.scale;
-			if(this.calcx > this.cxmax){this.calcx = this.cxmax;}else if(this.calcx < this.cxmin){this.calcx = this.cxmin;}
-			if(this.calcy > this.cymax){this.calcy = this.cymax;}else if(this.calcy < this.cymin){this.calcy = this.cymin;}
-			//var x0 = this.prevmx - this.mx;
-			//var y0 = this.prevmy - this.my;
-			//this.calcx += (x0 *  this.cosv + y0 * this.sinv) / this.scale;
-			//this.calcy += (x0 * -this.sinv + y0 * this.cosv) / this.scale;
-			//var x1 = (this.cxmax + this.cxmin) * 0.5;
-			//var y1 = (this.cymax + this.cymin) * 0.5;
-			//var w0 = (this.cxmax - this.cxmin) * 0.5;
-			//var h0 = (this.cymax - this.cymin) * 0.5;
-			//var w1 = Math.abs(w0 *  this.cosv + h0 * this.sinv);
-			//var h1 = Math.abs(w0 * -this.sinv + h0 * this.cosv);
-			//var maxx = x1 + w1;
-			//var maxy = y1 + h1;
-			//var minx = x1 - w1;
-			//var miny = y1 - h1;
-			//if(this.calcx > maxx){this.calcx = maxx;}else if(this.calcx < minx){this.calcx = minx;}
-			//if(this.calcy > maxy){this.calcy = maxy;}else if(this.calcy < miny){this.calcy = miny;}
+			var x1 = this.cxmax * this.cosv + this.cymax * -this.sinv;
+			var y1 = this.cxmax * this.sinv + this.cymax *  this.cosv;
+			var x2 = this.cxmax * this.cosv + this.cymin * -this.sinv;
+			var y2 = this.cxmax * this.sinv + this.cymin *  this.cosv;
+			var x3 = this.cxmin * this.cosv + this.cymax * -this.sinv;
+			var y3 = this.cxmin * this.sinv + this.cymax *  this.cosv;
+			var x4 = this.cxmin * this.cosv + this.cymin * -this.sinv;
+			var y4 = this.cxmin * this.sinv + this.cymin *  this.cosv;
+			var xmax = Math.max(x1, x2, x3, x4);
+			var ymax = Math.max(y1, y2, y3, y4);
+			var xmin = Math.min(x1, x2, x3, x4);
+			var ymin = Math.min(y1, y2, y3, y4);
+
+			var x0 = (this.calcx * this.cosv + this.calcy * -this.sinv) + (this.prevmx - this.mx);
+			var y0 = (this.calcx * this.sinv + this.calcy *  this.cosv) + (this.prevmy - this.my);
+			if(x0 > xmax){x0 = xmax;}else if(x0 < xmin){x0 = xmin;}
+			if(y0 > ymax){y0 = ymax;}else if(y0 < ymin){y0 = ymin;}
+			this.calcx = x0 *  this.cosv + y0 * this.sinv;
+			this.calcy = x0 * -this.sinv + y0 * this.cosv;
 		}
 	}
 
