@@ -148,7 +148,7 @@ class SECdiceTest extends EventCartridge{
 
 		// さいころボタン
 		if(Ctrl.trigger_zb){
-			this._page.serialPush(new SECdiceThrow(this._page));
+			this._page.serialPush(new SECdiceCharge(this._page));
 			exist = false;
 		}
 

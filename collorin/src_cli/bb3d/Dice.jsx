@@ -59,7 +59,7 @@ class DrawDice{
 
 	// ----------------------------------------------------------------
 	// クオータニオン作成関数 回転軸と回転角度から回転のクオータニオンを生成する
-	function setQuat(quat : number[], x : number, y : number, z : number, rot : number) : void{
+	static function setQuat(quat : number[], x : number, y : number, z : number, rot : number) : void{
 		var r = x * x + y * y + z * z;
 		if(r == 0){x = r = 1; y = z = 0;}
 		var s = Math.sin(rot * 0.5) / Math.sqrt(r);
@@ -71,7 +71,7 @@ class DrawDice{
 
 	// ----------------------------------------------------------------
 	// クオータニオン掛け合わせ関数
-	function multiQuat(q0 : number[], q1 : number[], q2 : number[]) : void{
+	static function multiQuat(q0 : number[], q1 : number[], q2 : number[]) : void{
 		var qax = q1[0]; var qay = q1[1]; var qaz = q1[2]; var qaw = q1[3];
 		var qbx = q2[0]; var qby = q2[1]; var qbz = q2[2]; var qbw = q2[3];
 		q0[0] = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
@@ -83,23 +83,23 @@ class DrawDice{
 	// ----------------------------------------------------------------
 	// クオータニオン設定関数 ランダムな回転のクオータニオンを設定する
 	function setRandomQuat() : void{
-		this.setQuat(this.rotq, Math.random(), Math.random(), Math.random(), Math.random() * Math.PI * 2);
+		DrawDice.setQuat(this.rotq, Math.random(), Math.random(), Math.random(), Math.random() * Math.PI * 2);
 	}
 
 	// ----------------------------------------------------------------
 	// クオータニオン設定関数 さいころの目設定
 	function setDiceQuat(pip : int) : void{
 		switch(pip){
-			case 1: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  0.5); break;
-			case 2: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  1  ); break;
-			case 3: this.setQuat(this.rotq, 0, 0, 1, Math.PI * -0.5); break;
-			case 4: this.setQuat(this.rotq, 0, 0, 1, Math.PI *  0.5); break;
-			case 5: this.setQuat(this.rotq, 1, 0, 0, Math.PI *  0  ); break;
-			case 6: this.setQuat(this.rotq, 1, 0, 0, Math.PI * -0.5); break;
+			case 1: DrawDice.setQuat(this.rotq, 1, 0, 0, Math.PI *  0.5); break;
+			case 2: DrawDice.setQuat(this.rotq, 1, 0, 0, Math.PI *  1  ); break;
+			case 3: DrawDice.setQuat(this.rotq, 0, 0, 1, Math.PI * -0.5); break;
+			case 4: DrawDice.setQuat(this.rotq, 0, 0, 1, Math.PI *  0.5); break;
+			case 5: DrawDice.setQuat(this.rotq, 1, 0, 0, Math.PI *  0  ); break;
+			case 6: DrawDice.setQuat(this.rotq, 1, 0, 0, Math.PI * -0.5); break;
 		}
 		var q1 = new number[];
-		this.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
-		this.multiQuat(this.rotq, q1, this.rotq);
+		DrawDice.setQuat(q1, 0, 1, 0, Math.random() * Math.PI * 2);
+		DrawDice.multiQuat(this.rotq, q1, this.rotq);
 	}
 
 	// ----------------------------------------------------------------
@@ -120,8 +120,8 @@ class DrawDice{
 		if((this.action++ % 3) == 0){
 			// 回転クォータニオンに視角をかける
 			var rq = new number[];
-			this.setQuat(rq, 1, 0, 0, ccvs.roth);
-			this.multiQuat(rq, rq, this.rotq);
+			DrawDice.setQuat(rq, 1, 0, 0, ccvs.roth);
+			DrawDice.multiQuat(rq, rq, this.rotq);
 
 			// 各頂点座標にクォータニオン回転の適用
 			var pos = this._pos1;

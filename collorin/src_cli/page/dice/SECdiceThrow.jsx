@@ -14,11 +14,9 @@ import "DiceCanvas.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECdiceThrow extends EventCartridge{
+class SECdiceCharge extends EventCartridge{
 	var _page : DicePage;
-	var _dice : DrawDice;
-	var _rotq1 : number[];
-	var _rotq2 : number[];
+	var _rotq1 = new number[];
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -30,23 +28,21 @@ class SECdiceThrow extends EventCartridge{
 	// 初期化
 	override function init() : boolean{
 		// さいころ初期化
-		this._dice = new DrawDice(50);
-		this._page.ccvs.dices.push(this._dice);
-		this._dice.x = -80;
-		this._dice.y = 80;
-		this._dice.h = 0;
-		this._dice.setRandomQuat();
+		var dice = new DrawDice(50);
+		dice.x = -80;
+		dice.y = 80;
+		dice.h = 0;
+		dice.setRandomQuat();
+		this._page.ccvs.dices.push(dice);
 		// さいころ回転のクオータニオン
-		this._rotq1 = new number[];
-		this._rotq2 = new number[];
-		this._dice.setQuat(this._rotq1, 1, 0, 0, -0.4);
-		this._dice.setQuat(this._rotq2, 1, 0, 0, 0.4 * 20);
+		DrawDice.setQuat(this._rotq1, 1, 0, 0, -0.4);
 		// トリガーリセット
+		Ctrl.trigger_zb = false;
 		Ctrl.trigger_xb = false;
 		this._page.ccvs.trigger_mup = false;
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
-		this._page.parallelPush(new PECopenRctrl("", "もどる", "", ""));
+		this._page.parallelPush(new PECopenRctrl("なげる", "もどる", "", ""));
 		this._page.parallelPush(new PECopenCharacter("player0", 0));
 		return false;
 	}
@@ -61,9 +57,111 @@ class SECdiceThrow extends EventCartridge{
 		ccvs.calc(true, 0, null, null);
 
 		// さいころ計算
-		this._dice.multiQuat(this._dice.rotq, this._rotq1, this._dice.rotq);
+		DrawDice.multiQuat(ccvs.dices[0].rotq, this._rotq1, ccvs.dices[0].rotq);
+
+		// なげるボタン
+		if(Ctrl.trigger_zb){
+			this._page.serialPush(new SECdiceThrow(this._page, [1]));
+			exist = false;
+		}
 
 		// もどるボタン
+		if(Ctrl.trigger_xb){
+			this._page.serialPush(new SECdiceTest(this._page));
+			exist = false;
+		}
+
+		// キャンバス描画
+		this._page.ccvs.draw();
+		return exist;
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		this._page.ccvs.dices.length = 0;
+	}
+}
+
+class ExDrawDice extends DrawDice{
+	static var _rotq1 : number[];
+	static var _rotq2 : number[];
+	var _action = 0;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(num : int, index : int){
+		super(50);
+		this.x = -80;
+		this.y = 80;
+		this.h = 0;
+		this.setRandomQuat();
+
+		// さいころ回転のクオータニオン
+		if(ExDrawDice._rotq1 == null){
+			ExDrawDice._rotq1 = new number[];
+			ExDrawDice._rotq2 = new number[];
+			DrawDice.setQuat(ExDrawDice._rotq1, 1, 0, 0, -0.4);
+			DrawDice.setQuat(ExDrawDice._rotq2, 1, 0, 0, 0.4 * 20);
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	function calc() : void{
+	}
+}
+
+
+class SECdiceThrow extends EventCartridge{
+	var _page : DicePage;
+	var _dice = new ExDrawDice[];
+	var _rotq1 = new number[];
+	var _rotq2 = new number[];
+	var _pip : int[];
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : DicePage, pip : int[]){
+		this._page = page;
+		this._pip = pip;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : boolean{
+		for(var i = 0; i < this._pip.length; i++){
+			// さいころ獲得
+			var dice = new ExDrawDice(this._pip.length, i);
+			this._dice.push(dice);
+			this._page.ccvs.dices.push(dice);
+		}
+		// さいころ回転のクオータニオン
+		DrawDice.setQuat(this._rotq1, 1, 0, 0, -0.4);
+		DrawDice.setQuat(this._rotq2, 1, 0, 0, 0.4 * 20);
+		// トリガーリセット
+		Ctrl.trigger_xb = false;
+		this._page.ccvs.trigger_mup = false;
+		// コントローラーを表示
+		this._page.parallelPush(new PECopenLctrl(false));
+		this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
+		this._page.parallelPush(new PECopenCharacter("player0", 0));
+		return false;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		var ccvs = this._page.ccvs;
+		var exist = true;
+
+		// キャンバス計算
+		ccvs.calc(true, 0, null, null);
+
+		// さいころ計算
+		DrawDice.multiQuat(ccvs.dices[0].rotq, this._rotq1, ccvs.dices[0].rotq);
+
+		// スキップボタン
 		if(Ctrl.trigger_xb){
 			this._page.serialPush(new SECdiceTest(this._page));
 			exist = false;
