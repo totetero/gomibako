@@ -92,20 +92,36 @@ class Ccvs{
 			this._tempmdn = Ctrl.mdn;
 			if(this.mdn && !Ctrl.mdn){this.trigger_mup = true;}
 			this.mdn = (clickable && this._tempmdn && 0 < this.mx && this.mx < this.width && 0 < this.my && this.my < this.height);
+			if(this._tempmdn){
+				this.prevmx = this.mx;
+				this.prevmy = this.my;
+			}
 		}
 	}
 
 	// タッチによる移動の計算 (rotv = 0 限定)
 	function calcTouchMove() : void{
 		if(this.mdn && Ctrl.mmv){
-			//var x = this.prevmx - this.mx;
-			//var y = this.prevmy - this.my;
-			//this.calcx += (x *  this.cosv + y * this.sinv) / this.scale;
-			//this.calcy += (x * -this.sinv + y * this.cosv) / this.scale;
 			this.calcx += (this.prevmx - this.mx) / this.scale;
 			this.calcy += (this.prevmy - this.my) / this.scale;
 			if(this.calcx > this.cxmax){this.calcx = this.cxmax;}else if(this.calcx < this.cxmin){this.calcx = this.cxmin;}
 			if(this.calcy > this.cymax){this.calcy = this.cymax;}else if(this.calcy < this.cymin){this.calcy = this.cymin;}
+			//var x0 = this.prevmx - this.mx;
+			//var y0 = this.prevmy - this.my;
+			//this.calcx += (x0 *  this.cosv + y0 * this.sinv) / this.scale;
+			//this.calcy += (x0 * -this.sinv + y0 * this.cosv) / this.scale;
+			//var x1 = (this.cxmax + this.cxmin) * 0.5;
+			//var y1 = (this.cymax + this.cymin) * 0.5;
+			//var w0 = (this.cxmax - this.cxmin) * 0.5;
+			//var h0 = (this.cymax - this.cymin) * 0.5;
+			//var w1 = Math.abs(w0 *  this.cosv + h0 * this.sinv);
+			//var h1 = Math.abs(w0 * -this.sinv + h0 * this.cosv);
+			//var maxx = x1 + w1;
+			//var maxy = y1 + h1;
+			//var minx = x1 - w1;
+			//var miny = y1 - h1;
+			//if(this.calcx > maxx){this.calcx = maxx;}else if(this.calcx < minx){this.calcx = minx;}
+			//if(this.calcy > maxy){this.calcy = maxy;}else if(this.calcy < miny){this.calcy = miny;}
 		}
 	}
 
