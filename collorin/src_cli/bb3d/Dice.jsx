@@ -108,6 +108,7 @@ class DrawDice{
 		// 影描画
 		ccvs.context.save();
 		ccvs.context.fillStyle = "rgba(0, 0, 0, 0.5)";
+		ccvs.context.translate(ccvs.width * 0.5, ccvs.height * 0.5);
 		ccvs.context.translate(this.x, this.y);
 		ccvs.context.scale(1, ccvs.sinh);
 		ccvs.context.beginPath();
@@ -178,7 +179,7 @@ class DrawDice{
 		}
 		var x = this.x - this._canvas.width * 0.5;
 		var y = this.y - this._canvas.height * 0.5 - (this.h + this._size * 0.5) * ccvs.cosh;
-		ccvs.context.drawImage(this._canvas, x, y);
+		ccvs.context.drawImage(this._canvas, ccvs.width * 0.5 + x, ccvs.height * 0.5 + y);
 	}
 
 	// 面を描画する関数

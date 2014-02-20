@@ -114,10 +114,7 @@ class DiceCanvas extends Ccvs{
 		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}	
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
-		this.context.save();
-		this.context.translate(this.width * 0.5, this.height * 0.5);
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
-		this.context.restore();
 	}
 }
 
