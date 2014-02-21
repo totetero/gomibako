@@ -1,6 +1,5 @@
 import "js/web.jsx";
 
-import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Dice.jsx";
@@ -14,7 +13,8 @@ import "DiceCanvas.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECdiceCharge extends EventCartridge{
+ // さいころ回転
+class SECdiceRoll extends EventCartridge{
 	var _page : DicePage;
 	var _rotq1 = new number[];
 
@@ -28,14 +28,8 @@ class SECdiceCharge extends EventCartridge{
 	// 初期化
 	override function init() : boolean{
 		// さいころ初期化
-		var dice = new DrawDice(50);
-		dice.x = -80;
-		dice.y = 80;
-		dice.h = 0;
-		dice.setRandomQuat();
+		var dice = new DrawThrowDice(1, 0);
 		this._page.ccvs.dices.push(dice);
-		// さいころ回転のクオータニオン
-		DrawDice.setQuat(this._rotq1, 1, 0, 0, -0.4);
 		// トリガーリセット
 		Ctrl.trigger_zb = false;
 		Ctrl.trigger_xb = false;
@@ -55,9 +49,8 @@ class SECdiceCharge extends EventCartridge{
 
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
-
 		// さいころ計算
-		DrawDice.multiQuat(ccvs.dices[0].rotq, this._rotq1, ccvs.dices[0].rotq);
+		for(var i = 0; i < ccvs.dices.length; i++){ccvs.dices[i].calcRoll();}
 
 		// なげるボタン
 		if(Ctrl.trigger_zb){
@@ -83,39 +76,9 @@ class SECdiceCharge extends EventCartridge{
 	}
 }
 
-class ExDrawDice extends DrawDice{
-	static var _rotq1 : number[];
-	static var _rotq2 : number[];
-	var _action = 0;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(num : int, index : int){
-		super(50);
-		this.x = -80;
-		this.y = 80;
-		this.h = 0;
-		this.setRandomQuat();
-
-		// さいころ回転のクオータニオン
-		if(ExDrawDice._rotq1 == null){
-			ExDrawDice._rotq1 = new number[];
-			ExDrawDice._rotq2 = new number[];
-			DrawDice.setQuat(ExDrawDice._rotq1, 1, 0, 0, -0.4);
-			DrawDice.setQuat(ExDrawDice._rotq2, 1, 0, 0, 0.4 * 20);
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	function calc() : void{
-	}
-}
-
-
+// さいころ投擲
 class SECdiceThrow extends EventCartridge{
 	var _page : DicePage;
-	var _dice = new ExDrawDice[];
 	var _rotq1 = new number[];
 	var _rotq2 = new number[];
 	var _pip : int[];
@@ -130,15 +93,11 @@ class SECdiceThrow extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		// さいころ初期化
 		for(var i = 0; i < this._pip.length; i++){
-			// さいころ獲得
-			var dice = new ExDrawDice(this._pip.length, i);
-			this._dice.push(dice);
+			var dice = new DrawThrowDice(this._pip.length, i);
 			this._page.ccvs.dices.push(dice);
 		}
-		// さいころ回転のクオータニオン
-		DrawDice.setQuat(this._rotq1, 1, 0, 0, -0.4);
-		DrawDice.setQuat(this._rotq2, 1, 0, 0, 0.4 * 20);
 		// トリガーリセット
 		Ctrl.trigger_xb = false;
 		this._page.ccvs.trigger_mup = false;
@@ -157,9 +116,8 @@ class SECdiceThrow extends EventCartridge{
 
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
-
 		// さいころ計算
-		DrawDice.multiQuat(ccvs.dices[0].rotq, this._rotq1, ccvs.dices[0].rotq);
+		for(var i = 0; i < ccvs.dices.length; i++){ccvs.dices[i].calcThrow();}
 
 		// スキップボタン
 		if(Ctrl.trigger_xb){

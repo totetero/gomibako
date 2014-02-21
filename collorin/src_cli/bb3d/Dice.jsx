@@ -274,6 +274,58 @@ class DrawDice{
 	}
 }
 
+// 投げるさいころ描画クラス
+class DrawThrowDice extends DrawDice{
+	static var _rotq1 : number[];
+	static var _rotq2 : number[];
+	var _mode = 0;
+	var _action = 0;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(num : int, index : int){
+		super(50);
+		this.x = -80;
+		this.y = 80;
+		this.h = 0;
+		this.setRandomQuat();
+
+		// さいころ回転のクオータニオン初期化
+		if(DrawThrowDice._rotq1 == null){
+			DrawThrowDice._rotq1 = new number[];
+			DrawThrowDice._rotq2 = new number[];
+			DrawDice.setQuat(DrawThrowDice._rotq1, 1, 0, 0, -0.4);
+			DrawDice.setQuat(DrawThrowDice._rotq2, 1, 0, 0, 0.4 * 20);
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 回転計算
+	function calcRoll() : void{
+		DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+	}
+
+	// ----------------------------------------------------------------
+	// 投擲計算
+	function calcThrow() : void{
+		switch(this._mode){
+			case 0:
+				// 1回めジャンプ
+				if(this._action++ < 20){
+					this.x += 2.7;
+					this.y -= 2.7;
+					this.h = 200 * Math.sin(this._action / 20 * Math.PI);
+					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+				}else{
+					this._mode = 2;
+					this._action = 0;
+					this.setRandomQuat();
+				}
+				break;
+		}
+	}
+}
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

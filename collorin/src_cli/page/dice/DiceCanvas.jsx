@@ -16,7 +16,7 @@ class DiceCanvas extends Ccvs{
 	var field : HexField;
 	var player : DiceCharacter;
 	var member = new DiceCharacter[];
-	var dices = new DrawDice[];
+	var dices = new DrawThrowDice[];
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
 	var tapped : boolean;
