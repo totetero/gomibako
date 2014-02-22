@@ -19,6 +19,17 @@ class DicePage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<canvas></canvas>
+		<div class="status player">
+			<div class="icon"></div>
+			<div class="gauge hp"><div class="param under"></div><div class="param over"></div><div class="wrap"></div></div>
+			<div class="gauge sp"><div class="param under"></div><div class="param over"></div><div class="wrap"></div></div>
+		</div>
+		<div class="status enemy">
+			<div class="icon"></div>
+			<div class="gauge hp"><div class="param under"></div><div class="param over"></div><div class="wrap"></div></div>
+			<div class="gauge sp"><div class="param under"></div><div class="param over"></div><div class="wrap"></div></div>
+		</div>
+		<div class="message">あと2マス</div>
 	""";
 
 	// キャンバス
