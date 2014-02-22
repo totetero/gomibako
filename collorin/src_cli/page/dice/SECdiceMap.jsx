@@ -24,6 +24,8 @@ class SECdiceMap extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		// 中心キャラクター設定
+		this._page.ccvs.center = null;
 		// トリガーリセット
 		Ctrl.trigger_xb = false;
 		this._page.ccvs.trigger_mup = false;

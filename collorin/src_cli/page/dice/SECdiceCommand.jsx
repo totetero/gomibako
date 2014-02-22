@@ -5,6 +5,7 @@ import "../../util/Ctrl.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
+import "DiceCanvas.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceThrow.jsx";
 
@@ -14,17 +15,20 @@ import "SECdiceThrow.jsx";
 
 class SECdiceCommand extends EventCartridge{
 	var _page : DicePage;
+	var _player : DiceCharacter;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage){
 		this._page = page;
-		this._page.ccvs.player = this._page.ccvs.member[0][0];
+		this._player = this._page.ccvs.member[0][0];
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		// 中心キャラクター設定
+		this._page.ccvs.center = [this._player];
 		// トリガーリセット
 		Ctrl.trigger_zb = false;
 		Ctrl.trigger_cb = false;
@@ -33,7 +37,7 @@ class SECdiceCommand extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("さいころ", "", "マップ", "メニュー"));
-		this._page.parallelPush(new PECopenCharacter(this._page.ccvs.player.code, 0));
+		this._page.parallelPush(new PECopenCharacter(this._player.code, 0));
 		return false;
 	}
 

@@ -14,7 +14,7 @@ import "../../bb3d/Dice.jsx";
 // キャンバス
 class DiceCanvas extends Ccvs{
 	var field : HexField;
-	var player : DiceCharacter;
+	var center : DiceCharacter[];
 	var member = new DiceCharacter[][];
 	var dices = new DrawThrowDice[];
 	var clist : DrawUnit[] = new DrawUnit[];
@@ -54,13 +54,23 @@ class DiceCanvas extends Ccvs{
 		// キャンバス座標回転と押下確認
 		this.calcTouchCoordinate(clickable);
 		if(camera == 1){
+			// マップ用カメラ
 			this.calcTouchMove();
 			this.calcRotv(0, 0.2);
 			this.calcRoth(Math.PI / 180 * 90, 0.1);
 			this.scale -= (this.scale - 1) * 0.1;
 			this.cx -= (this.cx - this.calcx) * 0.5;
 			this.cy -= (this.cy - this.calcy) * 0.5;
+		}else if(camera == 2){
+			// 拡大カメラ
+			this.calcTouchRotate();
+			this.calcRotv(this.calcrotv, 0.2);
+			this.calcRoth(Math.PI / 180 * 30, 0.1);
+			this.scale -= (this.scale - 4) * 0.1;
+			this.cx -= (this.cx - this.calcx) * 0.2;
+			this.cy -= (this.cy - this.calcy) * 0.2;
 		}else{
+			// 通常カメラ
 			this.calcTouchRotate();
 			this.calcRotv(this.calcrotv, 0.2);
 			this.calcRoth(Math.PI / 180 * 30, 0.1);
@@ -80,10 +90,16 @@ class DiceCanvas extends Ccvs{
 		// さいころ計算
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].calc();}
 
-		if(this.player != null && camera != 1){
-			// カメラ位置をプレイヤーに
-			this.calcx = this.player.x;
-			this.calcy = this.player.y;
+		if(this.center != null && this.center.length > 0){
+			// カメラ位置
+			var cx = 0;
+			var cy = 0;
+			for(var i = 0; i < this.center.length; i++){
+				cx += this.center[i].x;
+				cy += this.center[i].y;
+			}
+			this.calcx = cx / this.center.length;
+			this.calcy = cy / this.center.length;
 		}
 
 		// キャラクターフィールド押下確認
@@ -224,6 +240,17 @@ class DiceCharacter{
 		this._shadow.preDraw(ccvs, x, y, 0);
 		switch(this.motion){
 			case "walk": this._character.preDraw(ccvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
+			case "attack1":
+				var act = this._character.getLen(this.motion) - Math.ceil((10 - this.action) / 1);
+				if(act >= 0){this._character.preDraw(ccvs, x, y, 0, this.r, this.motion, act);}
+				else{this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0);}
+				break;
+			case "attack2":
+			case "damage":
+				var act = Math.floor(this.action / 1);
+				if(act < this._character.getLen(this.motion)){this._character.preDraw(ccvs, x, y, 0, this.r, this.motion, act);}
+				else{this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0);}
+				break;
 			default: this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0); break;
 		}
 	}
