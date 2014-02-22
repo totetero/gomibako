@@ -5,31 +5,35 @@ import "../../util/Ctrl.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
+import "SECdiceMap.jsx";
+import "SECdiceThrow.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECdiceMap extends EventCartridge{
+class SECdiceCommand extends EventCartridge{
 	var _page : DicePage;
-	var _cartridge : EventCartridge;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage, cartridge : EventCartridge){
+	function constructor(page : DicePage){
 		this._page = page;
-		this._cartridge = cartridge;
+		this._page.ccvs.player = this._page.ccvs.member[0][0];
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
 		// トリガーリセット
-		Ctrl.trigger_xb = false;
+		Ctrl.trigger_zb = false;
+		Ctrl.trigger_cb = false;
+		Ctrl.trigger_sb = false;
 		this._page.ccvs.trigger_mup = false;
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
-		this._page.parallelPush(new PECopenRctrl("", "もどる", "", ""));
+		this._page.parallelPush(new PECopenRctrl("さいころ", "", "マップ", "メニュー"));
+		this._page.parallelPush(new PECopenCharacter(this._page.ccvs.player.code, 0));
 		return false;
 	}
 
@@ -40,8 +44,8 @@ class SECdiceMap extends EventCartridge{
 		var exist = true;
 
 		// キャンバス計算
-		ccvs.calc(true, 1, function() : void{
-			// フィールド押下
+		ccvs.calc(true, 0, function() : void{
+			// フィールド押下による移動
 			var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
 			log "field " + hex.x + " " + hex.y;
 		}, function() : void{
@@ -49,10 +53,21 @@ class SECdiceMap extends EventCartridge{
 			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
 		});
 
-		// もどるボタン
-		if(Ctrl.trigger_xb){
-			this._page.serialPush(this._cartridge);
+		// さいころボタン
+		if(Ctrl.trigger_zb){
+			this._page.serialPush(new SECdiceRoll(this._page, this));
 			exist = false;
+		}
+
+		// マップボタン
+		if(Ctrl.trigger_cb){
+			this._page.serialPush(new SECdiceMap(this._page, this));
+			exist = false;
+		}
+
+		// メニューボタン
+		if(Ctrl.trigger_sb){
+			Ctrl.trigger_sb = false;
 		}
 
 		// キャンバス描画

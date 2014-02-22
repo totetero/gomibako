@@ -3,11 +3,10 @@ import "js/web.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Dice.jsx";
-import "../page/Page.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
-import "DiceCanvas.jsx";
+import "SECdiceMove.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -16,12 +15,14 @@ import "DiceCanvas.jsx";
  // さいころ回転
 class SECdiceRoll extends EventCartridge{
 	var _page : DicePage;
+	var _cartridge : EventCartridge;
 	var _num : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage){ // TODO さいころ数 送信データ もどるSEC
+	function constructor(page : DicePage, cartridge : EventCartridge){ // TODO さいころ数 送信データ
 		this._page = page;
+		this._cartridge = cartridge;
 		this._num = 1;
 	}
 
@@ -40,7 +41,7 @@ class SECdiceRoll extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("なげる", "もどる", "", ""));
-		this._page.parallelPush(new PECopenCharacter("player0", 0));
+		this._page.parallelPush(new PECopenCharacter("", 0));
 		return false;
 	}
 
@@ -62,7 +63,7 @@ class SECdiceRoll extends EventCartridge{
 		// もどるボタン
 		if(Ctrl.trigger_xb){
 			this._page.ccvs.dices.length = 0;
-			this._page.serialPush(new SECdiceTest(this._page));
+			this._page.serialPush(this._cartridge);
 			exist = false;
 		}
 
@@ -98,7 +99,7 @@ class SECdiceThrow extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
-		this._page.parallelPush(new PECopenCharacter("player0", 0));
+		this._page.parallelPush(new PECopenCharacter("", 0));
 		return false;
 	}
 
@@ -118,7 +119,7 @@ class SECdiceThrow extends EventCartridge{
 		// 演出終了もしくはスキップボタン
 		if(!throwing || Ctrl.trigger_xb){
 			this._page.ccvs.dices.length = 0;
-			this._page.serialPush(new SECdiceTest(this._page));
+			this._page.serialPush(new SECdiceMove(this._page));
 			exist = false;
 		}
 
