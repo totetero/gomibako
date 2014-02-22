@@ -232,7 +232,7 @@ class DrawDice{
 				//var uv22 = v3 - v1;
 				//var det = uv11 * uv22 - uv12 * uv21;
 				//if (-0.0001 < det && det < 0.0001){return;}
-				//var	uv11d = uv22 / det;
+				//var uv11d = uv22 / det;
 				//var uv22d = uv11 / det;
 				//var uv12d = -uv12 / det;
 				//var uv21d = -uv21 / det;
@@ -300,6 +300,7 @@ class DrawThrowDice extends DrawDice{
 	static var _rotq1 : number[];
 	static var _rotq2 : number[];
 	static const _layout = [[-80, 80], [-110, 70, -50, 90], [-50, 70,  -110, 90, -50, 110], [-90, 50, -30, 70, -120, 90, -60, 110]];
+	static const frame = 15;
 	var _throwMode = 0;
 	var _throwAction = 0;
 
@@ -319,7 +320,7 @@ class DrawThrowDice extends DrawDice{
 			DrawThrowDice._rotq1 = new number[];
 			DrawThrowDice._rotq2 = new number[];
 			DrawDice.setQuat(DrawThrowDice._rotq1, 1, 0, 0, -0.4);
-			DrawDice.setQuat(DrawThrowDice._rotq2, 1, 0, 0, 0.4 * 20);
+			DrawDice.setQuat(DrawThrowDice._rotq2, 1, 0, 0, 0.4 * DrawThrowDice.frame);
 		}
 	}
 
@@ -343,10 +344,10 @@ class DrawThrowDice extends DrawDice{
 				break;
 			case 1:
 				// 1回めジャンプ
-				if(this._throwAction++ < 20){
-					this.x += 160 / 60;
-					this.y -= 120 / 60;
-					this.h = 200 * Math.sin(this._throwAction / 20 * Math.PI);
+				if(this._throwAction++ < DrawThrowDice.frame){
+					this.x += 160 / (DrawThrowDice.frame * 3);
+					this.y -= 120 / (DrawThrowDice.frame * 3);
+					this.h = 200 * Math.sin(this._throwAction / DrawThrowDice.frame * Math.PI);
 					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
 				}else{
 					this._throwMode = 2;
@@ -356,10 +357,10 @@ class DrawThrowDice extends DrawDice{
 				break;
 			case 2:
 				// 2回めジャンプ
-				if(this._throwAction++ < 20){
-					this.x += 160 / 60;
-					this.y -= 120 / 60;
-					this.h = 100 * Math.sin(this._throwAction / 20 * Math.PI);
+				if(this._throwAction++ < DrawThrowDice.frame){
+					this.x += 160 / (DrawThrowDice.frame * 3);
+					this.y -= 120 / (DrawThrowDice.frame * 3);
+					this.h = 100 * Math.sin(this._throwAction / DrawThrowDice.frame * Math.PI);
 					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
 				}else{
 					this._throwMode = 3;
@@ -375,8 +376,8 @@ class DrawThrowDice extends DrawDice{
 					this._throwAction = 0;
 					this.setDiceQuat(this.pip);
 					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq2, this.rotq);
-				}else if(this._throwAction++ < 20){
-					this.h = 100 * Math.sin(this._throwAction / 20 * Math.PI);
+				}else if(this._throwAction++ < DrawThrowDice.frame){
+					this.h = 100 * Math.sin(this._throwAction / DrawThrowDice.frame * Math.PI);
 					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
 				}else{
 					this._throwMode = 3;
@@ -386,13 +387,13 @@ class DrawThrowDice extends DrawDice{
 				break;
 			case 4:
 				// 最後のジャンプ
-				if(this._throwAction++ < 20){
-					this.x += 160 / 60;
-					this.y -= 120 / 60;
-					this.h = 50 * Math.sin(this._throwAction / 20 * Math.PI);
+				if(this._throwAction++ < DrawThrowDice.frame){
+					this.x += 160 / (DrawThrowDice.frame * 3);
+					this.y -= 120 / (DrawThrowDice.frame * 3);
+					this.h = 50 * Math.sin(this._throwAction / DrawThrowDice.frame * Math.PI);
 					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
 					// 描画タイミングの調整
-					if(this._throwAction == 20){this.action = 0;}
+					if(this._throwAction == DrawThrowDice.frame){this.action = 0;}
 				}else{
 					this._throwMode = 5;
 					this._throwAction = 0;
@@ -400,7 +401,7 @@ class DrawThrowDice extends DrawDice{
 				break;
 			case 5:
 				// 少し待機
-				if(this._throwAction++ >= 40){
+				if(this._throwAction++ >= 30){
 					return false;
 				}
 				break;

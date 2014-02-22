@@ -6,7 +6,11 @@ import "require/passport.jsx";
 import "require/socket.io.jsx";
 
 import "util/ImageServer.jsx";
-import "page/*.jsx";
+import "page/AuthPage.jsx";
+import "page/mypage/MyPage.jsx";
+import "page/world/WorldPage.jsx";
+import "page/dice/DicePage.jsx";
+import "page/chat/ChatPage.jsx";
 
 import "models/User.jsx";
 

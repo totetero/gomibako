@@ -1,10 +1,10 @@
-import "../require/nodejs.jsx";
-import "../require/express.jsx";
-import "../require/redis.jsx";
-import "../require/socket.io.jsx";
+import "../../require/nodejs.jsx";
+import "../../require/express.jsx";
+import "../../require/redis.jsx";
+import "../../require/socket.io.jsx";
 
-import "../models/User.jsx";
-import "../data/CharacterDrawInfo.jsx";
+import "../../models/User.jsx";
+import "../../data/CharacterDrawInfo.jsx";
 
 class ChatUserInfo{
 	var uid : string;

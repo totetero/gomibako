@@ -46,9 +46,9 @@ class SECdiceMap extends EventCartridge{
 			// フィールド押下
 			var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
 			log "field " + hex.x + " " + hex.y;
-		}, function(chara : DiceCharacter) : void{
+		}, function() : void{
 			// キャラクター押下
-			log chara;
+			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
 		});
 
 		// もどるボタン

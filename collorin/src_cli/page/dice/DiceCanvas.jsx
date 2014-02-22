@@ -15,11 +15,12 @@ import "../../bb3d/Dice.jsx";
 class DiceCanvas extends Ccvs{
 	var field : HexField;
 	var player : DiceCharacter;
-	var member = new DiceCharacter[];
+	var member = new DiceCharacter[][];
 	var dices = new DrawThrowDice[];
 	var clist : DrawUnit[] = new DrawUnit[];
 	var slist : DrawUnit[] = new DrawUnit[];
 	var tapped : boolean;
+	var tappedType : int;
 	var tappedCharacter : int;
 
 	// コンストラクタ
@@ -34,16 +35,22 @@ class DiceCanvas extends Ccvs{
 		this.field = new HexField(this, response["hex"] as HexFieldCell[]);
 		// キャラクター
 		var charaInfoList = response["charaInfo"] as variant[][];
-		this.member.push(new DiceCharacter(this, charaInfoList[0][0]));
-		this.player = this.member[0];
-		// 初期カメラ位置
-		this.cx = this.calcx = this.member[0].x;
-		this.cy = this.calcy = this.member[0].y;
+		for(var i = 0; i < charaInfoList.length; i++){
+			this.member[i] = new DiceCharacter[];
+			for(var j = 0; j < charaInfoList[i].length; j++){
+				this.member[i].push(new DiceCharacter(this, charaInfoList[i][j]));
+			}
+		}
+ 		// 初期カメラ位置
+		var hexx = response["camera"][0] as int;
+		var hexy = response["camera"][1] as int;
+		this.cx = this.calcx = this.field.calcHexCoordx(hexx, hexy);
+		this.cy = this.calcy = this.field.calcHexCoordy(hexx, hexy);
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
-	function calc(clickable : boolean, camera : int, pressField : function():void, pressChara : function(chara:DiceCharacter):void) : void{
+	function calc(clickable : boolean, camera : int, pressField : function():void, pressChara : function():void) : void{
 		// キャンバス座標回転と押下確認
 		this.calcTouchCoordinate(clickable);
 		if(camera == 1){
@@ -64,11 +71,13 @@ class DiceCanvas extends Ccvs{
 
 		// キャラクター計算
 		for(var i = 0; i < this.member.length; i++){
-			this.member[i].calc(this);
-			if(!this.member[i].exist){this.member.splice(i--,1);}
+			for(var j = 0; j < this.member[i].length; j++){
+				this.member[i][j].calc(this);
+				if(!this.member[i][j].exist){this.member[i].splice(j--, 1);}
+			}
 		}
 
-		if(camera != 1){
+		if(this.player != null && camera != 1){
 			// カメラ位置をプレイヤーに
 			this.calcx = this.player.x;
 			this.calcy = this.player.y;
@@ -78,9 +87,9 @@ class DiceCanvas extends Ccvs{
 		if(this.trigger_mup){
 			this.trigger_mup = false;
 			if(!Ctrl.mmv){
-				if(pressChara != null && this.tappedCharacter >= 0){
+				if(pressChara != null && this.tappedType >= 0){
 					// キャラクター押下
-					pressChara(this.member[this.tappedCharacter]);
+					pressChara();
 				}else if(pressField != null){
 					// フィールド押下
 					pressField();
@@ -89,21 +98,26 @@ class DiceCanvas extends Ccvs{
 		}
 
 		// キャラクタータップ確認
-		this.tappedCharacter = -1;
+		this.tappedType = -1;
 		if(this.mdn && !Ctrl.mmv && pressChara != null){
-			for(var i = 0, depth = 0; i < this.member.length; i++){
-				var cdepth = this.member[i].getDepth();
-				if((this.tappedCharacter < 0 || depth < cdepth) && this.member[i].isOver(this.mx, this.my)){
-					depth = cdepth;
-					this.tappedCharacter = i;
+			var depth0 = 0;
+			for(var i = 0; i < this.member.length; i++){
+				if(i != 0 && i != 1){continue;}
+				for(var j = 0; j < this.member[i].length; j++){
+					var depth1 = this.member[i][j].getDepth();
+					if((this.tappedType < 0 || depth0 < depth1) && this.member[i][j].isOver(this.mx, this.my)){
+						depth0 = depth1;
+						this.tappedType = i;
+						this.tappedCharacter = j;
+					}
 				}
 			}
 		}
 
 		// キャラクター描画設定
-		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this.tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
+		for(var i = 0; i < this.member.length; i++){for(var j = 0; j < this.member[i].length; j++){this.member[i][j].setColor((this.tappedType == i && this.tappedCharacter == j) ? "rgba(255, 255, 255, 0.5)" : "");}}
 		// フィールド描画設定
-		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter < 0);
+		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedType < 0);
 	}
 
 	// ----------------------------------------------------------------
@@ -111,7 +125,7 @@ class DiceCanvas extends Ccvs{
 	function draw() : void{
 		this.context.clearRect(0, 0, this.width, this.height);
 		this.field.draw(this, this.cx, this.cy, this.tapped);
-		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}	
+		for(var i = 0; i < this.member.length; i++){for(var j = 0; j < this.member[i].length; j++){this.member[i][j].preDraw(this);}}
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}

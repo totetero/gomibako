@@ -1,9 +1,9 @@
-import "../require/nodejs.jsx";
-import "../require/express.jsx";
-import "../require/redis.jsx";
+import "../../require/nodejs.jsx";
+import "../../require/express.jsx";
+import "../../require/redis.jsx";
 
-import "../models/User.jsx";
-import "../data/CharacterDrawInfo.jsx";
+import "../../models/User.jsx";
+import "../../data/CharacterDrawInfo.jsx";
 
 // マイページ
 class DicePage{
@@ -64,6 +64,9 @@ class DicePage{
 			// 敵情報
 			{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 4, r: Math.PI * 0.5},
 		]];
+
+		// 初期カメラ位置
+		jdat["camera"] = [charaInfoList[0][0]["x"], charaInfoList[0][0]["y"]];
 
 		// キャラクター情報の画像読み込み
 		for(var i = 0; i < charaInfoList.length; i++){

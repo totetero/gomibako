@@ -90,6 +90,7 @@ class SECdiceTest extends EventCartridge{
 	// コンストラクタ
 	function constructor(page : DicePage){
 		this._page = page;
+		this._page.ccvs.player = this._page.ccvs.member[0][0];
 	}
 
 	// ----------------------------------------------------------------
@@ -118,9 +119,9 @@ class SECdiceTest extends EventCartridge{
 			// フィールド押下による移動
 			var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
 			ccvs.player.dstList.push([hex.x, hex.y]);
-		}, function(chara : DiceCharacter) : void{
+		}, function() : void{
 			// キャラクター押下
-			log chara;
+			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
 		});
 
 		// キャラクター計算
