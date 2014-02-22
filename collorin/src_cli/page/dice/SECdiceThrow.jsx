@@ -20,7 +20,7 @@ class SECdiceRoll extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage){
+	function constructor(page : DicePage){ // TODO さいころ数 送信データ もどるSEC
 		this._page = page;
 		this._num = 1;
 	}
@@ -29,6 +29,7 @@ class SECdiceRoll extends EventCartridge{
 	// 初期化
 	override function init() : boolean{
 		// さいころ初期化
+		this._page.ccvs.dices.length = 0;
 		for(var i = 0; i < this._num; i++){
 			this._page.ccvs.dices.push(new DrawThrowDice(this._num, i));
 		}
@@ -51,17 +52,16 @@ class SECdiceRoll extends EventCartridge{
 
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
-		// さいころ計算
-		for(var i = 0; i < ccvs.dices.length; i++){ccvs.dices[i].calcRoll();}
 
 		// なげるボタン
 		if(Ctrl.trigger_zb){
-			this._page.serialPush(new SECdiceThrow(this._page, this._num));
+			this._page.serialPush(new SECdiceThrow(this._page));
 			exist = false;
 		}
 
 		// もどるボタン
 		if(Ctrl.trigger_xb){
+			this._page.ccvs.dices.length = 0;
 			this._page.serialPush(new SECdiceTest(this._page));
 			exist = false;
 		}
@@ -74,29 +74,24 @@ class SECdiceRoll extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		this._page.ccvs.dices.length = 0;
 	}
 }
 
 // さいころ投擲
 class SECdiceThrow extends EventCartridge{
 	var _page : DicePage;
-	var _num : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage, num : int){
+	function constructor(page : DicePage){
 		this._page = page;
-		this._num = num;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		// さいころ初期化
-		for(var i = 0; i < this._num; i++){
-			this._page.ccvs.dices.push(new DrawThrowDice(this._num, i));
-		}
+		// さいころ設定
+		for(var i = 0; i < this._page.ccvs.dices.length; i++){this._page.ccvs.dices[i].start();}
 		// トリガーリセット
 		Ctrl.trigger_xb = false;
 		this._page.ccvs.trigger_mup = false;
@@ -115,12 +110,14 @@ class SECdiceThrow extends EventCartridge{
 
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
-		// さいころ計算
+
+		// さいころ完了確認
 		var throwing = false;
-		for(var i = 0; i < ccvs.dices.length; i++){throwing = ccvs.dices[i].calcThrow() || throwing;}
+		for(var i = 0; i < ccvs.dices.length; i++){throwing = throwing || ccvs.dices[i].throwing;}
 
 		// 演出終了もしくはスキップボタン
 		if(!throwing || Ctrl.trigger_xb){
+			this._page.ccvs.dices.length = 0;
 			this._page.serialPush(new SECdiceTest(this._page));
 			exist = false;
 		}
@@ -133,7 +130,6 @@ class SECdiceThrow extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		this._page.ccvs.dices.length = 0;
 	}
 }
 

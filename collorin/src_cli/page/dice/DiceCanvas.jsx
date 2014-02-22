@@ -77,6 +77,9 @@ class DiceCanvas extends Ccvs{
 			}
 		}
 
+		// さいころ計算
+		for(var i = 0; i < this.dices.length; i++){this.dices[i].calc();}
+
 		if(this.player != null && camera != 1){
 			// カメラ位置をプレイヤーに
 			this.calcx = this.player.x;

@@ -301,10 +301,12 @@ class DrawThrowDice extends DrawDice{
 	static var _rotq2 : number[];
 	static const _layout = [[-80, 80], [-110, 70, -50, 90], [-50, 70,  -110, 90, -50, 110], [-90, 50, -30, 70, -120, 90, -60, 110]];
 	static const frame = 15;
+	var _front : boolean;
 	var _throwMode = 0;
 	var _throwAction = 0;
 
-	var pip = 1;
+	var pip = 1; // TODO test初期値
+	var throwing = false;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -312,8 +314,8 @@ class DrawThrowDice extends DrawDice{
 		super(50 - 3 * num);
 		this.x = DrawThrowDice._layout[num - 1][index * 2 + 0];
 		this.y = DrawThrowDice._layout[num - 1][index * 2 + 1];
-		if(index != 0){this._throwAction = Math.floor(Math.random() * 5);}
 		this.setRandomQuat();
+		this._front = (index == 0);
 
 		// さいころ回転のクオータニオン初期化
 		if(DrawThrowDice._rotq1 == null){
@@ -325,18 +327,19 @@ class DrawThrowDice extends DrawDice{
 	}
 
 	// ----------------------------------------------------------------
-	// 回転計算
-	function calcRoll() : void{
-		DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+	// 投擲開始
+	function start() : void{
+		this._throwAction = 1 + (this._front ? 0 : Math.floor(Math.random() * 5));
+		this.throwing = true;
 	}
 
 	// ----------------------------------------------------------------
-	// 投擲計算
-	function calcThrow() : boolean{
+	// 計算
+	function calc() : void{
 		switch(this._throwMode){
 			case 0:
-				// 少し待機
-				if(--this._throwAction < 0){
+				// 回転待機
+				if(this._throwAction > 0 && --this._throwAction <= 0){
 					this._throwMode = 1;
 					this._throwAction = 0;
 				}
@@ -402,11 +405,12 @@ class DrawThrowDice extends DrawDice{
 			case 5:
 				// 少し待機
 				if(this._throwAction++ >= 30){
-					return false;
+					this._throwMode = 6;
+					this._throwAction = 0;
+					this.throwing = false;
 				}
 				break;
 		}
-		return true;
 	}
 }
 
