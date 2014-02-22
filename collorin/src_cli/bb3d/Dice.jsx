@@ -218,36 +218,58 @@ class DrawDice{
 			if(type > 0){
 				// 面の描画
 				// 参考 最速チュパカブラ研究会 2009年2月11日の日記(http://d.hatena.ne.jp/gyuque/20090211)
-				var u0 = ((type - 1) % 3) * 32;
-				var v0 = (((type - 1) / 3) as int) * 32;
-				var u1 = u0 + 0;
-				var v1 = v0 + 0;
-				var u2 = u0 + 0;
-				var v2 = v0 + 32;
-				var u3 = u0 + 32;
-				var v3 = v0 + 32;
-				var uv11 = u2 - u1;
-				var uv12 = v2 - v1;
-				var uv21 = u3 - u1;
-				var uv22 = v3 - v1;
-				var det = uv11 * uv22 - uv12 * uv21;
-				if (-0.0001 < det && det < 0.0001){return;}
-				var	uv11d = uv22 / det;
-				var uv22d = uv11 / det;
-				var uv12d = -uv12 / det;
-				var uv21d = -uv21 / det;
-				var t11 = uv11d * x1 + uv12d * x2;
-				var t21 = uv11d * y1 + uv12d * y2;
-				var t12 = uv21d * x1 + uv22d * x2;
-				var t22 = uv21d * y1 + uv22d * y2;
-				var t13 = top0[0] - (t11 * u1 + t12 * v1);
-				var t23 = top0[1] - (t21 * u1 + t22 * v1);
-				var uw0 = u1 < u2 ? u1 : u2; uw0 = uw0 < u3 ? uw0 : u3;
-				var uw1 = u1 > u2 ? u1 : u2; uw1 = uw1 > u3 ? uw1 : u3;
-				var vh0 = v1 < v2 ? v1 : v2; vh0 = vh0 < v3 ? vh0 : v3;
-				var vh1 = v1 > v2 ? v1 : v2; vh1 = vh1 > v3 ? vh1 : v3;
-				uw1 = uw1 - uw0;
-				vh1 = vh1 - vh0;
+				//var u0 = ((type - 1) % 3) * 32;
+				//var v0 = (((type - 1) / 3) as int) * 32;
+				//var u1 = u0 + 0;
+				//var v1 = v0 + 0;
+				//var u2 = u0 + 0;
+				//var v2 = v0 + 32;
+				//var u3 = u0 + 32;
+				//var v3 = v0 + 32;
+				//var uv11 = u2 - u1;
+				//var uv12 = v2 - v1;
+				//var uv21 = u3 - u1;
+				//var uv22 = v3 - v1;
+				//var det = uv11 * uv22 - uv12 * uv21;
+				//if (-0.0001 < det && det < 0.0001){return;}
+				//var	uv11d = uv22 / det;
+				//var uv22d = uv11 / det;
+				//var uv12d = -uv12 / det;
+				//var uv21d = -uv21 / det;
+				//var t11 = uv11d * x1 + uv12d * x2;
+				//var t21 = uv11d * y1 + uv12d * y2;
+				//var t12 = uv21d * x1 + uv22d * x2;
+				//var t22 = uv21d * y1 + uv22d * y2;
+				//var t13 = top0[0] - (t11 * u1 + t12 * v1);
+				//var t23 = top0[1] - (t21 * u1 + t22 * v1);
+				//var uw0 = u1 < u2 ? u1 : u2; uw0 = uw0 < u3 ? uw0 : u3;
+				//var uw1 = u1 > u2 ? u1 : u2; uw1 = uw1 > u3 ? uw1 : u3;
+				//var vh0 = v1 < v2 ? v1 : v2; vh0 = vh0 < v3 ? vh0 : v3;
+				//var vh1 = v1 > v2 ? v1 : v2; vh1 = vh1 > v3 ? vh1 : v3;
+				//uw1 = uw1 - uw0;
+				//vh1 = vh1 - vh0;
+				//this._context.save();
+				//this._context.beginPath();
+				//this._context.moveTo(top0[0], top0[1]);
+				//this._context.lineTo(top1[0], top1[1]);
+				//this._context.lineTo(top2[0], top2[1]);
+				//this._context.lineTo(top3[0], top3[1]);
+				//this._context.closePath();
+				//this._context.clip();
+				//this._context.transform(t11, t21, t12, t22, t13, t23);
+				//this._context.fill();
+				//this._context.drawImage(this._img, uw0, vh0, uw1, vh1, uw0, vh0, uw1, vh1);
+				//this._context.restore();
+				// ↓ 省略！！
+				var uvsize = 32;
+				var u = ((type - 1) % 3) * uvsize;
+				var v = (((type - 1) / 3) as int) * uvsize;
+				var t11 = (x2 - x1) / uvsize;
+				var t21 = (y2 - y1) / uvsize;
+				var t12 = x1 / uvsize;
+				var t22 = y1 / uvsize;
+				var t13 = top0[0] - (t11 * u + t12 * v);
+				var t23 = top0[1] - (t21 * u + t22 * v);
 				this._context.save();
 				this._context.beginPath();
 				this._context.moveTo(top0[0], top0[1]);
@@ -255,10 +277,9 @@ class DrawDice{
 				this._context.lineTo(top2[0], top2[1]);
 				this._context.lineTo(top3[0], top3[1]);
 				this._context.closePath();
-				this._context.clip();
 				this._context.transform(t11, t21, t12, t22, t13, t23);
 				this._context.fill();
-				this._context.drawImage(this._img, uw0, vh0, uw1, vh1, uw0, vh0, uw1, vh1);
+				this._context.drawImage(this._img, u, v, uvsize, uvsize, u, v, uvsize, uvsize);
 				this._context.restore();
 			}else{
 				// 辺と頂点の描画
@@ -278,16 +299,19 @@ class DrawDice{
 class DrawThrowDice extends DrawDice{
 	static var _rotq1 : number[];
 	static var _rotq2 : number[];
-	var _mode = 0;
-	var _action = 0;
+	static const _layout = [[-80, 80], [-110, 70, -50, 90], [-50, 70,  -110, 90, -50, 110], [-90, 50, -30, 70, -120, 90, -60, 110]];
+	var _throwMode = 0;
+	var _throwAction = 0;
+
+	var pip = 1;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(num : int, index : int){
-		super(50);
-		this.x = -80;
-		this.y = 80;
-		this.h = 0;
+		super(50 - 3 * num);
+		this.x = DrawThrowDice._layout[num - 1][index * 2 + 0];
+		this.y = DrawThrowDice._layout[num - 1][index * 2 + 1];
+		if(index != 0){this._throwAction = Math.floor(Math.random() * 5);}
 		this.setRandomQuat();
 
 		// さいころ回転のクオータニオン初期化
@@ -307,22 +331,81 @@ class DrawThrowDice extends DrawDice{
 
 	// ----------------------------------------------------------------
 	// 投擲計算
-	function calcThrow() : void{
-		switch(this._mode){
+	function calcThrow() : boolean{
+		switch(this._throwMode){
 			case 0:
+				// 少し待機
+				if(--this._throwAction < 0){
+					this._throwMode = 1;
+					this._throwAction = 0;
+				}
+				DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+				break;
+			case 1:
 				// 1回めジャンプ
-				if(this._action++ < 20){
-					this.x += 2.7;
-					this.y -= 2.7;
-					this.h = 200 * Math.sin(this._action / 20 * Math.PI);
+				if(this._throwAction++ < 20){
+					this.x += 160 / 60;
+					this.y -= 120 / 60;
+					this.h = 200 * Math.sin(this._throwAction / 20 * Math.PI);
 					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
 				}else{
-					this._mode = 2;
-					this._action = 0;
+					this._throwMode = 2;
+					this._throwAction = 0;
 					this.setRandomQuat();
 				}
 				break;
+			case 2:
+				// 2回めジャンプ
+				if(this._throwAction++ < 20){
+					this.x += 160 / 60;
+					this.y -= 120 / 60;
+					this.h = 100 * Math.sin(this._throwAction / 20 * Math.PI);
+					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+				}else{
+					this._throwMode = 3;
+					this._throwAction = 0;
+					this.setRandomQuat();
+				}
+				break;
+			case 3:
+				// 通信待機ジャンプ
+				if(this._throwAction == 0 && this.pip > 0){
+					// 通信完了時
+					this._throwMode = 4;
+					this._throwAction = 0;
+					this.setDiceQuat(this.pip);
+					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq2, this.rotq);
+				}else if(this._throwAction++ < 20){
+					this.h = 100 * Math.sin(this._throwAction / 20 * Math.PI);
+					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+				}else{
+					this._throwMode = 3;
+					this._throwAction = 0;
+					this.setRandomQuat();
+				}
+				break;
+			case 4:
+				// 最後のジャンプ
+				if(this._throwAction++ < 20){
+					this.x += 160 / 60;
+					this.y -= 120 / 60;
+					this.h = 50 * Math.sin(this._throwAction / 20 * Math.PI);
+					DrawDice.multiQuat(this.rotq, DrawThrowDice._rotq1, this.rotq);
+					// 描画タイミングの調整
+					if(this._throwAction == 20){this.action = 0;}
+				}else{
+					this._throwMode = 5;
+					this._throwAction = 0;
+				}
+				break;
+			case 5:
+				// 少し待機
+				if(this._throwAction++ >= 40){
+					return false;
+				}
+				break;
 		}
+		return true;
 	}
 }
 

@@ -16,20 +16,22 @@ import "DiceCanvas.jsx";
  // さいころ回転
 class SECdiceRoll extends EventCartridge{
 	var _page : DicePage;
-	var _rotq1 = new number[];
+	var _num : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage){
 		this._page = page;
+		this._num = 1;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
 		// さいころ初期化
-		var dice = new DrawThrowDice(1, 0);
-		this._page.ccvs.dices.push(dice);
+		for(var i = 0; i < this._num; i++){
+			this._page.ccvs.dices.push(new DrawThrowDice(this._num, i));
+		}
 		// トリガーリセット
 		Ctrl.trigger_zb = false;
 		Ctrl.trigger_xb = false;
@@ -54,7 +56,7 @@ class SECdiceRoll extends EventCartridge{
 
 		// なげるボタン
 		if(Ctrl.trigger_zb){
-			this._page.serialPush(new SECdiceThrow(this._page, [1]));
+			this._page.serialPush(new SECdiceThrow(this._page, this._num));
 			exist = false;
 		}
 
@@ -79,24 +81,21 @@ class SECdiceRoll extends EventCartridge{
 // さいころ投擲
 class SECdiceThrow extends EventCartridge{
 	var _page : DicePage;
-	var _rotq1 = new number[];
-	var _rotq2 = new number[];
-	var _pip : int[];
+	var _num : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage, pip : int[]){
+	function constructor(page : DicePage, num : int){
 		this._page = page;
-		this._pip = pip;
+		this._num = num;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
 		// さいころ初期化
-		for(var i = 0; i < this._pip.length; i++){
-			var dice = new DrawThrowDice(this._pip.length, i);
-			this._page.ccvs.dices.push(dice);
+		for(var i = 0; i < this._num; i++){
+			this._page.ccvs.dices.push(new DrawThrowDice(this._num, i));
 		}
 		// トリガーリセット
 		Ctrl.trigger_xb = false;
@@ -117,10 +116,11 @@ class SECdiceThrow extends EventCartridge{
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
 		// さいころ計算
-		for(var i = 0; i < ccvs.dices.length; i++){ccvs.dices[i].calcThrow();}
+		var throwing = false;
+		for(var i = 0; i < ccvs.dices.length; i++){throwing = ccvs.dices[i].calcThrow() || throwing;}
 
-		// スキップボタン
-		if(Ctrl.trigger_xb){
+		// 演出終了もしくはスキップボタン
+		if(!throwing || Ctrl.trigger_xb){
 			this._page.serialPush(new SECdiceTest(this._page));
 			exist = false;
 		}
