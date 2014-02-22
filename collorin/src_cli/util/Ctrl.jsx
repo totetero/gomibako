@@ -31,6 +31,8 @@ class Ctrl{
 	static var _lmdn : boolean;
 	static var _rmdn : boolean;
 	// キー押下状態
+	static var lKeyLock = false;
+	static var rKeyLock = false;
 	static var kup : boolean;
 	static var kdn : boolean;
 	static var krt : boolean;
@@ -154,14 +156,14 @@ class Ctrl{
 		}
 
 		// キー状態確認
-		var kup = Ctrl._mkup || Ctrl._kkup; 
-		var kdn = Ctrl._mkdn || Ctrl._kkdn; 
-		var krt = Ctrl._mkrt || Ctrl._kkrt; 
-		var klt = Ctrl._mklt || Ctrl._kklt; 
-		var k_z = Ctrl._mk_z || Ctrl._kk_z; 
-		var k_x = Ctrl._mk_x || Ctrl._kk_x; 
-		var k_c = Ctrl._mk_c || Ctrl._kk_c; 
-		var k_s = Ctrl._mk_s || Ctrl._kk_s; 
+		var kup = !Ctrl.lKeyLock && (Ctrl._mkup || Ctrl._kkup); 
+		var kdn = !Ctrl.lKeyLock && (Ctrl._mkdn || Ctrl._kkdn); 
+		var krt = !Ctrl.lKeyLock && (Ctrl._mkrt || Ctrl._kkrt); 
+		var klt = !Ctrl.lKeyLock && (Ctrl._mklt || Ctrl._kklt); 
+		var k_z = !Ctrl.rKeyLock && (Ctrl._mk_z || Ctrl._kk_z); 
+		var k_x = !Ctrl.rKeyLock && (Ctrl._mk_x || Ctrl._kk_x); 
+		var k_c = !Ctrl.rKeyLock && (Ctrl._mk_c || Ctrl._kk_c); 
+		var k_s = !Ctrl.rKeyLock && (Ctrl._mk_s || Ctrl._kk_s); 
 		if(Ctrl.kup != kup){Ctrl.kup = kup; Ctrl._upDiv.className = Ctrl.kup ? "up active" : "up";}
 		if(Ctrl.kdn != kdn){Ctrl.kdn = kdn; Ctrl._dnDiv.className = Ctrl.kdn ? "dn active" : "dn";}
 		if(Ctrl.krt != krt){Ctrl.krt = krt; Ctrl._rtDiv.className = Ctrl.krt ? "rt active" : "rt";}
@@ -245,10 +247,10 @@ class Ctrl{
 			var x = mx - 72;
 			var y = my - Ctrl.wh + 72;
 			if(x * x + y * y < 72 * 72){
-				if(y < 0 && x < y * y * 0.18 && x > y * y * -0.18){if(trigger){Ctrl.trigger_up = true;}else{Ctrl._mkup = true;}}
-				if(y > 0 && x < y * y * 0.18 && x > y * y * -0.18){if(trigger){Ctrl.trigger_dn = true;}else{Ctrl._mkdn = true;}}
-				if(x > 0 && y < x * x * 0.18 && y > x * x * -0.18){if(trigger){Ctrl.trigger_rt = true;}else{Ctrl._mkrt = true;}}
-				if(x < 0 && y < x * x * 0.18 && y > x * x * -0.18){if(trigger){Ctrl.trigger_lt = true;}else{Ctrl._mklt = true;}}
+				if(y < 0 && x < y * y * 0.18 && x > y * y * -0.18){if(trigger){if(!Ctrl.lKeyLock){Ctrl.trigger_up = true;}}else{Ctrl._mkup = true;}}
+				if(y > 0 && x < y * y * 0.18 && x > y * y * -0.18){if(trigger){if(!Ctrl.lKeyLock){Ctrl.trigger_dn = true;}}else{Ctrl._mkdn = true;}}
+				if(x > 0 && y < x * x * 0.18 && y > x * x * -0.18){if(trigger){if(!Ctrl.lKeyLock){Ctrl.trigger_rt = true;}}else{Ctrl._mkrt = true;}}
+				if(x < 0 && y < x * x * 0.18 && y > x * x * -0.18){if(trigger){if(!Ctrl.lKeyLock){Ctrl.trigger_lt = true;}}else{Ctrl._mklt = true;}}
 			}
 		}else{
 			Ctrl._mk_z = Ctrl._mk_x = Ctrl._mk_c = Ctrl._mk_s = false;
@@ -256,10 +258,10 @@ class Ctrl{
 			var x = mx - Ctrl.ww + 144;
 			if(12 < x && x < 132){
 				var y = my - Ctrl.wh + 144;
-				if(  0 < y && y <  36){if(trigger){Ctrl.trigger_zb = true;}else{Ctrl._mk_z = true;}}
-				if( 36 < y && y <  72){if(trigger){Ctrl.trigger_xb = true;}else{Ctrl._mk_x = true;}}
-				if( 72 < y && y < 108){if(trigger){Ctrl.trigger_cb = true;}else{Ctrl._mk_c = true;}}
-				if(108 < y && y < 144){if(trigger){Ctrl.trigger_sb = true;}else{Ctrl._mk_s = true;}}
+				if(  0 < y && y <  36){if(trigger){if(!Ctrl.rKeyLock){Ctrl.trigger_zb = true;}}else{Ctrl._mk_z = true;}}
+				if( 36 < y && y <  72){if(trigger){if(!Ctrl.rKeyLock){Ctrl.trigger_xb = true;}}else{Ctrl._mk_x = true;}}
+				if( 72 < y && y < 108){if(trigger){if(!Ctrl.rKeyLock){Ctrl.trigger_cb = true;}}else{Ctrl._mk_c = true;}}
+				if(108 < y && y < 144){if(trigger){if(!Ctrl.rKeyLock){Ctrl.trigger_sb = true;}}else{Ctrl._mk_s = true;}}
 			}
 		}
 		// 上位ノードイベントキャンセル
@@ -303,14 +305,14 @@ class Ctrl{
 		}else{
 			// コントローラーモード
 			switch((e as KeyboardEvent).keyCode){
-				case 37: Ctrl._kklt = false; Ctrl.trigger_lt = true; break;
-				case 38: Ctrl._kkup = false; Ctrl.trigger_up = true; break;
-				case 39: Ctrl._kkrt = false; Ctrl.trigger_rt = true; break;
-				case 40: Ctrl._kkdn = false; Ctrl.trigger_dn = true; break;
-				case 88: Ctrl._kk_x = false; Ctrl.trigger_xb = true; break;
-				case 90: Ctrl._kk_z = false; Ctrl.trigger_zb = true; break;
-				case 67: Ctrl._kk_c = false; Ctrl.trigger_cb = true; break;
-				case 32: Ctrl._kk_s = false; Ctrl.trigger_sb = true; break;
+				case 37: Ctrl._kklt = false; if(!Ctrl.lKeyLock){Ctrl.trigger_lt = true;} break;
+				case 38: Ctrl._kkup = false; if(!Ctrl.lKeyLock){Ctrl.trigger_up = true;} break;
+				case 39: Ctrl._kkrt = false; if(!Ctrl.lKeyLock){Ctrl.trigger_rt = true;} break;
+				case 40: Ctrl._kkdn = false; if(!Ctrl.lKeyLock){Ctrl.trigger_dn = true;} break;
+				case 88: Ctrl._kk_x = false; if(!Ctrl.rKeyLock){Ctrl.trigger_xb = true;} break;
+				case 90: Ctrl._kk_z = false; if(!Ctrl.rKeyLock){Ctrl.trigger_zb = true;} break;
+				case 67: Ctrl._kk_c = false; if(!Ctrl.rKeyLock){Ctrl.trigger_cb = true;} break;
+				case 32: Ctrl._kk_s = false; if(!Ctrl.rKeyLock){Ctrl.trigger_sb = true;} break;
 			}
 			// キーイベント終了
 			e.preventDefault();

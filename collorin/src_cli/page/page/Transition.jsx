@@ -224,6 +224,7 @@ class PECopenRctrl extends EventCartridge{
 		this._change = this._change || (Ctrl.xbDiv.innerHTML != this._xbtn);
 		this._change = this._change || (Ctrl.cbDiv.innerHTML != this._cbtn);
 		this._change = this._change || (Ctrl.sbDiv.innerHTML != this._sbtn);
+		if(this._change){Ctrl.rKeyLock = true;}
 		return true;
 	}
 
@@ -239,6 +240,7 @@ class PECopenRctrl extends EventCartridge{
 				// 後半位置記録
 				this._start = PECopenRctrl._position;
 				this._goal = this._open ? 0 : PECopenRctrl.hide;
+				Ctrl.rKeyLock = false;
 			}
 			this._action++;
 			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
