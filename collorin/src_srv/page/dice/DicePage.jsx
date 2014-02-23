@@ -17,7 +17,7 @@ class DicePage{
 
 		// -------- expressページ --------
 		app.post("/dice", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			DicePage._entry(function(jdat : Map.<variant>) : void{res.send(JSON.stringify(jdat));});
+			DicePage._entry(function(jdat : Map.<variant>) : void{res.contentType("application/json").send(JSON.stringify(jdat));});
 		});
 	}
 

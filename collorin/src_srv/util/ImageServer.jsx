@@ -14,21 +14,21 @@ class ImageServer{
 				for(var tag in urls){count++;}
 				if(count <= 0){
 					// リクエスト無し
-					res.send(null);
+					res.contentType("application/json").send(null);
 				}else if(req.body["isBin"] as boolean){
 					// binary画像のリクエスト
 					new ImageServer.ImageLoaderBin(path, urls, count, function(data : Buffer) : void{
-						res.send(data);
+						res.contentType("application/octet-stream").send(data);
 					});
 				}else{
 					// base64画像のリクエスト
 					new ImageServer.ImageLoaderB64(path, urls, count, function(data : string) : void{
-						res.send(data);
+						res.contentType("application/json").send(data);
 					});
 				}
 			}else{
 				// リクエスト書式異常
-				res.send(null);
+				res.contentType("application/json").send(null);
 			}
 		});
 	}

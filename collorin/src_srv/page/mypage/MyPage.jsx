@@ -7,7 +7,7 @@ class MyPage{
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
 		app.get("/mypage", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			res.send(JSON.stringify({"test": "マイページ"}));
+			res.contentType("application/json").send(JSON.stringify({"test": "マイページ"}));
 		});
 	}
 }

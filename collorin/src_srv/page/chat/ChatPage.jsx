@@ -87,7 +87,7 @@ class ChatPage{
 			// ユーザー情報の設定
 			ChatPage._setUinfo(req.session.passport["user"] as string, uinfo, function(){
 				jdat["imgs"] = imgs;
-				res.send(JSON.stringify(jdat));
+				res.contentType("application/json").send(JSON.stringify(jdat));
 			});
 		});
 
