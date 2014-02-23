@@ -29,9 +29,13 @@ class DicePage extends Page{
 			<div class="gauge hp"><div class="param under"></div><div class="param over"></div><div class="wrap"></div></div>
 			<div class="gauge sp"><div class="param under"></div><div class="param over"></div><div class="wrap"></div></div>
 		</div>
-		<div class="message">あと2マス</div>
+		<div class="message"></div>
 	""";
 
+	// メッセージ要素
+	var messageDiv : HTMLDivElement;
+	var pStatusDiv : HTMLDivElement;
+	var eStatusDiv : HTMLDivElement;
 	// キャンバス
 	var ccvs : DiceCanvas;
 
@@ -50,6 +54,10 @@ class DicePage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page dice";
 		this.div.innerHTML = this._htmlTag;
+		// DOM獲得
+		this.messageDiv = this.div.getElementsByClassName("message").item(0) as HTMLDivElement;
+		this.pStatusDiv = this.div.getElementsByClassName("status player").item(0) as HTMLDivElement;
+		this.eStatusDiv = this.div.getElementsByClassName("status enemy").item(0) as HTMLDivElement;
 		// キャンバス
 		this.ccvs = new DiceCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 

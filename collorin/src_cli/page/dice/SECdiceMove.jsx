@@ -6,6 +6,7 @@ import "../page/Transition.jsx";
 
 import "DicePage.jsx";
 import "DiceCanvas.jsx";
+import "DiceMessage.jsx";
 import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceFace.jsx";
@@ -32,7 +33,6 @@ class SECdiceMove extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		log "あと" + this._pip + "マス";
 		// 中心キャラクター設定
 		this._page.ccvs.center = [this._player];
 		// トリガーリセット
@@ -44,6 +44,7 @@ class SECdiceMove extends EventCartridge{
 		this._page.parallelPush(new PECopenLctrl(true));
 		this._page.parallelPush(new PECopenRctrl("", "一歩戻る", "マップ", "メニュー"));
 		this._page.parallelPush(new PECopenCharacter("", 0));
+		this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", true, -1));
 		return false;
 	}
 
@@ -79,7 +80,7 @@ class SECdiceMove extends EventCartridge{
 			if(this._srcList.length > 0){
 				this._pip++;
 				player.dstList.unshift(this._srcList.shift());
-				log "あと" + this._pip + "マス";
+				this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", false, -1));
 			}
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
@@ -165,7 +166,7 @@ class SECdiceMove extends EventCartridge{
 							this._dstList.push([x1, y1] : int[]);
 						}
 						player.motion = "walk";
-						log "あと" + this._pip + "マス";
+						this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", false, -1));
 						// 強制停止系のイベントタイルを確認する
 						if(this._srcList.length > 0 && ccvs.field.getHexFromIndex(x1, y1).type == 2){
 							this._pip = 0;
@@ -188,6 +189,7 @@ class SECdiceMove extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 	}
 }
 
