@@ -7,6 +7,7 @@ import "require/socket.io.jsx";
 
 import "util/ImageServer.jsx";
 import "page/AuthPage.jsx";
+import "page/top/TopPage.jsx";
 import "page/mypage/MyPage.jsx";
 import "page/world/WorldPage.jsx";
 import "page/dice/DicePage.jsx";
@@ -42,7 +43,7 @@ class _Main{
 		var srv = http.Server(app);
 		app.configure(function(){
 			app.set("secretKey", "totalbeat");
-			app.set("views", node.__dirname + "/public");
+			app.set("views", node.__dirname + "/template");
 			app.set("view engine", "ejs");
 			app.use(express.logger("dev"));
 			app.use(express.json({strict: false}));
@@ -58,10 +59,10 @@ class _Main{
 			app.use(passport.session());
 			app.use(express.compress());
 			app.use(app.router);
-			app.use(express.static_(app.get("views") as string));
+			app.use(express.static_(node.__dirname + "/content"));
 			app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
 			app.use(function(req : ExRequest, res : ExResponse, next : function():void){
-				res.status(404).send("404エラー<br><a href='/'>戻る</a>");
+				res.status(404).render("404.ejs", null);
 			});
 		});
 
@@ -104,24 +105,28 @@ class _Main{
 			}
 		});
 
-		// 認証ページ
-		AuthPage.setPage(app);
-		// トップページ
-		app.get("/", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.redirect("/top");});
-		app.get("/top", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("top/top.ejs");}); // TODO ログインしていないのに入れちゃう
-		// メインページ
-		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{res.render("main/index.ejs");});
-		// 画像サーバ
-		ImageServer.setPage("/img", app.get("views") as string, app);
-
 		// 各ページ設定
+		AuthPage.setPage(app);
+		TopPage.setPage(app);
+		_Main.setMainPage(app);
 		MyPage.setPage(app);
 		WorldPage.setPage(app);
 		DicePage.setPage(app, rcli);
 		ChatPage.setPage(app, rcli, io);
 
+		// 画像サーバ
+		ImageServer.setPage("/img", node.__dirname + "/content", app);
+
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";
+	}
+
+	// ----------------------------------------------------------------
+	// メインページの設定
+	static function setMainPage(app : ExApplication) : void{
+		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			res.render("main.ejs");
+		});
 	}
 }
 

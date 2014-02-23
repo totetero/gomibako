@@ -42,7 +42,7 @@ body{
 	top: 0px;
 	width: 320px;
 	height: 240px;
-	background-image: url(/top/title.png);
+	background-image: url(/public/title.png);
 	background-size: 320px 240px;
 }
 
@@ -52,7 +52,7 @@ body{
 	top:10px;
 	width:135px;
 	height:50px;
-	background-image: url(/top/logo.png);
+	background-image: url(/public/logo.png);
 	background-size: 135px 50px;
 }
 
@@ -113,7 +113,7 @@ body{
 	margin-top: -40px;
 	width: 80px;
 	height: 80px;
-	background-image: url(/top/loading.gif);
+	background-image: url(/public/loading.gif);
 	background-size: 60px 60px;
 	background-position: center;
 	background-repeat: no-repeat;

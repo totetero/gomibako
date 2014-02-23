@@ -131,7 +131,7 @@ class AuthPage{
 			if(req.isAuthenticated()){
 				next();
 			}else{
-				res.render("top/login.ejs");
+				res.render("login.ejs");
 			}
 		});
 
@@ -139,7 +139,7 @@ class AuthPage{
 		app.all("*", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			if(req.isAuthenticated()){
 				next();
-			}else if(req.url.indexOf("/top") == 0){
+			}else if(req.url.indexOf("/public") == 0){
 				next();
 			}else{
 				res.redirect("/login");
@@ -149,7 +149,7 @@ class AuthPage{
 		// ログアウト処理
 		app.get("/logout", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			req.logout();
-			res.send("ログアウトしました<br><a href='/'>戻る</a>");
+			res.render("logout.ejs");
 		});
 	}
 }

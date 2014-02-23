@@ -55,14 +55,17 @@ class DicePage{
 			{x: 4, y: 2, type: 1},
 		];
 
+		// さいころ画像
+		imgs["dice"] = "img/dice/test.png";
+
 		// キャラクター情報
 		var charaInfoList = [[
 			// プレイヤー情報
-			{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 1, y : 7, r: Math.PI * 1.5},
-			{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 7, r: Math.PI * 1.5},
+			{code: "player1", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 1, y : 7, r: Math.PI * 1.5},
+			{code: "player2", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 7, r: Math.PI * 1.5},
 		],[
 			// 敵情報
-			{code: "player0", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 4, r: Math.PI * 0.5},
+			{code: "enemy1", drawInfo: CharacterDrawInfo.data["human"], size: 1.2, x: 2, y : 4, r: Math.PI * 0.5},
 		]];
 
 		// 初期カメラ位置
