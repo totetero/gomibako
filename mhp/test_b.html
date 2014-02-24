@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
+<script type="text/javascript" src="Engine3d.js"></script>
+<script type="text/javascript" src="Controller.js"></script>
+<script type="text/javascript" src="Character.js"></script>
+<script type="text/javascript" src="Map.js"></script>
+<script type="text/javascript">
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// グローバル変数
+var e3d = new Engine3d();
+var map = new ScrollMap();
+var ctrl = new Controller();
+var shadow = new Shadow();
+var player = new Player();
+
+// テクスチャ
+var mapTexture;
+var ctrlTexture;
+var playerTexture;
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+window.onload = function(){
+	// 初期化
+	var canvas = document.getElementById("screen");
+	e3d.init(canvas);
+	e3d.initTemplate();
+	ctrl.init(e3d, canvas);
+	shadow.init(e3d);
+	player.init(e3d);
+	
+	mapTexture = e3d.loadTexture("mapchip.png");
+	ctrlTexture = e3d.loadTexture("ctrl.png");
+	playerTexture = e3d.loadTexture("boss.png");
+	
+	map.init(e3d, [[
+		[ 4,  4,  4,  4,  4, 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4, 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4, 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4, 4,  4,  4,  4,  4],
+		[ 4,  4,  4,  4,  4, 4,  4,  4,  4,  4],
+	],[
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+	],[
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+	],[
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+	],[
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+	],[
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+		[ 0,  0,  0,  0,  0, 0,  0,  0,  0,  0],
+	]], 10);
+	
+	ctrl.roth = Math.PI / 180 *  30;
+	ctrl.distance = 10;
+	
+	// 描画処理を毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// メインループ
+function redrawScene(){
+	// 計算
+	player.calc();
+	
+	// ----------------------------------------------------------------
+	// 3D描画
+	e3d.clear();
+	e3d.setMode(0);
+	// カメラ
+	mat4.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100, e3d.worldmat);
+	mat4.translate(e3d.worldmat, [0, 0, -ctrl.distance]);
+	mat4.rotateX(e3d.worldmat, ctrl.roth);
+	mat4.rotateY(e3d.worldmat, ctrl.rotv);
+	mat4.translate(e3d.worldmat, [-player.x, -player.z, -player.y]);
+	
+	// キャラクター
+	e3d.bindTex(playerTexture, 0);
+	player.draw(e3d, e3d.worldmat);
+	e3d.bindTex(shadow.texture, 0);
+	shadow.draw(e3d, e3d.worldmat, player.x, player.y, player.z - player.altitude, player.hsize);
+	
+	// マップ
+	e3d.setMode(3);
+	e3d.bindTex(mapTexture, 1);
+	map.draw(e3d, e3d.worldmat, player.x);
+	
+	// ----------------------------------------------------------------
+	// 2D描画
+	e3d.setMode(1);
+	mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
+	// コントローラ
+	e3d.bindTex(ctrlTexture, 0);
+	ctrl.draw(e3d, e3d.worldmat);
+	
+	// ----------------------------------------------------------------
+	// ページに反映させる
+	e3d.flush();
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// プレイヤークラス
+function Player(){
+	var character = new BillballCharacter();
+	// あたり判定用キャラクタサイズ
+	this.hsize = 1.6;
+	this.vsize = 2.0;
+	// キャラクタ画像倍率
+	this.size = 1.5;
+	// キャラクタ状態
+	this.mode = 0;
+	this.action = 0;
+	this.rotate0 = Math.PI / 180 *  90;
+	this.rotate1 = this.rotate0;
+	// 位置
+	this.x = 2.5;
+	this.y = 2.5; 
+	this.z = 1;
+	// 速度
+	this.speed = 0;
+	this.vx = 0;
+	this.vy = 0; 
+	this.vz = 0;
+	// 地面との距離
+	this.altitude = 0;
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(e3d){
+		// 各パーツのテクスチャバッファリスト
+		this.texBufStruct_hed1 = character.createTexuvList(e3d, 0.00, 0.000, 0.0625, 0.125, 0);
+		this.texBufStruct_hed2 = character.createTexuvList(e3d, 0.00, 0.375, 0.0625, 0.125, 0);
+		this.texBufStruct_body = character.createTexuvList(e3d, 0.25, 0.000, 0.0625, 0.125, 0);
+		this.texBufStruct_tail = character.createTexuvList(e3d, 0.50, 0.000, 0.0625, 0.125, 0);
+		this.texBufStruct_ft1r = character.createTexuvList(e3d, 0.25, 0.375, 0.0625, 0.125, 0);
+		this.texBufStruct_ft1l = character.createTexuvList(e3d, 0.25, 0.375, 0.0625, 0.125, 1);
+		this.texBufStruct_ft2r = character.createTexuvList(e3d, 0.50, 0.375, 0.0625, 0.125, 0);
+		this.texBufStruct_ft2l = character.createTexuvList(e3d, 0.50, 0.375, 0.0625, 0.125, 1);
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(){
+		if(this.mode == 2){
+			if(this.action++ > 12){
+				this.mode = 0;
+			}
+		}else{
+			// 地面に足がついている 十字キーで向きを変えることができる
+			if(0){
+			}else if(ctrl.k_x){
+				this.mode = 2;
+				this.action = 0;
+				this.speed = 0;
+			}else if(!(ctrl.kup || ctrl.kdn || ctrl.krt || ctrl.klt)){
+				// 静止状態
+				this.mode = 0;
+				this.speed = 0;
+			}else{
+				// 移動
+				this.mode = 1;
+				this.action++;
+				this.speed = ctrl.k_z ? 8 / 30 : 2 / 30;
+			}
+			
+			// 方向の計算
+			if     (ctrl.krt && ctrl.kup){this.rotate1 = Math.PI * 1.74 + ctrl.rotv;}
+			else if(ctrl.klt && ctrl.kup){this.rotate1 = Math.PI * 1.26 + ctrl.rotv;}
+			else if(ctrl.klt && ctrl.kdn){this.rotate1 = Math.PI * 0.74 + ctrl.rotv;}
+			else if(ctrl.krt && ctrl.kdn){this.rotate1 = Math.PI * 0.26 + ctrl.rotv;}
+			else if(ctrl.krt){this.rotate1 = Math.PI * 0.00 + ctrl.rotv;}
+			else if(ctrl.kup){this.rotate1 = Math.PI * 1.50 + ctrl.rotv;}
+			else if(ctrl.klt){this.rotate1 = Math.PI * 1.00 + ctrl.rotv;}
+			else if(ctrl.kdn){this.rotate1 = Math.PI * 0.50 + ctrl.rotv;}
+		}
+		
+		var dr = this.rotate1 - this.rotate0;
+		while(dr >  Math.PI){dr -= Math.PI * 2;}
+		while(dr < -Math.PI){dr += Math.PI * 2;}
+		this.rotate0 = this.rotate0 + dr * 0.1;
+		if(this.mode == 0 && Math.abs(dr) > 0.1){
+			this.mode = 1;
+			this.action++;
+		}
+		
+		this.vx = this.speed * Math.cos(this.rotate0);
+		this.vy = this.speed * Math.sin(this.rotate0);
+		this.vz -= 1.2 / 30;
+		// あたり判定
+		map.collision(this);
+		// 位置の計算
+		this.x += this.vx;
+		this.y += this.vy;
+		this.z += this.vz;
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(e3d, mat){
+		// 描画関数作成
+		var drawParts = character.createDrawFunc(e3d, mat, ctrl, this.rotate0, this.x, this.y, this.z, this.size);
+		
+		switch(this.mode){
+			case 1: // -------------------------------- 移動 --------------------------------
+				if(ctrl.k_z){
+					switch(Math.floor(this.action / 2) % 6){
+						case 0:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.55,  0.00, 0.65, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.55, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.45, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.23,  0.41, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.17, -0.41, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.43,  0.32, 0.38, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.37, -0.32, 0.28, 0, 0);break;
+						case 1:
+							drawParts(this.texBufStruct_hed2, 1.00,  0.55,  0.00, 0.70, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.60, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.50, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.20,  0.43, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.20, -0.43, 0.51, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.33, 0.43, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.33, 0.28, 0, 0);break;
+						case 2:
+							drawParts(this.texBufStruct_hed2, 1.00,  0.55,  0.00, 0.65, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.55, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.45, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.17,  0.41, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.23, -0.41, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.37,  0.32, 0.38, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.43, -0.32, 0.28, 0, 0);break;
+						case 3:
+							drawParts(this.texBufStruct_hed2, 1.00,  0.55,  0.00, 0.65, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.55, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.45, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.17,  0.41, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.23, -0.41, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.37,  0.32, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.43, -0.32, 0.38, 0, 0);break;
+						case 4:
+							drawParts(this.texBufStruct_hed2, 1.00,  0.55,  0.00, 0.70, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.60, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.50, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.20,  0.43, 0.51, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.20, -0.43, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.33, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.33, 0.43, 0, 0);break;
+						case 5:
+							drawParts(this.texBufStruct_hed2, 1.00,  0.55,  0.00, 0.65, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.55, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.45, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.23,  0.41, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.17, -0.41, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.43,  0.32, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.37, -0.32, 0.38, 0, 0);break;
+					}break;
+				}else{
+					switch(Math.floor(this.action / 2) % 8){
+						case 0:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.85, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.55, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.38, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.30,  0.30, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.10, -0.30, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.50,  0.22, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.30, -0.22, 0.28, 0, 0);break;
+						case 1:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.88, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.58, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.41, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.23,  0.33, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.17, -0.33, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.43,  0.24, 0.38, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.37, -0.24, 0.28, 0, 0);break;
+						case 2:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.90, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.60, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.43, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.20,  0.35, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.20, -0.35, 0.51, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.25, 0.43, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.25, 0.28, 0, 0);break;
+						case 3:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.88, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.58, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.41, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.17,  0.33, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.23, -0.33, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.37,  0.24, 0.38, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.42, -0.24, 0.28, 0, 0);break;
+						case 4:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.85, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.55, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.38, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.10,  0.30, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.30, -0.30, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.30,  0.22, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.50, -0.22, 0.28, 0, 0);break;
+						case 5:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.88, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.58, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.41, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.17,  0.33, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.23, -0.33, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.37,  0.24, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.42, -0.24, 0.38, 0, 0);break;
+						case 6:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.90, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.60, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.43, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.20,  0.35, 0.51, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.20, -0.35, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.25, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.25, 0.43, 0, 0);break;
+						case 7:
+							drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.88, 0, 0);
+							drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.58, 0, 0);
+							drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.41, 0, 0);
+							drawParts(this.texBufStruct_ft1r, 1.00,  0.23,  0.33, 0.46, 0, 0);
+							drawParts(this.texBufStruct_ft1l, 1.00,  0.17, -0.33, 0.36, 0, 0);
+							drawParts(this.texBufStruct_ft2r, 1.00, -0.43,  0.24, 0.28, 0, 0);
+							drawParts(this.texBufStruct_ft2l, 1.00, -0.37, -0.24, 0.38, 0, 0);break;
+					}break;
+				}
+			case 2: // -------------------------------- 噛みつき --------------------------------
+				switch(this.action){
+					case 0: case 1: 
+						drawParts(this.texBufStruct_hed2, 1.00,  0.24,  0.00, 1.02, 0, 0);
+						drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.64, 0, 0);
+						drawParts(this.texBufStruct_tail, 1.00, -0.32,  0.00, 0.38, 0, 0);
+						drawParts(this.texBufStruct_ft1r, 1.00,  0.17,  0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft1l, 1.00,  0.17, -0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.28, 0.28, 0, 0);
+						drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.28, 0.28, 0, 0);break;
+					case 2: case 3: case 4: case 5: case 6:
+						drawParts(this.texBufStruct_hed2, 1.00,  0.20,  0.00, 1.05, 0, 0);
+						drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.65, 0, 0);
+						drawParts(this.texBufStruct_tail, 1.00, -0.30,  0.00, 0.35, 0, 0);
+						drawParts(this.texBufStruct_ft1r, 1.00,  0.15,  0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft1l, 1.00,  0.15, -0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.28, 0.28, 0, 0);
+						drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.28, 0.28, 0, 0);break;
+					case 7:
+						drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.50, 0, 0);
+						drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.45, 0, 0);
+						drawParts(this.texBufStruct_tail, 1.00, -0.40,  0.00, 0.55, 0, 0);
+						drawParts(this.texBufStruct_ft1r, 1.00,  0.28,  0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft1l, 1.00,  0.28, -0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.28, 0.28, 0, 0);
+						drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.28, 0.28, 0, 0);break;
+					case 8: case 9: case 10: case 11: case 12:
+						drawParts(this.texBufStruct_hed1, 1.00,  0.45,  0.00, 0.55, 0, 0);
+						drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.47, 0, 0);
+						drawParts(this.texBufStruct_tail, 1.00, -0.40,  0.00, 0.53, 0, 0);
+						drawParts(this.texBufStruct_ft1r, 1.00,  0.26,  0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft1l, 1.00,  0.26, -0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.28, 0.28, 0, 0);
+						drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.28, 0.28, 0, 0);break;
+					case 13:
+						drawParts(this.texBufStruct_hed1, 1.00,  0.35,  0.00, 0.85, 0, 0);
+						drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.50, 0, 0);
+						drawParts(this.texBufStruct_tail, 1.00, -0.40,  0.00, 0.45, 0, 0);
+						drawParts(this.texBufStruct_ft1r, 1.00,  0.25,  0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft1l, 1.00,  0.25, -0.38, 0.36, 0, 0);
+						drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.28, 0.28, 0, 0);
+						drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.28, 0.28, 0, 0);break;
+				}break;
+			default: // -------------------------------- 静止 --------------------------------
+				drawParts(this.texBufStruct_hed1, 1.00,  0.30,  0.00, 0.95, 0, 0);
+				drawParts(this.texBufStruct_body, 1.00,  0.00,  0.00, 0.60, 0, 0);
+				drawParts(this.texBufStruct_tail, 1.00, -0.35,  0.00, 0.42, 0, 0);
+				drawParts(this.texBufStruct_ft1r, 1.00,  0.20,  0.38, 0.36, 0, 0);
+				drawParts(this.texBufStruct_ft1l, 1.00,  0.20, -0.38, 0.36, 0, 0);
+				drawParts(this.texBufStruct_ft2r, 1.00, -0.40,  0.28, 0.28, 0, 0);
+				drawParts(this.texBufStruct_ft2l, 1.00, -0.40, -0.28, 0.28, 0, 0);break;
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+</script>
+</head><body>
+<!-- キャンバス -->
+<canvas id='screen' width='320' height='320'></canvas><br>
+</body></html>
+
