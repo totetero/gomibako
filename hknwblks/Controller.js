@@ -41,6 +41,8 @@ function Controller(){
 	var clorBuffer;
 	var texcBuffer;
 	var faceBuffer;
+	// タッチ操作か確認
+	var isTouch = ('ontouchstart' in window);
 	
 	// バッファに画像の情報を登録
 	var pushBuffer = function(vert, texc, clor, face, w, h, tx, ty, vx, vy){
@@ -106,13 +108,16 @@ function Controller(){
 		texcBuffer = e3d.createVBO(texc);
 		faceBuffer = e3d.createIBO(face);
 		
-		canvas.addEventListener("mousedown", mdnEvent, true);
-		canvas.addEventListener("mousemove", mmvEvent, true);
-		canvas.addEventListener("mouseup", mupEvent, true);
-		canvas.addEventListener("mouseout", mupEvent, true);
-		canvas.addEventListener("touchstart", mdnEvent, true);
-		canvas.addEventListener("touchmove", mmvEvent, true);
-		canvas.addEventListener("touchend", mupEvent, true);
+		if(isTouch){
+			canvas.addEventListener("touchstart", mdnEvent, true);
+			canvas.addEventListener("touchmove", mmvEvent, true);
+			canvas.addEventListener("touchend", mupEvent, true);
+		}else{
+			canvas.addEventListener("mousedown", mdnEvent, true);
+			canvas.addEventListener("mousemove", mmvEvent, true);
+			canvas.addEventListener("mouseup", mupEvent, true);
+			canvas.addEventListener("mouseout", mupEvent, true);
+		}
 		document.addEventListener("keydown", kdnEvent, true);
 		document.addEventListener("keyup", kupEvent, true);
 	}
@@ -246,6 +251,10 @@ function Controller(){
 	
 	// マウスを押す
 	var mdnEvent = function(e){
+		// 座標を獲得する
+		var rect = e.target.getBoundingClientRect();
+		that.mousex = (isTouch ? e.changedTouches[0].clientX : e.clientX) - rect.left;
+		that.mousey = (isTouch ? e.changedTouches[0].clientY : e.clientY) - rect.top;
 		// コントローラークリックの確認
 		btnEvent();
 		if(mouseMode == 0){mnuEvent0();}
@@ -258,8 +267,8 @@ function Controller(){
 	var mmvEvent = function(e){
 		// 座標を獲得する
 		var rect = e.target.getBoundingClientRect();
-		that.mousex = e.clientX - rect.left;
-		that.mousey = e.clientY - rect.top;
+		that.mousex = (isTouch ? e.changedTouches[0].clientX : e.clientX) - rect.left;
+		that.mousey = (isTouch ? e.changedTouches[0].clientY : e.clientY) - rect.top;
 		// マウス移動イベント
 		if(mouseMode == 1){btnEvent();}
 		else if(mouseMode == 3){rotEvent1();}
