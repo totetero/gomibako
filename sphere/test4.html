@@ -1,0 +1,62 @@
+<html><head>
+<style type="text/css">body{margin: 0;}</style>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript">
+
+// http://blog.fenrir-inc.com/jp/2011/06/ios_android_pc_touchevent.html
+
+window.onload = function(){
+	var canvas = document.getElementById("world");
+	var context = canvas.getContext("2d");
+	var px = 100;
+	var py = 100;
+	
+	// メインループ
+	var renderScene = function(){
+		context.fillStyle = "green";
+		context.rect(0, 0, canvas.width, canvas.height);
+		context.fill();
+		
+		context.fillStyle="#f00";
+		context.fillRect(px - 5, py - 5, 10, 10);
+		
+		setTimeout(renderScene, 40);
+	}
+	renderScene();
+	
+	// -------------------------------- 回転処理 --------------------------------
+	var mousex = 0;
+	var mousey = 0;
+	var touchFlag = false;
+	var isTouch = ('ontouchstart' in window);
+	
+	var hoge = function(e){
+		var rect = e.target.getBoundingClientRect();
+		px = (isTouch ? e.changedTouches[0].clientX : e.clientX) - rect.left;
+		py = (isTouch ? e.changedTouches[0].clientY : e.clientY) - rect.top;
+	}
+	
+	// マウス押下
+	canvas.ontouchstart = canvas.onmousedown = function(e){
+		e.preventDefault();
+		touchFlag = true;
+		hoge(e);
+	};
+	
+	// マウス移動
+	canvas.ontouchmove = canvas.onmousemove = function(e){
+		if(touchFlag){
+			e.preventDefault();
+			hoge(e);
+		}
+	};
+	
+	// マウス解放
+	canvas.ontouchend = canvas.onmouseup = function(e){
+		touchFlag = false;
+	};
+}
+
+</script></head><body>
+<canvas id="world" width="320" height="320"></canvas>
+</body></html>

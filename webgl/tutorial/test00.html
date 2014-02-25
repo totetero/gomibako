@@ -1,0 +1,36 @@
+<html><head>
+<script type="text/javascript">
+
+window.onload = function(){
+	var canvas = document.getElementById("canvas");
+	
+	// -------------------------------- 初期化 --------------------------------
+	var context = canvas.getContext("2d");
+	
+	// -------------------------------- メインループ --------------------------------
+	var count = 0;
+	var renderScene = function(){
+		// 計算
+		var x = 64 * Math.cos(count / 10) + canvas.width / 2;
+		var y = 64 * Math.sin(count++ / 10) + canvas.height / 2;
+		var r = 5;
+		// クリア
+		context.fillStyle = "rgb(0, 0, 255)";
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		// 描画
+		context.beginPath();
+		context.fillStyle = "rgb(0, 255, 0)";
+		context.arc(x, y, r, 0, Math.PI * 2, false);
+		context.fill();
+		setTimeout(renderScene, 40);
+	}
+	
+	// 処理開始
+	renderScene();
+}
+
+</script></head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="320" height="320"></canvas>
+</td></tr></table>
+</body></html>

@@ -1,0 +1,491 @@
+<html><head>
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
+<script type="text/javascript">
+
+// 頂点シェーダー
+var vshader_src =
+	"#ifdef GL_ES                                                    \n" +
+	"    precision highp float;                                      \n" +
+	"#endif                                                          \n" +
+	"                                                                \n" +
+	"attribute vec3 vs_attr_pos;                                     \n" +
+	"attribute vec2 vs_attr_uvc;                                     \n" +
+	"uniform mat4 vs_unif_mat;                                       \n" +
+	"                                                                \n" +
+	"varying vec2 texCoord;                                          \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    texCoord    = vs_attr_uvc;                                  \n" +
+	"    gl_Position = vs_unif_mat * vec4(vs_attr_pos, 1.0);         \n" +
+	"}                                                               \n" +
+"";
+
+// フラグメントシェーダー
+var fshader_src =
+	"#ifdef GL_ES                                                    \n" +
+	"    precision highp float;                                      \n" +
+	"#endif                                                          \n" +
+	"                                                                \n" +
+	"uniform sampler2D texture;                                      \n" +
+	"                                                                \n" +
+	"varying vec2 texCoord;                                          \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    vec4 fragColor = texture2D(texture, texCoord);              \n" +
+	"    if(fragColor.a > 0.5){                                      \n" +
+	"        gl_FragColor = fragColor;                               \n" +
+	"    }else{                                                      \n" +
+	"        discard;                                                \n" +
+	"    }                                                           \n" +
+	"}                                                               \n" +
+"";
+
+var gl;
+var shader;
+var s_pos;
+var s_uvc;
+var s_mat;
+
+// -------------------------------- webgl初期化 --------------------------------
+function webglInit(canvas){
+	gl = canvas.getContext("experimental-webgl");
+	if(!gl){alert("WebGL がサポートされていません。"); return -1;}
+	// 頂点シェーダーの作成
+	var vshader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(vshader, vshader_src);
+	gl.compileShader(vshader);
+	// フラグメントシェーダーの作成
+	var fshader = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(fshader,  fshader_src);
+	gl.compileShader(fshader);
+	// プログラムオブジェクトを作成
+	shader = gl.createProgram();
+	gl.attachShader(shader, vshader);
+	gl.attachShader(shader, fshader);
+	// 頂点シェーダーとフラグメントシェーダーをリンクする
+	gl.linkProgram(shader);
+	// シェーダーを指定
+	gl.useProgram(shader);
+	// シェーダーパラメータ取得
+	s_pos = gl.getAttribLocation(shader, "vs_attr_pos");
+	s_uvc = gl.getAttribLocation(shader, "vs_attr_uvc");
+	s_mat = gl.getUniformLocation(shader, "vs_unif_mat");
+	
+	// opengl描画設定
+	gl.clearColor(1, 0, 1, 1);
+	gl.clearDepth(1);
+	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.TEXTURE_2D);
+	gl.enable(gl.CULL_FACE);
+}
+
+// -------------------------------- モデル生成 --------------------------------
+function webglCreateModel(vert, face){
+	// 頂点データをVBOに変換
+	var vertBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vert), gl.STATIC_DRAW);
+	
+	// インデックスデータをIBOに変換
+	var faceBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(face), gl.STATIC_DRAW);
+	
+	var model = new Object();
+	model.vertBuffer = vertBuffer;
+	model.faceBuffer = faceBuffer;
+	return model;
+}
+
+// -------------------------------- テクスチャ生成 --------------------------------
+function webglCreateTexture(imgurl){
+	var texture = gl.createTexture();
+	var image = new Image();
+	// 画像の読み込み完了時にテクスチャを設定する
+	image.onload = function() {
+		gl.enable(gl.TEXTURE_2D);
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+	}
+	// 画像の読み込みを開始
+	image.src = imgurl;
+	return texture;
+}
+
+// -------------------------------- 描画 --------------------------------
+function webglDraw(model, texture, offset, count){
+	// VBO登録 strideを設定して一つのVBOから頂点座標データとテクスチャ座標データを読み取る
+	gl.bindBuffer(gl.ARRAY_BUFFER, model.vertBuffer);
+	gl.enableVertexAttribArray(s_pos); gl.vertexAttribPointer(s_pos, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0 * Float32Array.BYTES_PER_ELEMENT);
+	gl.enableVertexAttribArray(s_uvc); gl.vertexAttribPointer(s_uvc, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+	// IBO登録 インデックスデータ
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.faceBuffer);
+	// テクスチャを指定
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	// 描画
+	gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, offset * Uint16Array.BYTES_PER_ELEMENT);
+}
+
+// -------------------------------- いつもここから --------------------------------
+window.onload = function(){
+	var canvas = document.getElementById("canvas");
+	webglInit(canvas);
+	
+	// -------- テクスチャ読み込み --------
+	var textureA = webglCreateTexture("back1.png");
+	var textureB = webglCreateTexture("back2.png");
+	var textureC = webglCreateTexture("graphig2.png");
+	var textureW = webglCreateTexture("white.png");
+	
+	// -------- 背景生成 --------
+	// 頂点データを生成
+	var vert = [
+		  0,   0, 0.0, 0.0, 1.0,
+		320,   0, 0.0, 1.0, 1.0,
+		320, 320, 0.0, 1.0, 0.0,
+		  0, 320, 0.0, 0.0, 0.0,
+	];
+	
+	// インデックスデータを生成
+	var face = [
+		0, 1, 2,
+		0, 2, 3,
+	];
+	
+	var model1 = webglCreateModel(vert, face);
+	
+	// -------- グラフィグ生成 --------
+	// 頂点データを生成
+	var vert = new Array();
+	
+	// 頭
+	var x0 = -6.0;
+	var x1 =  6.0;
+	var z0 = -3.0;
+	var z1 =  3.0;
+	var y0 = -1.5;
+	var y1 =  6.5;
+	vert.push( // 上
+		x0, y1, z0, 1 / 4, 0 / 4,
+		x0, y1, z1, 1 / 4, 1 / 4,
+		x1, y1, z1, 2 / 4, 1 / 4,
+		x1, y1, z0, 2 / 4, 0 / 4);
+	vert.push( // 下
+		x0, y0, z1, 1 / 4, 2 / 4,
+		x0, y0, z0, 1 / 4, 3 / 4,
+		x1, y0, z0, 2 / 4, 3 / 4,
+		x1, y0, z1, 2 / 4, 2 / 4);
+	vert.push( // 前
+		x0, y1, z1, 1 / 4, 1 / 4,
+		x0, y0, z1, 1 / 4, 2 / 4,
+		x1, y0, z1, 2 / 4, 2 / 4,
+		x1, y1, z1, 2 / 4, 1 / 4);
+	vert.push( // 後
+		x1, y1, z0, 3 / 4, 1 / 4,
+		x1, y0, z0, 3 / 4, 2 / 4,
+		x0, y0, z0, 4 / 4, 2 / 4,
+		x0, y1, z0, 4 / 4, 1 / 4);
+	vert.push( // 右
+		x1, y1, z1, 2 / 4, 1 / 4,
+		x1, y0, z1, 2 / 4, 2 / 4,
+		x1, y0, z0, 3 / 4, 2 / 4,
+		x1, y1, z0, 3 / 4, 1 / 4);
+	vert.push( // 左
+		x0, y1, z0, 0 / 4, 1 / 4,
+		x0, y0, z0, 0 / 4, 2 / 4,
+		x0, y0, z1, 1 / 4, 2 / 4,
+		x0, y1, z1, 1 / 4, 1 / 4);
+	vert.push( // 前髪
+		x0, y1, z1 + 0.01, 0 / 4, 0 / 4,
+		x0, y0, z1 + 0.01, 0 / 4, 1 / 4,
+		x1, y0, z1 + 0.01, 1 / 4, 1 / 4,
+		x1, y1, z1 + 0.01, 1 / 4, 0 / 4);
+	
+	// 体
+	var x00 = -3.5;
+	var x01 =  3.5;
+	var x10 = -1.5;
+	var x11 =  1.5;
+	var z00 = -2.5;
+	var z01 =  2.5;
+	var z10 = -1.0;
+	var z11 =  1.0;
+	var y0 = -6.5;
+	var y1 = -1.5;
+	vert.push( // 下
+		x00, y0, z01, 2 / 4, 2 / 4,
+		x00, y0, z00, 2 / 4, 3 / 4,
+		x01, y0, z00, 3 / 4, 3 / 4,
+		x01, y0, z01, 3 / 4, 2 / 4);
+	vert.push( // 前
+		x10, y1, z11,  5 / 16, 3 / 4,
+		x00, y0, z01,  4 / 16, 4 / 4,
+		x01, y0, z01,  8 / 16, 4 / 4,
+		x11, y1, z11,  7 / 16, 3 / 4);
+	vert.push( // 後
+		x11, y1, z10, 13 / 16, 3 / 4,
+		x01, y0, z00, 12 / 16, 4 / 4,
+		x00, y0, z00, 16 / 16, 4 / 4,
+		x10, y1, z10, 15 / 16, 3 / 4);
+	vert.push( // 右
+		x11, y1, z11,  9 / 16, 3 / 4,
+		x01, y0, z01,  8 / 16, 4 / 4,
+		x01, y0, z00, 12 / 16, 4 / 4,
+		x11, y1, z10, 11 / 16, 3 / 4);
+	vert.push( // 左
+		x10, y1, z10,  1 / 16, 3 / 4,
+		x00, y0, z00,  0 / 16, 4 / 4,
+		x00, y0, z01,  4 / 16, 4 / 4,
+		x10, y1, z11,  3 / 16, 3 / 4);
+	
+	// 手
+	var x00 =  1.5;
+	var x01 =  5.5;
+	var x02 =  7.5;
+	var x10 = -1.5;
+	var x11 = -5.5;
+	var x12 = -7.5;
+	var z0 = -1.0;
+	var z1 =  1.0;
+	var z2 = -2.0;
+	var y0 = -1.5;
+	var y1 = -4.5;
+	vert.push( // 左手1
+		x00, y0, z0, 1 / 16,  8 / 16,
+		x00, y0, z1, 2 / 16,  8 / 16,
+		x01, y1, z1, 2 / 16, 11 / 16,
+		x01, y1, z2, 1 / 16, 11 / 16);
+	vert.push( // 左手2
+		x01, y1, z0, 1 / 16, 11 / 16,
+		x01, y1, z1, 2 / 16, 11 / 16,
+		x02, y1, z1, 2 / 16, 12 / 16,
+		x02, y1, z0, 1 / 16, 12 / 16);
+	vert.push( // 右手1
+		x10, y0, z1, 0 / 16,  8 / 16,
+		x10, y0, z0, 1 / 16,  8 / 16,
+		x11, y1, z2, 1 / 16, 11 / 16,
+		x11, y1, z1, 0 / 16, 11 / 16);
+	vert.push( // 右手2
+		x11, y1, z1, 0 / 16, 11 / 16,
+		x11, y1, z0, 1 / 16, 11 / 16,
+		x12, y1, z0, 1 / 16, 12 / 16,
+		x12, y1, z1, 0 / 16, 12 / 16);
+	
+	// 足
+	var x00 =  1.0;
+	var x01 =  3.0;
+	var x10 = -1.0;
+	var x11 = -3.0;
+	var z0 =  2.5;
+	var z1 =  4.5;
+	var y0 = -6.5;
+	var y1 = -3.5;
+	vert.push( // 左足1
+		x00, y0 + 0.01, z0, 3 / 16, 32 / 64,
+		x00, y0 + 0.01, z1, 3 / 16, 35 / 64,
+		x01, y0 + 0.01, z1, 4 / 16, 35 / 64,
+		x01, y0 + 0.01, z0, 4 / 16, 32 / 64);
+	vert.push( // 左足1
+		x00, y0, z1 - 0.01, 3 / 16, 35 / 64,
+		x00, y1, z1 - 0.01, 3 / 16, 40 / 64,
+		x01, y1, z1 - 0.01, 4 / 16, 40 / 64,
+		x01, y0, z1 - 0.01, 4 / 16, 35 / 64);
+	vert.push( // 左足1
+		x00, y1, z1 + 0.01, 3 / 16, 40 / 64,
+		x00, y0, z1 + 0.01, 3 / 16, 45 / 64,
+		x01, y0, z1 + 0.01, 4 / 16, 45 / 64,
+		x01, y1, z1 + 0.01, 4 / 16, 40 / 64);
+	vert.push( // 左足1
+		x00, y0 - 0.01, z1, 3 / 16, 45 / 64,
+		x00, y0 - 0.01, z0, 3 / 16, 48 / 64,
+		x01, y0 - 0.01, z0, 4 / 16, 48 / 64,
+		x01, y0 - 0.01, z1, 4 / 16, 45 / 64);
+	vert.push( // 右足1
+		x10, y0 + 0.01, z1, 2 / 16, 32 / 64,
+		x10, y0 + 0.01, z0, 2 / 16, 35 / 64,
+		x11, y0 + 0.01, z0, 3 / 16, 35 / 64,
+		x11, y0 + 0.01, z1, 3 / 16, 32 / 64);
+	vert.push( // 右足2
+		x10, y1, z1 - 0.01, 2 / 16, 35 / 64,
+		x10, y0, z1 - 0.01, 2 / 16, 40 / 64,
+		x11, y0, z1 - 0.01, 3 / 16, 40 / 64,
+		x11, y1, z1 - 0.01, 3 / 16, 35 / 64);
+	vert.push( // 右足3
+		x10, y0, z1 + 0.01, 2 / 16, 40 / 64,
+		x10, y1, z1 + 0.01, 2 / 16, 45 / 64,
+		x11, y1, z1 + 0.01, 3 / 16, 45 / 64,
+		x11, y0, z1 + 0.01, 3 / 16, 40 / 64);
+	vert.push( // 右足4
+		x10, y0 - 0.01, z0, 2 / 16, 45 / 64,
+		x10, y0 - 0.01, z1, 2 / 16, 48 / 64,
+		x11, y0 - 0.01, z1, 3 / 16, 48 / 64,
+		x11, y0 - 0.01, z0, 3 / 16, 45 / 64);
+	
+	// ポニーテール
+	var x0 = -2.0;
+	var x1 = -1.0;
+	var x2 =  0.0;
+	var x3 =  1.0;
+	var x4 =  2.0;
+	var z0 = -3.0;
+	var z1 = -5.0;
+	var z2 = -7.0;
+	var y0 = -1.5;
+	var y1 =  3.5;
+	var y2 =  5.5;
+	var y3 =  6.5;
+	vert.push( // 上
+		x1, y2, z0, 167 / 256,  0 / 256,
+		x3, y2, z0, 153 / 256,  0 / 256,
+		x4, y3, z1, 150 / 256, 18 / 256,
+		x0, y3, z1, 170 / 256, 18 / 256);
+	vert.push( // 横1
+		x2, y0, z2, 160 / 256, 64 / 256,
+		x4, y3, z1, 150 / 256, 18 / 256,
+		x3, y2, z0, 135 / 256, 26 / 256,
+		x2, y1, z0, 135 / 256, 38 / 256);
+	vert.push( // 横2
+		x2, y1, z0, 185 / 256, 38 / 256,
+		x1, y2, z0, 185 / 256, 26 / 256,
+		x0, y3, z1, 170 / 256, 18 / 256,
+		x2, y0, z2, 160 / 256, 64 / 256);
+	vert.push( // 後
+		x0, y3, z1, 170 / 256, 17 / 256,
+		x4, y3, z1, 150 / 256, 17 / 256,
+		x2, y0, z2, 160 / 256, 64 / 256,
+		x2, y0, z2, 0, 0);
+	
+	// 帽子
+	var x0 = -2.0;
+	var x1 =  2.0;
+	var z0 = -2.0;
+	var z1 =  2.0;
+	var y0 =  6.5;
+	var y1 =  10.5;
+	vert.push( // 上
+		x0, y1, z0, 3 / 4, 0 / 4,
+		x0, y1, z1, 3 / 4, 1 / 4,
+		x1, y1, z1, 4 / 4, 1 / 4,
+		x1, y1, z0, 4 / 4, 0 / 4);
+	vert.push( // 前
+		x0, y1, z1, 3 / 4, 2 / 4,
+		x0, y0, z1, 3 / 4, 3 / 4,
+		x1, y0, z1, 4 / 4, 3 / 4,
+		x1, y1, z1, 4 / 4, 2 / 4);
+	vert.push( // 後
+		x1, y1, z0, 3 / 4, 2 / 4,
+		x1, y0, z0, 3 / 4, 3 / 4,
+		x0, y0, z0, 4 / 4, 3 / 4,
+		x0, y1, z0, 4 / 4, 2 / 4);
+	vert.push( // 右
+		x1, y1, z1, 3 / 4, 2 / 4,
+		x1, y0, z1, 3 / 4, 3 / 4,
+		x1, y0, z0, 4 / 4, 3 / 4,
+		x1, y1, z0, 4 / 4, 2 / 4);
+	vert.push( // 左
+		x0, y1, z0, 3 / 4, 2 / 4,
+		x0, y0, z0, 3 / 4, 3 / 4,
+		x0, y0, z1, 4 / 4, 3 / 4,
+		x0, y1, z1, 4 / 4, 2 / 4);
+	
+	// インデックスデータを生成
+	var face = new Array();
+	for(var i = 0; i < vert.length / 5; i += 4){
+		face.push(i + 0, i + 1, i + 2);
+		face.push(i + 0, i + 2, i + 3);
+	}
+	
+	var model2 = webglCreateModel(vert, face);
+	var faceNum = face.length;
+	
+	// -------------------------------- メインループ --------------------------------
+	var count = 0;
+	var rotq = quat4.create();
+	var renderScene = function(){
+		// クリア
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		
+		// -------- 背景描画 --------
+		gl.disable(gl.DEPTH_TEST);
+		// 行列作成と登録
+		var mat = mat4.ortho(0, 320, 0, 320, -1, 1);
+		gl.uniformMatrix4fv(s_mat, false, mat);
+		// 描画
+		gl.cullFace(gl.BACK);
+		if((count++ % 20) < 10){
+			webglDraw(model1, textureA, 0, 6);
+		}else{
+			webglDraw(model1, textureB, 0, 6);
+		}
+		
+		// -------- グラフィグ描画 --------
+		gl.enable(gl.DEPTH_TEST);
+		// 行列作成と登録
+		var mat = mat4.perspective(30, canvas.width / canvas.height, 1, 100);
+		mat4.translate(mat, [0, 0, -40]);
+		mat4.multiply(mat, quat4.toMat4(rotq));
+		gl.uniformMatrix4fv(s_mat, false, mat);
+		// 描画
+		gl.cullFace(gl.BACK);
+		webglDraw(model2, textureC, 0, faceNum);
+		gl.cullFace(gl.FRONT);
+		webglDraw(model2, textureW, 0, faceNum);
+		
+		// 画面の更新
+		gl.flush();
+		setTimeout(renderScene, 40);
+	}
+	
+	// 処理開始
+	renderScene();
+	
+	// -------------------------------- 回転処理 --------------------------------
+	var mousex = 0;
+	var mousey = 0;
+	var touchFlag = false;
+	var touchq = quat4.create();
+	//quat4.set([0, 0, 0, 1], rotq);
+	quat4.set([-0.1748010367155075, 0.14884084463119507, 0.022910015657544136, 0.9730200171470642], rotq);
+	
+	// マウス押下
+	canvas.ontouchstart = canvas.onmousedown = function(e){
+		touchFlag = true;
+		touchx = mousex;
+		touchy = mousey;
+	};
+	
+	// マウス移動
+	canvas.ontouchmove = canvas.onmousemove = function(e){
+		var rect = e.target.getBoundingClientRect();
+		var new_mousex = e.clientX - rect.left;
+		var new_mousey = e.clientY - rect.top;
+		if(touchFlag){
+			// クオータニオンによる回転
+			var dx = -(new_mousex - mousex) * 0.03;
+			var dy = -(new_mousey - mousey) * 0.03;
+			var a = Math.sqrt(dx * dx + dy * dy);
+			if(a != 0){
+				var ar = a * 0.5;
+				var as = Math.sin(ar) / a;
+				quat4.set([dy * as, dx * as, 0, Math.cos(ar)], touchq);
+				quat4.multiply(rotq, touchq);
+			}
+		}
+		mousex = new_mousex;
+		mousey = new_mousey;
+	};
+	
+	// マウス解放
+	canvas.ontouchend = canvas.onmouseup = function(e){
+		touchFlag = false;
+		console.log("rotq = [" + rotq[0] + ", " + rotq[1] + ", " + rotq[2] + ", " + rotq[3] + "]");
+	};
+}
+
+</script></head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="320" height="320"></canvas>
+</td></tr></table>
+</body></html>

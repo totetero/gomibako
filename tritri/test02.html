@@ -1,0 +1,14 @@
+<html><head>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+<style type="text/css">body{text-align: center; margin: 0;}</style>
+<script type="text/javascript" src="test02.js"></script>
+<script type="text/javascript">
+var JsCtrlUtil = new function(){this.isTouch = function(){return ("ontouchstart" in window);};}
+window.onload = function(){JSX.require('test02.jsx')._Main.main$();};
+</script>
+</head><body>
+<canvas id="canvas" width="320" height="320"></canvas><br>
+<button type="button" onclick="JSX.require('test02.jsx')._Main.test01$();">battle</button>
+<button type="button" onclick="JSX.require('test02.jsx')._Main.test02$();">place</button>
+</body></html>

@@ -1,0 +1,25 @@
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head><body><center>
+	<iframe
+		id="gameFrame"
+		src="index.html"
+		style="background-color:white; width:320px; height:320px;"
+		alt="test"
+		onload="document.getElementById('gameFrame').contentWindow.focus();"
+	></iframe><br>
+	<input type="button" value="focus" onClick="document.getElementById('gameFrame').contentWindow.focus();">
+
+	<script type="text/javascript">
+	// マップをフィールドに書き出す
+	function writeMap(){
+		var field = document.getElementById("gameFrame").contentWindow.game.writeMap();
+		document.getElementById('mapdata').value = field;
+	}
+	</script>
+	<form id='mapfield'>
+	<button type='button' onClick='writeMap()'>get map data</button><br>
+	<textarea cols=56 rows=10 id='mapdata'></textarea>
+	</form>
+	
+</center></body></html>

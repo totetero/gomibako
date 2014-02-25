@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="Engine3d.js"></script>
+<script type="text/javascript" src="Matrix.js"></script>
+<script type="text/javascript" src="Earth.js"></script>
+<script type="text/javascript">
+
+// グローバル変数
+var e3d = new Engine3d();
+var earth = new Earth();
+
+var count = 0;
+
+window.onload = function(){
+	// 初期化
+	e3d.init(document.getElementById("screen"));
+	earth.init(e3d);
+	
+	// 描画処理を毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+}
+
+function redrawScene() {
+	// フレームカウントをインクリメント
+	count += 1;
+	
+	e3d.clear();
+	
+	// シェーダーに渡すパラメータを計算し、設定
+	var mat1 = new Matrix();
+	mat1.frustum(1, 1, 1, 100);
+	mat1.mulTranslate(0, 0, -3);
+	mat1.mulRotY(count / 100);
+	e3d.setMatrix(mat1);
+	
+	earth.draw(e3d);
+	
+	// ページに反映させる
+	e3d.flush();
+}
+
+</script></head><body>
+<canvas id="screen" width="320" height="320"></canvas>
+</body></html>

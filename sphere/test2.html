@@ -1,0 +1,117 @@
+<html><head>
+<script type="text/javascript">
+
+window.onload = function(){
+	var canvas = document.getElementById("canvas");
+	var context = canvas.getContext("2d");
+	var canvasdat = context.createImageData(canvas.width, canvas.height);
+	var imgdat = null;
+	var rotq = [0.4199987001545864, 0.12089180229811576, 0.1406688505842586, 0.8883684699947848];
+	
+	// メインループ
+	var renderScene = function(){
+		for(var i = 0; i < canvasdat.height; i++){
+			for(var j = 0; j < canvasdat.width; j++){
+				var index = i * canvasdat.width + j;
+				var x = (j - canvasdat.width * 0.5) / 100;
+				var y = (i - canvasdat.height * 0.5) / 100;
+				var r = x * x + y * y;
+				if(r <= 1){
+					// 描画対象点の球上座標を得る
+					var z = Math.sqrt(1 - r);
+					// 球上座標にクォータニオン回転を適用する
+					var ix =  rotq[3] * x + rotq[1] * z - rotq[2] * y;
+					var iy =  rotq[3] * y + rotq[2] * x - rotq[0] * z;
+					var iz =  rotq[3] * z + rotq[0] * y - rotq[1] * x;
+					var iw = -rotq[0] * x - rotq[1] * y - rotq[2] * z;
+					x = ix * rotq[3] - iw * rotq[0] - iy * rotq[2] + iz * rotq[1];
+					y = iy * rotq[3] - iw * rotq[1] - iz * rotq[0] + ix * rotq[2];
+					z = iz * rotq[3] - iw * rotq[2] - ix * rotq[1] + iy * rotq[0];
+					// 球上座標をテクスチャ座標に変換する
+					var u = Math.atan2(z, x) / (2 * Math.PI) + 0.5;
+					var v = Math.acos(y) / Math.PI;
+					u = Math.floor((1 - u) * imgdat.height);
+					v = Math.floor((1 - v) * imgdat.width);
+					var index2 = v * imgdat.width + u;
+					canvasdat.data[index * 4 + 0] = imgdat.data[index2 * 4 + 0];
+					canvasdat.data[index * 4 + 1] = imgdat.data[index2 * 4 + 1];
+					canvasdat.data[index * 4 + 2] = imgdat.data[index2 * 4 + 2];
+					canvasdat.data[index * 4 + 3] = 255;
+				}else{
+					canvasdat.data[index * 4 + 0] = 0;
+					canvasdat.data[index * 4 + 1] = 255;
+					canvasdat.data[index * 4 + 2] = 255;
+					canvasdat.data[index * 4 + 3] = 255;
+				}
+			}
+		}
+		context.putImageData(canvasdat, 0, 0);
+		setTimeout(renderScene, 40);
+	}
+	
+	// 画像の読み込み
+	var img = new Image();
+	img.onload = function(){
+		var imgcanvas = document.createElement('canvas');
+		imgcanvas.setAttribute('width', 32);
+		imgcanvas.setAttribute('height', 32);
+		var imgcontext = imgcanvas.getContext('2d');
+		imgcontext.drawImage(img, 0, 0, imgcanvas.width, imgcanvas.height);
+		imgdat = imgcontext.getImageData(0, 0, imgcanvas.width, imgcanvas.height);
+		// 処理開始
+		renderScene();
+	}
+	img.src = "test.png";
+	
+	// -------------------------------- 回転処理 --------------------------------
+	var mousex = 0;
+	var mousey = 0;
+	var touchFlag = false;
+	
+	// マウス押下
+	canvas.ontouchstart = canvas.onmousedown = function(e){
+		touchFlag = true;
+		touchx = mousex;
+		touchy = mousey;
+	};
+	
+	// マウス移動
+	canvas.ontouchmove = canvas.onmousemove = function(e){
+		var rect = e.target.getBoundingClientRect();
+		var new_mousex = e.clientX - rect.left;
+		var new_mousey = e.clientY - rect.top;
+		if(touchFlag){
+			// クオータニオンによる回転
+			var dx = -(new_mousex - mousex) * 0.03;
+			var dy =  (new_mousey - mousey) * 0.03;
+			var a = Math.sqrt(dx * dx + dy * dy);
+			if(a != 0){
+				var ar = a * 0.5;
+				var as = Math.sin(ar) / a;
+				var qax = rotq[0], qay = rotq[1], qaz = rotq[2], qaw = rotq[3];
+				var qbx = dy * as;
+				var qby = dx * as;
+				var qbz = 0;
+				var qbw = Math.cos(ar);
+				rotq[0] = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+				rotq[1] = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+				rotq[2] = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+				rotq[3] = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+			}
+		}
+		mousex = new_mousex;
+		mousey = new_mousey;
+	};
+	
+	// マウス解放
+	canvas.ontouchend = canvas.onmouseup = function(e){
+		touchFlag = false;
+		console.log("rotq = [" + rotq[0] + ", " + rotq[1] + ", " + rotq[2] + ", " + rotq[3] + "]");
+	};
+}
+
+</script></head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="320" height="320"></canvas>
+</td></tr></table>
+</body></html>

@@ -1,0 +1,145 @@
+<html><head>
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
+<script type="text/javascript">
+
+// 頂点シェーダー
+var vshader_src =
+	"#ifdef GL_ES                                                    \n" +
+	"    precision highp float;                                      \n" +
+	"#endif                                                          \n" +
+	"                                                                \n" +
+	"attribute vec3 vs_attr_pos;                                     \n" +
+	"uniform mat4 vs_unif_mat;                                       \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    gl_Position = vs_unif_mat * vec4(vs_attr_pos, 1.0);         \n" +
+	"}                                                               \n" +
+"";
+
+// フラグメントシェーダー
+var fshader_src =
+	"#ifdef GL_ES                                                    \n" +
+	"    precision highp float;                                      \n" +
+	"#endif                                                          \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);                    \n" +
+	"}                                                               \n" +
+"";
+
+window.onload = function(){
+	var canvas = document.getElementById("canvas");
+	
+	// -------------------------------- webgl初期化 --------------------------------
+	var gl = canvas.getContext("experimental-webgl");
+	if(!gl){alert("WebGL がサポートされていません。"); return -1;}
+	// 頂点シェーダーの作成
+	var vshader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(vshader, vshader_src);
+	gl.compileShader(vshader);
+	// フラグメントシェーダーの作成
+	var fshader = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(fshader,  fshader_src);
+	gl.compileShader(fshader);
+	// プログラムオブジェクトを作成
+	var shader = gl.createProgram();
+	gl.attachShader(shader, vshader);
+	gl.attachShader(shader, fshader);
+	// 頂点シェーダーとフラグメントシェーダーをリンクする
+	gl.linkProgram(shader);
+	// シェーダーを指定
+	gl.useProgram(shader);
+	// シェーダーパラメータ取得
+	var s_pos = gl.getAttribLocation(shader, "vs_attr_pos");
+	var s_mat = gl.getUniformLocation(shader, "vs_unif_mat");
+	
+	// opengl描画設定
+	gl.clearColor(0, 0, 1, 1);
+	gl.clearDepth(1);
+	gl.enable(gl.DEPTH_TEST);
+	// カリング 裏面消去
+	gl.enable(gl.CULL_FACE);
+	gl.cullFace(gl.BACK);
+	
+	// -------------------------------- モデル生成 --------------------------------
+	// 頂点データを生成
+	var divide = 16;
+	var r1 = 1;
+	var r2 = 2;
+	var vert = new Array();
+	for(var i = 0; i < divide; i++){
+		for(var j = 0; j < divide; j++){
+			var rot1 = i / divide * Math.PI * 2;
+			var rot2 = j / divide * Math.PI * 2;
+			var r3 = r1 * Math.cos(rot2) + r2;
+			var y = r1 * Math.sin(rot2);
+			var x = r3 * Math.cos(rot1);
+			var z = r3 * Math.sin(rot1);
+			vert.push(x, y, z);
+		}
+	}
+	
+	// インデックスデータを生成
+	var face = new Array();
+	for(var i = 0; i < divide; i++){
+		for(var j = 0; j < divide; j++){
+			var i0 = i; var i1 = (i0 + 1) % divide;
+			var j0 = j; var j1 = (j0 + 1) % divide;
+			face.push(divide * i0 + j1);
+			face.push(divide * i1 + j1);
+			face.push(divide * i1 + j0);
+			face.push(divide * i0 + j1);
+			face.push(divide * i1 + j0);
+			face.push(divide * i0 + j0);
+		}
+	}
+	var faceNum = face.length;
+	
+	// 頂点データをVBOに変換
+	var vertBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vert), gl.STATIC_DRAW);
+	
+	// インデックスデータをIBOに変換
+	var faceBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(face), gl.STATIC_DRAW);
+	
+	// -------------------------------- メインループ --------------------------------
+	var count = 0;
+	var renderScene = function(){
+		// クリア
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		
+		// 行列作成
+		var mat = mat4.perspective(30, canvas.width / canvas.height, 1, 100);
+		mat4.translate(mat, [0, 0, -15]);
+		mat4.rotateY(mat, count / 50);
+		mat4.rotateX(mat, count++ / 100);
+		// 行列登録
+		gl.uniformMatrix4fv(s_mat, false, mat);
+		
+		// VBO登録 頂点データ
+		gl.enableVertexAttribArray(s_pos);
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
+		gl.vertexAttribPointer(s_pos, 3, gl.FLOAT, false, 0, 0);
+		// IBO登録 インデックスデータ
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceBuffer);
+		
+		// 描画
+		gl.drawElements(gl.TRIANGLES, faceNum, gl.UNSIGNED_SHORT, 0);
+		
+		// 画面の更新
+		gl.flush();
+		setTimeout(renderScene, 40);
+	}
+	
+	// 処理開始
+	renderScene();
+}
+
+</script></head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="320" height="320"></canvas>
+</td></tr></table>
+</body></html>

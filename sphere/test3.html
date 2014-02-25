@@ -1,0 +1,127 @@
+<html><head>
+<style type="text/css">body{margin: 0;}</style>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
+<script type="text/javascript">
+
+function Sphia(){
+	var imgdat = null;
+	
+	this.init = function(){
+		// 画像の読み込み
+		var img = new Image();
+		img.onload = function(){
+			var imgcvs = document.createElement('canvas');
+			var imgctx = imgcvs.getContext('2d');
+			imgcvs.width = imgcvs.height = 32;
+			imgctx.drawImage(img, 0, 0, imgcvs.width, imgcvs.height);
+			imgdat = imgctx.getImageData(0, 0, imgcvs.width, imgcvs.height);
+		}
+		img.src = "test.png";
+	}
+	
+	this.draw = function(context, rotq, x0, y0, w, h){
+		if(imgdat == null){return;}
+		var cvsdat = context.getImageData(x0, y0, w, h);
+		for(var i = 0; i < h; i++){
+			for(var j = 0; j < w; j++){
+				var index = (i * w + j) * 4;
+				if(cvsdat.data[index + 3] == 0){continue;}
+				var x = 2 * j / w - 1;
+				var y = 2 * i / h - 1;
+				var r = x * x + y * y;
+				if(r <= 0.95){
+					// 描画対象点の球上座標を得る
+					var vec = [x, y, Math.sqrt(1 - r)];
+					// 球上座標にクォータニオン回転を適用する
+					quat4.multiplyVec3(rotq, vec);
+					// 球上座標をテクスチャ座標に変換する
+					var u = Math.atan2(vec[2], vec[0]) / (2 * Math.PI) + 0.5;
+					var v = Math.acos(vec[1]) / Math.PI;
+					u = Math.floor((1 - u) * imgdat.height);
+					v = Math.floor((1 - v) * imgdat.width);
+					var index2 = (v * imgdat.width + u) * 4;
+					cvsdat.data[index + 0] = imgdat.data[index2 + 0];
+					cvsdat.data[index + 1] = imgdat.data[index2 + 1];
+					cvsdat.data[index + 2] = imgdat.data[index2 + 2];
+					cvsdat.data[index + 3] = 255;
+				}else if(r <= 1){
+					// 枠線
+					cvsdat.data[index + 0] = 0;
+					cvsdat.data[index + 1] = 0;
+					cvsdat.data[index + 2] = 0;
+					cvsdat.data[index + 3] = 255;
+				}
+			}
+		}
+		context.putImageData(cvsdat, x0, y0);
+	}
+}
+
+window.onload = function(){
+	var canvas = document.getElementById("world");
+	var context = canvas.getContext("2d");
+	canvas.width  = window.innerWidth;
+	canvas.height = window.innerHeight;
+	var rotq = [0.4199987001545864, 0.12089180229811576, 0.1406688505842586, 0.8883684699947848];
+	var sphia = new Sphia();
+	sphia.init();
+	
+	// メインループ
+	var renderScene = function(){
+		context.fillStyle = "green";
+		context.rect(0, 0, canvas.width, canvas.height);
+		context.fill();
+		
+		sphia.draw(context, rotq, 10, 10, 200, 200);
+		
+		setTimeout(renderScene, 40);
+	}
+	renderScene();
+	
+	// -------------------------------- 回転処理 --------------------------------
+	var mousex = 0;
+	var mousey = 0;
+	var touchFlag = false;
+	var isTouch = ('ontouchstart' in window);
+	
+	// マウス押下
+	canvas.ontouchstart = canvas.onmousedown = function(e){
+		e.preventDefault();
+		touchFlag = true;
+		touchx = mousex;
+		touchy = mousey;
+	};
+	
+	// マウス移動
+	canvas.ontouchmove = canvas.onmousemove = function(e){
+		var rect = e.target.getBoundingClientRect();
+		var new_mousex = (isTouch ? event.changedTouches[0].clientX : e.clientX) - rect.left;
+		var new_mousey = (isTouch ? event.changedTouches[0].clientY : e.clientY) - rect.top;
+		if(touchFlag){
+			e.preventDefault();
+			// クオータニオンによる回転
+			var dx = -(new_mousex - mousex) * 0.03;
+			var dy =  (new_mousey - mousey) * 0.03;
+			var a = Math.sqrt(dx * dx + dy * dy);
+			if(a != 0){
+				var ar = a * 0.5;
+				var as = Math.sin(ar) / a;
+				var tmpq = [dy * as, dx * as, 0, Math.cos(ar)];
+				quat4.multiply(rotq, tmpq)
+			}
+		}
+		mousex = new_mousex;
+		mousey = new_mousey;
+	};
+	
+	// マウス解放
+	canvas.ontouchend = canvas.onmouseup = function(e){
+		touchFlag = false;
+		console.log("rotq = [" + rotq[0] + ", " + rotq[1] + ", " + rotq[2] + ", " + rotq[3] + "]");
+	};
+}
+
+</script></head><body>
+<canvas id="world"></canvas>
+</body></html>

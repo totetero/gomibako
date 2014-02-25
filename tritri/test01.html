@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// 画像
+
+var mimg = new Image();
+var pimg = new Image();
+var kimg = new Image();
+mimg.src = "img/mapchip.png";
+pimg.src = "img/player.png";
+kimg.src = "img/kumo.png";
+
+function isImgLoad(){
+	return mimg.complete && pimg.complete && kimg.complete;
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// A*アルゴリズム
+
+function Astar(){
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(map){
+		this.node = new Array();
+		for(var j = 0; j < map.ysize; j++){
+			this.node[j] = new Array();
+			for(var i = 0; i < map.xsize; i++){
+				this.node[j][i] = new Object();
+				this.node[j][i].x = i;
+				this.node[j][i].y = j;
+			}
+		}
+		this.openList = new Array();
+		//this.closeList = new Array(); // 自分の実装ではcloseリストは必要ないっぽい
+		this.getNode = function(x, y){
+			if(x < 0 || map.xsize <= x){return -1;}
+			if(y < 0 || map.ysize <= y){return -1;}
+			return this.node[y][x];
+		}
+		this.gx = this.gy = -1;
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(player, map, mousex, mousey){
+		var mx = Math.floor((mousex - map.x) / 16);
+		var my = Math.floor((mousey - map.y) / 16);
+		var px = Math.floor(player.x / 16);
+		var py = Math.floor(player.y / 16);
+		// 全ノード初期化
+		for(var j = 0; j < map.ysize; j++){
+			for(var i = 0; i < map.xsize; i++){
+				this.node[j][i].px = -1;
+				this.node[j][i].py = -1;
+				this.node[j][i].gstar = -1;
+				this.node[j][i].hstar = -1;
+				this.node[j][i].fstar = -1;
+			}
+		}
+		this.openList.length = 0;
+		this.gx = this.gy = -1;
+		// ゴールノード
+		var gnode = this.node[my][mx];
+		// ゴールノードまでの仮コスト計算をする関数
+		var calcHstar = function(node){
+			// ここで0を返すとダイクストラ法になると
+			var x = node.x - gnode.x;
+			var y = node.y - gnode.y;
+			return (Math.abs(x) + Math.abs(y)) * 1;
+		}
+		// スタートノード
+		var snode = this.node[py][px];
+		snode.gstar = 0;
+		snode.hstar = calcHstar(snode);
+		snode.fstar = snode.hstar;
+		this.openList.push(snode);
+		// Astarアルゴリズム探索開始
+		var loop;
+		for(loop = 0 ;loop < 9999; loop++){
+			// openリストが空になっていたら終了
+			if(this.openList.length == 0){
+				break;
+			}
+			// openリストのうち最小のfstarを持つノードを取り出す
+			var index ,cnode ,minf;
+			for(var i = 0; i < this.openList.length; i++){
+				if(i == 0 || this.openList[i].fstar < minf){
+					index = i;
+					cnode = this.openList[index];
+					minf = cnode.fstar;
+				}
+			}
+			this.openList.splice(index, 1);
+			// ゴールノードにたどり着いていたら終了
+			if(cnode == gnode){
+				this.gx = gnode.x;
+				this.gy = gnode.y;
+				break;
+			}
+			// 隣接しているノードを調べる
+			this.checkNextNode = function(x, y){
+				var tnode = this.getNode(cnode.x + x, cnode.y + y);
+				if(tnode < 0){return;}
+				var toNextNodeCost = map.getCost(tnode.x, tnode.y);
+				if(toNextNodeCost > 127){return;}
+				// 現在のノードから隣接したノードに移動した際のスタートからゴールまでの推定コストを求める
+				var gstar = cnode.gstar + toNextNodeCost;
+				if(tnode.hstar < 0){tnode.hstar = calcHstar(tnode)}
+				var fstar = gstar + tnode.hstar;
+				// スタートからゴールまでの推定コストを比較する 小さくなっていたら更新する
+				if(tnode.fstar < 0 || tnode.fstar > fstar){
+					// openリストに登録されていない場合は登録
+					var isOpen = false;
+					for(var i = 0; i < this.openList.length; i++){
+						if(this.openList[i] == tnode){isOpen = true;}
+					}
+					if(!isOpen){this.openList.push(tnode);}
+					// データを更新
+					tnode.px = cnode.x;
+					tnode.py = cnode.y;
+					tnode.gstar = gstar;
+					tnode.fstar = fstar;
+				}
+			}
+			this.checkNextNode( 1, 0);
+			this.checkNextNode(-1, 0);
+			this.checkNextNode(0,  1);
+			this.checkNextNode(0, -1);
+		}
+		// スタートからゴールまでのコスト
+		var tnode = this.getNode(this.gx, this.gy);
+		if(!(tnode < 0)){
+			var cost = map.getCost(tnode.x, tnode.y);
+			for(var i = 0; i < 9999; i++){
+				tnode = this.getNode(tnode.px, tnode.py);
+				if(tnode < 0){break;}
+				cost += map.getCost(tnode.x, tnode.y);
+			}
+			console.log("calc cost: " + loop + " move cost: " + cost);
+		}else{
+			console.log("calc cost: " + loop);
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(ctrl, map){
+		// ゴールノードからたどっていく
+		var tnode = this.getNode(this.gx, this.gy);
+		if(!(tnode < 0)){
+			for(var i = 0; i < 9999; i++){
+				var x = tnode.x * 16 + map.x;
+				var y = tnode.y * 16 + map.y;
+				ctrl.context.drawImage(mimg, 0, 0, 16, 16, x, y, 16, 16);
+				tnode = this.getNode(tnode.px, tnode.py);
+				if(tnode < 0){break;}
+			}
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// マップ
+
+function Map(){
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(){
+		this.map = [
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,1,1,1,1,1,1,7,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,1,1,1,1,1,3,3,3,3,3,1,1,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,1,1,3,3,3,3,3,3,3,3,3,3,1,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,1,1,1,1,1,1,3,3,3,3,3,3,3,3,3,3,3,1,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,1,1,1,1,1,1,1,3,3,3,3,3,3,3,3,3,3,1,1,7,7],
+			[7,7,7,7,7,7,7,7,7,7,1,1,1,1,1,1,1,1,1,3,3,3,3,3,3,1,1,1,1,7,7,7],
+			[7,7,7,7,7,7,7,7,7,1,1,1,5,5,5,5,5,1,1,1,3,3,3,3,1,1,7,7,7,7,7,7],
+			[7,7,7,7,7,1,1,1,1,1,5,5,5,5,5,5,5,5,1,1,1,1,1,1,1,1,7,7,7,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,5,5,5,5,5,5,5,5,5,5,5,5,1,4,4,1,7,7,7,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,1,1,5,5,5,5,5,5,5,5,1,4,4,4,4,4,4,1,7,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,1,4,4,4,5,5,5,5,1,1,1,4,4,4,4,4,4,1,1,7,7,7],
+			[7,7,7,1,1,1,1,1,1,4,4,4,5,5,6,6,6,6,5,1,1,4,4,4,4,4,4,1,1,7,7,7],
+			[7,7,7,7,7,7,7,1,4,4,4,5,6,6,6,6,6,6,6,5,1,1,4,4,4,1,1,1,1,7,7,7],
+			[7,7,1,4,4,4,7,7,7,7,7,7,6,6,6,6,6,6,6,5,5,1,1,5,5,1,1,1,1,1,7,7],
+			[7,7,1,1,4,4,4,4,4,4,4,7,7,7,7,6,6,6,5,5,5,5,1,1,5,5,1,1,1,1,7,7],
+			[7,7,1,1,1,1,4,4,4,4,4,4,5,6,6,6,6,5,4,4,4,4,1,1,1,4,4,1,1,1,7,7],
+			[7,7,1,1,1,1,1,1,4,4,4,4,4,5,5,5,4,4,4,4,4,4,4,4,4,4,4,4,1,1,7,7],
+			[7,7,1,1,1,1,1,1,1,4,4,4,4,4,4,4,4,4,4,4,1,4,4,4,4,4,4,4,1,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,1,1,4,4,4,4,4,4,1,1,1,1,4,4,4,4,4,4,1,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,7,1,1,4,4,4,4,1,7,7,7,7],
+			[7,7,7,1,1,2,2,2,2,2,2,1,1,1,1,1,1,1,1,7,7,1,1,1,1,4,4,1,7,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,2,2,2,2,2,2,2,1,1,7,7,7,1,1,1,1,1,1,7,7,7,7],
+			[7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,7,7,7,7,1,1,1,1,1,7,7,7,7,7],
+			[7,7,7,1,1,3,3,3,3,3,3,1,1,1,1,1,1,1,7,7,7,7,7,1,1,1,1,7,7,7,7,7],
+			[7,7,7,7,1,3,3,3,3,3,3,1,1,1,1,1,1,1,7,7,7,1,1,1,1,1,1,7,7,7,7,7],
+			[7,7,7,7,1,1,3,3,3,3,1,1,1,1,1,1,1,1,7,7,7,1,1,1,1,1,1,7,7,7,7,7],
+			[7,7,7,7,7,1,1,1,1,1,1,7,1,1,1,1,1,7,7,7,7,1,1,1,1,1,1,7,7,7,7,7],
+			[7,7,7,7,7,7,1,1,1,1,1,7,7,7,1,1,7,7,7,7,7,7,1,1,1,1,7,7,7,7,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+			[7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7],
+		];
+		this.xsize = this.map[0].length;
+		this.ysize = this.map.length;
+		this.getChip = function(x, y){
+			if(x < 0 || this.xsize <= x){return -1;}
+			if(y < 0 || this.ysize <= y){return -1;}
+			return this.map[y][x];
+		}
+		// あたり判定
+		this.hitChip = function(x, y){
+			var chip = this.getChip(x, y);
+			return chip == 7;
+		}
+		// Astar探索で用いる移動コスト
+		this.getCost = function(x, y){
+			switch(this.getChip(x, y)){
+				case 1: return 2;
+				case 2: return 1;
+				case 3: return 4;
+				case 4: return 4;
+				case 5: return 8;
+				case 6: return 16;
+				default: return 128;
+			}
+		}
+		
+		// 海岸線自動補正地形作成
+		this.exmap = new Array();
+		for(var j = 0; j < this.ysize; j++){
+			this.exmap[j * 2 + 0] = new Array();
+			this.exmap[j * 2 + 1] = new Array();
+			for(var i = 0; i < this.xsize; i++){
+				var m = this.getChip(i + 0, j + 0);
+				var m00 = this.getChip(i - 1, j - 1); m00 = (m00 == m || m00 == -1);
+				var m01 = this.getChip(i + 0, j - 1); m01 = (m01 == m || m01 == -1);
+				var m02 = this.getChip(i + 1, j - 1); m02 = (m02 == m || m02 == -1);
+				var m10 = this.getChip(i - 1, j + 0); m10 = (m10 == m || m10 == -1);
+				var m12 = this.getChip(i + 1, j + 0); m12 = (m12 == m || m12 == -1);
+				var m20 = this.getChip(i - 1, j + 1); m20 = (m20 == m || m20 == -1);
+				var m21 = this.getChip(i + 0, j + 1); m21 = (m21 == m || m21 == -1);
+				var m22 = this.getChip(i + 1, j + 1); m22 = (m22 == m || m22 == -1);
+				var ex00 = this.exmap[j * 2 + 0][i * 2 + 0] = new Object();
+				var ex01 = this.exmap[j * 2 + 0][i * 2 + 1] = new Object();
+				var ex10 = this.exmap[j * 2 + 1][i * 2 + 0] = new Object();
+				var ex11 = this.exmap[j * 2 + 1][i * 2 + 1] = new Object();
+				ex00.u = m * 16 + 0;　ex01.u = m * 16 + 8;
+				ex10.u = m * 16 + 0;　ex11.u = m * 16 + 8;
+				if(m01){
+					if(m10){if(m00){ex00.v = 80;}else{ex00.v = 64;}}else{ex00.v = 32;}
+					if(m12){if(m02){ex01.v = 80;}else{ex01.v = 64;}}else{ex01.v = 32;}
+				}else{
+					if(m10){ex00.v = 48;}else{ex00.v = 16;}
+					if(m12){ex01.v = 48;}else{ex01.v = 16;}
+				}
+				if(m21){
+					if(m10){if(m20){ex10.v = 88;}else{ex10.v = 72;}}else{ex10.v = 40;}
+					if(m12){if(m22){ex11.v = 88;}else{ex11.v = 72;}}else{ex11.v = 40;}
+				}else{
+					if(m10){ex10.v = 56;}else{ex10.v = 24;}
+					if(m12){ex11.v = 56;}else{ex11.v = 24;}
+				}
+			}
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(ctrl, player){
+		this.x = (ctrl.xsize * 0.5) - player.x;
+		this.y = (ctrl.ysize * 0.5) - player.y;
+		var tempx = ctrl.xsize - this.xsize * 16;
+		var tempy = ctrl.ysize - this.ysize * 16;
+		if(this.x > 0){this.x = 0;}else if(this.x < tempx){this.x = tempx;}
+		if(this.y > 0){this.y = 0;}else if(this.y < tempy){this.y = tempy;}
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(ctrl){
+		if(0){
+			// 通常地形の描画
+			for(var j = 0; j < this.ysize; j++){
+				for(var i = 0; i < this.xsize; i++){
+					var x = Math.floor(this.x + i * 16);
+					var y = Math.floor(this.y + j * 16);
+					var u = (this.map[j][i] % 16) * 16;
+					var v = (Math.floor(this.map[j][i] / 16)) * 16;
+					ctrl.context.drawImage(mimg, u, v, 16, 16, x, y, 16, 16);
+				}
+			}
+		}else{
+			// 海岸線自動補正地形の描画
+			for(var j = 0; j < this.ysize * 2; j++){
+				for(var i = 0; i < this.xsize * 2; i++){
+					var x = Math.floor(this.x + i * 8);
+					var y = Math.floor(this.y + j * 8);
+					var u = this.exmap[j][i].u;
+					var v = this.exmap[j][i].v;
+					ctrl.context.drawImage(mimg, u, v, 8, 8, x, y, 8, 8);
+				}
+			}
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// キャラクター
+
+function Player(){
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(x, y){
+		this.x = x;
+		this.y = y;
+		this.rotate = 0;
+		this.action = 0;
+		this.partsList = new Array();
+		for(var i = 0; i < 9; i++){this.partsList[i] = new Object();}
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(ctrl, map){
+		this.action++;
+		// 方向の確認
+		if     (ctrl.krt && ctrl.kup){this.rotate = Math.PI * 1.74;}
+		else if(ctrl.klt && ctrl.kup){this.rotate = Math.PI * 1.26;}
+		else if(ctrl.klt && ctrl.kdn){this.rotate = Math.PI * 0.74;}
+		else if(ctrl.krt && ctrl.kdn){this.rotate = Math.PI * 0.26;}
+		else if(ctrl.krt){this.rotate = Math.PI * 0.00;}
+		else if(ctrl.kup){this.rotate = Math.PI * 1.50;}
+		else if(ctrl.klt){this.rotate = Math.PI * 1.00;}
+		else if(ctrl.kdn){this.rotate = Math.PI * 0.50;}
+		else{this.action = 0;}
+		// 移動
+		if(this.action > 0){
+			var speed = ctrl.k_z ? 3 : 2;
+			// 速度に地形補正をかける
+			var mx0 = Math.floor(this.x / 16);
+			var my0 = Math.floor(this.y / 16);
+			switch(map.getChip(mx0, my0)){
+				case 2: speed *= 1.2; break;
+				case 3: speed *= 0.6; break;
+				case 4: speed *= 0.6; break;
+				case 5: speed *= 0.5; break;
+				case 6: speed *= 0.3; break;
+				case 7: speed *= 0.2; break;
+			}
+			// 速度分移動する 
+			var vx = speed * Math.cos(this.rotate);
+			var vy = speed * Math.sin(this.rotate);
+			if(0){
+				// 海に移動できる
+				this.x += vx;
+				this.y += vy;
+			}else{
+				// 海には移動できない
+				var mx1 = Math.floor((this.x + vx) / 16);
+				var my1 = Math.floor((this.y + vy) / 16);
+				var hitTest01 = map.hitChip(mx0, my1);
+				var hitTest10 = map.hitChip(mx1, my0);
+				if(!map.hitChip(mx1, my1)){
+					this.x += vx;
+					this.y += vy;
+				}else if(hitTest01 && !hitTest10){
+					this.x += vx;
+				}else if(!hitTest01 && hitTest10){
+					this.y += vy;
+				}
+			}
+		}
+		// 境界条件
+		var tempx = map.xsize * 16;
+		var tempy = map.ysize * 16;
+		if(this.x < 0){this.x = 0;}else if(this.x > tempx){this.x = tempx;}
+		if(this.y < 0){this.y = 0;}else if(this.y > tempy){this.y = tempy;}
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(ctrl, map){
+		// 位置
+		var x = map.x + this.x;
+		var y = map.y + this.y;
+		// 角度
+		var s = Math.sin(this.rotate);
+		var c = Math.cos(this.rotate);
+		var r = 45 + 180 / Math.PI * -this.rotate;
+		while(r > 360){r -= 360;} while(r <= 0){r += 360;}
+		if(r < 90){r = 1;}else if(r <= 180){r = 2;}else if(r < 270){r = 3;}else{r = 0;}
+		// 登録関数の作成
+		var pushList = function(p, type, px, py, pz){
+			p.x = x + 35 * (px * c - py * s);
+			p.z =     35 * (px * s + py * c);
+			p.y = y - 35 * pz + 2;
+			switch(type){
+				case 0: p.s = 16; p.u =  0 + r * p.s; p.v =  0; break;
+				case 1: p.s = 16; p.u =  0 + r * p.s; p.v = 16; break;
+				case 2: p.s =  8; p.u =  0 + r * p.s; p.v = 32; break;
+				case 3: p.s =  8; p.u = 32 + r * p.s; p.v = 32; break;
+				case 4: p.s =  8; p.u =  0          ; p.v = 40; break;
+				case 5: p.s = 16; p.u =  0 + r * p.s; p.v = 48; break;
+				case 6: p.s = 16; p.u =  0 + r * p.s; p.v = 64; break;
+			}
+		}
+		// ポーズ登録
+		if(this.action > 0){
+			if(ctrl.k_z){
+				// 走る
+				switch(Math.floor(this.action / 6) % 4){
+					case 0:
+						pushList(this.partsList[0], 0,  0.12,  0.00, 0.45);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.23);
+						pushList(this.partsList[2], 3, -0.20, -0.07, 0.20);
+						pushList(this.partsList[3], 2,  0.10,  0.07, 0.10);
+						pushList(this.partsList[4], 4,  0.10, -0.15, 0.25);
+						pushList(this.partsList[5], 4, -0.10,  0.15, 0.25);
+						pushList(this.partsList[6], 5,  0.06,  0.20, 0.43);
+						pushList(this.partsList[7], 5,  0.06, -0.20, 0.43);
+						pushList(this.partsList[8], 6, -0.07,  0.00, 0.36);break;
+					case 1:
+						pushList(this.partsList[0], 0,  0.12,  0.00, 0.47);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.26);
+						pushList(this.partsList[2], 2, -0.00, -0.07, 0.15);
+						pushList(this.partsList[3], 2,  0.00,  0.07, 0.10);
+						pushList(this.partsList[4], 4,  0.05, -0.18, 0.25);
+						pushList(this.partsList[5], 4, -0.05,  0.18, 0.25);
+						pushList(this.partsList[6], 5,  0.06,  0.20, 0.45);
+						pushList(this.partsList[7], 5,  0.06, -0.20, 0.45);
+						pushList(this.partsList[8], 6, -0.07,  0.00, 0.38);break;
+					case 2:
+						pushList(this.partsList[0], 0,  0.12,  0.00, 0.45);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.23);
+						pushList(this.partsList[2], 2,  0.10, -0.07, 0.10);
+						pushList(this.partsList[3], 3, -0.20,  0.07, 0.20);
+						pushList(this.partsList[4], 4, -0.10, -0.15, 0.25);
+						pushList(this.partsList[5], 4,  0.10,  0.15, 0.25);
+						pushList(this.partsList[6], 5,  0.06,  0.20, 0.43);
+						pushList(this.partsList[7], 5,  0.06, -0.20, 0.43);
+						pushList(this.partsList[8], 6, -0.07,  0.00, 0.36);break;
+					case 3:
+						pushList(this.partsList[0], 0,  0.12,  0.00, 0.47);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.26);
+						pushList(this.partsList[2], 2,  0.00, -0.07, 0.10);
+						pushList(this.partsList[3], 2, -0.00,  0.07, 0.15);
+						pushList(this.partsList[4], 4, -0.05, -0.18, 0.25);
+						pushList(this.partsList[5], 4,  0.05,  0.18, 0.25);
+						pushList(this.partsList[6], 5,  0.06,  0.20, 0.45);
+						pushList(this.partsList[7], 5,  0.06, -0.20, 0.45);
+						pushList(this.partsList[8], 6, -0.07,  0.00, 0.38);break;
+				}
+			}else{
+				// 速歩き
+				switch(Math.floor(this.action / 6) % 4){
+					case 0:
+						pushList(this.partsList[0], 0,  0.03,  0.00, 0.50);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.25);
+						pushList(this.partsList[2], 2,  0.04,  0.08, 0.10);
+						pushList(this.partsList[3], 2, -0.04, -0.08, 0.13);
+						pushList(this.partsList[4], 4, -0.03,  0.18, 0.25);
+						pushList(this.partsList[5], 4,  0.03, -0.18, 0.25);
+						pushList(this.partsList[6], 5, -0.02,  0.20, 0.48);
+						pushList(this.partsList[7], 5, -0.02, -0.20, 0.48);
+						pushList(this.partsList[8], 6, -0.14,  0.00, 0.36);break;
+					case 1:
+						pushList(this.partsList[0], 0,  0.05,  0.00, 0.48);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.24);
+						pushList(this.partsList[2], 2,  0.08,  0.08, 0.10);
+						pushList(this.partsList[3], 3, -0.08, -0.08, 0.15);
+						pushList(this.partsList[4], 4, -0.06,  0.15, 0.25);
+						pushList(this.partsList[5], 4,  0.06, -0.15, 0.25);
+						pushList(this.partsList[6], 5,  0.00,  0.20, 0.46);
+						pushList(this.partsList[7], 5,  0.00, -0.20, 0.46);
+						pushList(this.partsList[8], 6, -0.13,  0.00, 0.34);break;
+					case 2:
+						pushList(this.partsList[0], 0,  0.03,  0.00, 0.50);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.25);
+						pushList(this.partsList[2], 2, -0.04,  0.08, 0.13);
+						pushList(this.partsList[3], 2,  0.04, -0.08, 0.10);
+						pushList(this.partsList[4], 4,  0.03,  0.18, 0.25);
+						pushList(this.partsList[5], 4, -0.03, -0.18, 0.25);
+						pushList(this.partsList[6], 5, -0.02,  0.20, 0.48);
+						pushList(this.partsList[7], 5, -0.02, -0.20, 0.48);
+						pushList(this.partsList[8], 6, -0.14,  0.00, 0.36);break;
+					case 3:
+						pushList(this.partsList[0], 0,  0.05,  0.00, 0.48);
+						pushList(this.partsList[1], 1,  0.00,  0.00, 0.24);
+						pushList(this.partsList[2], 3, -0.08,  0.08, 0.15);
+						pushList(this.partsList[3], 2,  0.08, -0.08, 0.10);
+						pushList(this.partsList[4], 4,  0.06,  0.15, 0.25);
+						pushList(this.partsList[5], 4, -0.06, -0.15, 0.25);
+						pushList(this.partsList[6], 5,  0.00,  0.20, 0.46);
+						pushList(this.partsList[7], 5,  0.00, -0.20, 0.46);
+						pushList(this.partsList[8], 6, -0.13,  0.00, 0.34);break;
+				}
+			}
+		}else{
+			pushList(this.partsList[0], 0,  0.00,  0.00, 0.52);
+			pushList(this.partsList[1], 1, -0.02,  0.00, 0.27);
+			pushList(this.partsList[2], 2, -0.02, -0.10, 0.10);
+			pushList(this.partsList[3], 2,  0.02,  0.10, 0.10);
+			pushList(this.partsList[4], 4,  0.02, -0.20, 0.25);
+			pushList(this.partsList[5], 4, -0.02,  0.20, 0.25);
+			pushList(this.partsList[6], 5, -0.05,  0.20, 0.50);
+			pushList(this.partsList[7], 5, -0.05, -0.20, 0.50);
+			pushList(this.partsList[8], 6, -0.15,  0.00, 0.40);
+		}
+		// 描画
+		this.partsList.sort(function(p0, p1){return p0.z - p1.z;});
+		for(var i = 0; i < this.partsList.length; i++){
+			var p = this.partsList[i];
+			var s = p.s;
+			var x = Math.floor(p.x - s * 0.5);
+			var y = Math.floor(p.y - s * 0.5);
+			ctrl.context.drawImage(pimg, p.u, p.v, s, s, x, y, s, s);
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// 雲
+
+function Kumo(){
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(){
+		this.action = 0;
+		this.w = 320;
+		this.h = 240;
+	}
+	
+	// ----------------------------------------------------------------
+	// 計算
+	this.calc = function(map){
+		var w = this.w, h = this.h;
+		this.x = map.x + Math.floor(this.action++ * 0.24) % w;
+		this.y = map.y + Math.floor(this.action++ * 0.08) % h;
+		while(this.x > 0){this.x -= w;} while(this.x < -w){this.x += w;}
+		while(this.y > 0){this.y -= h;} while(this.y < -h){this.y += h;}
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	this.draw = function(ctrl){
+		var w = this.w, h = this.h;
+		for(var iw = 0; iw < ctrl.xsize + w; iw += w){
+			for(var jh = 0; jh < ctrl.ysize + h; jh += h){
+				ctrl.context.drawImage(kimg, 0, 0, w, h, this.x + iw, this.y + jh, w, h);
+			}
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// メイン
+
+window.onload = function(){
+	this.canvas = document.getElementById("screen");
+	this.context = canvas.getContext("2d");
+	this.xsize = this.canvas.width;
+	this.ysize = this.canvas.height;
+	
+	// 初期化
+	var map = new Map();
+	var player = new Player();
+	var astar = new Astar();
+	var kumo = new Kumo();
+	map.init();
+	player.init(5 * 16 + 8, 22 * 16 + 8);
+	astar.init(map);
+	kumo.init();
+	
+	// メインループ
+	var redrawScene = function(){
+		// 計算
+		player.calc(this, map);
+		map.calc(this, player);
+		kumo.calc(map);
+		
+		// 描画
+		map.draw(this);
+		astar.draw(this, map);
+		player.draw(this, map);
+		kumo.draw(this);
+		//this.context.fillStyle = "#000";
+		//this.context.fillRect(0, 0, this.xsize, 32);
+		//this.context.fillRect(0, this.ysize - 32, this.xsize, 32);
+	}
+	// メインループを毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+	
+	// ----------------------------------------------------------------
+	// イベント
+	this.kup = false;
+	this.kdn = false;
+	this.krt = false;
+	this.klt = false;
+	this.k_z = false;
+	this.k_x = false;
+	this.k_s = false;
+	this.mousex = -1;
+	this.mousey = -1;
+	var that = this;
+	
+	// キーを押す
+	var kdnEvent = function(e){
+		var getkey = true;
+		switch (e.keyCode){
+			case 37: that.klt = true; break;
+			case 38: that.kup = true; break;
+			case 39: that.krt = true; break;
+			case 40: that.kdn = true; break;
+			case 88: that.k_x = true; break;
+			case 90: that.k_z = true; break;
+			case 32: that.k_s = true; break;
+			default: getkey = false;
+		}
+		// キーイベント終了
+		if(getkey){
+			e.preventDefault();
+		}
+	}
+	
+	// キーを離す
+	var kupEvent = function(e){
+		var getkey = true;
+		switch (e.keyCode){
+			case 37: that.klt = false; break;
+			case 38: that.kup = false; break;
+			case 39: that.krt = false; break;
+			case 40: that.kdn = false; break;
+			case 88: that.k_x = false; break;
+			case 90: that.k_z = false; break;
+			case 32: that.k_s = false; break;
+			default: getkey = false;
+		}
+		// キーイベント終了
+		if(getkey){
+			e.preventDefault();
+		}
+	}
+	
+	// マウスを押す
+	var mdnEvent = function(e){}
+	
+	// マウス移動
+	var mmvEvent = function(e){}
+	
+	// マウスボタンを離す
+	var mupEvent = function(e){
+		// 座標を獲得する
+		var rect = e.target.getBoundingClientRect();
+		that.mousex = e.clientX - rect.left;
+		that.mousey = e.clientY - rect.top;
+		// Astarアルゴリズムでプレイヤー位置とクリック位置の最短経路を調べる
+		astar.calc(player, map, that.mousex, that.mousey);
+		// マウスイベント終了
+		e.preventDefault();
+	}
+	
+	document.addEventListener("keydown", kdnEvent, true);
+	document.addEventListener("keyup", kupEvent, true);
+	this.canvas.addEventListener("mousedown", mdnEvent, true);
+	this.canvas.addEventListener("mousemove", mmvEvent, true);
+	this.canvas.addEventListener("mouseup", mupEvent, true);
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+</script>
+</head><body>
+
+<center>
+<canvas id="screen" width="320" height="320"></canvas><br>
+</center>
+
+</body></html>
+
+

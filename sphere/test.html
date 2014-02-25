@@ -1,0 +1,229 @@
+<html><head>
+<script type="text/javascript" src="3dengine.js"></script>
+<script type="text/javascript" src="controller.js"></script>
+<script type="text/javascript">
+
+window.onload = function(){
+	ctrl.init(document.getElementById("canvas"));
+	test3dStart(document.getElementById("canvas"));
+}
+
+// ----------------------------------------------------------------
+
+// 補間とか
+// http://imagingsolution.net/imaging/interpolation/
+// http://webcache.googleusercontent.com/search?q=cache:MypMtoHS-poJ:emaame.com/20080901.html+%E7%94%BB%E5%83%8F%E3%80%80%E6%8B%A1%E5%A4%A7%E3%80%80%E8%A3%9C%E9%96%93%E3%80%80%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0&cd=3&hl=ja&ct=clnk&gl=jp&client=firefox-a
+// バイキュービック補間フィルタリング
+var testMap = function(map_size, noise_size){
+	var map = new Array();
+	var noise = new Array();
+	
+	// 正規化sinc関数のテイラー展開 バイキュービック補間で使うらしい
+	var sinc = function(x){
+		x = Math.abs(x);
+		if(x <= 1.0) return x * x * x - 2.0 * x * x + 1.0;
+		if(x <= 2.0) return -x * x * x + 5.0 * x * x - 8.0 * x + 4.0;
+		return 0;
+	}
+	
+	var getIndex = function(size, side, x, y){
+		return (side * size + y) * size + x;
+	}
+	
+	// 境界条件を満たす配列上の位置	
+	var boundary = function(size, side, x, y){
+		var s = size;
+		if(x < 0){x = 0;}
+		if(x > s){x = s;}
+		if(y < 0){y = 0;}
+		if(y > s){y = s;}
+		return getIndex(s + 1, side, x, y);
+	}
+	
+	// ノイズ作成
+	var s = noise_size;
+	var noise_length = (s + 1) * (s + 1) * 6;
+	for(var i = 0; i < noise_length; i++){noise[i] = (0.5 - Math.random()) * 0.5;}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 5, s, i)] = noise[getIndex(s + 1, 0, 0, i)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 4, 0, i)] = noise[getIndex(s + 1, 0, s, i)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 4, s, i)] = noise[getIndex(s + 1, 1, 0, i)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 5, 0, i)] = noise[getIndex(s + 1, 1, s, i)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 3, i, 0)] = noise[getIndex(s + 1, 0, s - i, 0)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 2, i, 0)] = noise[getIndex(s + 1, 0, i, s)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 3, i, s)] = noise[getIndex(s + 1, 1, i, 0)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 2, i, s)] = noise[getIndex(s + 1, 1, s - i, s)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 2, 0, i)] = noise[getIndex(s + 1, 5, s - i, s)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 2, s, i)] = noise[getIndex(s + 1, 4, i, s)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 3, 0, i)] = noise[getIndex(s + 1, 4, i, 0)];}
+	for(var i = 0; i < s + 1; i++){noise[getIndex(s + 1, 3, s, i)] = noise[getIndex(s + 1, 5, s - i, 0)];}
+	
+	// バイキュービック補間
+	for(var k = 0; k < 6; k++){
+		for(var j = 0; j <= map_size; j++){
+			for(var i = 0; i <= map_size; i++){
+				var interval = map_size / noise_size;
+				var x1 = sinc(1 + (i % interval) / interval);
+				var x2 = sinc(0 + (i % interval) / interval);
+				var x3 = sinc(1 - (i % interval) / interval);
+				var x4 = sinc(2 - (i % interval) / interval);
+				var y1 = sinc(1 + (j % interval) / interval);
+				var y2 = sinc(0 + (j % interval) / interval);
+				var y3 = sinc(1 - (j % interval) / interval);
+				var y4 = sinc(2 - (j % interval) / interval);
+				
+				var i1 =  - 1;
+				var i2 = Math.floor(i / interval) - 0;
+				var i3 = Math.floor(i / interval) + 1;
+				var i4 = Math.floor(i / interval) + 2;
+				var j1 = Math.floor(j / interval) - 1;
+				var j2 = Math.floor(j / interval) - 0;
+				var j3 = Math.floor(j / interval) + 1;
+				var j4 = Math.floor(j / interval) + 2;
+				
+				var ii = Math.floor(i / interval) - 1;
+				var jj = Math.floor(j / interval) - 1;
+				var m11 = noise[boundary(noise_size, k, ii + 0, jj + 0)];
+				var m12 = noise[boundary(noise_size, k, ii + 1, jj + 0)];
+				var m13 = noise[boundary(noise_size, k, ii + 2, jj + 0)];
+				var m14 = noise[boundary(noise_size, k, ii + 3, jj + 0)];
+				var m21 = noise[boundary(noise_size, k, ii + 0, jj + 1)];
+				var m22 = noise[boundary(noise_size, k, ii + 1, jj + 1)];
+				var m23 = noise[boundary(noise_size, k, ii + 2, jj + 1)];
+				var m24 = noise[boundary(noise_size, k, ii + 3, jj + 1)];
+				var m31 = noise[boundary(noise_size, k, ii + 0, jj + 2)];
+				var m32 = noise[boundary(noise_size, k, ii + 1, jj + 2)];
+				var m33 = noise[boundary(noise_size, k, ii + 2, jj + 2)];
+				var m34 = noise[boundary(noise_size, k, ii + 3, jj + 2)];
+				var m41 = noise[boundary(noise_size, k, ii + 0, jj + 3)];
+				var m42 = noise[boundary(noise_size, k, ii + 1, jj + 3)];
+				var m43 = noise[boundary(noise_size, k, ii + 2, jj + 3)];
+				var m44 = noise[boundary(noise_size, k, ii + 3, jj + 3)];
+				
+				y1 *= m11 * x1 + m12 * x2 + m13 * x3 + m14 * x4;
+				y2 *= m21 * x1 + m22 * x2 + m23 * x3 + m24 * x4;
+				y3 *= m31 * x1 + m32 * x2 + m33 * x3 + m34 * x4;
+				y4 *= m41 * x1 + m42 * x2 + m43 * x3 + m44 * x4;
+				map[(k * (map_size + 1) + j) * (map_size + 1) + i] = y1 + y2 + y3 + y4;
+			}
+		}
+	}
+	return map;
+}
+
+// ----------------------------------------------------------------
+
+// 描画テスト用の関数
+function test3dStart(canvas){
+	var rotation = 0;
+	var tmpMat1 = new Object();
+	var tmpMat2 = new Object();
+	var projectionMatrix = new Object();
+	
+	// 3dエンジン初期化
+	e3d_init(canvas);
+	
+	// 射影行列の作成
+	var aspect = canvas.width / canvas.height;
+	mat44Frustum(tmpMat1, aspect, 1, 1, 100);
+	mat44Viewport(tmpMat2, 0, 0, canvas.width, canvas.height);
+	mulMat44(projectionMatrix, tmpMat1, tmpMat2);
+	
+	// 作成
+	var num = 64;
+	var dots = new Array();
+	var noise = testMap(num, 4);
+	if(1){
+		// 球
+		for(var k = 0; k < 6; k++){
+			for(var j = 0; j <= num; j++){
+				for(var i = 0; i <= num; i++){
+					var dot = new Object();
+					var t1 = Math.PI / 2 * (i / num - 0.5);
+					var t2 = Math.PI / 2 * (j / num - 0.5);
+					switch(k){
+						case 0:
+							dot.z = 1;
+							dot.x = dot.z * Math.tan(t1);
+							dot.y = dot.z * Math.tan(t2);
+							break;
+						case 1:
+							dot.z = -1;
+							dot.x = -dot.z * Math.tan(-t1);
+							dot.y = -dot.z * Math.tan(t2);
+							break;
+						case 2:
+							dot.y = 1;
+							dot.z = dot.y * Math.tan(-t2);
+							dot.x = dot.y * Math.tan(t1);
+							break;
+						case 3:
+							dot.y = -1;
+							dot.z = dot.y * Math.tan(t2);
+							dot.x = dot.y * Math.tan(t1);
+							break;
+						case 4:
+							dot.x = 1;
+							dot.y = dot.x * Math.tan(t2);
+							dot.z = dot.x * Math.tan(-t1);
+							break;
+						case 5:
+							dot.x = -1;
+							dot.y = -dot.x * Math.tan(t2);
+							dot.z = -dot.x * Math.tan(t1);
+							break;
+					}
+					var n = 1 + 0.5 * noise[(k * (num + 1) + j) * (num + 1) + i];
+					var r = Math.sqrt(dot.x * dot.x + dot.y * dot.y + dot.z * dot.z) / n;
+					dot.x /= r;
+					dot.y /= r;
+					dot.z /= r;
+					dots.push(dot);
+				}
+			}
+		}
+	}else{
+		// 平面
+		for(var j = 0; j <= num; j++){
+			for(var i = 0; i <= num; i++){
+				var dot = new Object();
+				dot.x = 2 * (i / num - 0.5);
+				dot.y = noise[(0 * (num + 1) + j) * (num + 1) + i];
+				dot.z = 2 * (j / num - 0.5);
+				dots.push(dot);
+			}
+		}
+	}
+	
+	// メインループ
+	var renderScene = function(){
+		mat44(tmpMat1);
+		mulMat44Translate(tmpMat2, tmpMat1, 0, 0, -3);
+		mulMat44RotX(tmpMat1, tmpMat2, ctrl.roth);
+		mulMat44RotY(tmpMat2, tmpMat1, ctrl.rotv + rotation);
+		mulMat44(tmpMat1, tmpMat2, projectionMatrix);
+		
+		rotation += 0.01;
+		
+		e3d_clear();
+		
+		e3d_draw_dot3d(tmpMat1, 0, 0, 0, 0, 0, 255);
+		for(var i = 0; i < dots.length; i++){
+			var dot = dots[i];
+			e3d_draw_dot3d(tmpMat1, dot.x, dot.y, dot.z, 0, 0, 255);
+		}
+		
+		e3d_draw();
+		ctrl.draw();
+		
+		setTimeout(renderScene, 40);
+	}
+	
+	// 処理開始
+	renderScene();
+}
+
+</script></head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="320" height="320"></canvas>
+</td></tr></table>
+</body></html>

@@ -1,0 +1,26 @@
+<html><head>
+<script type="text/javascript" src="3dengine.js"></script>
+<script type="text/javascript">
+
+window.onload = function(){
+	var g = document.getElementById("canvas").getContext("2d");
+	g.fillStyle = "rgb(255, 0, 0)";
+	g.fillRect (0, 0, 240, 320);
+	
+	test3dStart(document.getElementById("canvas").getContext("2d"), 10, 10, 230, 310);
+}
+
+function print(str){
+	var out = document.getElementById("debug");
+	if (!out) return;
+  	  out.value = str + out.value;
+}
+
+</script>
+
+</head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="240" height="320"></canvas>
+</td></tr></table>
+<textarea cols=100 rows=10 id="debug"></textarea>
+</body></html>
