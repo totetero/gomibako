@@ -5,10 +5,20 @@ import "../require/express.jsx";
 class ImageServer{
 	// ----------------------------------------------------------------
 	// ページの設定
-	static function setPage(url : string, path : string, app : ExApplication) : void{
+	static function setPage(app : ExApplication, url : string, path : string, key : string) : void{
 		app.post(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			if(typeof req.body == "object" && typeof req.body["urls"] == "object"){
 				var urls = req.body["urls"] as Map.<string>;
+
+				// test あとで暗号化関数と復号化関数を用意する
+				for(var tag in urls){
+					var cipher = crypto.createCipher("aes192", key);
+					var detstr = cipher.update(urls[tag], "ascii", "base64") + cipher.final("base64");
+					var decipher = crypto.createDecipher("aes192", key);
+					var srcstr = decipher.update(detstr, "base64", "ascii") + decipher.final("ascii");
+					log urls[tag], " : ", detstr, " : ", srcstr;
+				}
+
 				// 画像数を数える
 				var count = 0;
 				for(var tag in urls){count++;}

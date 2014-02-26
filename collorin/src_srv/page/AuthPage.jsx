@@ -24,44 +24,47 @@ class AuthPage{
 		);
 
 		// ローカル用設定
-		passport.use(new LocalStrategy({
-			usernameField: "user",
-			passwordField: "password"
-		}, function(name : string, pass : string, done : function(err:variant,user:UserModel,info:variant):void){
-			process.nextTick(function(){
-				UserModel.findOne({domain: "local", name: name}, function(err : variant, user : UserModel){
-					if(err){done(err, null, null);}
-					else if(user){
-						if(AuthPage.getHash(pass) == user.pass){
-							// 認証成功 データベース更新
-							user.count++;
-							user.save(function(err : variant) : void{
-								done(null, user, null);
-							});
+		if(strategies["local"] != null){
+			var secretKey = strategies["local"]["secretKey"] as string;
+			passport.use(new LocalStrategy({
+				usernameField: "user",
+				passwordField: "password"
+			}, function(name : string, pass : string, done : function(err:variant,user:UserModel,info:variant):void){
+				process.nextTick(function(){
+					UserModel.findOne({domain: "local", name: name}, function(err : variant, user : UserModel){
+						if(err){done(err, null, null);}
+						else if(user){
+							if(AuthPage.getHash(pass, secretKey) == user.pass){
+								// 認証成功 データベース更新
+								user.count++;
+								user.save(function(err : variant) : void{
+									done(null, user, null);
+								});
+							}else{
+								done(null, null, {message: "パスワードが間違っています。"});
+							}
 						}else{
-							done(null, null, {message: "パスワードが間違っています。"});
+							var testFlag = (name == "test01" || name == "test02" || name == "test03");
+							if(testFlag){
+								// テストユーザーのデータベース登録
+								user = new UserModel();
+								user.domain = "local";
+								user.name = name;
+								user.pass = AuthPage.getHash(pass, secretKey);
+								user.nickname = name;
+								user.imgurl = "";
+								user.count = 1;
+								user.save(function(err : variant) : void{
+									done(null, user, null);
+								});
+							}else{
+								done(null, null, {message: "ユーザーが見つかりませんでした。"});
+							}
 						}
-					}else{
-						var testFlag = (name == "test01" || name == "test02" || name == "test03");
-						if(testFlag){
-							// テストユーザーのデータベース登録
-							user = new UserModel();
-							user.domain = "local";
-							user.name = name;
-							user.pass = AuthPage.getHash(pass);
-							user.nickname = name;
-							user.imgurl = "";
-							user.count = 1;
-							user.save(function(err : variant) : void{
-								done(null, user, null);
-							});
-						}else{
-							done(null, null, {message: "ユーザーが見つかりませんでした。"});
-						}
-					}
+					});
 				});
-			});
-		}));
+			}));
+		}
 
 		// twitter用設定
 		if(strategies["twitter"] != null){
@@ -93,8 +96,8 @@ class AuthPage{
 
 	// ----------------------------------------------------------------
 	// ハッシュ値
-	static function getHash(target : string) : string{
-		var hmac = crypto.createHmac("sha256", "testSecretKey");
+	static function getHash(target : string, key : string) : string{
+		var hmac = crypto.createHmac("sha256", key);
 		return hmac.update(target).digest("hex");
 	}
 

@@ -98,7 +98,9 @@ class _Main{
 
 		// passport認証設定
 		AuthPage.setPassport({
-			twitter: {
+			local: {
+				secretKey: app.get("secretKey") as string
+			}, twitter: {
 				consumerKey: "qHPj2nZHSawplrhmx3BQ",
 				consumerSecret: "pU2ssiGpZXuOZ20djoya3h15LORnuL6XJ7IxD0egk",
 				callbackURL: "http://127.0.0.1:10080/auth/twitter/callback"
@@ -115,7 +117,7 @@ class _Main{
 		ChatPage.setPage(app, rcli, io);
 
 		// 画像サーバ
-		ImageServer.setPage("/img", node.__dirname + "/content", app);
+		ImageServer.setPage(app, "/img", node.__dirname + "/content", "testImageSecretKey");
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";

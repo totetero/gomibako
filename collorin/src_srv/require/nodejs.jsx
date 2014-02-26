@@ -47,12 +47,26 @@ native class fs{
 // ----------------------------------------------------------------
 
 native class crypto{
+	static function getCiphers() : string[];
+	static function getHashes() : string[];
 	static function createHmac(algorithm : string, key : string) : Hmac;
+	static function createCipher(algorithm : string, password : string) : Chipher;
+	static function createDecipher(algorithm : string, password : string) : Dechipher;
 } = """require("crypto")""";
 
 native class Hmac{
 	function update(data : string) : Hmac;
 	function digest(encoding : string) : string;
+}
+
+native class Chipher{
+	function update(data : string, input_encoding : string, output_encoding : string) : string;
+	function final(encoding : string) : string;
+}
+
+native class Dechipher{
+	function update(data : string, input_encoding : string, output_encoding : string) : string;
+	function final(encoding : string) : string;
 }
 
 // ----------------------------------------------------------------
