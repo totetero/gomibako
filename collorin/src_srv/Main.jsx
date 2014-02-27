@@ -10,6 +10,9 @@ import "page/AuthPage.jsx";
 import "page/top/TopPage.jsx";
 import "page/mypage/MyPage.jsx";
 import "page/world/WorldPage.jsx";
+import "page/quest/QuestPage.jsx";
+import "page/chara/CharaPage.jsx";
+import "page/item/ItemPage.jsx";
 import "page/dice/DicePage.jsx";
 import "page/chat/ChatPage.jsx";
 
@@ -113,6 +116,9 @@ class _Main{
 		_Main.setMainPage(app);
 		MyPage.setPage(app);
 		WorldPage.setPage(app);
+		QuestPage.setPage(app);
+		CharaPage.setPage(app);
+		ItemPage.setPage(app);
 		DicePage.setPage(app, rcli);
 		ChatPage.setPage(app, rcli, io);
 

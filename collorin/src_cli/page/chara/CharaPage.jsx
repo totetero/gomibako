@@ -11,25 +11,17 @@ import "../page/SECload.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class MyPage extends Page{
+class CharaPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="navi">
-			<div class="core-btn b1">ワールド</div>
-			<div class="core-btn b2">クエスト</div>
-			<div class="core-btn b3">キャラクター</div>
-			<div class="core-btn b4">アイテム</div>
-		</div>
-
-		<div class="footer">おしらせバナースペース</div>
 	""";
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "マイページ";
-		this.depth = 1;
+		this.name = "キャラクター";
+		this.depth = 2;
 	}
 
 	// ----------------------------------------------------------------
@@ -37,12 +29,12 @@ class MyPage extends Page{
 	override function init() : void{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
-		this.div.className = "page mypage";
+		this.div.className = "page chara";
 		this.div.innerHTML = this._htmlTag;
 
 		// ロード設定
 		var loader = new SECload();
-		loader.eventPlayer.serialPush(new ECloadInfo("/mypage", null, function(response : variant) : void{
+		loader.eventPlayer.serialPush(new ECloadInfo("/chara", null, function(response : variant) : void{
 			loader.eventPlayer.serialPush(new ECloadImgs(response["imgs"] as Map.<string>));
 			loader.eventPlayer.serialPush(new ECone(function() : void{
 				// データの形成
@@ -53,13 +45,13 @@ class MyPage extends Page{
 		this.serialPush(loader);
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
-			this.parallelPush(new PECopenHeader(this.name, 1));
+			this.parallelPush(new PECopenHeader(this.name, 2));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECmyPageMain(this));
+		this.serialPush(new SECcharaPageMain(this));
 	}
 
 	// ----------------------------------------------------------------
@@ -73,23 +65,19 @@ class MyPage extends Page{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECmyPageMain extends EventCartridge{
-	var _page : MyPage;
+class SECcharaPageMain extends EventCartridge{
+	var _page : CharaPage;
 	var _btnList = {} : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : MyPage){
+	function constructor(page : CharaPage){
 		this._page = page;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
-		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
-		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("core-btn b3").item(0) as HTMLDivElement, true);
-		this._btnList["b4"] = new PageButton(this._page.div.getElementsByClassName("core-btn b4").item(0) as HTMLDivElement, true);
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
 		return false;
@@ -100,25 +88,8 @@ class SECmyPageMain extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		if(this._btnList["b1"].trigger){
-			Page.transitionsPage("world");
-		}
-
-		if(this._btnList["b2"].trigger){
-			Page.transitionsPage("quest");
-		}
-
-		if(this._btnList["b3"].trigger){
-			Page.transitionsPage("chara");
-		}
-
-		if(this._btnList["b4"].trigger){
-			Page.transitionsPage("item");
-		}
-
 		if(this._btnList["back"].trigger){
-			// トップに戻る
-			dom.document.location.href = "/top";
+			Page.transitionsPage("mypage");
 		}
 
 		return true;

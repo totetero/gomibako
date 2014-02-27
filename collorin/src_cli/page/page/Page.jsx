@@ -5,6 +5,9 @@ import "../../util/Ctrl.jsx";
 import "../../util/Util.jsx";
 import "../mypage/MyPage.jsx";
 import "../world/WorldPage.jsx";
+import "../quest/QuestPage.jsx";
+import "../chara/CharaPage.jsx";
+import "../item/ItemPage.jsx";
 import "../dice/DicePage.jsx";
 import "../chat/ChatPage.jsx";
 
@@ -57,6 +60,9 @@ abstract class Page extends EventPlayer{
 			if(currentHash.indexOf("dice") == 1){nextPage = new DicePage();}
 			else if(currentHash.indexOf("chat") == 1){nextPage = new ChatPage();}
 			else if(currentHash.indexOf("world") == 1){nextPage = new WorldPage();}
+			else if(currentHash.indexOf("quest") == 1){nextPage = new QuestPage();}
+			else if(currentHash.indexOf("chara") == 1){nextPage = new CharaPage();}
+			else if(currentHash.indexOf("item") == 1){nextPage = new ItemPage();}
 			else{nextPage = new MyPage();}
 			if(Page.current == null || Page.current.name != nextPage.name){
 				// ページ遷移

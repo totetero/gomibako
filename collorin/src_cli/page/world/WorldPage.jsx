@@ -93,17 +93,14 @@ class SECworldPageMain extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		if(this._btnList["btn1"].trigger){
-			this._btnList["btn1"].trigger = false;
 			Page.transitionsPage("dice");
 		}
 
 		if(this._btnList["btn2"].trigger){
-			this._btnList["btn2"].trigger = false;
 			Page.transitionsPage("chat");
 		}
 
 		if(this._btnList["back"].trigger){
-			this._btnList["back"].trigger = false;
 			Page.transitionsPage("mypage");
 		}
 
