@@ -99,7 +99,7 @@ class Loader{
 								b64imgs = JSON.parse(xhr.responseText) as Map.<string>;
 								for(var tag in b64imgs){count++;}
 							}
-                        
+
 							// base64形式から画像オブジェクト作成
 							if(count > 0){
 								for(var tag in b64imgs){

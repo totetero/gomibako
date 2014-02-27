@@ -5,7 +5,7 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
-import "../page/Popup.jsx";
+import "../page/SECpopup.jsx";
 
 import "ChatPage.jsx";
 import "ChatCanvas.jsx";

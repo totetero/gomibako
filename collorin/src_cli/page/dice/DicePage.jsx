@@ -4,6 +4,7 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
+import "../page/SECload.jsx";
 
 import "DiceCanvas.jsx";
 import "SECdiceThrow.jsx";
@@ -87,15 +88,18 @@ class DicePage extends Page{
 // ----------------------------------------------------------------
 
 // すごろくページ情報読み込み
-class SECloadDice extends SECloadPage{
+class SECloadDice extends SECload{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage, request : variant){
-		super("/dice", request, function(response : variant) : void{
-			// データの形成
-			page.ccvs.init(response);
-			page.serialPush(new SECdiceCommand(page));
-		});
+		this.eventPlayer.serialPush(new ECloadInfo("/dice", request, function(response : variant) : void{
+			this.eventPlayer.serialPush(new ECloadImgs(response["imgs"] as Map.<string>));
+			this.eventPlayer.serialPush(new ECone(function() : void{
+				// データの形成
+				page.ccvs.init(response);
+				page.serialPush(new SECdiceCommand(page));
+			}));
+		}));
 	}
 }
 

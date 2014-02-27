@@ -1,6 +1,5 @@
 import "js/web.jsx";
 
-import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Util.jsx";
@@ -82,74 +81,6 @@ abstract class Page extends EventPlayer{
 
 	// 開始直前の初期化処理
 	function init() : void{}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-// ページ情報読み込み
-class SECloadPage extends EventCartridge{
-	var _exist : boolean;
-	var _url : string;
-	var _request : variant;
-	var _callback : function(response:variant):void;
-	var _action = 0;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(url : string, request : variant, callback : function(response:variant):void){
-		this._exist = false;
-		this._url = url;
-		this._request = request;
-		this._callback = callback;
-	}
-
-	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : boolean{
-		if(!this._exist){
-			this._exist = true;
-			// ページ情報ロード開始
-			Loader.loadxhr(this._url, this._request, function(response : variant) : void{
-				// ページ情報ロード成功 画像ロード
-				Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
-					// 画像ロード成功
-					this._callback(response);
-					this._exist = false;
-				}, function():void{
-					// 画像ロード失敗
-				});
-			}, function() : void{
-				// ページ情報ロード失敗
-			});
-		}
-		return true;
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc() : boolean{
-		this._action++;
-		// ロード画面表示
-		var display = ((this._exist || this._action < 15) && 5 < this._action) ? "block" : "none";
-		if(Page.loadingDiv.style.display != display){Page.loadingDiv.style.display = display;}
-		// ロード文字列描画
-		if(this._action % 10 == 0){
-			switch(this._action / 10 % 4){
-				case 0: Page.loadingDiv.setAttribute("txt", "loading"); break;
-				case 1: Page.loadingDiv.setAttribute("txt", "loading."); break;
-				case 2: Page.loadingDiv.setAttribute("txt", "loading.."); break;
-				case 3: Page.loadingDiv.setAttribute("txt", "loading..."); break;
-			}
-		}
-		return (this._exist || (5 < this._action && this._action < 15));
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-	}
 }
 
 // ----------------------------------------------------------------
