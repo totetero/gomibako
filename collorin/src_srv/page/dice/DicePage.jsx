@@ -2,6 +2,7 @@ import "../../require/nodejs.jsx";
 import "../../require/express.jsx";
 import "../../require/redis.jsx";
 
+import "../../util/ImageServer.jsx";
 import "../../models/User.jsx";
 import "../../data/CharacterDrawInfo.jsx";
 
@@ -81,7 +82,7 @@ class DicePage{
 		}
 
 		jdat["charaInfo"] = charaInfoList;
-		jdat["imgs"] = imgs;
+		jdat["imgs"] = ImageServer.convertAddress(imgs);
 		callback(jdat);
 	}
 }

@@ -3,25 +3,24 @@ import "../require/express.jsx";
 
 // 画像配信クラス
 class ImageServer{
+	static var key : string;
+
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication, url : string, path : string, key : string) : void{
+		ImageServer.key = key;
+
+		// POST画像リクエストの処理
 		app.post(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			if(typeof req.body == "object" && typeof req.body["urls"] == "object"){
 				var urls = req.body["urls"] as Map.<string>;
-
-				// test あとで暗号化関数と復号化関数を用意する
-				for(var tag in urls){
-					var cipher = crypto.createCipher("aes192", key);
-					var detstr = cipher.update(urls[tag], "ascii", "base64") + cipher.final("base64");
-					var decipher = crypto.createDecipher("aes192", key);
-					var srcstr = decipher.update(detstr, "base64", "ascii") + decipher.final("ascii");
-					log urls[tag], " : ", detstr, " : ", srcstr;
-				}
-
-				// 画像数を数える
+				// 画像数を数えつつアドレスの復号化
 				var count = 0;
-				for(var tag in urls){count++;}
+				for(var tag in urls){
+					count++;
+					var decipher = crypto.createDecipher("aes192", ImageServer.key);
+					urls[tag] = decipher.update(urls[tag], "base64", "ascii") + decipher.final("ascii");
+				}
 				if(count <= 0){
 					// リクエスト無し
 					res.contentType("application/json").send(null);
@@ -38,9 +37,26 @@ class ImageServer{
 				}
 			}else{
 				// リクエスト書式異常
-				res.contentType("application/json").send(null);
+				res.status(404).render("404.ejs", null);
 			}
 		});
+
+		// TODO GET画像リクエスト ページ毎のテンプレート
+
+		// GETとPOST以外のリクエストは404
+		app.all(url + "/*", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			res.status(404).render("404.ejs", null);
+		});
+	}
+
+	// ----------------------------------------------------------------
+	// アドレスを暗号化
+	static function convertAddress(imgs : Map.<string>) : Map.<string>{
+		for(var tag in imgs){
+			var cipher = crypto.createCipher("aes192", ImageServer.key);
+			imgs[tag] = cipher.update(imgs[tag], "ascii", "base64") + cipher.final("base64");
+		}
+		return imgs;
 	}
 
 	// ----------------------------------------------------------------

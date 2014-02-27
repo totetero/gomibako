@@ -3,6 +3,7 @@ import "../../require/express.jsx";
 import "../../require/redis.jsx";
 import "../../require/socket.io.jsx";
 
+import "../../util/ImageServer.jsx";
 import "../../models/User.jsx";
 import "../../data/CharacterDrawInfo.jsx";
 
@@ -86,7 +87,7 @@ class ChatPage{
 
 			// ユーザー情報の設定
 			ChatPage._setUinfo(req.session.passport["user"] as string, uinfo, function(){
-				jdat["imgs"] = imgs;
+				jdat["imgs"] = ImageServer.convertAddress(imgs);
 				res.contentType("application/json").send(JSON.stringify(jdat));
 			});
 		});
@@ -144,8 +145,8 @@ class ChatPage{
 				// データの送信
 				step["send"] = function() : void{
 					client.join(uinfo.room);
-					client.emit("entry", uinfo.uid, allData, allImgs);
-					client.broadcast.to(uinfo.room).emit("add", newData, newImgs);
+					client.emit("entry", uinfo.uid, allData, ImageServer.convertAddress(allImgs));
+					client.broadcast.to(uinfo.room).emit("add", newData, ImageServer.convertAddress(newImgs));
 				};
 				// プログラムステップ開始
 				step["getuinfo"]();
