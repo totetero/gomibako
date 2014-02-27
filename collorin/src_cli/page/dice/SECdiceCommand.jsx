@@ -49,7 +49,7 @@ class SECdiceCommand extends EventCartridge{
 
 		// キャンバス計算
 		ccvs.calc(true, 0, function() : void{
-			// フィールド押下による移動
+			// フィールド押下
 			var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
 			log "field " + hex.x + " " + hex.y;
 		}, function() : void{

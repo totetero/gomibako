@@ -94,18 +94,22 @@ class SECmyPageMain extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
+		// ワールドボタン
 		if(this._btnList["b1"].trigger){
 			Page.transitionsPage("world");
 		}
 
+		// クエストボタン
 		if(this._btnList["b2"].trigger){
 			Page.transitionsPage("quest");
 		}
 
+		// キャラクターボタン
 		if(this._btnList["b3"].trigger){
 			Page.transitionsPage("chara");
 		}
 
+		// アイテムボタン
 		if(this._btnList["b4"].trigger){
 			Page.transitionsPage("item");
 		}
