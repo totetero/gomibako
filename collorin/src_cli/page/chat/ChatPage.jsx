@@ -49,18 +49,12 @@ class ChatPage extends Page{
 		// キャンバス
 		this.ccvs = new ChatCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
-		// ロード設定
-		var loader = new SECload();
-		loader.eventPlayer.serialPush(new ECloadInfo("/chat", {"stage": "test"}, function(response : variant) : void{
-			loader.eventPlayer.serialPush(new ECloadImgs(response["imgs"] as Map.<string>));
-			loader.eventPlayer.serialPush(new ECone(function() : void{
-				// データの形成
-				this.ccvs.init(response);
-				this.socket.init(this.ccvs);
-			}));
-		}));
 		// イベント設定
-		this.serialPush(loader);
+		this.serialPush(new SECload("/chat", {"stage": "test"}, function(response : variant) : void{
+			// ロード完了 データの形成
+			this.ccvs.init(response);
+			this.socket.init(this.ccvs);
+		}));
 		this.serialPush(new ECone(function() : void{
 			// ページ遷移前描画
 			this.ccvs.draw();

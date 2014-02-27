@@ -34,17 +34,11 @@ class WorldPage extends Page{
 		this.div.className = "page world";
 		this.div.innerHTML = this._htmlTag;
 
-		// ロード設定
-		var loader = new SECload();
-		loader.eventPlayer.serialPush(new ECloadInfo("/world", null, function(response : variant) : void{
-			loader.eventPlayer.serialPush(new ECloadImgs(response["imgs"] as Map.<string>));
-			loader.eventPlayer.serialPush(new ECone(function() : void{
-				// データの形成
-				log response;
-			}));
-		}));
 		// イベント設定
-		this.serialPush(loader);
+		this.serialPush(new SECload("/world", null, function(response : variant) : void{
+			// ロード完了 データの形成
+			log response;
+		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader(this.name, 2));

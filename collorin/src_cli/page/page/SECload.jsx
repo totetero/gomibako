@@ -22,6 +22,18 @@ class SECload extends EventCartridge{
 	}
 
 	// ----------------------------------------------------------------
+	// 情報読み込みコンストラクタ
+	function constructor(url : string, request : variant, callback : function(response:variant):void){
+		this();
+		this.eventPlayer.serialPush(new ECloadInfo(url, request, function(response : variant) : void{
+			this.eventPlayer.serialPush(new ECloadImgs(response["imgs"] as Map.<string>));
+			this.eventPlayer.serialPush(new ECone(function() : void{
+				callback(response);
+			}));
+		}));
+	}
+
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
 		return true;

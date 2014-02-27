@@ -92,14 +92,11 @@ class SECloadDice extends SECload{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage, request : variant){
-		this.eventPlayer.serialPush(new ECloadInfo("/dice", request, function(response : variant) : void{
-			this.eventPlayer.serialPush(new ECloadImgs(response["imgs"] as Map.<string>));
-			this.eventPlayer.serialPush(new ECone(function() : void{
-				// データの形成
-				page.ccvs.init(response);
-				page.serialPush(new SECdiceCommand(page));
-			}));
-		}));
+		super("/dice", request, function(response : variant) : void{
+			// ロード完了 データの形成
+			page.ccvs.init(response);
+			page.serialPush(new SECdiceCommand(page));
+		});
 	}
 }
 
