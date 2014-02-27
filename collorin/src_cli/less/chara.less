@@ -4,6 +4,62 @@
 
 #screen >.pageContainer .page.chara{
 	background-color: green;
+
+	.tab{
+		position: absolute;
+		width: 45px;
+		height: 30px;
+		line-height: 32px;
+		text-align: center;
+		border: solid 3px white;
+		border-right: none;
+		border-radius: 8px 0 0 8px;
+		background-color: red;
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-radius: 8px 0 0 8px;
+		}
+
+		&.active{
+			background-color: yellow;
+		}
+
+		&.select{
+			background-color: pink;
+			&::before{border-right: solid 2px pink;}
+		}
+
+		&.list{top: 53px;}
+		&.team{top: 90px;}
+		&.rest{top: 127px;}
+		&.pwup{top: 164px;}
+		&.sell{top: 201px;}
+	}
+
+	.body{
+		position: absolute;
+		left: 47px;
+		width: 270px;
+		height: 100%;
+		border-left: solid 3px white;
+		background-color: pink;
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			width: 100%;
+			height: 100%;
+			border-left: solid 2px black;
+		}
+	}
 }
 
 /* -------------------------------- */
