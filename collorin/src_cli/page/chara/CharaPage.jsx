@@ -15,11 +15,13 @@ class CharaPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="body"></div>
-		<div class="tab list">一覧</div>
-		<div class="tab team">編成</div>
-		<div class="tab rest">休息</div>
-		<div class="tab pwup">強化</div>
-		<div class="tab sell">別れ</div>
+		<div class="tab">
+			<div class="list">一覧</div>
+			<div class="team">編成</div>
+			<div class="rest">休息</div>
+			<div class="pwup">強化</div>
+			<div class="sell">別れ</div>
+		</div>
 	""";
 
 	// タブ要素
@@ -44,11 +46,12 @@ class CharaPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chara";
 		this.div.innerHTML = this._htmlTag;
-		this.listDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
-		this.teamDiv = this.div.getElementsByClassName("tab team").item(0) as HTMLDivElement;
-		this.restDiv = this.div.getElementsByClassName("tab rest").item(0) as HTMLDivElement;
-		this.pwupDiv = this.div.getElementsByClassName("tab pwup").item(0) as HTMLDivElement;
-		this.sellDiv = this.div.getElementsByClassName("tab sell").item(0) as HTMLDivElement;
+		var tabDiv = this.div.getElementsByClassName("tab").item(0);
+		this.listDiv = tabDiv.getElementsByClassName("list").item(0) as HTMLDivElement;
+		this.teamDiv = tabDiv.getElementsByClassName("team").item(0) as HTMLDivElement;
+		this.restDiv = tabDiv.getElementsByClassName("rest").item(0) as HTMLDivElement;
+		this.pwupDiv = tabDiv.getElementsByClassName("pwup").item(0) as HTMLDivElement;
+		this.sellDiv = tabDiv.getElementsByClassName("sell").item(0) as HTMLDivElement;
 
 		// イベント設定
 		this.serialPush(new SECload("/chara", null, function(response : variant) : void{

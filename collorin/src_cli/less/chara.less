@@ -7,40 +7,45 @@
 
 	.tab{
 		position: absolute;
-		width: 45px;
-		height: 30px;
-		line-height: 32px;
-		text-align: center;
-		border: solid 3px white;
-		border-right: none;
-		border-radius: 8px 0 0 8px;
-		background-color: red;
+		width: 47px;
+		height: 100%;
+		padding: 50px 0 2px 0;
+		box-sizing: border-box;
+		-webkit-box-sizing: border-box; // TODO
 
-		&::before{
-			content: '';
-			position: absolute;
-			left: -2px;
-			top: -2px;
-			width: 100%;
-			height: 100%;
-			border: solid 2px black;
+		div{
+			position: relative;
+			width: 48px;
+			height: 20%;
+			box-sizing: border-box;
+			-webkit-box-sizing: border-box; // TODO
+			line-height: 32px;
+			text-align: center;
+			border: solid 3px white;
+			border-right: none;
 			border-radius: 8px 0 0 8px;
-		}
+			background-color: red;
 
-		&.active{
-			background-color: yellow;
-		}
+			&::before{
+				content: '';
+				position: absolute;
+				left: -2px;
+				top: -2px;
+				width: 100%;
+				height: 100%;
+				border: solid 2px black;
+				border-radius: 8px 0 0 8px;
+			}
 
-		&.select{
-			background-color: pink;
-			&::before{border-right: solid 2px pink;}
-		}
+			&.active{
+				background-color: yellow;
+			}
 
-		&.list{top: 53px;}
-		&.team{top: 90px;}
-		&.rest{top: 127px;}
-		&.pwup{top: 164px;}
-		&.sell{top: 201px;}
+			&.select{
+				background-color: pink;
+				&::before{border-right: solid 2px pink;}
+			}
+		}
 	}
 
 	.body{

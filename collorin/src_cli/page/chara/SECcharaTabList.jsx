@@ -29,7 +29,7 @@ class SECcharaTabList extends EventCartridge{
 		this._btnList["rest"] = new PageButton(this._page.restDiv, true);
 		this._btnList["pwup"] = new PageButton(this._page.pwupDiv, true);
 		this._btnList["sell"] = new PageButton(this._page.sellDiv, true);
-		this._page.listDiv.className = "tab list select";
+		this._page.listDiv.className = "list select";
 		return false;
 	}
 
@@ -48,7 +48,7 @@ class SECcharaTabList extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		this._page.listDiv.className = "tab list";
+		this._page.listDiv.className = "list";
 	}
 }
 
