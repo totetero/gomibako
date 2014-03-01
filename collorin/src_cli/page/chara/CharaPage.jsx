@@ -6,6 +6,10 @@ import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 
 import "SECcharaTabList.jsx";
+import "SECcharaTabTeam.jsx";
+import "SECcharaTabRest.jsx";
+import "SECcharaTabPwup.jsx";
+import "SECcharaTabSell.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -68,7 +72,19 @@ class CharaPage extends Page{
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECcharaTabList(this));
+		this.toggleTab("list");
+	}
+
+	// ----------------------------------------------------------------
+	// タブきりかえ SECの登録
+	function toggleTab(tab : string) : void{
+		switch(tab){
+			case "list": this.serialPush(new SECcharaTabList(this)); break;
+			case "team": this.serialPush(new SECcharaTabTeam(this)); break;
+			case "rest": this.serialPush(new SECcharaTabRest(this)); break;
+			case "pwup": this.serialPush(new SECcharaTabPwup(this)); break;
+			case "sell": this.serialPush(new SECcharaTabSell(this)); break;
+		}
 	}
 
 	// ----------------------------------------------------------------

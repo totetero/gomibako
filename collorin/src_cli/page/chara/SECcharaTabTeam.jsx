@@ -5,10 +5,6 @@ import "../page/Page.jsx";
 import "../page/SECpopupMenu.jsx";
 
 import "CharaPage.jsx";
-import "SECcharaTabList.jsx";
-import "SECcharaTabRest.jsx";
-import "SECcharaTabPwup.jsx";
-import "SECcharaTabSell.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -57,10 +53,10 @@ class SECcharaTabTeam extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		if(this._btnList["list"].trigger){this._page.serialPush(new SECcharaTabList(this._page)); return false;}
-		if(this._btnList["rest"].trigger){this._page.serialPush(new SECcharaTabRest(this._page)); return false;}
-		if(this._btnList["pwup"].trigger){this._page.serialPush(new SECcharaTabPwup(this._page)); return false;}
-		if(this._btnList["sell"].trigger){this._page.serialPush(new SECcharaTabSell(this._page)); return false;}
+		if(this._btnList["list"].trigger){this._page.toggleTab("list"); return false;}
+		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
+		if(this._btnList["pwup"].trigger){this._page.toggleTab("pwup"); return false;}
+		if(this._btnList["sell"].trigger){this._page.toggleTab("sell"); return false;}
 
 		// ヘッダーボタン
 		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
