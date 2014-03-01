@@ -63,7 +63,7 @@ class WorldPage extends Page{
 
 class SECworldPageMain extends EventCartridge{
 	var _page : WorldPage;
-	var _btnList = {} : Map.<PageButton>;
+	var _btnList : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -74,6 +74,7 @@ class SECworldPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		this._btnList = {} : Map.<PageButton>;
 		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
 		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
 		this._btnList["back"] = new PageButton(Page.backDiv, true);

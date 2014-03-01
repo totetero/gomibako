@@ -17,7 +17,7 @@ import "SECchatCharacterPopup.jsx";
 class SECchatMain extends EventCartridge{
 	var _page : ChatPage;
 	var _input : HTMLInputElement;
-	var _btnList = {} : Map.<PageButton>;
+	var _btnList : Map.<PageButton>;
 
 	var _tappedCharacter : int = -1;
 	var _socketCounter : int = 0;
@@ -34,6 +34,7 @@ class SECchatMain extends EventCartridge{
 	// 初期化
 	override function init() : boolean{
 		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
+		this._btnList = {} : Map.<PageButton>;
 		this._btnList["send"] = new PageButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement, true);
 		this._btnList["exit"] = new PageButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement, true);
 		// トリガーリセット

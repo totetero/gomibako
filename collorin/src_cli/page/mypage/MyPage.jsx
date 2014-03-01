@@ -69,7 +69,7 @@ class MyPage extends Page{
 
 class SECmyPageMain extends EventCartridge{
 	var _page : MyPage;
-	var _btnList = {} : Map.<PageButton>;
+	var _btnList : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -80,6 +80,7 @@ class SECmyPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		this._btnList = {} : Map.<PageButton>;
 		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
 		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
 		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("core-btn b3").item(0) as HTMLDivElement, true);

@@ -30,7 +30,7 @@ class SECchatCharacterPopup extends SECpopup{
 
 	var _page : ChatPage;
 	var _chara : ChatCharacter;
-	var _btnList = {} : Map.<PageButton>;
+	var _btnList : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -47,6 +47,7 @@ class SECchatCharacterPopup extends SECpopup{
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
 		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._chara.code] + ")";
+		this._btnList = {} : Map.<PageButton>;
 		this._btnList["close"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PageButton(this.windowDiv, false);
 		// コントローラーを隠す

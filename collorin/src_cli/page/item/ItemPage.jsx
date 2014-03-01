@@ -61,7 +61,7 @@ class ItemPage extends Page{
 
 class SECitemPageMain extends EventCartridge{
 	var _page : ItemPage;
-	var _btnList = {} : Map.<PageButton>;
+	var _btnList : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -72,6 +72,7 @@ class SECitemPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		this._btnList = {} : Map.<PageButton>;
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
 		return false;

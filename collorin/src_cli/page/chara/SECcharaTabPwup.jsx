@@ -20,7 +20,7 @@ class SECcharaTabPwup extends EventCartridge{
 	""";
 
 	var _page : CharaPage;
-	var _btnList = {} : Map.<PageButton>;
+	var _btnList : Map.<PageButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -31,7 +31,16 @@ class SECcharaTabPwup extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		this._page.bodyDiv.innerHTML = this._htmlTag;
+		if(this._page.pwupDiv.className.indexOf("select") < 0){
+			// タブ変更時にDOM生成
+			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.listDiv.className = "list";
+			this._page.teamDiv.className = "team";
+			this._page.restDiv.className = "rest";
+			this._page.pwupDiv.className = "pwup select";
+			this._page.sellDiv.className = "sell";
+		}
+		this._btnList = {} : Map.<PageButton>;
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
 		this._btnList["list"] = new PageButton(this._page.listDiv, true);
@@ -39,11 +48,6 @@ class SECcharaTabPwup extends EventCartridge{
 		this._btnList["rest"] = new PageButton(this._page.restDiv, true);
 		this._btnList["pwup"] = new PageButton(this._page.pwupDiv, true);
 		this._btnList["sell"] = new PageButton(this._page.sellDiv, true);
-		this._page.listDiv.className = "list";
-		this._page.teamDiv.className = "team";
-		this._page.restDiv.className = "rest";
-		this._page.pwupDiv.className = "pwup select";
-		this._page.sellDiv.className = "sell";
 		return false;
 	}
 
