@@ -97,6 +97,7 @@ abstract class Page extends EventPlayer{
 class PageButton{
 	var div : HTMLDivElement;
 	var active : boolean;
+	var inactive : boolean;
 	var trigger : boolean;
 	var _inner : boolean;
 
@@ -110,7 +111,11 @@ class PageButton{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc(clickable : boolean) : void{
-		if(Ctrl.mdn){
+		if(this.inactive){
+			// ボタン無効状態
+			this.active = false;
+		}else if(Ctrl.mdn){
+			// ボタン押下中
 			var box = this.div.getBoundingClientRect();
 			var x0 = box.left - Ctrl.sx;
 			var y0 = box.top - Ctrl.sy;
@@ -123,13 +128,15 @@ class PageButton{
 			this.active = false;
 			this.trigger = true;
 		}
-		// 描画
+		// 押下描画
 		var isActive = this.div.className.indexOf(" active") >= 0;
-		if(this.active && !isActive){
-			this.div.className += " active";
-		}else if(!this.active && isActive){
-			this.div.className = this.div.className.replace(/ active/g , "");
-		}
+		if(this.active && !isActive){this.div.className += " active";}
+		else if(!this.active && isActive){this.div.className = this.div.className.replace(/ active/g , "");}
+		// 無効化描画
+		var isInactive = this.div.className.indexOf(" inactive") >= 0;
+		if(this.inactive && !isInactive){this.div.className += " inactive";}
+		else if(!this.inactive && isInactive){this.div.className = this.div.className.replace(/ inactive/g , "");}
+
 	}
 }
 
