@@ -7,7 +7,7 @@ import "../page/Transition.jsx";
 
 import "ChatPage.jsx";
 import "ChatCanvas.jsx";
-import "SECchatCharacterPopup.jsx";
+import "SECchatPopupCharacter.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -70,7 +70,7 @@ class SECchatMain extends EventCartridge{
 			}
 		}, function(chara : ChatCharacter) : void{
 			// キャラクター押下によるポップアップ表示
-			this._page.serialPush(new SECchatCharacterPopup(this._page, chara));
+			this._page.serialPush(new SECchatPopupCharacter(this._page, chara));
 			exist = false;
 		});
 

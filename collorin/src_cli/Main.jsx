@@ -39,6 +39,7 @@ class _Main{
 					<div class="cb"></div>
 					<div class="sb"></div>
 				</div>
+				<div id="popup" class="core-popup"></div>
 			</div>
 		""";
 

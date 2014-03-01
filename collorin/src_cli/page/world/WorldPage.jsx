@@ -6,6 +6,7 @@ import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
+import "../page/SECpopupMenu.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -95,9 +96,9 @@ class SECworldPageMain extends EventCartridge{
 			Page.transitionsPage("chat");
 		}
 
-		if(this._btnList["back"].trigger){
-			Page.transitionsPage("mypage");
-		}
+		// ヘッダーボタン
+		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
 
 		return true;
 	}

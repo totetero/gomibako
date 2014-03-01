@@ -21,7 +21,6 @@ class ChatPage extends Page{
 		<input type="text" maxlength="20">
 		<div class="core-btn send">送信</div>
 		<div class="core-btn exit">退出</div>
-		<div class="core-popup"></div>
 	""";
 
 	// チャットソケット

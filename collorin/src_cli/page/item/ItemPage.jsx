@@ -6,6 +6,7 @@ import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
+import "../page/SECpopupMenu.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -83,9 +84,9 @@ class SECitemPageMain extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		if(this._btnList["back"].trigger){
-			Page.transitionsPage("mypage");
-		}
+		// ヘッダーボタン
+		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
 
 		return true;
 	}

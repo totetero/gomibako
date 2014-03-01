@@ -16,7 +16,7 @@ import "SECchatMain.jsx";
 // ----------------------------------------------------------------
 
 // チャットページポップアップイベントカートリッジ
-class SECchatCharacterPopup extends SECpopup{
+class SECchatPopupCharacter extends SECpopup{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="core-background"></div>
@@ -42,16 +42,16 @@ class SECchatCharacterPopup extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function popupInit() : void{
-		this.popupDiv = this._page.div.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
+		this.popupDiv.className = "core-popup chat character";
 		this.popupDiv.innerHTML = this._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
+
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
 		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._chara.code] + ")";
+
 		this._btnList = {} : Map.<PageButton>;
 		this._btnList["close"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PageButton(this.windowDiv, false);
-		// コントローラーを隠す
-		this._page.parallelPush(new PECopenLctrl(false));
 	}
 
 	// ----------------------------------------------------------------

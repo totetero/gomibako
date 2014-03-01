@@ -44,10 +44,11 @@
 
 	.core-window{
 		position: absolute;
-		left: 7px;
+		left: 50%;
 		top: 50%;
 		width: 300px;
 		height: 220px;
+		margin-left: -153px;
 		margin-top: -113px;
 		border: solid 3px white;
 		border-radius: 12px;
@@ -63,6 +64,26 @@
 			border: solid 2px black;
 			border-radius: 12px;
 		}
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- メニューポップアップ -------- */
+
+.core-popup.core.menu{
+	.core-btn{
+		width: 100px;
+		height: 26px;
+		line-height: 30px;
+		text-align: center;
+
+		&.world{left: 5px; top: 5px;}
+		&.quest{left: 5px; top: 42px;}
+		&.chara{left: 5px; top: 79px;}
+		&.item{left: 5px; top: 116px;}
+		&.close{width: 80px; right: 5px; bottom: 5px;}
 	}
 }
 

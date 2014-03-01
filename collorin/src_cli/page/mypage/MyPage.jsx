@@ -6,6 +6,7 @@ import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
+import "../page/SECpopupMenu.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -15,10 +16,10 @@ class MyPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="navi">
-			<div class="core-btn b1">ワールド</div>
-			<div class="core-btn b2">クエスト</div>
-			<div class="core-btn b3">キャラクター</div>
-			<div class="core-btn b4">アイテム</div>
+			<div class="core-btn world">ワールド</div>
+			<div class="core-btn quest">クエスト</div>
+			<div class="core-btn chara">キャラクター</div>
+			<div class="core-btn item">アイテム</div>
 		</div>
 
 		<div class="footer">おしらせバナースペース</div>
@@ -81,10 +82,10 @@ class SECmyPageMain extends EventCartridge{
 	// 初期化
 	override function init() : boolean{
 		this._btnList = {} : Map.<PageButton>;
-		this._btnList["b1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
-		this._btnList["b2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
-		this._btnList["b3"] = new PageButton(this._page.div.getElementsByClassName("core-btn b3").item(0) as HTMLDivElement, true);
-		this._btnList["b4"] = new PageButton(this._page.div.getElementsByClassName("core-btn b4").item(0) as HTMLDivElement, true);
+		this._btnList["world"] = new PageButton(this._page.div.getElementsByClassName("core-btn world").item(0) as HTMLDivElement, true);
+		this._btnList["quest"] = new PageButton(this._page.div.getElementsByClassName("core-btn quest").item(0) as HTMLDivElement, true);
+		this._btnList["chara"] = new PageButton(this._page.div.getElementsByClassName("core-btn chara").item(0) as HTMLDivElement, true);
+		this._btnList["item"] = new PageButton(this._page.div.getElementsByClassName("core-btn item").item(0) as HTMLDivElement, true);
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
 		return false;
@@ -95,30 +96,15 @@ class SECmyPageMain extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		// ワールドボタン
-		if(this._btnList["b1"].trigger){
-			Page.transitionsPage("world");
-		}
+		// コンテンツボタン
+		if(this._btnList["world"].trigger){Page.transitionsPage("world");}
+		if(this._btnList["quest"].trigger){Page.transitionsPage("quest");}
+		if(this._btnList["chara"].trigger){Page.transitionsPage("chara");}
+		if(this._btnList["item"].trigger){Page.transitionsPage("item");}
 
-		// クエストボタン
-		if(this._btnList["b2"].trigger){
-			Page.transitionsPage("quest");
-		}
-
-		// キャラクターボタン
-		if(this._btnList["b3"].trigger){
-			Page.transitionsPage("chara");
-		}
-
-		// アイテムボタン
-		if(this._btnList["b4"].trigger){
-			Page.transitionsPage("item");
-		}
-
-		if(this._btnList["back"].trigger){
-			// トップに戻る
-			dom.document.location.href = "/top";
-		}
+		// ヘッダーボタン
+		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){dom.document.location.href = "/top";}
 
 		return true;
 	}

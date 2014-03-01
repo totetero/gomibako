@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
+import "../page/SECpopupMenu.jsx";
 
 import "CharaPage.jsx";
 import "SECcharaTabList.jsx";
@@ -61,9 +62,9 @@ class SECcharaTabPwup extends EventCartridge{
 		if(this._btnList["rest"].trigger){this._page.serialPush(new SECcharaTabRest(this._page)); return false;}
 		if(this._btnList["sell"].trigger){this._page.serialPush(new SECcharaTabSell(this._page)); return false;}
 
-		if(this._btnList["back"].trigger){
-			Page.transitionsPage("mypage");
-		}
+		// ヘッダーボタン
+		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
 
 		return true;
 	}
