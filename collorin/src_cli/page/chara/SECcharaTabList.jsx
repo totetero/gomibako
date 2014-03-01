@@ -18,25 +18,23 @@ class SECcharaTabList extends EventCartridge{
 
 	var _page : CharaPage;
 	var _btnList : Map.<PageButton>;
+	var _data : variant;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : CharaPage){
+	function constructor(page : CharaPage, response : variant){
 		this._page = page;
+		this._data = response;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		if(this._page.listDiv.className.indexOf("select") < 0){
+		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = this._htmlTag;
-			this._page.listDiv.className = "list select";
-			this._page.teamDiv.className = "team";
-			this._page.restDiv.className = "rest";
-			this._page.pwupDiv.className = "pwup";
-			this._page.sellDiv.className = "sell";
 		}
+
 		this._btnList = {} : Map.<PageButton>;
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);

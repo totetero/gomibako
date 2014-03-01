@@ -60,10 +60,6 @@ class CharaPage extends Page{
 		this.sellDiv = this.div.getElementsByClassName("sell").item(0) as HTMLDivElement;
 
 		// イベント設定
-		this.serialPush(new SECload("/chara", null, function(response : variant) : void{
-			// ロード完了 データの形成
-			log response;
-		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader(this.name, 2));
@@ -78,12 +74,38 @@ class CharaPage extends Page{
 	// ----------------------------------------------------------------
 	// タブきりかえ SECの登録
 	function toggleTab(tab : string) : void{
+		this.bodyDiv.innerHTML = "";
+		this.listDiv.className = (tab == "list") ? "list select" : "list";
+		this.teamDiv.className = (tab == "team") ? "team select" : "team";
+		this.restDiv.className = (tab == "rest") ? "rest select" : "rest";
+		this.pwupDiv.className = (tab == "pwup") ? "pwup select" : "pwup";
+		this.sellDiv.className = (tab == "sell") ? "sell select" : "sell";
 		switch(tab){
-			case "list": this.serialPush(new SECcharaTabList(this)); break;
-			case "team": this.serialPush(new SECcharaTabTeam(this)); break;
-			case "rest": this.serialPush(new SECcharaTabRest(this)); break;
-			case "pwup": this.serialPush(new SECcharaTabPwup(this)); break;
-			case "sell": this.serialPush(new SECcharaTabSell(this)); break;
+			case "list":
+				this.serialPush(new SECload("/chara/list", null, function(response : variant) : void{
+					this.serialPush(new SECcharaTabList(this, response));
+				}));
+				break;
+			case "team":
+				this.serialPush(new SECload("/chara/team", null, function(response : variant) : void{
+					this.serialPush(new SECcharaTabTeam(this, response));
+				}));
+				break;
+			case "rest":
+				this.serialPush(new SECload("/chara/rest", null, function(response : variant) : void{
+					this.serialPush(new SECcharaTabRest(this, response));
+				}));
+				break;
+			case "pwup":
+				this.serialPush(new SECload("/chara/pwup", null, function(response : variant) : void{
+					this.serialPush(new SECcharaTabPwup(this, response));
+				}));
+				break;
+			case "sell":
+				this.serialPush(new SECload("/chara/sell", null, function(response : variant) : void{
+					this.serialPush(new SECcharaTabSell(this, response));
+				}));
+				break;
 		}
 	}
 
