@@ -24,6 +24,8 @@ class CharaPage extends Page{
 		</div>
 	""";
 
+	// ボディ要素
+	var bodyDiv : HTMLDivElement;
 	// タブ要素
 	var listDiv : HTMLDivElement;
 	var teamDiv : HTMLDivElement;
@@ -46,12 +48,12 @@ class CharaPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chara";
 		this.div.innerHTML = this._htmlTag;
-		var tabDiv = this.div.getElementsByClassName("tab").item(0);
-		this.listDiv = tabDiv.getElementsByClassName("list").item(0) as HTMLDivElement;
-		this.teamDiv = tabDiv.getElementsByClassName("team").item(0) as HTMLDivElement;
-		this.restDiv = tabDiv.getElementsByClassName("rest").item(0) as HTMLDivElement;
-		this.pwupDiv = tabDiv.getElementsByClassName("pwup").item(0) as HTMLDivElement;
-		this.sellDiv = tabDiv.getElementsByClassName("sell").item(0) as HTMLDivElement;
+		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
+		this.listDiv = this.div.getElementsByClassName("list").item(0) as HTMLDivElement;
+		this.teamDiv = this.div.getElementsByClassName("team").item(0) as HTMLDivElement;
+		this.restDiv = this.div.getElementsByClassName("rest").item(0) as HTMLDivElement;
+		this.pwupDiv = this.div.getElementsByClassName("pwup").item(0) as HTMLDivElement;
+		this.sellDiv = this.div.getElementsByClassName("sell").item(0) as HTMLDivElement;
 
 		// イベント設定
 		this.serialPush(new SECload("/chara", null, function(response : variant) : void{

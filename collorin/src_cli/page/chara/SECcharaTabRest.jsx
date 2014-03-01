@@ -4,8 +4,8 @@ import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
 
 import "CharaPage.jsx";
+import "SECcharaTabList.jsx";
 import "SECcharaTabTeam.jsx";
-import "SECcharaTabRest.jsx";
 import "SECcharaTabPwup.jsx";
 import "SECcharaTabSell.jsx";
 
@@ -13,10 +13,10 @@ import "SECcharaTabSell.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECcharaTabList extends EventCartridge{
+class SECcharaTabRest extends EventCartridge{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="test">あういえお</div>
+		<div class="test">さしすせそ</div>
 	""";
 
 	var _page : CharaPage;
@@ -39,9 +39,9 @@ class SECcharaTabList extends EventCartridge{
 		this._btnList["rest"] = new PageButton(this._page.restDiv, true);
 		this._btnList["pwup"] = new PageButton(this._page.pwupDiv, true);
 		this._btnList["sell"] = new PageButton(this._page.sellDiv, true);
-		this._page.listDiv.className = "list select";
+		this._page.listDiv.className = "list";
 		this._page.teamDiv.className = "team";
-		this._page.restDiv.className = "rest";
+		this._page.restDiv.className = "rest select";
 		this._page.pwupDiv.className = "pwup";
 		this._page.sellDiv.className = "sell";
 		return false;
@@ -52,8 +52,8 @@ class SECcharaTabList extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
+		if(this._btnList["list"].trigger){this._page.serialPush(new SECcharaTabList(this._page)); return false;}
 		if(this._btnList["team"].trigger){this._page.serialPush(new SECcharaTabTeam(this._page)); return false;}
-		if(this._btnList["rest"].trigger){this._page.serialPush(new SECcharaTabRest(this._page)); return false;}
 		if(this._btnList["pwup"].trigger){this._page.serialPush(new SECcharaTabPwup(this._page)); return false;}
 		if(this._btnList["sell"].trigger){this._page.serialPush(new SECcharaTabSell(this._page)); return false;}
 
