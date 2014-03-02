@@ -67,7 +67,7 @@ abstract class Page extends EventPlayer{
 			else if(currentHash.indexOf("chara") == 1){nextPage = new CharaPage();}
 			else if(currentHash.indexOf("item") == 1){nextPage = new ItemPage();}
 			else{nextPage = new MyPage();}
-			if(Page.current == null || Page.current.name != nextPage.name){
+			if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
 				// ページ遷移
 				nextPage.init();
 				Page.current = nextPage;
@@ -84,9 +84,9 @@ abstract class Page extends EventPlayer{
 
 	// ページ本体要素
 	var div : HTMLDivElement;
-	// プロパティ
-	var name : string;
-	var depth : int = 0; // 深度 画面遷移時の演出に影響
+	// 画面遷移時演出用プロパティ
+	var type : string;
+	var depth : int = 0;
 
 	// 開始直前の初期化処理
 	function init() : void{}

@@ -32,8 +32,8 @@ class ChatPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "チャット";
-		this.depth = 3;
+		this.type = "chat";
+		this.depth = 21;
 	}
 
 	// ----------------------------------------------------------------
@@ -58,7 +58,7 @@ class ChatPage extends Page{
 			// ページ遷移前描画
 			this.ccvs.draw();
 			// コントローラー展開
-			this.parallelPush(new PECopenHeader(this.name, 0));
+			this.parallelPush(new PECopenHeader("", 0));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));

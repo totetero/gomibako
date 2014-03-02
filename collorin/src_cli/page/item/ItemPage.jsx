@@ -21,8 +21,8 @@ class ItemPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "アイテム";
-		this.depth = 2;
+		this.type = "item";
+		this.depth = 11;
 	}
 
 	// ----------------------------------------------------------------
@@ -40,7 +40,7 @@ class ItemPage extends Page{
 		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
-			this.parallelPush(new PECopenHeader(this.name, 2));
+			this.parallelPush(new PECopenHeader("アイテム", 2));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));

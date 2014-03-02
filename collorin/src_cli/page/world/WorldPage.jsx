@@ -23,8 +23,8 @@ class WorldPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "ワールド";
-		this.depth = 2;
+		this.type = "world";
+		this.depth = 11;
 	}
 
 	// ----------------------------------------------------------------
@@ -42,7 +42,7 @@ class WorldPage extends Page{
 		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
-			this.parallelPush(new PECopenHeader(this.name, 2));
+			this.parallelPush(new PECopenHeader("ワールド", 2));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));

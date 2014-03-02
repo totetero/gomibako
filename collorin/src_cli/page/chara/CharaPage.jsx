@@ -41,8 +41,8 @@ class CharaPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "キャラクター";
-		this.depth = 2;
+		this.type = "chara";
+		this.depth = 11;
 	}
 
 	// ----------------------------------------------------------------
@@ -52,6 +52,7 @@ class CharaPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chara";
 		this.div.innerHTML = this._htmlTag;
+		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
 		this.listDiv = this.div.getElementsByClassName("list").item(0) as HTMLDivElement;
 		this.teamDiv = this.div.getElementsByClassName("team").item(0) as HTMLDivElement;
@@ -62,7 +63,7 @@ class CharaPage extends Page{
 		// イベント設定
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
-			this.parallelPush(new PECopenHeader(this.name, 2));
+			this.parallelPush(new PECopenHeader("キャラクター", 2));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));

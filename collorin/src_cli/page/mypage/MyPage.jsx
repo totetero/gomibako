@@ -29,7 +29,7 @@ class MyPage extends Page{
 	// コンストラクタ
 	function constructor(){
 		// プロパティ設定
-		this.name = "マイページ";
+		this.type = "mypage";
 		this.depth = 1;
 	}
 
@@ -48,7 +48,7 @@ class MyPage extends Page{
 		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
-			this.parallelPush(new PECopenHeader(this.name, 1));
+			this.parallelPush(new PECopenHeader("マイページ", 1));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
 			this.parallelPush(new PECopenCharacter("", 0));

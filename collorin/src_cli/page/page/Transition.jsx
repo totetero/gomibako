@@ -15,7 +15,7 @@ import "Page.jsx";
 class SECtransitionsPage extends EventCartridge{
 	var _currentPage : Page;
 	var _nextPage : Page;
-	var _next : boolean;
+	var _next : int;
 	var _action : int = 0;
 
 	// ----------------------------------------------------------------
@@ -26,7 +26,8 @@ class SECtransitionsPage extends EventCartridge{
 
 		if(this._currentPage != null){
 			// 進行方向の確認
-			this._next = (this._currentPage.depth <= this._nextPage.depth);
+			this._next = this._nextPage.depth - this._currentPage.depth;
+			if(this._currentPage.type != this._nextPage.type){this._next = Math.floor(this._next / 10);}
 			// 直前ページのオブジェクト後片付け
 			this._currentPage.dispose();
 		}
@@ -34,7 +35,7 @@ class SECtransitionsPage extends EventCartridge{
 		// ページのdivを配置、設定
 		Page.containerDiv.appendChild(this._nextPage.div);
 		if(this._currentPage != null){
-			if(this._next){
+			if(this._next >= 0){
 				// 進む場合は初期位置の変更
 				Util.cssTranslate(this._currentPage.div, 0, 0);
 				Util.cssTranslate(this._nextPage.div, 320, 0);
@@ -53,11 +54,9 @@ class SECtransitionsPage extends EventCartridge{
 		if(this._currentPage != null){
 			// ページの遷移演出
 			var num = this._action / 10;
-			if(this._next){
-				Util.cssTranslate(this._nextPage.div, 320 * (1 - num * num), 0);
-			}else{
-				Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);
-			}
+			if(this._next >= 0){Util.cssTranslate(this._nextPage.div, 320 * (1 - num * num), 0);}
+			if(this._next == 0){Util.cssTranslate(this._currentPage.div, 320 * (0 - num * num), 0);}
+			if(this._next < 0){Util.cssTranslate(this._currentPage.div, 320 * (num * num), 0);}
 		}
 		return (this._action < 10);
 	}
