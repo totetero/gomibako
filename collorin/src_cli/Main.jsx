@@ -24,6 +24,7 @@ class _Main{
 						<div class="btn back"></div>
 						<div class="btn menu"></div>
 					</div>
+					<div class="core-popup"></div>
 				</div>
 				<div id="character"></div>
 				<div id="loading" txt="loading..."></div>
@@ -39,7 +40,6 @@ class _Main{
 					<div class="cb"></div>
 					<div class="sb"></div>
 				</div>
-				<div id="popup" class="core-popup"></div>
 			</div>
 		""";
 

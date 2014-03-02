@@ -3,6 +3,8 @@ import "js/web.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Util.jsx";
 
+import "Page.jsx";
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -20,7 +22,7 @@ abstract class SECpopup extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		this.popupDiv = dom.document.getElementById("popup") as HTMLDivElement;
+		this.popupDiv = Page.popupDiv;
 		this.popupInit();
 		this.popupDiv.style.opacity = "0";
 		return false;

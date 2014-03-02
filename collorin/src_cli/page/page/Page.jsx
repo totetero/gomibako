@@ -28,6 +28,8 @@ abstract class Page extends EventPlayer{
 	static var titleDiv : HTMLDivElement;
 	static var backDiv : HTMLDivElement;
 	static var menuDiv : HTMLDivElement;
+	// ポップアップ要素
+	static var popupDiv : HTMLDivElement;
 	// キャラクター要素
 	static var characterDiv : HTMLDivElement;
 	// ロード画面要素
@@ -41,6 +43,7 @@ abstract class Page extends EventPlayer{
 		Page.titleDiv = Page.headerDiv.getElementsByClassName("title").item(0) as HTMLDivElement;
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
+		Page.popupDiv = Ctrl.sDiv.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
 		Page.characterDiv = dom.document.getElementById("character") as HTMLDivElement;
 		Page.loadingDiv = dom.document.getElementById("loading") as HTMLDivElement;
 		// 一番最初はヘッダを隠しておく

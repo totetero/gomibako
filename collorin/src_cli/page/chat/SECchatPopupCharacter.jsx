@@ -52,6 +52,9 @@ class SECchatPopupCharacter extends SECpopup{
 		this._btnList = {} : Map.<PageButton>;
 		this._btnList["close"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PageButton(this.windowDiv, false);
+
+		// コントローラーを隠す
+		this._page.parallelPush(new PECopenLctrl(false));
 	}
 
 	// ----------------------------------------------------------------
