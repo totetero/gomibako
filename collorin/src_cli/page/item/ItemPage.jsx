@@ -15,6 +15,13 @@ import "../page/SECpopupMenu.jsx";
 class ItemPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
+		<div class="core-picker-btn"><div class="button">新着</div><div class="arrow"></div></div>
+		<div class="body"></div>
+		<div class="tab">
+			<div class="list">一覧</div>
+			<div class="make">作成</div>
+			<div class="shop">購入</div>
+		</div>
 	""";
 
 	// ----------------------------------------------------------------
