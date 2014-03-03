@@ -19,12 +19,12 @@ class CharaPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="body"></div>
-		<div class="tab">
-			<div class="list">一覧</div>
-			<div class="team">編成</div>
-			<div class="rest">休息</div>
-			<div class="pwup">強化</div>
-			<div class="sell">別れ</div>
+		<div class="tabContainer">
+			<div class="tab list">一覧</div>
+			<div class="tab team">編成</div>
+			<div class="tab rest">休息</div>
+			<div class="tab pwup">強化</div>
+			<div class="tab sell">別れ</div>
 		</div>
 	""";
 
@@ -54,11 +54,11 @@ class CharaPage extends Page{
 		this.div.innerHTML = this._htmlTag;
 		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
-		this.listDiv = this.div.getElementsByClassName("list").item(0) as HTMLDivElement;
-		this.teamDiv = this.div.getElementsByClassName("team").item(0) as HTMLDivElement;
-		this.restDiv = this.div.getElementsByClassName("rest").item(0) as HTMLDivElement;
-		this.pwupDiv = this.div.getElementsByClassName("pwup").item(0) as HTMLDivElement;
-		this.sellDiv = this.div.getElementsByClassName("sell").item(0) as HTMLDivElement;
+		this.listDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
+		this.teamDiv = this.div.getElementsByClassName("tab team").item(0) as HTMLDivElement;
+		this.restDiv = this.div.getElementsByClassName("tab rest").item(0) as HTMLDivElement;
+		this.pwupDiv = this.div.getElementsByClassName("tab pwup").item(0) as HTMLDivElement;
+		this.sellDiv = this.div.getElementsByClassName("tab sell").item(0) as HTMLDivElement;
 
 		// イベント設定
 		this.serialPush(new ECone(function() : void{
@@ -76,11 +76,11 @@ class CharaPage extends Page{
 	// タブきりかえ SECの登録
 	function toggleTab(tab : string) : void{
 		this.bodyDiv.innerHTML = "";
-		this.listDiv.className = (tab == "list") ? "list select" : "list";
-		this.teamDiv.className = (tab == "team") ? "team select" : "team";
-		this.restDiv.className = (tab == "rest") ? "rest select" : "rest";
-		this.pwupDiv.className = (tab == "pwup") ? "pwup select" : "pwup";
-		this.sellDiv.className = (tab == "sell") ? "sell select" : "sell";
+		this.listDiv.className = "tab list" + ((tab == "list") ? " select" : "");
+		this.teamDiv.className = "tab team" + ((tab == "team") ? " select" : "");
+		this.restDiv.className = "tab rest" + ((tab == "rest") ? " select" : "");
+		this.pwupDiv.className = "tab pwup" + ((tab == "pwup") ? " select" : "");
+		this.sellDiv.className = "tab sell" + ((tab == "sell") ? " select" : "");
 		switch(tab){
 			case "list":
 				this.serialPush(new SECload("/chara/list", null, function(response : variant) : void{
