@@ -50,34 +50,34 @@ class Loader{
 							var b64imgs = {} : Map.<string>;
 							var count = 0;
 							if(isBin){
-								var uInt8Array = new Uint8Array(xhr.response as ArrayBuffer);
+								var uint8Array = new Uint8Array(xhr.response as ArrayBuffer);
 								var index = 0;
-								var totalLength = uInt8Array.length;
+								var totalLength = uint8Array.length;
 								while(index < totalLength){
 									// ファイルのタグ名長さ読み取り
-									var len1 = uInt8Array[index++];
-									var len2 = uInt8Array[index++] << 8;
-									var len3 = uInt8Array[index++] << 16;
-									var len4 = uInt8Array[index++] << 24;
+									var len1 = uint8Array[index++];
+									var len2 = uint8Array[index++] << 8;
+									var len3 = uint8Array[index++] << 16;
+									var len4 = uint8Array[index++] << 24;
 									var length = len1 + len2 + len3 + len4;
 									// タグ名記録
 									var tag = "";
-									for(var i = 0; i < length; i++){tag += String.fromCharCode(uInt8Array[index + i]);}
+									for(var i = 0; i < length; i++){tag += String.fromCharCode(uint8Array[index + i]);}
 									index += length;
 									// ファイルのバイナリ長さ読み取り
-									var len1 = uInt8Array[index++];
-									var len2 = uInt8Array[index++] << 8;
-									var len3 = uInt8Array[index++] << 16;
-									var len4 = uInt8Array[index++] << 24;
+									var len1 = uint8Array[index++];
+									var len2 = uint8Array[index++] << 8;
+									var len3 = uint8Array[index++] << 16;
+									var len4 = uint8Array[index++] << 24;
 									var length = len1 + len2 + len3 + len4;
 									// ファイル形式の確認
 									var type = "";
-									var cp0 = uInt8Array[index + 0];
-									var cp1 = uInt8Array[index + 1];
-									var cp2 = uInt8Array[index + 2];
-									var cp3 = uInt8Array[index + 3];
-									var cm1 = uInt8Array[index + length - 1];
-									var cm2 = uInt8Array[index + length - 2];
+									var cp0 = uint8Array[index + 0];
+									var cp1 = uint8Array[index + 1];
+									var cp2 = uint8Array[index + 2];
+									var cp3 = uint8Array[index + 3];
+									var cm1 = uint8Array[index + length - 1];
+									var cm2 = uint8Array[index + length - 2];
 									if(cp0 == 0x89 && cp1 == 0x50 && cp2 == 0x4e && cp3 == 0x47){
 										type = "data:image/png;base64,";
 									}else if(cp0 == 0x47 && cp1 == 0x49 && cp2 == 0x46 && cp3 == 0x38){
@@ -87,7 +87,7 @@ class Loader{
 									}
 									if(type != ""){
 										var data = "";
-										for(var i = 0; i < length; i++){data += String.fromCharCode(uInt8Array[index + i]);}
+										for(var i = 0; i < length; i++){data += String.fromCharCode(uint8Array[index + i]);}
 										// base64情報GET!!
 										count++;
 										b64imgs[tag] = type + dom.window.btoa(data);
