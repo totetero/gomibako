@@ -33,6 +33,7 @@ class SECcharaTabSell extends EventCartridge{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.className = "body sell";
 		}
 
 		this._btnList = {} : Map.<PageButton>;

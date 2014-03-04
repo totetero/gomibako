@@ -33,6 +33,8 @@ class SECitemTabShop extends EventCartridge{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.className = "body shop";
+			this._page.pickLabelDiv.innerHTML = "ぴよ";
 		}
 
 		this._btnList = {} : Map.<PageButton>;
@@ -41,6 +43,7 @@ class SECitemTabShop extends EventCartridge{
 		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
 		this._btnList["make"] = new PageButton(this._page.tabMakeDiv, true);
 		this._btnList["shop"] = new PageButton(this._page.tabShopDiv, true);
+		this._btnList["pick"] = new PageButton(this._page.pickDiv, true);
 		return false;
 	}
 

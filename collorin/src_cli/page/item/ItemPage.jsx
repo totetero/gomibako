@@ -19,7 +19,7 @@ import "SECitemTabShop.jsx";
 class ItemPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="core-picker-btn"><div class="button">新着</div><div class="arrow"></div></div>
+		<div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div>
 		<div class="body"></div>
 		<div class="tab list">一覧</div>
 		<div class="tab make">作成</div>
@@ -28,6 +28,9 @@ class ItemPage extends Page{
 
 	// ボディ要素
 	var bodyDiv : HTMLDivElement;
+	// 並べ替え要素
+	var pickDiv : HTMLDivElement;
+	var pickLabelDiv : HTMLDivElement;
 	// タブ要素
 	var tabListDiv : HTMLDivElement;
 	var tabMakeDiv : HTMLDivElement;
@@ -50,6 +53,8 @@ class ItemPage extends Page{
 		this.div.innerHTML = this._htmlTag;
 		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
+		this.pickDiv = this.div.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
+		this.pickLabelDiv = this.pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement;
 		this.tabListDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
 		this.tabMakeDiv = this.div.getElementsByClassName("tab make").item(0) as HTMLDivElement;
 		this.tabShopDiv = this.div.getElementsByClassName("tab shop").item(0) as HTMLDivElement;

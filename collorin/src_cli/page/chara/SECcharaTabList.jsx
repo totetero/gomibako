@@ -13,12 +13,18 @@ import "CharaPage.jsx";
 class SECcharaTabList extends EventCartridge{
 	// HTMLタグ
 	var _htmlTag = """
-		<div class="test">あういえお</div>
+		<div class="core-picker-btn"><div class="label">新着</div><div class="arrow"></div></div>
+		<div class="core-btn">補給</div>
 	""";
 
 	var _page : CharaPage;
 	var _btnList : Map.<PageButton>;
 	var _data : variant;
+	// 並べ替え要素
+	var pickDiv : HTMLDivElement;
+	var pickLabelDiv : HTMLDivElement;
+	// 補給ボタン要素
+	var supplyDiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -33,6 +39,11 @@ class SECcharaTabList extends EventCartridge{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.className = "body list";
+			// DOM獲得
+			this.pickDiv = this._page.bodyDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
+			this.pickLabelDiv = this.pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement;
+			this.supplyDiv = this._page.bodyDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement;
 		}
 
 		this._btnList = {} : Map.<PageButton>;
@@ -43,6 +54,8 @@ class SECcharaTabList extends EventCartridge{
 		this._btnList["rest"] = new PageButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PageButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PageButton(this._page.tabSellDiv, true);
+		this._btnList["pick"] = new PageButton(this.pickDiv, true);
+		this._btnList["supply"] = new PageButton(this.supplyDiv, true);
 		return false;
 	}
 
