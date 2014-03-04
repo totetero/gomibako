@@ -9,17 +9,16 @@ import "Util.jsx";
 
 // cssで使用する画像の作成クラス
 class CssImgs{
-	static var sheet : CSSStyleSheet;
+	static var style : HTMLStyleElement;
 
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
 		// スタイルシート準備
-		var style = dom.document.createElement("style") as HTMLStyleElement;
-		style.type = "text/css";
-		dom.document.head.appendChild(style);
-		CssImgs.sheet = style.sheet as CSSStyleSheet;
-		var cssIndex = CssImgs.sheet.cssRules.length;
+		CssImgs.style = dom.document.createElement("style") as HTMLStyleElement;
+		CssImgs.style.type = "text/css";
+		dom.document.head.appendChild(CssImgs.style);
+		var sheet = CssImgs.style.sheet as CSSStyleSheet;
 
 		// ピッカーボタン画像
 		if(Loader.b64imgs["corePickerArrow"] == null){
@@ -40,7 +39,7 @@ class CssImgs{
 			context.stroke();
 			Loader.b64imgs["corePickerArrow"] = Util.cvsToBase64(canvas);
 		}
-		CssImgs.sheet.insertRule(".core-picker-btn .arrow{background-image: url(" + Loader.b64imgs["corePickerArrow"] + ")}", cssIndex++);
+		sheet.insertRule(".core-picker-btn .arrow{background-image: url(" + Loader.b64imgs["corePickerArrow"] + ")}", sheet.cssRules.length);
 	}
 }
 
