@@ -4,6 +4,68 @@
 
 #screen >.pageContainer .page.quest{
 	background-color: green;
+	
+	.tab{
+		position: absolute;
+		top: 53px;
+		width: 154px;
+		height: 38px;
+		line-height: 32px;
+		text-align: center;
+		border: solid 3px white;
+		border-bottom: none;
+		border-radius: 8px 8px 0 0;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-radius: 8px 8px 0 0;
+		}
+
+		&.active{
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		&.select{
+			background-color: pink;
+			&::before{border-bottom: solid 2px pink;}
+		}
+
+		&.curr{left: 0px;}
+		&.fine{left: 160px;}
+	}
+
+	.bodyContainer{
+		position: absolute;
+		width: 320px;
+		height: 100%;
+		padding: 93px 0 0 0;
+		.box-sizing(border-box);
+
+		.body{
+			position: relative;
+			width: 100%;
+			height: 100%;
+			.box-sizing(border-box);
+			border-top: solid 3px white;
+			background-color: pink;
+
+			&::before{
+				content: '';
+				position: absolute;
+				top: -2px;
+				width: 100%;
+				height: 100%;
+				border-top: solid 2px black;
+			}
+		}
+	}
 }
 
 /* -------------------------------- */

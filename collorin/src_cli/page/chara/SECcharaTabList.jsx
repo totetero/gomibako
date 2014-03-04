@@ -38,11 +38,11 @@ class SECcharaTabList extends EventCartridge{
 		this._btnList = {} : Map.<PageButton>;
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
-		this._btnList["list"] = new PageButton(this._page.listDiv, true);
-		this._btnList["team"] = new PageButton(this._page.teamDiv, true);
-		this._btnList["rest"] = new PageButton(this._page.restDiv, true);
-		this._btnList["pwup"] = new PageButton(this._page.pwupDiv, true);
-		this._btnList["sell"] = new PageButton(this._page.sellDiv, true);
+		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
+		this._btnList["team"] = new PageButton(this._page.tabTeamDiv, true);
+		this._btnList["rest"] = new PageButton(this._page.tabRestDiv, true);
+		this._btnList["pwup"] = new PageButton(this._page.tabPwupDiv, true);
+		this._btnList["sell"] = new PageButton(this._page.tabSellDiv, true);
 		return false;
 	}
 

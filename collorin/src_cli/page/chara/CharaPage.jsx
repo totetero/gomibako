@@ -31,11 +31,11 @@ class CharaPage extends Page{
 	// ボディ要素
 	var bodyDiv : HTMLDivElement;
 	// タブ要素
-	var listDiv : HTMLDivElement;
-	var teamDiv : HTMLDivElement;
-	var restDiv : HTMLDivElement;
-	var pwupDiv : HTMLDivElement;
-	var sellDiv : HTMLDivElement;
+	var tabListDiv : HTMLDivElement;
+	var tabTeamDiv : HTMLDivElement;
+	var tabRestDiv : HTMLDivElement;
+	var tabPwupDiv : HTMLDivElement;
+	var tabSellDiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -54,11 +54,11 @@ class CharaPage extends Page{
 		this.div.innerHTML = this._htmlTag;
 		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
-		this.listDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
-		this.teamDiv = this.div.getElementsByClassName("tab team").item(0) as HTMLDivElement;
-		this.restDiv = this.div.getElementsByClassName("tab rest").item(0) as HTMLDivElement;
-		this.pwupDiv = this.div.getElementsByClassName("tab pwup").item(0) as HTMLDivElement;
-		this.sellDiv = this.div.getElementsByClassName("tab sell").item(0) as HTMLDivElement;
+		this.tabListDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
+		this.tabTeamDiv = this.div.getElementsByClassName("tab team").item(0) as HTMLDivElement;
+		this.tabRestDiv = this.div.getElementsByClassName("tab rest").item(0) as HTMLDivElement;
+		this.tabPwupDiv = this.div.getElementsByClassName("tab pwup").item(0) as HTMLDivElement;
+		this.tabSellDiv = this.div.getElementsByClassName("tab sell").item(0) as HTMLDivElement;
 
 		// イベント設定
 		this.serialPush(new ECone(function() : void{
@@ -76,11 +76,11 @@ class CharaPage extends Page{
 	// タブきりかえ SECの登録
 	function toggleTab(tab : string) : void{
 		this.bodyDiv.innerHTML = "";
-		this.listDiv.className = "tab list" + ((tab == "list") ? " select" : "");
-		this.teamDiv.className = "tab team" + ((tab == "team") ? " select" : "");
-		this.restDiv.className = "tab rest" + ((tab == "rest") ? " select" : "");
-		this.pwupDiv.className = "tab pwup" + ((tab == "pwup") ? " select" : "");
-		this.sellDiv.className = "tab sell" + ((tab == "sell") ? " select" : "");
+		this.tabListDiv.className = "tab list" + ((tab == "list") ? " select" : "");
+		this.tabTeamDiv.className = "tab team" + ((tab == "team") ? " select" : "");
+		this.tabRestDiv.className = "tab rest" + ((tab == "rest") ? " select" : "");
+		this.tabPwupDiv.className = "tab pwup" + ((tab == "pwup") ? " select" : "");
+		this.tabSellDiv.className = "tab sell" + ((tab == "sell") ? " select" : "");
 		switch(tab){
 			case "list":
 				this.serialPush(new SECload("/chara/list", null, function(response : variant) : void{

@@ -15,6 +15,9 @@ import "../page/SECpopupMenu.jsx";
 class QuestPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
+		<div class="bodyContainer"><div class="body"></div></div>
+		<div class="tab curr">進行可能</div>
+		<div class="tab fine">完了シナリオ</div>
 	""";
 
 	// ----------------------------------------------------------------
