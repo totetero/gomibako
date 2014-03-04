@@ -8,6 +8,10 @@ import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
 
+import "SECitemTabList.jsx";
+import "SECitemTabMake.jsx";
+import "SECitemTabShop.jsx";
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -21,6 +25,13 @@ class ItemPage extends Page{
 		<div class="tab make">作成</div>
 		<div class="tab shop">購入</div>
 	""";
+
+	// ボディ要素
+	var bodyDiv : HTMLDivElement;
+	// タブ要素
+	var tabListDiv : HTMLDivElement;
+	var tabMakeDiv : HTMLDivElement;
+	var tabShopDiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -37,12 +48,13 @@ class ItemPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page item";
 		this.div.innerHTML = this._htmlTag;
+		// DOM獲得
+		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
+		this.tabListDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
+		this.tabMakeDiv = this.div.getElementsByClassName("tab make").item(0) as HTMLDivElement;
+		this.tabShopDiv = this.div.getElementsByClassName("tab shop").item(0) as HTMLDivElement;
 
 		// イベント設定
-		this.serialPush(new SECload("/item", null, function(response : variant) : void{
-			// ロード完了 データの形成
-			log response;
-		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader("アイテム", 2));
@@ -51,54 +63,39 @@ class ItemPage extends Page{
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECitemPageMain(this));
+		this.toggleTab("list");
+	}
+
+	// ----------------------------------------------------------------
+	// タブきりかえ SECの登録
+	function toggleTab(tab : string) : void{
+		this.bodyDiv.innerHTML = "";
+		this.tabListDiv.className = "tab list" + ((tab == "list") ? " select" : "");
+		this.tabMakeDiv.className = "tab make" + ((tab == "make") ? " select" : "");
+		this.tabShopDiv.className = "tab shop" + ((tab == "shop") ? " select" : "");
+		switch(tab){
+			case "list":
+				this.serialPush(new SECload("/item/list", null, function(response : variant) : void{
+					this.serialPush(new SECitemTabList(this, response));
+				}));
+				break;
+			case "make":
+				this.serialPush(new SECload("/item/make", null, function(response : variant) : void{
+					this.serialPush(new SECitemTabMake(this, response));
+				}));
+				break;
+			case "shop":
+				this.serialPush(new SECload("/item/shop", null, function(response : variant) : void{
+					this.serialPush(new SECitemTabShop(this, response));
+				}));
+				break;
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-class SECitemPageMain extends EventCartridge{
-	var _page : ItemPage;
-	var _btnList : Map.<PageButton>;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(page : ItemPage){
-		this._page = page;
-	}
-
-	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : boolean{
-		this._btnList = {} : Map.<PageButton>;
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
-		return false;
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
-
-		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
-
-		return true;
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
 	}
 }
 
