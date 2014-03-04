@@ -23,7 +23,6 @@ class Util{
 		// toDataURL関数が存在すればそれを使う
 		var b64 = canvas.toDataURL("image/png");
 		if(b64 != "data:,"){return b64;}
-		//if(js.eval("!!HTMLCanvasElement.prototype.toDataURL") as boolean){return canvas.toDataURL("image/png");}
 
 		// 画像ピクセルの取得
 		var context = canvas.getContext("2d") as CanvasRenderingContext2D;
