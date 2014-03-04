@@ -114,7 +114,7 @@ class PageButton{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc(clickable : boolean) : void{
-		if(this.inactive){
+		if(this.inactive || !clickable){
 			// ボタン無効状態
 			this.active = false;
 		}else if(Ctrl.mdn){
@@ -125,12 +125,13 @@ class PageButton{
 			var x1 = x0 + box.width;
 			var y1 = y0 + box.height;
 			var inner = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
-			this.active = (clickable && (inner == this._inner));
+			this.active = (inner == this._inner);
 		}else if(this.active){
 			// ボタンを放した瞬間
 			this.active = false;
 			this.trigger = true;
 		}
+
 		// 押下描画
 		var isActive = this.div.className.indexOf(" active") >= 0;
 		if(this.active && !isActive){this.div.className += " active";}
@@ -139,7 +140,107 @@ class PageButton{
 		var isInactive = this.div.className.indexOf(" inactive") >= 0;
 		if(this.inactive && !isInactive){this.div.className += " inactive";}
 		else if(!this.inactive && isInactive){this.div.className = this.div.className.replace(/ inactive/g , "");}
+	}
+}
 
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// ページ用スクロールクラス
+class PageScroll{
+	var containerDiv : HTMLDivElement;
+	var scrollDiv : HTMLDivElement;
+	var barDiv : HTMLDivElement;
+	var btnList : Map.<PageButton>;
+	var active : boolean;
+	var inactive : boolean;
+	var scrollx : number;
+	var scrolly : number;
+	var _speedx : number;
+	var _speedy : number;
+	var _tempscrollx : number;
+	var _tempscrolly : number;
+	var _mdn : boolean;
+	var _tempmx : int;
+	var _tempmy : int;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(containerDiv : HTMLDivElement, scrollDiv : HTMLDivElement, barDiv : HTMLDivElement){
+		this.containerDiv = containerDiv;
+		this.scrollDiv = scrollDiv;
+		this.barDiv = barDiv;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	function calc(clickable : boolean) : void{
+		var cbox = this.containerDiv.getBoundingClientRect();
+		var sbox = this.scrollDiv.getBoundingClientRect();
+
+		// スクロール開始終了の確認
+		if(this._mdn != Ctrl.mdn){
+			this._mdn = Ctrl.mdn;
+			if(this.inactive || !clickable){
+				// スクロール無効状態
+				this.active = false;
+			}else if(this._mdn){
+				var x0 = cbox.left - Ctrl.sx;
+				var y0 = cbox.top - Ctrl.sy;
+				var x1 = x0 + cbox.width;
+				var y1 = y0 + cbox.height;
+				this.active = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+			}else{
+				this.active = false;
+			}
+		}
+
+		
+
+		// スクロール処理
+		if(this.active && Ctrl.mmv){
+			this._speedx *= 0.3;
+			this._speedy *= 0.3;
+			this.scrollx -= this._tempmx - Ctrl.mx;
+			this.scrolly -= this._tempmy - Ctrl.my;			
+		}else{
+			this._speedx *= 0.8;
+			this._speedy *= 0.8;
+			this.scrollx += this._speedx;
+			this.scrolly += this._speedy;
+		}
+		this._tempmx = Ctrl.mx;
+		this._tempmy = Ctrl.my;
+		var maxx = sbox.width - cbox.width;
+		var maxy = sbox.height - cbox.height;
+		if(this.scrollx > 0){this.scrollx = 0;}else if(this.scrollx < -maxx){this.scrollx = -maxx;}
+		if(this.scrolly > 0){this.scrolly = 0;}else if(this.scrolly < -maxy){this.scrolly = -maxy;}
+
+		// スクロール内ボタン処理
+		if(this.btnList != null){
+			for(var name in this.btnList){
+				this.btnList[name].calc(this.active && !Ctrl.mmv);
+			}
+		}
+
+		// スクロール描画
+		var dx = Math.abs(this._tempscrollx - this.scrollx);
+		var dy = Math.abs(this._tempscrolly - this.scrolly);
+		if(dx > 0.5 || dy > 0.5){
+			this._tempscrollx = this.scrollx;
+			this._tempscrolly = this.scrolly;
+			Util.cssTranslate(this.scrollDiv, this.scrollx, this.scrolly);
+		}
+		
+		// 押下描画
+		var isActive = this.containerDiv.className.indexOf(" active") >= 0;
+		if(this.active && !isActive){this.containerDiv.className += " active";}
+		else if(!this.active && isActive){this.containerDiv.className = this.containerDiv.className.replace(/ active/g , "");}
+		// 無効化描画
+		var isInactive = this.containerDiv.className.indexOf(" inactive") >= 0;
+		if(this.inactive && !isInactive){this.containerDiv.className += " inactive";}
+		else if(!this.inactive && isInactive){this.containerDiv.className = this.containerDiv.className.replace(/ inactive/g , "");}
 	}
 }
 
