@@ -8,6 +8,9 @@ import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
 
+import "SECquestTabCurr.jsx";
+import "SECquestTabFine.jsx";
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -19,6 +22,12 @@ class QuestPage extends Page{
 		<div class="tab curr">進行可能</div>
 		<div class="tab fine">完了シナリオ</div>
 	""";
+
+	// ボディ要素
+	var bodyDiv : HTMLDivElement;
+	// タブ要素
+	var tabCurrDiv : HTMLDivElement;
+	var tabFineDiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -35,12 +44,12 @@ class QuestPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page quest";
 		this.div.innerHTML = this._htmlTag;
+		// DOM獲得
+		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
+		this.tabCurrDiv = this.div.getElementsByClassName("tab curr").item(0) as HTMLDivElement;
+		this.tabFineDiv = this.div.getElementsByClassName("tab fine").item(0) as HTMLDivElement;
 
 		// イベント設定
-		this.serialPush(new SECload("/quest", null, function(response : variant) : void{
-			// ロード完了 データの形成
-			log response;
-		}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader("クエスト", 2));
@@ -49,54 +58,33 @@ class QuestPage extends Page{
 			this.parallelPush(new PECopenCharacter("", 0));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
-		this.serialPush(new SECquestPageMain(this));
+		this.toggleTab("curr");
+	}
+
+	// ----------------------------------------------------------------
+	// タブきりかえ SECの登録
+	function toggleTab(tab : string) : void{
+		this.bodyDiv.innerHTML = "";
+		this.tabCurrDiv.className = "tab curr" + ((tab == "curr") ? " select" : "");
+		this.tabFineDiv.className = "tab fine" + ((tab == "fine") ? " select" : "");
+		switch(tab){
+			case "curr":
+				this.serialPush(new SECload("/quest/curr", null, function(response : variant) : void{
+					this.serialPush(new SECquestTabCurr(this, response));
+				}));
+				break;
+			case "fine":
+				this.serialPush(new SECload("/quest/fine", null, function(response : variant) : void{
+					this.serialPush(new SECquestTabFine(this, response));
+				}));
+				break;
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-class SECquestPageMain extends EventCartridge{
-	var _page : QuestPage;
-	var _btnList : Map.<PageButton>;
-
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(page : QuestPage){
-		this._page = page;
-	}
-
-	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : boolean{
-		this._btnList = {} : Map.<PageButton>;
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
-		return false;
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
-
-		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
-
-		return true;
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
 	}
 }
 
