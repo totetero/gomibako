@@ -2,6 +2,7 @@ import "timer.jsx";
 import "js/web.jsx";
 
 import "util/Ctrl.jsx";
+import "util/CssImgs.jsx";
 import "page/page/Page.jsx";
 
 // ----------------------------------------------------------------
@@ -45,6 +46,7 @@ class _Main{
 
 		// プログラム初期化
 		Ctrl.init();
+		CssImgs.init();
 		Page.init();
 
 		// メインループ開始
