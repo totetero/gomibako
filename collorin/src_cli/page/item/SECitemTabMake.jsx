@@ -37,13 +37,17 @@ class SECitemTabMake extends EventCartridge{
 			this._page.pickLabelDiv.innerHTML = "ふが";
 		}
 
+		// ボタン作成
 		this._btnList = {} : Map.<PageButton>;
+		// ヘッダーボタン
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		// タブボタン
 		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
 		this._btnList["make"] = new PageButton(this._page.tabMakeDiv, true);
 		this._btnList["shop"] = new PageButton(this._page.tabShopDiv, true);
 		this._btnList["pick"] = new PageButton(this._page.pickDiv, true);
+
 		return false;
 	}
 
@@ -52,6 +56,7 @@ class SECitemTabMake extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
+		// タブボタン
 		if(this._btnList["list"].trigger){this._page.toggleTab("list"); return false;}
 		if(this._btnList["shop"].trigger){this._page.toggleTab("shop"); return false;}
 

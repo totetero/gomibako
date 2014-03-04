@@ -196,8 +196,6 @@ class PageScroll{
 			}
 		}
 
-		
-
 		// スクロール処理
 		if(this.active && Ctrl.mmv){
 			this._speedx *= 0.3;

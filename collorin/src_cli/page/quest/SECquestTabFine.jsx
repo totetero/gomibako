@@ -36,11 +36,15 @@ class SECquestTabFine extends EventCartridge{
 			this._page.bodyDiv.className = "body fine";
 		}
 
+		// ボタン作成
 		this._btnList = {} : Map.<PageButton>;
+		// ヘッダーボタン
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		// タブボタン
 		this._btnList["curr"] = new PageButton(this._page.tabCurrDiv, true);
 		this._btnList["fine"] = new PageButton(this._page.tabFineDiv, true);
+
 		return false;
 	}
 
@@ -49,6 +53,7 @@ class SECquestTabFine extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
+		// タブボタン
 		if(this._btnList["curr"].trigger){this._page.toggleTab("curr"); return false;}
 
 		// ヘッダーボタン

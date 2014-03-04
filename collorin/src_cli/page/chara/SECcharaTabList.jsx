@@ -66,13 +66,16 @@ class SECcharaTabList extends EventCartridge{
 
 		// ボタン作成
 		this._btnList = {} : Map.<PageButton>;
+		// ヘッダーボタン
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		// タブボタン
 		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
 		this._btnList["team"] = new PageButton(this._page.tabTeamDiv, true);
 		this._btnList["rest"] = new PageButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PageButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PageButton(this._page.tabSellDiv, true);
+		// 本体ボタン
 		this._btnList["pick"] = new PageButton(this._pickDiv, true);
 		this._btnList["supply"] = new PageButton(this._supplyDiv, true);
 
@@ -82,6 +85,7 @@ class SECcharaTabList extends EventCartridge{
 			this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
 			null
 		);
+		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PageButton>;
 		this._scroller.btnList["test"] = new PageButton(this._scroller.scrollDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement, true);
 

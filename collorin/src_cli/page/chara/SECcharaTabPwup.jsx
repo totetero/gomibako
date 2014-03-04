@@ -36,14 +36,18 @@ class SECcharaTabPwup extends EventCartridge{
 			this._page.bodyDiv.className = "body pwup";
 		}
 
+		// ボタン作成
 		this._btnList = {} : Map.<PageButton>;
+		// ヘッダーボタン
 		this._btnList["back"] = new PageButton(Page.backDiv, true);
 		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		// タブボタン
 		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
 		this._btnList["team"] = new PageButton(this._page.tabTeamDiv, true);
 		this._btnList["rest"] = new PageButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PageButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PageButton(this._page.tabSellDiv, true);
+
 		return false;
 	}
 
@@ -52,6 +56,7 @@ class SECcharaTabPwup extends EventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
+		// タブボタン
 		if(this._btnList["list"].trigger){this._page.toggleTab("list"); return false;}
 		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}
 		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
