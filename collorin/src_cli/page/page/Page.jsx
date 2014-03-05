@@ -151,7 +151,8 @@ class PageButton{
 class PageScroll{
 	var containerDiv : HTMLDivElement;
 	var scrollDiv : HTMLDivElement;
-	var barDiv : HTMLDivElement;
+	var xbarDiv : HTMLDivElement;
+	var ybarDiv : HTMLDivElement;
 	var btnList : Map.<PageButton>;
 	var active : boolean;
 	var inactive : boolean;
@@ -159,18 +160,21 @@ class PageScroll{
 	var scrolly : number;
 	var _speedx : number;
 	var _speedy : number;
+	var _mdn : boolean;
+	var _prevmx : int;
+	var _prevmy : int;
+	var _tempsw : int;
+	var _tempsh : int;
 	var _tempscrollx : number;
 	var _tempscrolly : number;
-	var _mdn : boolean;
-	var _tempmx : int;
-	var _tempmy : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(containerDiv : HTMLDivElement, scrollDiv : HTMLDivElement, barDiv : HTMLDivElement){
+	function constructor(containerDiv : HTMLDivElement, scrollDiv : HTMLDivElement, xbarDiv : HTMLDivElement, ybarDiv : HTMLDivElement){
 		this.containerDiv = containerDiv;
 		this.scrollDiv = scrollDiv;
-		this.barDiv = barDiv;
+		this.xbarDiv = xbarDiv;
+		this.ybarDiv = ybarDiv;
 	}
 
 	// ----------------------------------------------------------------
@@ -191,6 +195,8 @@ class PageScroll{
 				var x1 = x0 + cbox.width;
 				var y1 = y0 + cbox.height;
 				this.active = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+				this._prevmx = Ctrl.mx;
+				this._prevmy = Ctrl.my;
 			}else{
 				this.active = false;
 			}
@@ -198,22 +204,24 @@ class PageScroll{
 
 		// スクロール処理
 		if(this.active && Ctrl.mmv){
-			this._speedx *= 0.3;
-			this._speedy *= 0.3;
-			this.scrollx -= this._tempmx - Ctrl.mx;
-			this.scrolly -= this._tempmy - Ctrl.my;			
+			this._speedx = Ctrl.mx - this._prevmx + this._speedx * 0.3;
+			this._speedy = Ctrl.my - this._prevmy + this._speedy * 0.3;
+			this.scrollx += Ctrl.mx - this._prevmx;
+			this.scrolly += Ctrl.my - this._prevmy;
+			this._prevmx = Ctrl.mx;
+			this._prevmy = Ctrl.my;
 		}else{
 			this._speedx *= 0.8;
 			this._speedy *= 0.8;
 			this.scrollx += this._speedx;
 			this.scrolly += this._speedy;
 		}
-		this._tempmx = Ctrl.mx;
-		this._tempmy = Ctrl.my;
 		var maxx = sbox.width - cbox.width;
 		var maxy = sbox.height - cbox.height;
-		if(this.scrollx > 0){this.scrollx = 0;}else if(this.scrollx < -maxx){this.scrollx = -maxx;}
-		if(this.scrolly > 0){this.scrolly = 0;}else if(this.scrolly < -maxy){this.scrolly = -maxy;}
+		if(this.scrollx < -maxx){this.scrollx = -maxx;}
+		if(this.scrolly < -maxy){this.scrolly = -maxy;}
+		if(this.scrollx > 0){this.scrollx = 0;}
+		if(this.scrolly > 0){this.scrolly = 0;}
 
 		// スクロール内ボタン処理
 		if(this.btnList != null){
@@ -230,7 +238,29 @@ class PageScroll{
 			this._tempscrolly = this.scrolly;
 			Util.cssTranslate(this.scrollDiv, this.scrollx, this.scrolly);
 		}
-		
+		// スクロールバー描画
+		if(dx > 0.5 || dy > 0.5 || this._tempsw != Ctrl.sw || this._tempsh != Ctrl.sh){
+			this._tempsw = Ctrl.sw;
+			this._tempsh = Ctrl.sh;
+			if(this.xbarDiv != null){
+				if(cbox.width < sbox.width){
+					this.xbarDiv.style.left = (-this.scrollx * cbox.width / sbox.width) + "px";
+					this.xbarDiv.style.width = (cbox.width * cbox.width / sbox.width) + "px";
+				}else{
+					this.xbarDiv.style.width = "0px";
+				}
+			}
+			if(this.ybarDiv != null){
+				if(cbox.height < sbox.height){
+					this.ybarDiv.style.top = (-this.scrolly * cbox.height / sbox.height) + "px";
+					this.ybarDiv.style.height = (cbox.height * cbox.height / sbox.height) + "px";
+				}else{
+					this.ybarDiv.style.height = "0px";
+				}
+			}
+		}
+
+
 		// 押下描画
 		var isActive = this.containerDiv.className.indexOf(" active") >= 0;
 		if(this.active && !isActive){this.containerDiv.className += " active";}

@@ -30,6 +30,7 @@ class SECcharaTabList extends EventCartridge{
 					9けけけけけ<br>9けけけけけ<br>9けけけけけ<br>
 					0こここここ<br>0こここここ<br>0こここここ
 				</div>
+				<div class="ybar"></div>
 			</div>
 		</div>
 	""";
@@ -83,7 +84,8 @@ class SECcharaTabList extends EventCartridge{
 		this._scroller = new PageScroll(
 			this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
 			this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
-			null
+			null,
+			this._page.bodyDiv.getElementsByClassName("ybar").item(0) as HTMLDivElement
 		);
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PageButton>;
