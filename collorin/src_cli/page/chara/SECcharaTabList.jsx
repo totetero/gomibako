@@ -5,6 +5,7 @@ import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/PartsScroll.jsx";
 import "../page/SECpopupMenu.jsx";
+import "../page/SECpopupPicker.jsx";
 
 import "CharaPage.jsx";
 
@@ -107,6 +108,9 @@ class SECcharaTabList extends EventCartridge{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
+		// 並べ替えピッカーボタン
+		if(this._btnList["pick"].trigger){this._page.serialPush(new SECcharaTabListPopupPicker(this._page, this)); return false;}
+
 		// タブボタン
 		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}
 		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
@@ -124,6 +128,20 @@ class SECcharaTabList extends EventCartridge{
 	// 破棄
 	override function dispose() : void{
 	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// 並べ替えピッカーポップアップ
+class SECcharaTabListPopupPicker extends SECpopupPicker{
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : Page, cartridge : EventCartridge){
+		super(page, cartridge);
+	}
+
 }
 
 // ----------------------------------------------------------------
