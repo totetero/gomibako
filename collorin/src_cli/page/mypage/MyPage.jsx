@@ -4,6 +4,7 @@ import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
@@ -70,7 +71,7 @@ class MyPage extends Page{
 
 class SECmyPageMain extends EventCartridge{
 	var _page : MyPage;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -81,13 +82,13 @@ class SECmyPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		this._btnList = {} : Map.<PageButton>;
-		this._btnList["world"] = new PageButton(this._page.div.getElementsByClassName("core-btn world").item(0) as HTMLDivElement, true);
-		this._btnList["quest"] = new PageButton(this._page.div.getElementsByClassName("core-btn quest").item(0) as HTMLDivElement, true);
-		this._btnList["chara"] = new PageButton(this._page.div.getElementsByClassName("core-btn chara").item(0) as HTMLDivElement, true);
-		this._btnList["item"] = new PageButton(this._page.div.getElementsByClassName("core-btn item").item(0) as HTMLDivElement, true);
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		this._btnList = {} : Map.<PartsButton>;
+		this._btnList["world"] = new PartsButton(this._page.div.getElementsByClassName("core-btn world").item(0) as HTMLDivElement, true);
+		this._btnList["quest"] = new PartsButton(this._page.div.getElementsByClassName("core-btn quest").item(0) as HTMLDivElement, true);
+		this._btnList["chara"] = new PartsButton(this._page.div.getElementsByClassName("core-btn chara").item(0) as HTMLDivElement, true);
+		this._btnList["item"] = new PartsButton(this._page.div.getElementsByClassName("core-btn item").item(0) as HTMLDivElement, true);
+		this._btnList["back"] = new PartsButton(Page.backDiv, true);
+		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		return false;
 	}
 

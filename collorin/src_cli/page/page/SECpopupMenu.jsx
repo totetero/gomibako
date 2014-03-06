@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "Page.jsx";
+import "PartsButton.jsx";
 import "SECpopup.jsx";
 
 // ----------------------------------------------------------------
@@ -29,7 +30,7 @@ class SECpopupMenu extends SECpopup{
 
 	var _page : Page;
 	var _cartridge : EventCartridge;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -45,17 +46,17 @@ class SECpopupMenu extends SECpopup{
 		this.popupDiv.innerHTML = this._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 
-		this._btnList = {} : Map.<PageButton>;
-		this._btnList["world"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn world").item(0) as HTMLDivElement, true);
-		this._btnList["quest"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn quest").item(0) as HTMLDivElement, true);
-		this._btnList["chara"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn chara").item(0) as HTMLDivElement, true);
-		this._btnList["item"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn item").item(0) as HTMLDivElement, true);
-		this._btnList["friend"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn friend").item(0) as HTMLDivElement, true);
-		this._btnList["setting"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn setting").item(0) as HTMLDivElement, true);
-		this._btnList["refbook"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn refbook").item(0) as HTMLDivElement, true);
-		this._btnList["help"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn help").item(0) as HTMLDivElement, true);
-		this._btnList["close"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
-		this._btnList["outer"] = new PageButton(this.windowDiv, false);
+		this._btnList = {} : Map.<PartsButton>;
+		this._btnList["world"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn world").item(0) as HTMLDivElement, true);
+		this._btnList["quest"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn quest").item(0) as HTMLDivElement, true);
+		this._btnList["chara"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn chara").item(0) as HTMLDivElement, true);
+		this._btnList["item"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn item").item(0) as HTMLDivElement, true);
+		this._btnList["friend"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn friend").item(0) as HTMLDivElement, true);
+		this._btnList["setting"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn setting").item(0) as HTMLDivElement, true);
+		this._btnList["refbook"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn refbook").item(0) as HTMLDivElement, true);
+		this._btnList["help"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn help").item(0) as HTMLDivElement, true);
+		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
 	}
 
 	// ----------------------------------------------------------------

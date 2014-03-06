@@ -4,6 +4,7 @@ import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
@@ -64,7 +65,7 @@ class WorldPage extends Page{
 
 class SECworldPageMain extends EventCartridge{
 	var _page : WorldPage;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -75,11 +76,11 @@ class SECworldPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		this._btnList = {} : Map.<PageButton>;
-		this._btnList["btn1"] = new PageButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
-		this._btnList["btn2"] = new PageButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		this._btnList = {} : Map.<PartsButton>;
+		this._btnList["btn1"] = new PartsButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
+		this._btnList["btn2"] = new PartsButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
+		this._btnList["back"] = new PartsButton(Page.backDiv, true);
+		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		return false;
 	}
 

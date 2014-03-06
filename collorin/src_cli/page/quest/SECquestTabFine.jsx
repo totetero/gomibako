@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
 import "../page/SECpopupMenu.jsx";
 
 import "QuestPage.jsx";
@@ -17,7 +18,7 @@ class SECquestTabFine extends EventCartridge{
 	""";
 
 	var _page : QuestPage;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 	var _data : variant;
 
 	// ----------------------------------------------------------------
@@ -37,13 +38,13 @@ class SECquestTabFine extends EventCartridge{
 		}
 
 		// ボタン作成
-		this._btnList = {} : Map.<PageButton>;
+		this._btnList = {} : Map.<PartsButton>;
 		// ヘッダーボタン
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		this._btnList["back"] = new PartsButton(Page.backDiv, true);
+		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["curr"] = new PageButton(this._page.tabCurrDiv, true);
-		this._btnList["fine"] = new PageButton(this._page.tabFineDiv, true);
+		this._btnList["curr"] = new PartsButton(this._page.tabCurrDiv, true);
+		this._btnList["fine"] = new PartsButton(this._page.tabFineDiv, true);
 
 		return false;
 	}

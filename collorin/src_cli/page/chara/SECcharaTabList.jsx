@@ -2,6 +2,8 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
+import "../page/PartsScroll.jsx";
 import "../page/SECpopupMenu.jsx";
 
 import "CharaPage.jsx";
@@ -36,8 +38,8 @@ class SECcharaTabList extends EventCartridge{
 	""";
 
 	var _page : CharaPage;
-	var _btnList : Map.<PageButton>;
-	var _scroller : PageScroll;
+	var _btnList : Map.<PartsButton>;
+	var _scroller : PartsScroll;
 	var _data : variant;
 	// 並べ替え要素
 	var _pickDiv : HTMLDivElement;
@@ -69,23 +71,23 @@ class SECcharaTabList extends EventCartridge{
 		this._supplyDiv = this._page.bodyDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement;
 
 		// ボタン作成
-		this._btnList = {} : Map.<PageButton>;
+		this._btnList = {} : Map.<PartsButton>;
 		// ヘッダーボタン
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		this._btnList["back"] = new PartsButton(Page.backDiv, true);
+		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
-		this._btnList["team"] = new PageButton(this._page.tabTeamDiv, true);
-		this._btnList["rest"] = new PageButton(this._page.tabRestDiv, true);
-		this._btnList["pwup"] = new PageButton(this._page.tabPwupDiv, true);
-		this._btnList["sell"] = new PageButton(this._page.tabSellDiv, true);
+		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
+		this._btnList["team"] = new PartsButton(this._page.tabTeamDiv, true);
+		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
+		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
+		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
 		// 本体ボタン
-		this._btnList["pick"] = new PageButton(this._pickDiv, true);
-		this._btnList["supply"] = new PageButton(this._supplyDiv, true);
+		this._btnList["pick"] = new PartsButton(this._pickDiv, true);
+		this._btnList["supply"] = new PartsButton(this._supplyDiv, true);
 
 		// スクロール作成
 		if(this._scroller == null){
-			this._scroller = new PageScroll(
+			this._scroller = new PartsScroll(
 				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
 				this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
 				null,
@@ -93,8 +95,8 @@ class SECcharaTabList extends EventCartridge{
 			);
 		}
 		// スクロールボタン作成
-		this._scroller.btnList = {} : Map.<PageButton>;
-		this._scroller.btnList["test"] = new PageButton(this._scroller.scrollDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement, true);
+		this._scroller.btnList = {} : Map.<PartsButton>;
+		this._scroller.btnList["test"] = new PartsButton(this._scroller.scrollDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement, true);
 
 		return false;
 	}

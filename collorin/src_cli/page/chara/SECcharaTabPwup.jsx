@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
 import "../page/SECpopupMenu.jsx";
 
 import "CharaPage.jsx";
@@ -17,7 +18,7 @@ class SECcharaTabPwup extends EventCartridge{
 	""";
 
 	var _page : CharaPage;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 	var _data : variant;
 
 	// ----------------------------------------------------------------
@@ -37,16 +38,16 @@ class SECcharaTabPwup extends EventCartridge{
 		}
 
 		// ボタン作成
-		this._btnList = {} : Map.<PageButton>;
+		this._btnList = {} : Map.<PartsButton>;
 		// ヘッダーボタン
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		this._btnList["back"] = new PartsButton(Page.backDiv, true);
+		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
-		this._btnList["team"] = new PageButton(this._page.tabTeamDiv, true);
-		this._btnList["rest"] = new PageButton(this._page.tabRestDiv, true);
-		this._btnList["pwup"] = new PageButton(this._page.tabPwupDiv, true);
-		this._btnList["sell"] = new PageButton(this._page.tabSellDiv, true);
+		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
+		this._btnList["team"] = new PartsButton(this._page.tabTeamDiv, true);
+		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
+		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
+		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
 
 		return false;
 	}

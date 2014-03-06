@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
 import "../page/SECpopupMenu.jsx";
 
 import "ItemPage.jsx";
@@ -17,7 +18,7 @@ class SECitemTabList extends EventCartridge{
 	""";
 
 	var _page : ItemPage;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 	var _data : variant;
 
 	// ----------------------------------------------------------------
@@ -38,15 +39,15 @@ class SECitemTabList extends EventCartridge{
 		}
 
 		// ボタン作成
-		this._btnList = {} : Map.<PageButton>;
+		this._btnList = {} : Map.<PartsButton>;
 		// ヘッダーボタン
-		this._btnList["back"] = new PageButton(Page.backDiv, true);
-		this._btnList["menu"] = new PageButton(Page.menuDiv, true);
+		this._btnList["back"] = new PartsButton(Page.backDiv, true);
+		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["list"] = new PageButton(this._page.tabListDiv, true);
-		this._btnList["make"] = new PageButton(this._page.tabMakeDiv, true);
-		this._btnList["shop"] = new PageButton(this._page.tabShopDiv, true);
-		this._btnList["pick"] = new PageButton(this._page.pickDiv, true);
+		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
+		this._btnList["make"] = new PartsButton(this._page.tabMakeDiv, true);
+		this._btnList["shop"] = new PartsButton(this._page.tabShopDiv, true);
+		this._btnList["pick"] = new PartsButton(this._page.pickDiv, true);
 
 		return false;
 	}

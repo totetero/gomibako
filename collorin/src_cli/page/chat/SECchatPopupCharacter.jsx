@@ -2,8 +2,7 @@ import "js/web.jsx";
 
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
-import "../../util/Ctrl.jsx";
-import "../page/Page.jsx";
+import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
 import "../page/SECpopup.jsx";
 
@@ -30,7 +29,7 @@ class SECchatPopupCharacter extends SECpopup{
 
 	var _page : ChatPage;
 	var _chara : ChatCharacter;
-	var _btnList : Map.<PageButton>;
+	var _btnList : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -49,9 +48,9 @@ class SECchatPopupCharacter extends SECpopup{
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
 		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._chara.code] + ")";
 
-		this._btnList = {} : Map.<PageButton>;
-		this._btnList["close"] = new PageButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
-		this._btnList["outer"] = new PageButton(this.windowDiv, false);
+		this._btnList = {} : Map.<PartsButton>;
+		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
 
 		// コントローラーを隠す
 		this._page.parallelPush(new PECopenLctrl(false));
