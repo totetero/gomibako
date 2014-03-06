@@ -59,11 +59,12 @@ class SECcharaTabList extends EventCartridge{
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = this._htmlTag;
 			this._page.bodyDiv.className = "body list";
-			// DOM獲得
-			this._pickDiv = this._page.bodyDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
-			this._pickLabelDiv = this._pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement;
-			this._supplyDiv = this._page.bodyDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement;
 		}
+
+		// DOM獲得
+		this._pickDiv = this._page.bodyDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
+		this._pickLabelDiv = this._pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement;
+		this._supplyDiv = this._page.bodyDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement;
 
 		// ボタン作成
 		this._btnList = {} : Map.<PageButton>;
@@ -81,12 +82,14 @@ class SECcharaTabList extends EventCartridge{
 		this._btnList["supply"] = new PageButton(this._supplyDiv, true);
 
 		// スクロール作成
-		this._scroller = new PageScroll(
-			this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
-			this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
-			null,
-			this._page.bodyDiv.getElementsByClassName("ybar").item(0) as HTMLDivElement
-		);
+		if(this._scroller == null){
+			this._scroller = new PageScroll(
+				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
+				this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+				null,
+				this._page.bodyDiv.getElementsByClassName("ybar").item(0) as HTMLDivElement
+			);
+		}
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PageButton>;
 		this._scroller.btnList["test"] = new PageButton(this._scroller.scrollDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement, true);
