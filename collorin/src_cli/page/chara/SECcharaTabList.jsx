@@ -55,10 +55,12 @@ class SECcharaTabList extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		if(this._page.bodyDiv.innerHTML == ""){
+		if(this._page.bodyDiv.className.indexOf("list") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = this._htmlTag;
 			this._page.bodyDiv.className = "body list";
+
+			this._scroller = null;
 		}
 
 		// DOM獲得
