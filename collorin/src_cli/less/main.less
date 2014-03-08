@@ -104,6 +104,15 @@ body{
 			&.menu{left: 278px;}
 		}
 	}
+
+	// タップ領域の保護 (タップ開始した要素が削除されると不味いことに対する対策)
+	.tapCover{
+		position: absolute;
+		width: 100%;
+		height: 100%;
+
+		input{display: none;}
+	}
 }
 
 /* -------------------------------- */

@@ -26,6 +26,7 @@ class _Main{
 						<div class="btn menu"></div>
 					</div>
 					<div class="core-popup"></div>
+					<div class="tapCover"><input></div>
 				</div>
 				<div id="character"></div>
 				<div id="loading" txt="loading..."></div>

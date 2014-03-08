@@ -34,7 +34,10 @@ class SECchatMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		this._input = this._page.div.getElementsByTagName("input").item(0) as HTMLInputElement;
+		this._input = Ctrl.sDiv.getElementsByTagName("input").item(0) as HTMLInputElement;
+		this._input.className = "chat";
+		this._input.type = "text";
+		this._input.maxLength = 20;
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["send"] = new PartsButton(this._page.div.getElementsByClassName("core-btn send").item(0) as HTMLDivElement, true);
 		this._btnList["exit"] = new PartsButton(this._page.div.getElementsByClassName("core-btn exit").item(0) as HTMLDivElement, true);
@@ -160,6 +163,7 @@ class SECchatMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		this._input.className = "";
 	}
 }
 

@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
@@ -18,7 +19,6 @@ class ChatPage extends Page{
 	// HTMLタグ
 	var _htmlTag = """
 		<canvas></canvas>
-		<input type="text" maxlength="20">
 		<div class="core-btn send">送信</div>
 		<div class="core-btn exit">退出</div>
 	""";
@@ -43,6 +43,8 @@ class ChatPage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chat";
 		this.div.innerHTML = this._htmlTag;
+		// 入力リセット
+		(Ctrl.sDiv.getElementsByTagName("input").item(0) as HTMLInputElement).value = "";
 		// ソケット
 		this.socket = new ChatSocket();
 		// キャンバス
