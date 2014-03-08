@@ -57,6 +57,9 @@ class SECpopupMenu extends SECpopup{
 		this._btnList["help"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn help").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
+
+		var current = this._btnList[Page.current.type];
+		if(current != null){current.inactive = true;}
 	}
 
 	// ----------------------------------------------------------------
