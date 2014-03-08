@@ -166,13 +166,80 @@
 /* -------- ポップアップ ピッカー -------- */
 
 .core-popup.core.picker{
-	.core-btn{
-		width: 100px;
-		height: 26px;
-		line-height: 30px;
-		text-align: center;
+	.core-window{
+		left: 57px;
+		width: 200px;
+	}
 
-		&.close{width: 80px; right: 5px; bottom: 5px;}
+	.title{
+		width: 200px;
+		height: 30px;
+		line-height: 34px;
+		text-align: center;
+		border-bottom: solid 2px black;
+	}
+
+	.scrollContainer{
+		position: relative;
+		width: 200px;
+		height: 144px;
+		
+		overflow: hidden;
+
+		.scroll{
+			.item{
+				width: 200px;
+				height: 36px;
+				line-height: 38px;
+				text-align: center;
+
+				&.select{
+					background-color: rgba(0, 0, 0, 0.3);
+				}
+
+				&.active{
+					background-color: rgba(0, 0, 0, 0.5);
+				}
+
+				&.inactive{
+					opacity: 0.5;
+				}
+			}
+
+			.border{
+				width: 160px;
+				height: 2px;
+				margin: 0 20px;
+				background-color: black;
+
+				&:last-child{height: 0px;}
+			}
+		}
+
+		.ybar{
+			position: absolute;
+			right: 0px;
+			top: 0px;
+			width: 4px;
+			border-radius: 2px;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+	}
+
+	.buttonContainer{
+		position: relative;
+		width: 200px;
+		height: 40px;
+		border-top: solid 2px black;
+		
+		.core-btn{
+			width: 80px;
+			height: 26px;
+			line-height: 30px;
+			text-align: center;
+
+			&.close{left: 57px; top: 5px;}
+		}
 	}
 }
 

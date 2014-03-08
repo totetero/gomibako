@@ -46,6 +46,7 @@ class PartsScroll{
 		var sbox = this.scrollDiv.getBoundingClientRect();
 
 		// スクロール開始終了の確認
+		var btnActive = false;
 		if(this._mdn != Ctrl.mdn){
 			this._mdn = Ctrl.mdn;
 			if(this.inactive || !clickable){
@@ -61,8 +62,10 @@ class PartsScroll{
 				this._prevmy = Ctrl.my;
 			}else{
 				this.active = false;
+				btnActive = true;
 			}
 		}
+		btnActive = btnActive || this.active;
 
 		// スクロール処理
 		if(this.active && Ctrl.mmv){
@@ -88,7 +91,7 @@ class PartsScroll{
 		// スクロール内ボタン処理
 		if(this.btnList != null){
 			for(var name in this.btnList){
-				this.btnList[name].calc(this.active && !Ctrl.mmv);
+				this.btnList[name].calc(btnActive && !Ctrl.mmv);
 			}
 		}
 
