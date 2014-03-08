@@ -13,6 +13,10 @@ import "page/world/WorldPage.jsx";
 import "page/quest/QuestPage.jsx";
 import "page/chara/CharaPage.jsx";
 import "page/item/ItemPage.jsx";
+import "page/friend/FriendPage.jsx";
+import "page/setting/SettingPage.jsx";
+import "page/refbook/RefbookPage.jsx";
+import "page/help/HelpPage.jsx";
 import "page/dice/DicePage.jsx";
 import "page/chat/ChatPage.jsx";
 
@@ -119,6 +123,10 @@ class _Main{
 		QuestPage.setPage(app);
 		CharaPage.setPage(app);
 		ItemPage.setPage(app);
+		FriendPage.setPage(app);
+		SettingPage.setPage(app);
+		RefbookPage.setPage(app);
+		HelpPage.setPage(app);
 		DicePage.setPage(app, rcli);
 		ChatPage.setPage(app, rcli, io);
 

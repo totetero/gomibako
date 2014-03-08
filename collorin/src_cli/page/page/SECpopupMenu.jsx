@@ -69,6 +69,10 @@ class SECpopupMenu extends SECpopup{
 		if(this._btnList["quest"].trigger){this._btnList["quest"].trigger = false; Page.transitionsPage("quest");}
 		if(this._btnList["chara"].trigger){this._btnList["chara"].trigger = false; Page.transitionsPage("chara");}
 		if(this._btnList["item"].trigger){this._btnList["item"].trigger = false; Page.transitionsPage("item");}
+		if(this._btnList["friend"].trigger){this._btnList["friend"].trigger = false; Page.transitionsPage("friend");}
+		if(this._btnList["setting"].trigger){this._btnList["setting"].trigger = false; Page.transitionsPage("setting");}
+		if(this._btnList["refbook"].trigger){this._btnList["refbook"].trigger = false; Page.transitionsPage("refbook");}
+		if(this._btnList["help"].trigger){this._btnList["help"].trigger = false; Page.transitionsPage("help");}
 
 		// 閉じるボタン
 		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){

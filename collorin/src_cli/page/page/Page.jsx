@@ -8,6 +8,10 @@ import "../world/WorldPage.jsx";
 import "../quest/QuestPage.jsx";
 import "../chara/CharaPage.jsx";
 import "../item/ItemPage.jsx";
+import "../friend/FriendPage.jsx";
+import "../setting/SettingPage.jsx";
+import "../refbook/RefbookPage.jsx";
+import "../help/HelpPage.jsx";
 import "../dice/DicePage.jsx";
 import "../chat/ChatPage.jsx";
 
@@ -66,6 +70,10 @@ abstract class Page extends EventPlayer{
 			else if(currentHash.indexOf("quest") == 1){nextPage = new QuestPage();}
 			else if(currentHash.indexOf("chara") == 1){nextPage = new CharaPage();}
 			else if(currentHash.indexOf("item") == 1){nextPage = new ItemPage();}
+			else if(currentHash.indexOf("friend") == 1){nextPage = new FriendPage();}
+			else if(currentHash.indexOf("setting") == 1){nextPage = new SettingPage();}
+			else if(currentHash.indexOf("refbook") == 1){nextPage = new RefbookPage();}
+			else if(currentHash.indexOf("help") == 1){nextPage = new HelpPage();}
 			else{nextPage = new MyPage();}
 			if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
 				// ページ遷移
