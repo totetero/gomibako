@@ -34,10 +34,6 @@ abstract class Page extends EventPlayer{
 	static var menuDiv : HTMLDivElement;
 	// ポップアップ要素
 	static var popupDiv : HTMLDivElement;
-	// キャラクター要素
-	static var characterDiv : HTMLDivElement;
-	// ロード画面要素
-	static var loadingDiv : HTMLDivElement;
 
 	// ページ機能の初期化
 	static function init() : void{
@@ -48,13 +44,10 @@ abstract class Page extends EventPlayer{
 		Page.backDiv = Page.headerDiv.getElementsByClassName("back").item(0) as HTMLDivElement;
 		Page.menuDiv = Page.headerDiv.getElementsByClassName("menu").item(0) as HTMLDivElement;
 		Page.popupDiv = Ctrl.sDiv.getElementsByClassName("core-popup").item(0) as HTMLDivElement;
-		Page.characterDiv = dom.document.getElementById("character") as HTMLDivElement;
-		Page.loadingDiv = dom.document.getElementById("loading") as HTMLDivElement;
 		// 一番最初はヘッダを隠しておく
 		Util.cssTranslate(Page.headerDiv, 0, PECopenHeader.hide);
 		Util.cssTranslate(Ctrl.lDiv, PECopenLctrl.hide, 0);
 		Util.cssTranslate(Ctrl.rDiv, PECopenRctrl.hide, 0);
-		Util.cssTranslate(Page.characterDiv, PECopenCharacter.hide, 0);
 	}
 
 	// ページ機能の監視

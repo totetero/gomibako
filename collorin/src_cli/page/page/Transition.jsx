@@ -273,6 +273,7 @@ class PECopenCharacter extends EventCartridge{
 	static var _current : PECopenCharacter;
 	static var _position = PECopenCharacter.hide;
 	static var _code : string;
+	static var _div : HTMLDivElement;
 	var _code : string;
 	var _type : int;
 	var _open : boolean;
@@ -287,6 +288,10 @@ class PECopenCharacter extends EventCartridge{
 	function constructor(code : string, type : int){
 		this._code = code;
 		this._type = type;
+		if(PECopenCharacter._div == null){
+			PECopenCharacter._div = dom.document.getElementById("character") as HTMLDivElement;
+			Util.cssTranslate(PECopenCharacter._div, PECopenCharacter.hide, 0);
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -318,11 +323,11 @@ class PECopenCharacter extends EventCartridge{
 			var num = (this._action <= 8) ? (this._action / 8) : ((this._action - 8) / 8);
 			PECopenCharacter._position = this._start + (this._goal - this._start) * num;
 			// 描画
-			if(this._start != this._goal){Util.cssTranslate(Page.characterDiv, PECopenCharacter._position, 0);}
+			if(this._start != this._goal){Util.cssTranslate(PECopenCharacter._div, PECopenCharacter._position, 0);}
 			if(this._action == 8){
 				PECopenCharacter._code = this._code;
-				if(this._change){Page.characterDiv.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs["b64_bust_" + this._code] + ")");}
-				Page.characterDiv.style.backgroundPosition = (this._type * -160) + "px 0";
+				if(this._change){PECopenCharacter._div.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs["b64_bust_" + this._code] + ")");}
+				PECopenCharacter._div.style.backgroundPosition = (this._type * -160) + "px 0";
 			}
 			return (this._action < 16);
 		}else{return false;}

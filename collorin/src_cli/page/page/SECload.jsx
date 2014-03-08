@@ -12,6 +12,7 @@ import "Page.jsx";
 
 // 読み込み元締めクラス
 class SECload extends EventCartridge{
+	static var _div : HTMLDivElement;
 	var eventPlayer : EventPlayer;
 	var _action = 0;
 
@@ -19,6 +20,7 @@ class SECload extends EventCartridge{
 	// コンストラクタ
 	function constructor(){
 		this.eventPlayer = new EventPlayer();
+		if(SECload._div == null){SECload._div = dom.document.getElementById("loading") as HTMLDivElement;}
 	}
 
 	// ----------------------------------------------------------------
@@ -46,14 +48,14 @@ class SECload extends EventCartridge{
 		this._action++;
 		// ロード画面表示
 		var display = ((exist || this._action < 15) && 5 < this._action) ? "block" : "none";
-		if(Page.loadingDiv.style.display != display){Page.loadingDiv.style.display = display;}
+		if(SECload._div.style.display != display){SECload._div.style.display = display;}
 		// ロード文字列描画
 		if(this._action % 10 == 0){
 			switch(this._action / 10 % 4){
-				case 0: Page.loadingDiv.setAttribute("txt", "loading"); break;
-				case 1: Page.loadingDiv.setAttribute("txt", "loading."); break;
-				case 2: Page.loadingDiv.setAttribute("txt", "loading.."); break;
-				case 3: Page.loadingDiv.setAttribute("txt", "loading..."); break;
+				case 0: SECload._div.setAttribute("txt", "loading"); break;
+				case 1: SECload._div.setAttribute("txt", "loading."); break;
+				case 2: SECload._div.setAttribute("txt", "loading.."); break;
+				case 3: SECload._div.setAttribute("txt", "loading..."); break;
 			}
 		}
 		return (exist || (5 < this._action && this._action < 15));
