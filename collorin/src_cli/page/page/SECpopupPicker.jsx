@@ -125,8 +125,10 @@ class SECpopupPicker extends SECpopup{
 				btn.trigger = false;
 				if(active){
 					// 選択フラグ設定
-					for(var j = 0; j < this._itemList.length; j++){this._itemList[j].selected = false;}
-					this._itemList[i].selected = true;
+					for(var j = 0; j < this._itemList.length; j++){
+						this._scroller.btnList[this._itemList[j].tag].div.className = (i == j) ? "item select" : "item";
+						this._itemList[j].selected = (i == j);
+					}
 					// 選択完了
 					this._page.serialPush(this._cartridge);
 					return false;
