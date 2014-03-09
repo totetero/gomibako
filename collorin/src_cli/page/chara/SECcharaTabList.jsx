@@ -131,6 +131,11 @@ class SECcharaTabList extends EventCartridge{
 			itemBtn.children = [iconBtn.div];
 		}
 
+		// 補給ボタン設定
+		var count = 0;
+		for(var i = 0; i < this._charaList.length; i++){if(this._charaList[i].select){count++;}}
+		this._btnList["supply"].inactive = !(count > 0);
+
 		return false;
 	}
 
