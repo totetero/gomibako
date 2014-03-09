@@ -4,6 +4,7 @@ import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/PartsScroll.jsx";
+import "../page/PartsCharaListItem.jsx";
 import "../page/SECpopupMenu.jsx";
 import "../page/SECpopupPicker.jsx";
 
@@ -21,19 +22,7 @@ class SECcharaTabList extends EventCartridge{
 		<div class="scrollContainerContainer">
 			<div class="scrollContainerBorder">
 				<div class="scrollContainer">
-					<div class="scroll">
-						1あああああ<br>1あああああ<br>1あああああ<br>
-						<div class="core-btn test">test</div><br><br>
-						2いいいいい<br>2いいいいい<br>2いいいいい<br>
-						3ううううう<br>3ううううう<br>3ううううう<br>
-						4えええええ<br>4えええええ<br>4えええええ<br>
-						5おおおおお<br>5おおおおお<br>5おおおおお<br>
-						6かかかかか<br>6かかかかか<br>6かかかかか<br>
-						7ききききき<br>7ききききき<br>7ききききき<br>
-						8くくくくく<br>8くくくくく<br>8くくくくく<br>
-						9けけけけけ<br>9けけけけけ<br>9けけけけけ<br>
-						0こここここ<br>0こここここ<br>0こここここ
-					</div>
+					<div class="scroll"></div>
 					<div class="ybar"></div>
 				</div>
 			</div>
@@ -43,6 +32,7 @@ class SECcharaTabList extends EventCartridge{
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
+	var _charaList : PartsCharaListItem[];
 	var _data : variant;
 	// 並べ替え要素
 	var _pickerItemList : SECpopupPickerItem[];
@@ -53,6 +43,20 @@ class SECcharaTabList extends EventCartridge{
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
 		this._data = response;
+
+		// キャラクターリスト作成
+		this._charaList = [
+			new PartsCharaListItem("test01"),
+			new PartsCharaListItem("test02"),
+			new PartsCharaListItem("test03"),
+			new PartsCharaListItem("test04"),
+			new PartsCharaListItem("test05"),
+			new PartsCharaListItem("test06"),
+			new PartsCharaListItem("test07"),
+			new PartsCharaListItem("test08"),
+			new PartsCharaListItem("test09"),
+			new PartsCharaListItem("test10")
+		];
 
 		// 並べ替え要素作成
 		this._pickerItemList = [
@@ -75,18 +79,22 @@ class SECcharaTabList extends EventCartridge{
 
 			this._scroller = null;
 		}
+		var pickDiv = this._page.bodyDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
+		var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
 		// ピッカー設定
-		var pickDiv = this._page.bodyDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
-		var pickLabelDiv = pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement;
 		var selected = -1;
-		for(var i = 0; i < this._pickerItemList.length; i++){
-			if(this._pickerItemList[i].selected){selected = i;}
-		}
+		for(var i = 0; i < this._pickerItemList.length; i++){if(this._pickerItemList[i].selected){selected = i; break;}}
 		if(this._pickerSelected != selected){
 			// ピッカーの選択されている要素が変わった場合
 			this._pickerSelected = selected;
-			pickLabelDiv.innerHTML = this._pickerItemList[this._pickerSelected].name;
+			(pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement).innerHTML = this._pickerItemList[selected].name;
+			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], this._pickerItemList[selected].tag);
+			// キャラクターリスト作成
+			scrollDiv.innerHTML = "";
+			for(var i = 0; i < this._charaList.length; i++){
+				scrollDiv.appendChild(this._charaList[i].bodyDiv);
+			}
 		}
 
 		// ボタン作成
@@ -108,14 +116,20 @@ class SECcharaTabList extends EventCartridge{
 		if(this._scroller == null){
 			this._scroller = new PartsScroll(
 				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
-				this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+				scrollDiv,
 				null,
 				this._page.bodyDiv.getElementsByClassName("ybar").item(0) as HTMLDivElement
 			);
 		}
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
-		this._scroller.btnList["test"] = new PartsButton(this._scroller.scrollDiv.getElementsByClassName("core-btn").item(0) as HTMLDivElement, true);
+		for(var i = 0; i < this._charaList.length; i++){
+			var itemBtn = new PartsButton(this._charaList[i].bodyDiv, true);
+			var iconBtn = new PartsButton(this._charaList[i].iconDiv, true);
+			this._scroller.btnList["charaItem" + i] = itemBtn;
+			this._scroller.btnList["charaIcon" + i] = iconBtn;
+			itemBtn.children = [iconBtn.div];
+		}
 
 		return false;
 	}
@@ -125,6 +139,40 @@ class SECcharaTabList extends EventCartridge{
 	override function calc() : boolean{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
+
+		// キャラクターリストボタン
+		var count = 0;
+		for(var i = 0; i < this._charaList.length; i++){
+			var item = this._charaList[i];
+
+			// 要素ボタン
+			var btn = this._scroller.btnList["charaItem" + i];
+			if(btn.trigger){
+				btn.trigger = false;
+				item.select = !this._charaList[i].select;
+			}
+
+			// アイコンボタン
+			var btn = this._scroller.btnList["charaIcon" + i];
+			if(btn.trigger){
+				btn.trigger = false;
+			}
+
+			if(item.select){count++;}
+
+			// 選択状態描画
+			var div = item.bodyDiv;
+			var isSelect = div.className.indexOf(" select") >= 0;
+			if(item.select && !isSelect){div.className += " select";}
+			else if(!item.select && isSelect){div.className = div.className.replace(/ select/g , "");}
+		}
+
+		// 補給ボタン
+		var btn = this._btnList["supply"];
+		btn.inactive = !(count > 0);
+		if(btn.trigger){
+			btn.trigger = false;
+		}
 
 		// 並べ替えピッカーボタン
 		if(this._btnList["pick"].trigger){this._page.serialPush(new SECpopupPicker(this._page, this, "並べ替え", this._pickerItemList)); return false;}

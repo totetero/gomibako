@@ -102,6 +102,49 @@
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
+/* -------- キャラリスト要素 -------- */
+
+.core-charaListItem{
+	position: relative;
+	width: 180px;
+	height: 60px;
+	&:nth-child(odd){background-color: rgba(127, 127, 127, 0.5);}
+	&:nth-child(even){background-color: rgba(196, 196, 196, 0.5);}
+
+	.icon{
+		position: absolute;
+		left: 5px;
+		top: 5px;
+		width: 50px;
+		height: 50px;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&.active{
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+	}
+
+	.name{
+		position: absolute;
+		left: 60px;
+		top: 5px;
+		width: 100px;
+		height: 20px;
+		background-color: rgba(255, 255, 255, 0.5);
+	}
+
+	&.active{
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	&.inactive{
+		opacity: 0.5;
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
 /* -------- ポップアップ -------- */
 
 .core-popup{

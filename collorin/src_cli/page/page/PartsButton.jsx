@@ -9,6 +9,7 @@ import "../../util/Ctrl.jsx";
 // ページ用ボタンクラス
 class PartsButton{
 	var div : HTMLDivElement;
+	var children : HTMLDivElement[];
 	var active : boolean;
 	var inactive : boolean;
 	var trigger : boolean;
@@ -36,6 +37,17 @@ class PartsButton{
 			var y1 = y0 + box.height;
 			var inner = (x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
 			this.active = (inner == this._inner);
+			// 子要素の範囲内では押下状態にならない
+			if(this.children != null){
+				for(var i = 0; i < this.children.length; i++){
+					var box = this.children[i].getBoundingClientRect();
+					var x0 = box.left - Ctrl.sx;
+					var y0 = box.top - Ctrl.sy;
+					var x1 = x0 + box.width;
+					var y1 = y0 + box.height;
+					this.active = this.active && !(x0 < Ctrl.mx && Ctrl.mx < x1 && y0 < Ctrl.my && Ctrl.my < y1);
+				}
+			}
 		}else if(this.active){
 			// ボタンを放した瞬間
 			this.active = false;
