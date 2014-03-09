@@ -15,7 +15,7 @@ import "../page/SECpopupMenu.jsx";
 
 class FriendPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">友達</div>
 	""";
 
@@ -33,7 +33,7 @@ class FriendPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page friend";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = FriendPage._htmlTag;
 
 		// イベント設定
 		this.serialPush(new SECload("/friend", null, function(response : variant) : void{

@@ -17,7 +17,7 @@ import "SECchatMain.jsx";
 // チャットページクラス
 class ChatPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<canvas></canvas>
 		<div class="core-btn send">送信</div>
 		<div class="core-btn exit">退出</div>
@@ -42,7 +42,7 @@ class ChatPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chat";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = ChatPage._htmlTag;
 		// 入力リセット
 		(Ctrl.sDiv.getElementsByTagName("input").item(0) as HTMLInputElement).value = "";
 		// ソケット

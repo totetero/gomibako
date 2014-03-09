@@ -17,7 +17,7 @@ import "SECquestTabFine.jsx";
 
 class QuestPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="bodyContainer"><div class="body"></div></div>
 		<div class="tab curr">進行可能</div>
 		<div class="tab fine">完了シナリオ</div>
@@ -43,7 +43,7 @@ class QuestPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page quest";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = QuestPage._htmlTag;
 		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
 		this.tabCurrDiv = this.div.getElementsByClassName("tab curr").item(0) as HTMLDivElement;

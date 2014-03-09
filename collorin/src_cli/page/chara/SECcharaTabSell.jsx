@@ -13,7 +13,7 @@ import "CharaPage.jsx";
 
 class SECcharaTabSell extends EventCartridge{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">なにぬねの</div>
 	""";
 
@@ -33,7 +33,7 @@ class SECcharaTabSell extends EventCartridge{
 	override function init() : boolean{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.innerHTML = SECcharaTabSell._htmlTag;
 			this._page.bodyDiv.className = "body sell";
 		}
 

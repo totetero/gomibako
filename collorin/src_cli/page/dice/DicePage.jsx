@@ -18,7 +18,7 @@ import "SECdiceMap.jsx";
 // すごろくページクラス
 class DicePage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<canvas></canvas>
 		<div class="status player">
 			<div class="icon"></div>
@@ -54,7 +54,7 @@ class DicePage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page dice";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = DicePage._htmlTag;
 		// DOM獲得
 		this.messageDiv = this.div.getElementsByClassName("message").item(0) as HTMLDivElement;
 		this.pStatusDiv = this.div.getElementsByClassName("status player").item(0) as HTMLDivElement;

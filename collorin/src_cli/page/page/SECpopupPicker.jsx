@@ -30,7 +30,7 @@ class SECpopupPickerItem{
 // ピッカーポップアップ
 class SECpopupPicker extends SECpopup{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="core-background"></div>
 		<div class="core-window">
 			<div class="title"></div>
@@ -64,7 +64,7 @@ class SECpopupPicker extends SECpopup{
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core picker";
-		this.popupDiv.innerHTML = this._htmlTag;
+		this.popupDiv.innerHTML = SECpopupPicker._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 		(this.windowDiv.getElementsByClassName("title").item(0) as HTMLDivElement).innerHTML = this._title;
 		var scrollContainerDiv = this.windowDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement;

@@ -18,7 +18,7 @@ import "SECitemTabShop.jsx";
 
 class ItemPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div>
 		<div class="body"></div>
 		<div class="tab list">一覧</div>
@@ -50,7 +50,7 @@ class ItemPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page item";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = ItemPage._htmlTag;
 		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
 		this.pickDiv = this.div.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;

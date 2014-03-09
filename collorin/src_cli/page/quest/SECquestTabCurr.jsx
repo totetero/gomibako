@@ -13,7 +13,7 @@ import "QuestPage.jsx";
 
 class SECquestTabCurr extends EventCartridge{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">あいうえお</div>
 	""";
 
@@ -33,7 +33,7 @@ class SECquestTabCurr extends EventCartridge{
 	override function init() : boolean{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.innerHTML = SECquestTabCurr._htmlTag;
 			this._page.bodyDiv.className = "body curr";
 		}
 

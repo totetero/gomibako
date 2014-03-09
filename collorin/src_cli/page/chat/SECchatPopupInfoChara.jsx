@@ -17,7 +17,7 @@ import "SECchatMain.jsx";
 // チャットページキャラクター情報ポップアップイベントカートリッジ
 class SECchatPopupInfoChara extends SECpopup{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="core-background"></div>
 		<div class="core-window">
 			<div class="sidebar"></div>
@@ -42,7 +42,7 @@ class SECchatPopupInfoChara extends SECpopup{
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core infoChara";
-		this.popupDiv.innerHTML = this._htmlTag;
+		this.popupDiv.innerHTML = SECchatPopupInfoChara._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;

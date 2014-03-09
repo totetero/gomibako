@@ -15,7 +15,7 @@ import "../page/SECpopupMenu.jsx";
 
 class WorldPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="core-btn b1">テストステージ</div>
 		<div class="core-btn b2">チャットステージ</div>
 	""";
@@ -34,7 +34,7 @@ class WorldPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page world";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = WorldPage._htmlTag;
 
 		// イベント設定
 		this.serialPush(new SECload("/world", null, function(response : variant) : void{

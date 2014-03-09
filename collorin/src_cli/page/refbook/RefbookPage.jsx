@@ -15,7 +15,7 @@ import "../page/SECpopupMenu.jsx";
 
 class RefbookPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">図鑑</div>
 	""";
 
@@ -33,7 +33,7 @@ class RefbookPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page refbook";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = RefbookPage._htmlTag;
 
 		// イベント設定
 		this.serialPush(new SECload("/refbook", null, function(response : variant) : void{

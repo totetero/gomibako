@@ -16,7 +16,7 @@ import "CharaPage.jsx";
 
 class SECcharaTabList extends EventCartridge{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div>
 		<div class="core-btn supply">補給</div>
 		<div class="scrollContainerContainer">
@@ -74,7 +74,7 @@ class SECcharaTabList extends EventCartridge{
 	override function init() : boolean{
 		if(this._page.bodyDiv.className.indexOf("list") < 0){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.innerHTML = SECcharaTabList._htmlTag;
 			this._page.bodyDiv.className = "body list";
 
 			this._scroller = null;

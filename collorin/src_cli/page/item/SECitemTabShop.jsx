@@ -13,7 +13,7 @@ import "ItemPage.jsx";
 
 class SECitemTabShop extends EventCartridge{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">さしすせそ</div>
 	""";
 
@@ -33,7 +33,7 @@ class SECitemTabShop extends EventCartridge{
 	override function init() : boolean{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = this._htmlTag;
+			this._page.bodyDiv.innerHTML = SECitemTabShop._htmlTag;
 			this._page.bodyDiv.className = "body shop";
 			this._page.pickLabelDiv.innerHTML = "ぴよ";
 		}

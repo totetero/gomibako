@@ -13,7 +13,7 @@ import "SECpopup.jsx";
 // メニューポップアップ
 class SECpopupMenu extends SECpopup{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="core-background"></div>
 		<div class="core-window">
 			<div class="core-btn world">ワールド</div>
@@ -43,7 +43,7 @@ class SECpopupMenu extends SECpopup{
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core menu";
-		this.popupDiv.innerHTML = this._htmlTag;
+		this.popupDiv.innerHTML = SECpopupMenu._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 
 		this._btnList = {} : Map.<PartsButton>;

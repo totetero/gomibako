@@ -17,7 +17,7 @@ import "SECcharaTabSell.jsx";
 
 class CharaPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="body"></div>
 		<div class="tabContainer">
 			<div class="tab list">一覧</div>
@@ -51,7 +51,7 @@ class CharaPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page chara";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = CharaPage._htmlTag;
 		// DOM獲得
 		this.bodyDiv = this.div.getElementsByClassName("body").item(0) as HTMLDivElement;
 		this.tabListDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;

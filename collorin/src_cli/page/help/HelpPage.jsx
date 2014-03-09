@@ -15,7 +15,7 @@ import "../page/SECpopupMenu.jsx";
 
 class HelpPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">ヘルプ</div>
 	""";
 
@@ -33,7 +33,7 @@ class HelpPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page help";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = HelpPage._htmlTag;
 
 		// イベント設定
 		this.serialPush(new SECload("/help", null, function(response : variant) : void{

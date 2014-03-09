@@ -15,7 +15,7 @@ import "../page/SECpopupMenu.jsx";
 
 class SettingPage extends Page{
 	// HTMLタグ
-	var _htmlTag = """
+	static const _htmlTag = """
 		<div class="test">設定</div>
 	""";
 
@@ -33,7 +33,7 @@ class SettingPage extends Page{
 		// ページ要素作成
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page setting";
-		this.div.innerHTML = this._htmlTag;
+		this.div.innerHTML = SettingPage._htmlTag;
 
 		// イベント設定
 		this.serialPush(new SECload("/setting", null, function(response : variant) : void{
