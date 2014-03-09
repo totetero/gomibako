@@ -43,7 +43,7 @@ class SECdiceMove extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(true));
 		this._page.parallelPush(new PECopenRctrl("", "一歩戻る", "マップ", "メニュー"));
-		this._page.parallelPush(new PECopenCharacter("", 0));
+		this._page.parallelPush(new PECopenCharacter("", ""));
 		this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", true, -1));
 		return false;
 	}

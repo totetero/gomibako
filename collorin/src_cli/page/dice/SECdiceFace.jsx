@@ -36,7 +36,7 @@ class SECdiceFace extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "", "", ""));
-		this._page.parallelPush(new PECopenCharacter("", 0));
+		this._page.parallelPush(new PECopenCharacter("", ""));
 		// キャラクターが向き合う
 		var r = Math.atan2(this._chara1.y - this._chara0.y, this._chara1.x - this._chara0.x);
 		this._chara0.r = r;

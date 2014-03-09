@@ -71,7 +71,7 @@ class DicePage extends Page{
 			this.parallelPush(new PECopenHeader("", 0));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
-			this.parallelPush(new PECopenCharacter("", 0));
+			this.parallelPush(new PECopenCharacter("", ""));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 	}

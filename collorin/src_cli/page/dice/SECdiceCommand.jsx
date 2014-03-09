@@ -37,7 +37,7 @@ class SECdiceCommand extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("さいころ", "", "マップ", "メニュー"));
-		this._page.parallelPush(new PECopenCharacter(this._player.code, 0));
+		this._page.parallelPush(new PECopenCharacter(this._player.code, "normal"));
 		return false;
 	}
 

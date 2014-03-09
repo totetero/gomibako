@@ -62,7 +62,7 @@ class ChatPage extends Page{
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader("", 0));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
-			this.parallelPush(new PECopenCharacter("", 0));
+			this.parallelPush(new PECopenCharacter("", ""));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECchatMain(this));

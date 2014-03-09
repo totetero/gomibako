@@ -41,7 +41,7 @@ class SECdiceRoll extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("なげる", "もどる", "", ""));
-		this._page.parallelPush(new PECopenCharacter("", 0));
+		this._page.parallelPush(new PECopenCharacter("", ""));
 		return false;
 	}
 
@@ -99,7 +99,7 @@ class SECdiceThrow extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
-		this._page.parallelPush(new PECopenCharacter("", 0));
+		this._page.parallelPush(new PECopenCharacter("", ""));
 		return false;
 	}
 

@@ -275,7 +275,7 @@ class PECopenCharacter extends EventCartridge{
 	static var _code : string;
 	static var _div : HTMLDivElement;
 	var _code : string;
-	var _type : int;
+	var _type : string;
 	var _open : boolean;
 	var _change : boolean;
 	var _start : int;
@@ -285,7 +285,7 @@ class PECopenCharacter extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(code : string, type : int){
+	function constructor(code : string, type : string){
 		this._code = code;
 		this._type = type;
 		if(PECopenCharacter._div == null){
@@ -326,8 +326,9 @@ class PECopenCharacter extends EventCartridge{
 			if(this._start != this._goal){Util.cssTranslate(PECopenCharacter._div, PECopenCharacter._position, 0);}
 			if(this._action == 8){
 				PECopenCharacter._code = this._code;
-				if(this._change){PECopenCharacter._div.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs["b64_bust_" + this._code] + ")");}
-				PECopenCharacter._div.style.backgroundPosition = (this._type * -160) + "px 0";
+				var type = "b64_bust_";
+				if(this._type == "damage"){type = "b64_damage_";}
+				PECopenCharacter._div.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs[type + this._code] + ")");
 			}
 			return (this._action < 16);
 		}else{return false;}

@@ -55,7 +55,7 @@ class QuestPage extends Page{
 			this.parallelPush(new PECopenHeader("クエスト", 2));
 			this.parallelPush(new PECopenLctrl(false));
 			this.parallelPush(new PECopenRctrl("", "", "", ""));
-			this.parallelPush(new PECopenCharacter("", 0));
+			this.parallelPush(new PECopenCharacter("", ""));
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.toggleTab("curr");

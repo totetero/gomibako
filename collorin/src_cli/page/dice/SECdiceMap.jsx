@@ -32,7 +32,7 @@ class SECdiceMap extends EventCartridge{
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "もどる", "", ""));
-		this._page.parallelPush(new PECopenCharacter("", 0));
+		this._page.parallelPush(new PECopenCharacter("", ""));
 		return false;
 	}
 
