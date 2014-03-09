@@ -16,7 +16,10 @@ import "../page/SECpopupMenu.jsx";
 class FriendPage extends Page{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">友達</div>
+		<div style="width:280px;margin:20px;margin-top:68px;font-size:12px;">
+			•友達について<br>
+			あいうえお
+		</div>
 	""";
 
 	// ----------------------------------------------------------------

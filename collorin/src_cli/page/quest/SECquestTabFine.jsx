@@ -14,7 +14,12 @@ import "QuestPage.jsx";
 class SECquestTabFine extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">かきくけこ</div>
+		<div style="width:280px;margin:20px;font-size:12px;">
+			•完了シナリオについて<br>
+			クリア済みのクエストはここで確認することができる。
+			一度見たムービーをもう一度見直すことができる。
+			デイリークエストなどは表示しない。
+		</div>
 	""";
 
 	var _page : QuestPage;

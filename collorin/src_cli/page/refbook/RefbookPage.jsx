@@ -16,7 +16,10 @@ import "../page/SECpopupMenu.jsx";
 class RefbookPage extends Page{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">図鑑</div>
+		<div style="width:280px;margin:20px;margin-top:68px;font-size:12px;">
+			•図鑑について<br>
+			あいうえお
+		</div>
 	""";
 
 	// ----------------------------------------------------------------

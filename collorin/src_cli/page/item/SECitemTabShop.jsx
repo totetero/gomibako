@@ -14,7 +14,17 @@ import "ItemPage.jsx";
 class SECitemTabShop extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">さしすせそ</div>
+		<div style="width:280px;margin:20px;font-size:12px;background-color:rgba(255,255,255,0.5);">
+			•購入について<br>
+			課金ショップ 以下のようなものを販売する<br>
+			○SP回復アイテム<br>
+			○ステージ中SP回復アイテム<br>
+			○ステージ中復活アイテム<br>
+			○HP回復時短アイテム<br>
+			○HP回復ベッド増加アイテム<br>
+			○キャラクター福袋<br>
+			○使い捨てさいころ増加装備<br>
+		</div>
 	""";
 
 	var _page : ItemPage;

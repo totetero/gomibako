@@ -16,7 +16,10 @@ import "../page/SECpopupMenu.jsx";
 class HelpPage extends Page{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">ヘルプ</div>
+		<div style="width:280px;margin:20px;margin-top:68px;font-size:12px;">
+			•ヘルプについて<br>
+			あいうえお
+		</div>
 	""";
 
 	// ----------------------------------------------------------------

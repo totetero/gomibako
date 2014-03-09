@@ -14,7 +14,20 @@ import "QuestPage.jsx";
 class SECquestTabCurr extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">あいうえお</div>
+		<div style="width:280px;margin:20px;font-size:12px;">
+			•クエストについて<br>
+			特殊な条件を満たすとクエストが現れる。
+			このページで受注することによってクエストを進行することができ、五つまで同時進行できる。
+			クエストをクリアすることによってアイテムを手に入れ、ムービーを見ることができる。
+			条件は以下の通り。<br>
+			○発生条件: キャラクターの入手<br>
+			○発生条件: 特定のステージ進入<br>
+			○発生条件: イベントログイン<br>
+			○発生条件: 親クエストクリア<br>
+			○達成条件: アイテムを規定数納品する<br>
+			○達成条件: 敵を規定数倒す<br>
+			○達成条件: 規定チーム編成<br>
+		</div>
 	""";
 
 	var _page : QuestPage;

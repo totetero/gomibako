@@ -14,7 +14,17 @@ import "CharaPage.jsx";
 class SECcharaTabTeam extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">かきくけこ</div>
+		<div style="width:230px;margin:20px;margin-top:68px;font-size:12px;">
+			•補給について<br>
+			一覧タブや編成タブではSP回復アイテムを消費することによってSPを回復することができる。
+			SPはステージで行動すると消費する値であり、消費量はキャラクターやステージによって異なる。
+			SP回復アイテムは時間経過で入手することができ、いわゆるスタミナの役割を果たす。
+			SP回復アイテムはショップでも購入できる。
+			<br><br>
+			•編成について<br>
+			マイページで表示するリーダーの設定と、
+			ステージで使用する3人までのチームを設定することができる。
+		</div>
 	""";
 
 	var _page : CharaPage;

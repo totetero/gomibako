@@ -14,7 +14,23 @@ import "CharaPage.jsx";
 class SECcharaTabPwup extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">たちつてと</div>
+		<div style="width:230px;margin:20px;margin-top:68px;font-size:12px;">
+			•強化について<br>
+			強化タブでは装備アイテムの装備とキャラクターの進化が行える。
+			キャラクター合成はできない。
+			<br><br>
+			•装備について<br>
+			装備アイテムの装備できる種類と数はキャラクターにより異なり、
+			装備することにより能力が上昇したり、ステージ中で使うことができる。
+			スキルの代わりとしての意味も持つ。
+			<br><br>
+			•進化について<br>
+			進化アイテムを消費することによりキャラクターを進化させることができる。
+			必要な進化アイテムはキャラクターにより異なる。
+			キャラクターの進化先は一つではなく、分岐する。
+			進化先はイベントなどによりどんどん追加する。
+			また、退化をさせることもできる。
+		</div>
 	""";
 
 	var _page : CharaPage;

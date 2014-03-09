@@ -14,7 +14,12 @@ import "ItemPage.jsx";
 class SECitemTabMake extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">かきくけこ</div>
+		<div style="width:280px;margin:20px;font-size:12px;background-color:rgba(255,255,255,0.5);">
+			•作成について<br>
+			アイテム合成素材を組み合わせることにより
+			別のアイテムを作ることができる。
+			レシピはクエストクリアなどで手に入る。
+		</div>
 	""";
 
 	var _page : ItemPage;

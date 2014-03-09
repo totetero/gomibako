@@ -14,7 +14,17 @@ import "ItemPage.jsx";
 class SECitemTabList extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">あういえお</div>
+		<div style="width:280px;margin:20px;font-size:12px;background-color:rgba(255,255,255,0.5);">
+			•アイテムについて<br>
+			以下の種類のアイテムが存在する。<br>
+			○補給アイテム<br>
+			○装備アイテム<br>
+			○アイテム合成素材<br>
+			○キャラクター進化素材<br>
+			○福袋 ガチャ的アイテム<br>
+			○さいころ装飾アイテム<br>
+			○イベントキーアイテム 含フレーバー<br>
+		</div>
 	""";
 
 	var _page : ItemPage;

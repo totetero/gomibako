@@ -14,7 +14,12 @@ import "CharaPage.jsx";
 class SECcharaTabSell extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="test">なにぬねの</div>
+		<div style="width:230px;margin:20px;margin-top:68px;font-size:12px;">
+			•別れについて<br>
+			キャラクターと別れることによりアイテムを手に入れることができる。
+			手に入るアイテムはキャラクターや進化状態で異なり、
+			別れでしか手に入らないアイテムも用意する。
+		</div>
 	""";
 
 	var _page : CharaPage;
