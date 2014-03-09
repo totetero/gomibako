@@ -74,10 +74,20 @@ class ChatPage{
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 			];
 
+			var codeList = [
+				"player0",
+				"player1",
+				"player2",
+				"player3",
+				"enemy1",
+				"enemy2",
+				"enemy3",
+			];
+
 			// ユーザー情報の作成
 			var uinfo = new ChatUserInfo({
 				room: "room0",
-				code: "player0",
+				code: codeList[Math.floor(Math.random() * codeList.length)],
 				name: req.user.nickname,
 				x: Math.floor(16 * Math.random()),
 				y: Math.floor(16 * Math.random()),

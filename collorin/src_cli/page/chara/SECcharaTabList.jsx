@@ -4,7 +4,7 @@ import "../../util/EventCartridge.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/PartsScroll.jsx";
-import "../page/PartsCharaListItem.jsx";
+import "../page/PartsCharacter.jsx";
 import "../page/SECpopupMenu.jsx";
 import "../page/SECpopupPicker.jsx";
 
@@ -46,16 +46,16 @@ class SECcharaTabList extends EventCartridge{
 
 		// キャラクターリスト作成
 		this._charaList = [
-			new PartsCharaListItem("test01"),
-			new PartsCharaListItem("test02"),
-			new PartsCharaListItem("test03"),
-			new PartsCharaListItem("test04"),
-			new PartsCharaListItem("test05"),
-			new PartsCharaListItem("test06"),
-			new PartsCharaListItem("test07"),
-			new PartsCharaListItem("test08"),
-			new PartsCharaListItem("test09"),
-			new PartsCharaListItem("test10")
+			new PartsCharaListItem({name: "test01", code: "player0"}),
+			new PartsCharaListItem({name: "test02", code: "player1"}),
+			new PartsCharaListItem({name: "test03", code: "player2"}),
+			new PartsCharaListItem({name: "test04", code: "player3"}),
+			new PartsCharaListItem({name: "test05", code: "enemy1"}),
+			new PartsCharaListItem({name: "test06", code: "enemy2"}),
+			new PartsCharaListItem({name: "test07", code: "enemy3"}),
+			new PartsCharaListItem({name: "test08", code: "player0"}),
+			new PartsCharaListItem({name: "test09", code: "player0"}),
+			new PartsCharaListItem({name: "test10", code: "player0"})
 		];
 
 		// 並べ替え要素作成
@@ -160,7 +160,8 @@ class SECcharaTabList extends EventCartridge{
 			// アイコンボタン
 			var btn = this._scroller.btnList["charaIcon" + i];
 			if(btn.trigger){
-				btn.trigger = false;
+				this._page.serialPush(new SECpopupInfoChara(this._page, this, item));
+				return false;
 			}
 
 			if(item.select){count++;}

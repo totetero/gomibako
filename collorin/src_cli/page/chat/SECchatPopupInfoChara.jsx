@@ -14,8 +14,8 @@ import "SECchatMain.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// チャットページポップアップイベントカートリッジ
-class SECchatPopupCharacter extends SECpopup{
+// チャットページキャラクター情報ポップアップイベントカートリッジ
+class SECchatPopupInfoChara extends SECpopup{
 	// HTMLタグ
 	var _htmlTag = """
 		<div class="core-background"></div>
@@ -41,7 +41,7 @@ class SECchatPopupCharacter extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function popupInit() : void{
-		this.popupDiv.className = "core-popup chat character";
+		this.popupDiv.className = "core-popup core infoChara";
 		this.popupDiv.innerHTML = this._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 

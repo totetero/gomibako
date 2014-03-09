@@ -102,49 +102,6 @@
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
-/* -------- キャラリスト要素 -------- */
-
-.core-charaListItem{
-	position: relative;
-	width: 180px;
-	height: 60px;
-	&:nth-child(odd){background-color: rgba(127, 127, 127, 0.5);}
-	&:nth-child(even){background-color: rgba(196, 196, 196, 0.5);}
-
-	.icon{
-		position: absolute;
-		left: 5px;
-		top: 5px;
-		width: 50px;
-		height: 50px;
-		background-color: rgba(255, 255, 255, 0.5);
-
-		&.active{
-			background-color: rgba(0, 0, 0, 0.5);
-		}
-	}
-
-	.name{
-		position: absolute;
-		left: 60px;
-		top: 5px;
-		width: 100px;
-		height: 20px;
-		background-color: rgba(255, 255, 255, 0.5);
-	}
-
-	&.active{
-		background-color: rgba(0, 0, 0, 0.5);
-	}
-
-	&.inactive{
-		opacity: 0.5;
-	}
-}
-
-/* -------------------------------- */
-/* -------------------------------- */
-/* -------------------------------- */
 /* -------- ポップアップ -------- */
 
 .core-popup{
@@ -291,6 +248,91 @@
 
 			&.close{left: 57px; top: 5px;}
 		}
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- キャラクター情報 リスト -------- */
+
+.core-charaListItem{
+	position: relative;
+	width: 180px;
+	height: 60px;
+	&:nth-child(odd){background-color: rgba(127, 127, 127, 0.5);}
+	&:nth-child(even){background-color: rgba(196, 196, 196, 0.5);}
+
+	.icon{
+		position: absolute;
+		left: 5px;
+		top: 5px;
+		width: 50px;
+		height: 50px;
+		background-size:50px 50px;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&.active{
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+	}
+
+	.name{
+		position: absolute;
+		left: 60px;
+		top: 5px;
+		width: 100px;
+		height: 20px;
+	}
+
+	&.active{
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	&.inactive{
+		opacity: 0.5;
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- キャラクター情報 ポップアップ -------- */
+
+.core-popup.core.infoChara{
+	.sidebar{
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 30px;
+		height: 220px;
+		border-radius: 10px 0 0 10px;
+		background-color: blue;
+	}
+
+	.name{
+		position: absolute;
+		left: 150px;
+		top: 10px;
+	}
+
+	.chara{
+		position: absolute;
+		left: 40px;
+		top: 10px;
+		width: 100px;
+		height: 200px;
+		background-size:160px 240px;
+		background-position: -30px -40px;
+	}
+
+	.core-btn.close{
+		right: 5px;
+		bottom: 5px;
+		width: 80px;
+		height: 26px;
+		line-height: 30px;
+		text-align: center;
 	}
 }
 
