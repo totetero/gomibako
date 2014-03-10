@@ -17,8 +17,8 @@ class SECitemTabList extends EventCartridge{
 		<div style="width:280px;margin:20px;font-size:12px;background-color:rgba(255,255,255,0.5);">
 			•アイテムについて<br>
 			以下の種類のアイテムが存在する。<br>
-			○補給アイテム<br>
-			○装備アイテム<br>
+			○補給アイテム HPやSPの回復素材<br>
+			○装備アイテム ステージで使用する<br>
 			○アイテム合成素材<br>
 			○キャラクター進化素材<br>
 			○福袋 ガチャ的アイテム<br>
