@@ -21,8 +21,8 @@ class SECpopupMenu extends SECpopup{
 			<div class="core-btn chara">キャラクター</div>
 			<div class="core-btn item">アイテム</div>
 			<div class="core-btn friend">友達</div>
-			<div class="core-btn setting">設定</div>
 			<div class="core-btn refbook">図鑑</div>
+			<div class="core-btn setting">設定</div>
 			<div class="core-btn help">ヘルプ</div>
 			<div class="core-btn close">閉じる</div>
 		</div>
@@ -52,8 +52,8 @@ class SECpopupMenu extends SECpopup{
 		this._btnList["chara"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn chara").item(0) as HTMLDivElement, true);
 		this._btnList["item"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn item").item(0) as HTMLDivElement, true);
 		this._btnList["friend"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn friend").item(0) as HTMLDivElement, true);
-		this._btnList["setting"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn setting").item(0) as HTMLDivElement, true);
 		this._btnList["refbook"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn refbook").item(0) as HTMLDivElement, true);
+		this._btnList["setting"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn setting").item(0) as HTMLDivElement, true);
 		this._btnList["help"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn help").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
@@ -73,8 +73,8 @@ class SECpopupMenu extends SECpopup{
 		if(this._btnList["chara"].trigger){this._btnList["chara"].trigger = false; Page.transitionsPage("chara");}
 		if(this._btnList["item"].trigger){this._btnList["item"].trigger = false; Page.transitionsPage("item");}
 		if(this._btnList["friend"].trigger){this._btnList["friend"].trigger = false; Page.transitionsPage("friend");}
-		if(this._btnList["setting"].trigger){this._btnList["setting"].trigger = false; Page.transitionsPage("setting");}
 		if(this._btnList["refbook"].trigger){this._btnList["refbook"].trigger = false; Page.transitionsPage("refbook");}
+		if(this._btnList["setting"].trigger){this._btnList["setting"].trigger = false; Page.transitionsPage("setting");}
 		if(this._btnList["help"].trigger){this._btnList["help"].trigger = false; Page.transitionsPage("help");}
 
 		// 閉じるボタン
