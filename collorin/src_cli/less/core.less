@@ -32,71 +32,15 @@
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
-/* -------- ボタン ピッカー -------- */
+/* -------- スクロール -------- */
 
-.core-picker-btn{
+.core-ybar{
 	position: absolute;
-	width: 135px;
-	height: 38px;
-
-	.label{
-		position: absolute;
-		left: 35px;
-		top: 3px;
-		width: 97px;
-		height: 26px;
-		line-height: 28px;
-		text-align: center;
-		border: solid 3px white;
-		border-left: none;
-		border-radius: 0 12px 12px 0;
-		background-color: rgba(255, 255, 255, 0.5);
-
-		&::before{
-			content: '';
-			position: absolute;
-			left: 0px;
-			top: -2px;
-			width: 100%;
-			height: 100%;
-			border: solid 2px black;
-			border-left: none;
-			border-radius: 0 12px 12px 0;
-		}
-	}
-
-	.arrow{
-		position: absolute;
-		left: 0px;
-		top: 0px;
-		width: 32px;
-		height: 32px;
-		border: solid 3px white;
-		border-radius: 12px 10px 10px 12px;
-		background-color: rgba(255, 255, 255, 0.5);
-		background-size: 32px 32px;
-		background-repeat: no-repeat;
-		background-position: center;
-
-		&::before{
-			content: '';
-			position: absolute;
-			left: -2px;
-			top: -2px;
-			width: 100%;
-			height: 100%;
-			border: solid 2px black;
-			border-radius: 12px 10px 10px 12px;
-		}
-	}
-
-	&.active{
-		.label, .arrow{background-color: rgba(0, 0, 0, 0.5);}
-	}
-
-	&.inactive{
-		opacity: 0.5;
-	}
+	right: 0px;
+	top: 0px;
+	width: 4px;
+	border-radius: 2px;
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* -------------------------------- */
@@ -139,7 +83,7 @@
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
-/* -------- ポップアップ メニュー -------- */
+/* -------- メニュー -------- */
 
 .core-popup.core.menu{
 	.core-window{
@@ -170,8 +114,75 @@
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
-/* -------- ポップアップ ピッカー -------- */
+/* -------- ピッカー -------- */
 
+// ピッカーボタン
+.core-picker-btn{
+	position: absolute;
+	width: 135px;
+	height: 38px;
+
+	.core-picker-label{
+		position: absolute;
+		left: 35px;
+		top: 3px;
+		width: 97px;
+		height: 26px;
+		line-height: 28px;
+		text-align: center;
+		border: solid 3px white;
+		border-left: none;
+		border-radius: 0 12px 12px 0;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: 0px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-left: none;
+			border-radius: 0 12px 12px 0;
+		}
+	}
+
+	.core-picker-arrow{
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 32px;
+		height: 32px;
+		border: solid 3px white;
+		border-radius: 12px 10px 10px 12px;
+		background-color: rgba(255, 255, 255, 0.5);
+		background-size: 32px 32px;
+		background-repeat: no-repeat;
+		background-position: center;
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-radius: 12px 10px 10px 12px;
+		}
+	}
+
+	&.active{
+		.core-picker-label, .core-picker-arrow{background-color: rgba(0, 0, 0, 0.5);}
+	}
+
+	&.inactive{
+		opacity: 0.5;
+	}
+}
+
+// ピッカーポップアップ
 .core-popup.core.picker{
 	.core-window{
 		left: 57px;
@@ -223,15 +234,6 @@
 				&:last-child{height: 0px;}
 			}
 		}
-
-		.ybar{
-			position: absolute;
-			right: 0px;
-			top: 0px;
-			width: 4px;
-			border-radius: 2px;
-			background-color: rgba(0, 0, 0, 0.5);
-		}
 	}
 
 	.buttonContainer{
@@ -254,16 +256,17 @@
 /* -------------------------------- */
 /* -------------------------------- */
 /* -------------------------------- */
-/* -------- キャラクター情報 リスト -------- */
+/* -------- キャラクター情報 -------- */
 
-.core-charaListItem{
+// キャラクター情報リスト要素
+.core-chara-item{
 	position: relative;
 	width: 180px;
 	height: 60px;
 	&:nth-child(odd){background-color: rgba(127, 127, 127, 0.5);}
 	&:nth-child(even){background-color: rgba(196, 196, 196, 0.5);}
 
-	.icon{
+	.core-chara-icon{
 		position: absolute;
 		left: 5px;
 		top: 5px;
@@ -277,7 +280,7 @@
 		}
 	}
 
-	.name{
+	.core-chara-name{
 		position: absolute;
 		left: 60px;
 		top: 5px;
@@ -294,11 +297,7 @@
 	}
 }
 
-/* -------------------------------- */
-/* -------------------------------- */
-/* -------------------------------- */
-/* -------- キャラクター情報 ポップアップ -------- */
-
+// キャラクター情報ポップアップ
 .core-popup.core.infoChara{
 	.sidebar{
 		position: absolute;

@@ -20,13 +20,13 @@ class SettingPage extends Page{
 		<div class="scrollContainerContainer">
 			<div class="scrollContainer">
 				<div class="scroll">
-					<div class="nickname"><div class="text">ニックネーム</div></div>
-					<div class="comment"><div class="text">コメント</div></div>
-					<div class="quality"><div class="text">ゲーム画質</div><div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div></div>
-					<div class="bgm"><div class="text">BGM</div><div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div></div>
-					<div class="se"><div class="text">効果音</div><div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div></div>
+					<div class="nickname"><div class="label">ニックネーム</div></div>
+					<div class="comment"><div class="label">コメント</div></div>
+					<div class="quality"><div class="label">ゲーム画質</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
+					<div class="bgm"><div class="label">BGM</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
+					<div class="se"><div class="label">効果音</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
 				</div>
-				<div class="ybar"></div>
+				<div class="core-ybar"></div>
 			</div>
 		</div>
 	""";
@@ -93,7 +93,7 @@ class SECsettingPageMain extends EventCartridge{
 			this._page.div.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
 			this._page.div.getElementsByClassName("scroll").item(0) as HTMLDivElement,
 			null,
-			this._page.div.getElementsByClassName("ybar").item(0) as HTMLDivElement
+			this._page.div.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 		);
 
 		// ボタン作成

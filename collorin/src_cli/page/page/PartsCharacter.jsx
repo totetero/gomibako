@@ -33,8 +33,8 @@ class PartsCharacter{
 class PartsCharaListItem extends PartsCharacter{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="icon"></div>
-		<div class="name"></div>
+		<div class="core-chara-icon"></div>
+		<div class="core-chara-name"></div>
 	""";
 
 	// 並べ替え
@@ -55,9 +55,9 @@ class PartsCharaListItem extends PartsCharacter{
 		super(data);
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
-		this.bodyDiv.className = "core-charaListItem";
-		this.iconDiv = this.bodyDiv.getElementsByClassName("icon").item(0) as HTMLDivElement;
-		(this.bodyDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this.name;
+		this.bodyDiv.className = "core-chara-item";
+		this.iconDiv = this.bodyDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement;
+		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
 		this.iconDiv.style.backgroundImage = "url(" + Loader.b64imgs["b64_icon_" + this.code] + ")";
 
 	}

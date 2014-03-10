@@ -17,13 +17,13 @@ import "CharaPage.jsx";
 class SECcharaTabList extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div>
+		<div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div>
 		<div class="core-btn supply">補給</div>
 		<div class="scrollContainerContainer">
 			<div class="scrollContainerBorder">
 				<div class="scrollContainer">
 					<div class="scroll"></div>
-					<div class="ybar"></div>
+					<div class="core-ybar"></div>
 				</div>
 			</div>
 		</div>
@@ -88,7 +88,7 @@ class SECcharaTabList extends EventCartridge{
 		if(this._pickerSelected != selected){
 			// ピッカーの選択されている要素が変わった場合
 			this._pickerSelected = selected;
-			(pickDiv.getElementsByClassName("label").item(0) as HTMLDivElement).innerHTML = this._pickerItemList[selected].name;
+			(pickDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._pickerItemList[selected].name;
 			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], this._pickerItemList[selected].tag);
 			// キャラクターリスト作成
 			scrollDiv.innerHTML = "";
@@ -118,7 +118,7 @@ class SECcharaTabList extends EventCartridge{
 				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
 				scrollDiv,
 				null,
-				this._page.bodyDiv.getElementsByClassName("ybar").item(0) as HTMLDivElement
+				this._page.bodyDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 			);
 		}
 		// スクロールボタン作成

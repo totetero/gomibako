@@ -36,7 +36,7 @@ class SECpopupPicker extends SECpopup{
 			<div class="title"></div>
 			<div class="scrollContainer">
 				<div class="scroll"></div>
-				<div class="ybar"></div>
+				<div class="core-ybar"></div>
 			</div>
 			<div class="buttonContainer">
 				<div class="core-btn close">閉じる</div>
@@ -99,7 +99,7 @@ class SECpopupPicker extends SECpopup{
 		// スクロール作成
 		this._scroller = new PartsScroll(
 			scrollContainerDiv, scrollDiv, null,
-			this.windowDiv.getElementsByClassName("ybar").item(0) as HTMLDivElement
+			this.windowDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 		);
 		// 選択されている要素をできるだけ中心に持ってくる
 		this._scroller.scrolly = pickerSize * 0.5 - 18 - selectedIndex * 38;;
