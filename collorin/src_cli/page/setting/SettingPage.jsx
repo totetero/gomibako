@@ -5,6 +5,7 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
+import "../page/PartsScroll.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
@@ -16,9 +17,17 @@ import "../page/SECpopupMenu.jsx";
 class SettingPage extends Page{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div style="width:280px;margin:20px;margin-top:68px;font-size:12px;">
-			•設定について<br>
-			あいうえお
+		<div class="scrollContainerContainer">
+			<div class="scrollContainer">
+				<div class="scroll">
+					<div class="nickname"><div class="text">ニックネーム</div></div>
+					<div class="comment"><div class="text">コメント</div></div>
+					<div class="quality"><div class="text">ゲーム画質</div><div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div></div>
+					<div class="bgm"><div class="text">BGM</div><div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div></div>
+					<div class="se"><div class="text">効果音</div><div class="core-picker-btn"><div class="label"></div><div class="arrow"></div></div></div>
+				</div>
+				<div class="ybar"></div>
+			</div>
 		</div>
 	""";
 
@@ -68,6 +77,7 @@ class SettingPage extends Page{
 class SECsettingPageMain extends EventCartridge{
 	var _page : SettingPage;
 	var _btnList : Map.<PartsButton>;
+	var _scroller : PartsScroll;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -78,6 +88,15 @@ class SECsettingPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		// スクロール作成
+		this._scroller = new PartsScroll(
+			this._page.div.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
+			this._page.div.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+			null,
+			this._page.div.getElementsByClassName("ybar").item(0) as HTMLDivElement
+		);
+
+		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
@@ -87,7 +106,8 @@ class SECsettingPageMain extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
+		this._scroller.calc(true);
+		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
 		// ヘッダーボタン
 		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
