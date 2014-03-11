@@ -35,8 +35,7 @@ class SECcharaTabList extends EventCartridge{
 	var _charaList : PartsCharaListItem[];
 	var _data : variant;
 	// 並べ替え要素
-	var _pickerItemList : SECpopupPickerItem[];
-	var _pickerSelected = -1;
+	var _pickerPopup : SECpopupPicker;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -59,14 +58,13 @@ class SECcharaTabList extends EventCartridge{
 		];
 
 		// 並べ替え要素作成
-		this._pickerItemList = [
+		this._pickerPopup = new SECpopupPicker("並べ替え", [
 			new SECpopupPickerItem("test1", "新着順"),
 			new SECpopupPickerItem("test2", "Lv順"),
 			new SECpopupPickerItem("test3", "atk順"),
 			new SECpopupPickerItem("test4", "grd順"),
 			new SECpopupPickerItem("test5", "luk順"),
-		];
-		this._pickerItemList[0].selected = true;
+		], 0);
 	}
 
 	// ----------------------------------------------------------------
@@ -83,13 +81,10 @@ class SECcharaTabList extends EventCartridge{
 		var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
 		// ピッカー設定
-		var selected = -1;
-		for(var i = 0; i < this._pickerItemList.length; i++){if(this._pickerItemList[i].selected){selected = i; break;}}
-		if(this._pickerSelected != selected){
+		var tag = this._pickerPopup.setLabel(pickDiv);
+		if(tag != ""){
 			// ピッカーの選択されている要素が変わった場合
-			this._pickerSelected = selected;
-			(pickDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._pickerItemList[selected].name;
-			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], this._pickerItemList[selected].tag);
+			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], tag);
 			// キャラクターリスト作成
 			scrollDiv.innerHTML = "";
 			for(var i = 0; i < this._charaList.length; i++){
@@ -181,7 +176,7 @@ class SECcharaTabList extends EventCartridge{
 		}
 
 		// 並べ替えピッカーボタン
-		if(this._btnList["pick"].trigger){this._page.serialPush(new SECpopupPicker(this._page, this, "並べ替え", this._pickerItemList)); return false;}
+		if(this._btnList["pick"].trigger){this._page.serialPush(this._pickerPopup.beforeOpen(this._page, this)); return false;}
 
 		// タブボタン
 		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}

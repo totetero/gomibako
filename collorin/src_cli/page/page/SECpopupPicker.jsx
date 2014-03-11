@@ -46,18 +46,39 @@ class SECpopupPicker extends SECpopup{
 
 	var _page : Page;
 	var _cartridge : EventCartridge;
-	var _btnList : Map.<PartsButton>;
-	var _scroller : PartsScroll;
 	var _title : string;
 	var _itemList : SECpopupPickerItem[];
+	var _btnList : Map.<PartsButton>;
+	var _scroller : PartsScroll;
+	var _selected = -1;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : EventCartridge, title : string, itemList : SECpopupPickerItem[]){
-		this._page = page;
-		this._cartridge = cartridge;
+	function constructor(title : string, itemList : SECpopupPickerItem[], selected : int){
 		this._title = title;
 		this._itemList = itemList;
+		this._itemList[selected].selected = true;
+	}
+
+	// ----------------------------------------------------------------
+	// ピッカーボタンのラベル設定 選択要素が変わっていた場合はそのタグも返す
+	function setLabel(div : HTMLDivElement) : string{
+		var selected = -1;
+		for(var i = 0; i < this._itemList.length; i++){if(this._itemList[i].selected){selected = i; break;}}
+		if(this._selected != selected){
+			this._selected = selected;
+			var label = (selected < 0) ? "" : this._itemList[selected].name;
+			(div.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = label;
+			return this._itemList[selected].tag;
+		}
+		return "";	}
+
+	// ----------------------------------------------------------------
+	// 開く前の設定
+	function beforeOpen(page : Page, cartridge : EventCartridge) : SECpopupPicker{
+		this._page = page;
+		this._cartridge = cartridge;
+		return this;
 	}
 
 	// ----------------------------------------------------------------
@@ -130,7 +151,7 @@ class SECpopupPicker extends SECpopup{
 						this._itemList[j].selected = (i == j);
 					}
 					// 選択完了
-					this._page.serialPush(this._cartridge);
+					this.beforeClose(i);
 					return false;
 				}
 			}
@@ -141,12 +162,18 @@ class SECpopupPicker extends SECpopup{
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
-				this._page.serialPush(this._cartridge);
+				this.beforeClose(-1);
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	// ----------------------------------------------------------------
+	// 閉じる直前の動作
+	function beforeClose(index : int) : void{
+		this._page.serialPush(this._cartridge);
 	}
 
 	// ----------------------------------------------------------------

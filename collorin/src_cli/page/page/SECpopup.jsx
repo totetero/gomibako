@@ -17,7 +17,7 @@ abstract class SECpopup extends EventCartridge{
 	function popupCalc(active : boolean) : boolean{return false;}
 	function popupDispose() : void{}
 
-	var _openStep = -5;
+	var _openStep : int;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -25,6 +25,7 @@ abstract class SECpopup extends EventCartridge{
 		this.popupDiv = Page.popupDiv;
 		this.popupInit();
 		this.popupDiv.style.opacity = "0";
+		this._openStep = -5;
 		return false;
 	}
 

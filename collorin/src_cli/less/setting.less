@@ -29,12 +29,27 @@
 					text-align: right;
 				}
 
+				.field{
+					position: absolute;
+					left: 145px;
+					width: 146px;
+					height: 34px;
+					line-height: 36px;
+					text-align: center;
+					border: solid 2px black;
+					background-color: rgba(255, 255, 255, 0.5);
+
+					&.active{
+						background-color: rgba(0, 0, 0, 0.5);
+					}
+				}
+
 				.core-picker-btn{
 					left: 145px;
 				}
 
-				.nickname{.label{top: 10px;}}
-				.comment{.label{top: 58px;}}
+				.nickname{.label, .field{top: 10px;}}
+				.comment{.label, .field{top: 58px;}}
 				.quality{.label, .core-picker-btn{top: 106px;}}
 				.bgm{.label, .core-picker-btn{top: 154px;}}
 				.se{.label, .core-picker-btn{top: 202px;}}
