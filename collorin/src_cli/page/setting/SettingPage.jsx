@@ -169,13 +169,18 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 			new SECpopupPickerItem("middle", "普通画質"),
 			new SECpopupPickerItem("low", "低画質")
 		]);
-		this.getItem("high").inactive = true;
-		this.getItem("middle").selected = true;
+
+		if(dom.window.devicePixelRatio <= 1){this.getItem("high").inactive = true;}
+
+		var quality = dom.window.sessionStorage.getItem("setting_quality");
+		if(quality != "high" && quality != "low"){quality = "middle";}
+		this.getItem(quality).selected = true;
 	}
 
 	// ----------------------------------------------------------------
 	// 閉じる直前の動作
 	override function beforeClose(tag : string) : void{
+		dom.window.sessionStorage.setItem("setting_quality", tag);
 		super.beforeClose(tag);
 	}
 }
