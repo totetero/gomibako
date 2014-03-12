@@ -54,10 +54,20 @@ class SECpopupPicker extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(title : string, itemList : SECpopupPickerItem[], selected : int){
+	function constructor(title : string, itemList : SECpopupPickerItem[]){
 		this._title = title;
 		this._itemList = itemList;
-		this._itemList[selected].selected = true;
+	}
+
+	// ----------------------------------------------------------------
+	// 要素の獲得
+	function getItem(tag : string) : SECpopupPickerItem{
+		for(var i = 0; i < this._itemList.length; i++){
+			if(this._itemList[i].tag == tag){
+				return this._itemList[i];
+			}
+		}
+		return null;
 	}
 
 	// ----------------------------------------------------------------
@@ -71,7 +81,8 @@ class SECpopupPicker extends SECpopup{
 			(div.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = label;
 			return this._itemList[selected].tag;
 		}
-		return "";	}
+		return "";
+	}
 
 	// ----------------------------------------------------------------
 	// 開く前の設定
@@ -151,7 +162,7 @@ class SECpopupPicker extends SECpopup{
 						this._itemList[j].selected = (i == j);
 					}
 					// 選択完了
-					this.beforeClose(i);
+					this.beforeClose(this._itemList[i].tag);
 					return false;
 				}
 			}
@@ -162,7 +173,7 @@ class SECpopupPicker extends SECpopup{
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
-				this.beforeClose(-1);
+				this.beforeClose("");
 				return false;
 			}
 		}
@@ -172,7 +183,7 @@ class SECpopupPicker extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// 閉じる直前の動作
-	function beforeClose(index : int) : void{
+	function beforeClose(tag : string) : void{
 		this._page.serialPush(this._cartridge);
 	}
 

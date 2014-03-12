@@ -32,10 +32,9 @@ class SECcharaTabList extends EventCartridge{
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
+	var _picker : SECpopupPicker;
 	var _charaList : PartsCharaListItem[];
 	var _data : variant;
-	// 並べ替え要素
-	var _pickerPopup : SECpopupPicker;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -58,13 +57,14 @@ class SECcharaTabList extends EventCartridge{
 		];
 
 		// 並べ替え要素作成
-		this._pickerPopup = new SECpopupPicker("並べ替え", [
+		this._picker = new SECpopupPicker("並べ替え", [
 			new SECpopupPickerItem("test1", "新着順"),
 			new SECpopupPickerItem("test2", "Lv順"),
 			new SECpopupPickerItem("test3", "atk順"),
 			new SECpopupPickerItem("test4", "grd順"),
 			new SECpopupPickerItem("test5", "luk順"),
-		], 0);
+		]);
+		this._picker.getItem("test1").selected = true;
 	}
 
 	// ----------------------------------------------------------------
@@ -81,7 +81,7 @@ class SECcharaTabList extends EventCartridge{
 		var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
 		// ピッカー設定
-		var tag = this._pickerPopup.setLabel(pickDiv);
+		var tag = this._picker.setLabel(pickDiv);
 		if(tag != ""){
 			// ピッカーの選択されている要素が変わった場合
 			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], tag);
@@ -176,7 +176,7 @@ class SECcharaTabList extends EventCartridge{
 		}
 
 		// 並べ替えピッカーボタン
-		if(this._btnList["pick"].trigger){this._page.serialPush(this._pickerPopup.beforeOpen(this._page, this)); return false;}
+		if(this._btnList["pick"].trigger){this._page.serialPush(this._picker.beforeOpen(this._page, this)); return false;}
 
 		// タブボタン
 		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}

@@ -32,8 +32,6 @@ class SettingPage extends Page{
 		</div>
 	""";
 
-	//var qualityPicker : SECsettingPopupPickerQuality;
-
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
@@ -81,11 +79,18 @@ class SECsettingPageMain extends EventCartridge{
 	var _page : SettingPage;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
+	var _qualityPicker : SECsettingPopupPickerQuality;
+	var _bgmPicker : SECsettingPopupPickerBgm;
+	var _sePicker : SECsettingPopupPickerSe;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : SettingPage){
 		this._page = page;
+
+		this._qualityPicker = new SECsettingPopupPickerQuality();
+		this._bgmPicker = new SECsettingPopupPickerBgm();
+		this._sePicker = new SECsettingPopupPickerSe();
 	}
 
 	// ----------------------------------------------------------------
@@ -97,13 +102,20 @@ class SECsettingPageMain extends EventCartridge{
 		var bgmDiv = this._page.div.getElementsByClassName("bgm").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 		var seDiv = this._page.div.getElementsByClassName("se").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 
+		// ピッカー設定
+		this._qualityPicker.setLabel(qualityDiv);
+		this._bgmPicker.setLabel(bgmDiv);
+		this._sePicker.setLabel(seDiv);
+
 		// スクロール作成
-		this._scroller = new PartsScroll(
-			this._page.div.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
-			this._page.div.getElementsByClassName("scroll").item(0) as HTMLDivElement,
-			null,
-			this._page.div.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
-		);
+		if(this._scroller == null){
+			this._scroller = new PartsScroll(
+				this._page.div.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
+				this._page.div.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+				null,
+				this._page.div.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
+			);
+		}
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		this._scroller.btnList["nickname"] = new PartsButton(nicknameDiv, true);
@@ -116,6 +128,7 @@ class SECsettingPageMain extends EventCartridge{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
+
 		return false;
 	}
 
@@ -124,6 +137,11 @@ class SECsettingPageMain extends EventCartridge{
 	override function calc() : boolean{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
+
+		// ピッカーボタン
+		if(this._scroller.btnList["quality"].trigger){this._page.serialPush(this._qualityPicker.beforeOpen(this._page, this)); return false;}
+		if(this._scroller.btnList["bgm"].trigger){this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this)); return false;}
+		if(this._scroller.btnList["se"].trigger){this._page.serialPush(this._sePicker.beforeOpen(this._page, this)); return false;}
 
 		// ヘッダーボタン
 		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
@@ -142,34 +160,59 @@ class SECsettingPageMain extends EventCartridge{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-/*
-class SECsettingPopupPicker extends SECpopupPicker{
-	var settingItemList : SECpopupPickerItem[];
-}
-
-class SECsettingPopupPickerQuality extends SECsettingPopupPicker{
+class SECsettingPopupPickerQuality extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
-		this.settingItemList = [
-			new SECpopupPickerItem("test1", "あいう"),
-			new SECpopupPickerItem("test2", "うえお"),
-		];
-	}
-
-	// ----------------------------------------------------------------
-	// 開く前の設定
-	function beforeOpen(page : Page, cartridge : EventCartridge) : SECpopupPicker{
-		return this.beforeOpen(page, cartridge, "ゲーム画質", this.settingItemList);
+		super("ゲーム画質", [
+			new SECpopupPickerItem("high", "高画質"),
+			new SECpopupPickerItem("middle", "普通画質"),
+			new SECpopupPickerItem("low", "低画質")
+		]);
+		this.getItem("high").inactive = true;
+		this.getItem("middle").selected = true;
 	}
 
 	// ----------------------------------------------------------------
 	// 閉じる直前の動作
-	override function beforeClose(index : int) : void{
-		super.beforeClose(index);
+	override function beforeClose(tag : string) : void{
+		super.beforeClose(tag);
 	}
 }
-*/
+
+class SECsettingPopupPickerBgm extends SECpopupPicker{
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(){
+		super("BGM", [
+			new SECpopupPickerItem("off", "OFF")
+		]);
+		this.getItem("off").selected = true;
+	}
+
+	// ----------------------------------------------------------------
+	// 閉じる直前の動作
+	override function beforeClose(tag : string) : void{
+		super.beforeClose(tag);
+	}
+}
+
+class SECsettingPopupPickerSe extends SECpopupPicker{
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(){
+		super("効果音", [
+			new SECpopupPickerItem("off", "OFF")
+		]);
+		this.getItem("off").selected = true;
+	}
+
+	// ----------------------------------------------------------------
+	// 閉じる直前の動作
+	override function beforeClose(tag : string) : void{
+		super.beforeClose(tag);
+	}
+}
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
