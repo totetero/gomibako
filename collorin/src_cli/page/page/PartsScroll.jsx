@@ -25,8 +25,8 @@ class PartsScroll{
 	var _mdn : boolean;
 	var _prevmx : int;
 	var _prevmy : int;
-	var _tempsw : int;
-	var _tempsh : int;
+	var _tempcw : int;
+	var _tempch : int;
 	var _tempscrollx : number;
 	var _tempscrolly : number;
 
@@ -101,30 +101,27 @@ class PartsScroll{
 		if(dx > 0.5 || dy > 0.5){
 			this._tempscrollx = this.scrollx;
 			this._tempscrolly = this.scrolly;
+			//this.scrollDiv.style.left = this.scrollx + "px";
+			//this.scrollDiv.style.top = this.scrolly + "px";
 			Util.cssTranslate(this.scrollDiv, this.scrollx, this.scrolly);
 		}
 		// スクロールバー描画
-		if(dx > 0.5 || dy > 0.5 || this._tempsw != Ctrl.sw || this._tempsh != Ctrl.sh){
-			this._tempsw = Ctrl.sw;
-			this._tempsh = Ctrl.sh;
-			if(this.xbarDiv != null){
-				if(cbox.width < sbox.width){
-					this.xbarDiv.style.left = (-this.scrollx * cbox.width / sbox.width) + "px";
-					this.xbarDiv.style.width = (cbox.width * cbox.width / sbox.width) + "px";
-				}else{
-					this.xbarDiv.style.width = "0px";
-				}
+		if(dx > 0.5 || dy > 0.5 || this._tempcw != cbox.width || this._tempch != cbox.height){
+			if(this.xbarDiv != null && cbox.width < sbox.width){
+				//this.xbarDiv.style.left = (-this.scrollx * cbox.width / sbox.width) + "px";
+				Util.cssTranslate(this.xbarDiv, (-this.scrollx * cbox.width / sbox.width), 0);
 			}
-			if(this.ybarDiv != null){
-				if(cbox.height < sbox.height){
-					this.ybarDiv.style.top = (-this.scrolly * cbox.height / sbox.height) + "px";
-					this.ybarDiv.style.height = (cbox.height * cbox.height / sbox.height) + "px";
-				}else{
-					this.ybarDiv.style.height = "0px";
-				}
+			if(this.ybarDiv != null && cbox.height < sbox.height){
+				//this.ybarDiv.style.top = (-this.scrolly * cbox.height / sbox.height) + "px";
+				Util.cssTranslate(this.ybarDiv, 0, (-this.scrolly * cbox.height / sbox.height));
 			}
 		}
-
+		if(this._tempcw != cbox.width || this._tempch != cbox.height){
+			this._tempcw = cbox.width;
+			this._tempch = cbox.height;
+			if(this.xbarDiv != null){this.xbarDiv.style.width = ((cbox.width < sbox.width) ? (cbox.width * cbox.width / sbox.width) : 0) + "px";}
+			if(this.ybarDiv != null){this.ybarDiv.style.height = ((cbox.height < sbox.height) ? (cbox.height * cbox.height / sbox.height) : 0) + "px";}
+		}
 
 		// 押下描画
 		var isActive = this.containerDiv.className.indexOf(" active") >= 0;
