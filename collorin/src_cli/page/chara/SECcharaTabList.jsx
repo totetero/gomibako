@@ -5,6 +5,7 @@ import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/PartsScroll.jsx";
 import "../page/PartsCharacter.jsx";
+import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
 import "../page/SECpopupPicker.jsx";
 
@@ -34,27 +35,13 @@ class SECcharaTabList extends EventCartridge{
 	var _scroller : PartsScroll;
 	var _picker : SECpopupPicker;
 	var _charaList : PartsCharaListItem[];
-	var _data : variant;
+	var _update : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
-		this._data = response;
-
-		// キャラクターリスト作成
-		this._charaList = [
-			new PartsCharaListItem({name: "test01", code: "player0"}),
-			new PartsCharaListItem({name: "test02", code: "player1"}),
-			new PartsCharaListItem({name: "test03", code: "player2"}),
-			new PartsCharaListItem({name: "test04", code: "player3"}),
-			new PartsCharaListItem({name: "test05", code: "enemy1"}),
-			new PartsCharaListItem({name: "test06", code: "enemy2"}),
-			new PartsCharaListItem({name: "test07", code: "enemy3"}),
-			new PartsCharaListItem({name: "test08", code: "player0"}),
-			new PartsCharaListItem({name: "test09", code: "player0"}),
-			new PartsCharaListItem({name: "test10", code: "player0"})
-		];
+		this.parse(response);
 
 		// 並べ替え要素作成
 		this._picker = new SECpopupPicker("並べ替え", [
@@ -65,6 +52,18 @@ class SECcharaTabList extends EventCartridge{
 			new SECpopupPickerItem("test5", "luk順"),
 		]);
 		this._picker.getItem("test1").selected = true;
+	}
+
+	// ----------------------------------------------------------------
+	// ロード完了時 データの形成
+	function parse(response : variant) : void{
+		this._update = true;
+		// キャラクターリスト作成
+		var list = response["list"] as variant[];
+		this._charaList = new PartsCharaListItem[];
+		for(var i = 0; i < list.length; i++){
+			this._charaList.push(new PartsCharaListItem(list[i]));
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -82,6 +81,7 @@ class SECcharaTabList extends EventCartridge{
 
 		// ピッカー設定
 		var tag = this._picker.setLabel(pickDiv);
+		if(this._update){this._update = false; if(tag == ""){tag = this._picker.getTag();}}
 		if(tag != ""){
 			// ピッカーの選択されている要素が変わった場合
 			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], tag);
@@ -172,7 +172,10 @@ class SECcharaTabList extends EventCartridge{
 		var btn = this._btnList["supply"];
 		btn.inactive = !(count > 0);
 		if(btn.trigger){
-			btn.trigger = false;
+			// テスト とりあえず通信
+			this._page.serialPush(new SECload("/chara/list", null, function(response : variant) : void{this.parse(response);}));
+			this._page.serialPush(this);
+			return false;
 		}
 
 		// 並べ替えピッカーボタン

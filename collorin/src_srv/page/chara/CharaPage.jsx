@@ -11,16 +11,36 @@ class CharaPage{
 		// 一覧
 		app.get("/chara/list", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
-			jdat["test"] = "キャラクター 一覧";
-			jdat["imgs"] = ImageServer.convertAddress({
-				"b64_icon_player0": "img/character/player0/icon.png", "b64_bust_player0": "img/character/player0/bust.png",
-				"b64_icon_player1": "img/character/player1/icon.png", "b64_bust_player1": "img/character/player1/bust.png",
-				"b64_icon_player2": "img/character/player2/icon.png", "b64_bust_player2": "img/character/player2/bust.png",
-				"b64_icon_player3": "img/character/player3/icon.png", "b64_bust_player3": "img/character/player3/bust.png",
-				"b64_icon_enemy1": "img/character/enemy1/icon.png", "b64_bust_enemy1": "img/character/enemy1/bust.png",
-				"b64_icon_enemy2": "img/character/enemy2/icon.png", "b64_bust_enemy2": "img/character/enemy2/bust.png",
-				"b64_icon_enemy3": "img/character/enemy3/icon.png", "b64_bust_enemy3": "img/character/enemy3/bust.png",
-			});
+			var imgs = {} : Map.<string>;
+
+			var codeList = [
+				"player0",
+				"player1",
+				"player2",
+				"player3",
+				"enemy1",
+				"enemy2",
+				"enemy3",
+			];
+
+			// キャラクター情報
+			var charaInfoList = new variant[];
+			for(var i = 0; i < 10; i++){
+				var name = "test" + ("0" + i).slice(-2);
+				//var code = codeList[Math.floor(Math.random() * codeList.length)];
+				var code = codeList[i % codeList.length];
+				charaInfoList.push({name: name, code: code});
+			}
+
+			// キャラクター情報の画像読み込み
+			for(var i = 0; i < charaInfoList.length; i++){
+				var code = charaInfoList[i]["code"] as string;
+				imgs["b64_icon_" + code] = "img/character/" + code + "/icon.png";
+				imgs["b64_bust_" + code] = "img/character/" + code + "/bust.png";
+			}
+
+			jdat["list"] = charaInfoList;
+			jdat["imgs"] = ImageServer.convertAddress(imgs);
 			res.contentType("application/json").send(JSON.stringify(jdat));
 		});
 

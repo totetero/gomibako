@@ -71,6 +71,13 @@ class SECpopupPicker extends SECpopup{
 	}
 
 	// ----------------------------------------------------------------
+	// 選択されている要素のタグ獲得
+	function getTag() : string{
+		for(var i = 0; i < this._itemList.length; i++){if(this._itemList[i].selected){return this._itemList[i].tag;}}
+		return "";
+	}
+
+	// ----------------------------------------------------------------
 	// ピッカーボタンのラベル設定 選択要素が変わっていた場合はそのタグも返す
 	function setLabel(div : HTMLDivElement) : string{
 		var selected = -1;
