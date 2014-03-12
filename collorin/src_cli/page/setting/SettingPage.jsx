@@ -10,6 +10,7 @@ import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 import "../page/SECpopupMenu.jsx";
 import "../page/SECpopupPicker.jsx";
+import "../page/SECpopupTextarea.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -21,8 +22,8 @@ class SettingPage extends Page{
 		<div class="scrollContainerContainer">
 			<div class="scrollContainer">
 				<div class="scroll">
-					<div class="nickname"><div class="label">ニックネーム</div><div class="field">あああ</div></div>
-					<div class="comment"><div class="label">コメント</div><div class="field">いいい</div></div>
+					<div class="nickname"><div class="label">ニックネーム</div><div class="field"></div></div>
+					<div class="comment"><div class="label">コメント</div><div class="field"></div></div>
 					<div class="quality"><div class="label">ゲーム画質</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
 					<div class="bgm"><div class="label">BGM</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
 					<div class="se"><div class="label">効果音</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
@@ -31,6 +32,10 @@ class SettingPage extends Page{
 			</div>
 		</div>
 	""";
+
+	// サーバから受け取った設定情報
+	var nickname : string;
+	var comment : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -49,10 +54,7 @@ class SettingPage extends Page{
 		this.div.innerHTML = SettingPage._htmlTag;
 
 		// イベント設定
-		this.serialPush(new SECload("/setting", null, function(response : variant) : void{
-			// ロード完了 データの形成
-			log response;
-		}));
+		this.serialPush(new SECload("/setting", null, function(response : variant) : void{this.parse(response);}));
 		this.serialPush(new ECone(function() : void{
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader("設定", 2));
@@ -62,6 +64,13 @@ class SettingPage extends Page{
 		}));
 		this.serialPush(new SECtransitionsPage(this));
 		this.serialPush(new SECsettingPageMain(this));
+	}
+
+	// ----------------------------------------------------------------
+	// ロード完了時 データの形成
+	function parse(response : variant) : void{
+		this.nickname = response["nickname"] as string;
+		this.comment = response["comment"] as string;
 	}
 
 	// ----------------------------------------------------------------
@@ -102,6 +111,10 @@ class SECsettingPageMain extends EventCartridge{
 		var bgmDiv = this._page.div.getElementsByClassName("bgm").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 		var seDiv = this._page.div.getElementsByClassName("se").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 
+		// テキストエリア設定
+		nicknameDiv.innerHTML = this._page.nickname;
+		commentDiv.innerHTML = this._page.comment;
+
 		// ピッカー設定
 		this._qualityPicker.setLabel(qualityDiv);
 		this._bgmPicker.setLabel(bgmDiv);
@@ -138,6 +151,10 @@ class SECsettingPageMain extends EventCartridge{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
+		// テキストエリアボタン
+		if(this._scroller.btnList["nickname"].trigger){this._page.serialPush(new SECsettingPopupTextareaNickname(this._page, this)); return false;}
+		if(this._scroller.btnList["comment"].trigger){this._page.serialPush(new SECsettingPopupTextareaComment(this._page, this)); return false;}
+
 		// ピッカーボタン
 		if(this._scroller.btnList["quality"].trigger){this._page.serialPush(this._qualityPicker.beforeOpen(this._page, this)); return false;}
 		if(this._scroller.btnList["bgm"].trigger){this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this)); return false;}
@@ -160,6 +177,47 @@ class SECsettingPageMain extends EventCartridge{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// ニックネームのテキストエリア
+class SECsettingPopupTextareaNickname extends SECpopupTextarea{
+	var _sPage : SettingPage;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : SettingPage, cartridge : EventCartridge){
+		super(page, cartridge, page.nickname, 8);
+		this._sPage = page;
+	}
+
+	// ----------------------------------------------------------------
+	// 入力確定時の動作
+	override function enter(value : string) : void{
+		if(value != this._sPage.nickname){
+			this._sPage.serialPush(new SECload("/setting?nickname=" + value, null, function(response : variant) : void{this._sPage.parse(response);}));
+		}
+	}
+}
+
+// コメントのテキストエリア
+class SECsettingPopupTextareaComment extends SECpopupTextarea{
+	var _sPage : SettingPage;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : SettingPage, cartridge : EventCartridge){
+		super(page, cartridge, page.comment, 8);
+		this._sPage = page;
+	}
+
+	// ----------------------------------------------------------------
+	// 入力確定時の動作
+	override function enter(value : string) : void{
+		if(value != this._sPage.comment){
+			this._sPage.serialPush(new SECload("/setting?comment=" + value, null, function(response : variant) : void{this._sPage.parse(response);}));
+		}
+	}
+}
+
+// 画質のピッカー
 class SECsettingPopupPickerQuality extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -178,13 +236,13 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 	}
 
 	// ----------------------------------------------------------------
-	// 閉じる直前の動作
-	override function beforeClose(tag : string) : void{
+	// 選択時の動作
+	override function select(tag : string) : void{
 		dom.window.sessionStorage.setItem("setting_quality", tag);
-		super.beforeClose(tag);
 	}
 }
 
+// BGMのピッカー
 class SECsettingPopupPickerBgm extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -196,12 +254,12 @@ class SECsettingPopupPickerBgm extends SECpopupPicker{
 	}
 
 	// ----------------------------------------------------------------
-	// 閉じる直前の動作
-	override function beforeClose(tag : string) : void{
-		super.beforeClose(tag);
+	// 選択時の動作
+	override function select(tag : string) : void{
 	}
 }
 
+// 効果音のピッカー
 class SECsettingPopupPickerSe extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -213,9 +271,8 @@ class SECsettingPopupPickerSe extends SECpopupPicker{
 	}
 
 	// ----------------------------------------------------------------
-	// 閉じる直前の動作
-	override function beforeClose(tag : string) : void{
-		super.beforeClose(tag);
+	// 選択時の動作
+	override function select(tag : string) : void{
 	}
 }
 

@@ -162,7 +162,8 @@ class SECpopupPicker extends SECpopup{
 						this._itemList[j].selected = (i == j);
 					}
 					// 選択完了
-					this.beforeClose(this._itemList[i].tag);
+					this.select(this._itemList[i].tag);
+					this._page.serialPush(this._cartridge);
 					return false;
 				}
 			}
@@ -173,7 +174,7 @@ class SECpopupPicker extends SECpopup{
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
-				this.beforeClose("");
+				this._page.serialPush(this._cartridge);
 				return false;
 			}
 		}
@@ -182,9 +183,8 @@ class SECpopupPicker extends SECpopup{
 	}
 
 	// ----------------------------------------------------------------
-	// 閉じる直前の動作
-	function beforeClose(tag : string) : void{
-		this._page.serialPush(this._cartridge);
+	// 選択時の動作 継承用
+	function select(tag : string) : void{
 	}
 
 	// ----------------------------------------------------------------

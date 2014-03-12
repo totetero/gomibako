@@ -44,6 +44,7 @@ native class ExApplication{
 native class ExRequest{
 	var url : string;
 	var params : variant;
+	var query : variant;
 	var body : variant;
 	var session : ExSession;
 	var user : UserModel;
