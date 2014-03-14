@@ -59,8 +59,8 @@ class SECcharaTabPwup extends EventCartridge{
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
 		this._btnList["team"] = new PartsButton(this._page.tabTeamDiv, true);
+		this._btnList["supp"] = new PartsButton(this._page.tabSuppDiv, true);
 		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
@@ -74,8 +74,8 @@ class SECcharaTabPwup extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// タブボタン
-		if(this._btnList["list"].trigger){this._page.toggleTab("list"); return false;}
 		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}
+		if(this._btnList["supp"].trigger){this._page.toggleTab("supp"); return false;}
 		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
 		if(this._btnList["sell"].trigger){this._page.toggleTab("sell"); return false;}
 

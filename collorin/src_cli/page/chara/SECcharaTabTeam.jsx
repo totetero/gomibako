@@ -18,10 +18,9 @@ class SECcharaTabTeam extends EventCartridge{
 			•編成について<br>
 			マイページで表示するリーダーの設定と、
 			ステージで使用する3人までのチームを設定することができる。
-			また、チームへの一括補給もできる。
 			<br><br>
 			•補給について<br>
-			一覧タブや編成タブではSP回復アイテムを消費することによってSPを回復することができる。
+			補給タブではSP回復アイテムを消費することによってSPを回復することができる。
 			SPはステージで行動すると消費する値であり、消費量はキャラクターやステージによって異なる。
 			SP回復アイテムは時間経過で入手することができ、いわゆるスタミナの役割を果たす。
 			SP回復アイテムはショップでも購入できる。
@@ -54,8 +53,8 @@ class SECcharaTabTeam extends EventCartridge{
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
 		this._btnList["team"] = new PartsButton(this._page.tabTeamDiv, true);
+		this._btnList["supp"] = new PartsButton(this._page.tabSuppDiv, true);
 		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
@@ -69,7 +68,7 @@ class SECcharaTabTeam extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// タブボタン
-		if(this._btnList["list"].trigger){this._page.toggleTab("list"); return false;}
+		if(this._btnList["supp"].trigger){this._page.toggleTab("supp"); return false;}
 		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
 		if(this._btnList["pwup"].trigger){this._page.toggleTab("pwup"); return false;}
 		if(this._btnList["sell"].trigger){this._page.toggleTab("sell"); return false;}

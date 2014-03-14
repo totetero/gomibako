@@ -15,7 +15,7 @@ import "CharaPage.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECcharaTabList extends EventCartridge{
+class SECcharaTabSupp extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
 		<div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div>
@@ -69,10 +69,10 @@ class SECcharaTabList extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		if(this._page.bodyDiv.className.indexOf("list") < 0){
+		if(this._page.bodyDiv.className.indexOf("supp") < 0){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECcharaTabList._htmlTag;
-			this._page.bodyDiv.className = "body list";
+			this._page.bodyDiv.innerHTML = SECcharaTabSupp._htmlTag;
+			this._page.bodyDiv.className = "body supp";
 
 			this._scroller = null;
 		}
@@ -98,8 +98,8 @@ class SECcharaTabList extends EventCartridge{
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
 		// タブボタン
-		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
 		this._btnList["team"] = new PartsButton(this._page.tabTeamDiv, true);
+		this._btnList["supp"] = new PartsButton(this._page.tabSuppDiv, true);
 		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
@@ -173,7 +173,7 @@ class SECcharaTabList extends EventCartridge{
 		btn.inactive = !(count > 0);
 		if(btn.trigger){
 			// テスト とりあえず通信
-			this._page.serialPush(new SECload("/chara/list", null, function(response : variant) : void{this.parse(response);}));
+			this._page.serialPush(new SECload("/chara/supp", null, function(response : variant) : void{this.parse(response);}));
 			this._page.serialPush(this);
 			return false;
 		}

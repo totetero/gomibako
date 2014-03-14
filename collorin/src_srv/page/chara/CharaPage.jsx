@@ -8,8 +8,13 @@ class CharaPage{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
-		// 一覧
-		app.get("/chara/list", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+		// 編成
+		app.get("/chara/team", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			res.contentType("application/json").send(JSON.stringify({"test": "キャラクター 編成"}));
+		});
+
+		// 補給
+		app.get("/chara/supp", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
 			var imgs = {} : Map.<string>;
 
@@ -42,11 +47,6 @@ class CharaPage{
 			jdat["list"] = charaInfoList;
 			jdat["imgs"] = ImageServer.convertAddress(imgs);
 			res.contentType("application/json").send(JSON.stringify(jdat));
-		});
-
-		// 編成
-		app.get("/chara/team", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			res.contentType("application/json").send(JSON.stringify({"test": "キャラクター 編成"}));
 		});
 
 		// 休息
