@@ -46,6 +46,7 @@ native class ExRequest{
 	var params : variant;
 	var query : variant;
 	var body : variant;
+	var headers : variant;
 	var session : ExSession;
 	var user : UserModel;
 	function logout() : void;
