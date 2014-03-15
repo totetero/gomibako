@@ -10,38 +10,55 @@ class ImageServer{
 	static function setPage(app : ExApplication, url : string, path : string, key : string) : void{
 		ImageServer.key = key;
 
-		// POST画像リクエストの処理
-		app.post(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			if(typeof req.body == "object" && typeof req.body["urls"] == "object"){
-				var urls = req.body["urls"] as Map.<string>;
-				// 画像数を数えつつアドレスの復号化
-				var count = 0;
-				for(var tag in urls){
-					count++;
-					var decipher = crypto.createDecipher("aes192", ImageServer.key);
-					urls[tag] = decipher.update(urls[tag], "base64", "ascii") + decipher.final("ascii");
-				}
-				if(count <= 0){
-					// リクエスト無し
-					res.contentType("application/json").send(null);
-				}else if(req.body["isBin"] as boolean){
+		// urlリクエスト応答
+		var urlResp = function(req : ExRequest, res : ExResponse, urls : Map.<string>) : void{
+			if(urls != null){
+				if(req.body["isBin"] as boolean){
 					// binary画像のリクエスト
-					new ImageServer.ImageLoaderBin(path, urls, count, function(data : Buffer) : void{
+					new ImageServer.ImageLoaderBin(path, urls, function(data : Buffer) : void{
 						res.contentType("application/octet-stream").send(data);
 					});
 				}else{
 					// base64画像のリクエスト
-					new ImageServer.ImageLoaderB64(path, urls, count, function(data : string) : void{
+					new ImageServer.ImageLoaderB64(path, urls, function(data : string) : void{
 						res.contentType("application/json").send(data);
 					});
 				}
+			}else{
+				// リクエスト無し
+				res.contentType("application/json").send(null);
+			}
+		};
+
+		// GET画像リクエストの処理
+		app.get(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			var urls : Map.<string> = null;
+
+			// 基本セット
+			urls = {
+				"img_dot_player0": "img/character/player0/dot.png",
+			};
+
+			urlResp(req, res, urls);
+		});
+
+		// POST画像リクエストの処理
+		app.post(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			if(typeof req.body == "object" && typeof req.body["urls"] == "object"){
+				var urls = req.body["urls"] as Map.<string>;
+
+				// アドレスの復号化
+				for(var tag in urls){
+					var decipher = crypto.createDecipher("aes192", ImageServer.key);
+					urls[tag] = decipher.update(urls[tag], "base64", "ascii") + decipher.final("ascii");
+				}
+
+				urlResp(req, res, urls);
 			}else{
 				// リクエスト書式異常
 				res.status(404).render("404.ejs", null);
 			}
 		});
-
-		// TODO GET画像リクエスト ページ毎のテンプレート
 
 		// GETとPOST以外のリクエストは404
 		app.all(url + "/*", function(req : ExRequest, res : ExResponse, next : function():void) : void{
@@ -67,11 +84,13 @@ class ImageServer{
 		var _imgs = {} : Map.<string>;
 
 		// コンストラクタ
-		function constructor(path : string, urls : Map.<string>, count : int, callback : function(data:string):void){
-			this._count = count;
+		function constructor(path : string, urls : Map.<string>, callback : function(data:string):void){
+			this._count = 0;
 			this._callback = callback;
 			// 画像を読み込む
-			for(var tag in urls){this.load(path + "/" + urls[tag], tag);}
+			for(var tag in urls){this._count++;}
+			if(this._count > 0){for(var tag in urls){this.load(path + "/" + urls[tag], tag);}}
+			else{this._callback("");}
 		}
 
 		// データのロード
@@ -96,8 +115,6 @@ class ImageServer{
 					if(type != ""){
 						// base64情報GET!!
 						this._imgs[tag] = type + data.toString("base64");
-					}else{
-						// 読み込み失敗 TODO なんかデフォルトの透明画像でも用意しとく？
 					}
 				}else{
 					// 読み込み失敗 TODO なんかデフォルトの透明画像でも用意しとく？
@@ -121,11 +138,13 @@ class ImageServer{
 		var _totalLength = 0;
 
 		// コンストラクタ
-		function constructor(path : string, urls : Map.<string>, count : int, callback : function(data:Buffer):void){
-			this._count = count;
+		function constructor(path : string, urls : Map.<string>, callback : function(data:Buffer):void){
+			this._count = 0;
 			this._callback = callback;
 			// 画像を読み込む
-			for(var tag in urls){this.load(path + "/" + urls[tag], tag);}
+			for(var tag in urls){this._count++;}
+			if(this._count > 0){for(var tag in urls){this.load(path + "/" + urls[tag], tag);}}
+			else{this._callback(null);}
 		}
 
 		// データのロード
@@ -151,7 +170,7 @@ class ImageServer{
 						data.writeUInt8((length >> 8) & 0xff, index++);
 						data.writeUInt8((length >> 16) & 0xff, index++);
 						data.writeUInt8((length >> 24) & 0xff, index++);
-						this._tags[tag1].copy(data, index, 0, Math.min(length, 0xffffffff));
+						this._tags[tag1].copy(data, index, 0, length);
 						index += length;
 						// 画像データ
 						var length = this._imgs[tag1].length;
@@ -159,7 +178,7 @@ class ImageServer{
 						data.writeUInt8((length >> 8) & 0xff, index++);
 						data.writeUInt8((length >> 16) & 0xff, index++);
 						data.writeUInt8((length >> 24) & 0xff, index++);
-						this._imgs[tag1].copy(data, index, 0, Math.min(length, 0xffffffff));
+						this._imgs[tag1].copy(data, index, 0, length);
 						index += length;
 					}
 					this._callback(data);

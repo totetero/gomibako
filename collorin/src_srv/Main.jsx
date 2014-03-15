@@ -6,6 +6,7 @@ import "require/passport.jsx";
 import "require/socket.io.jsx";
 
 import "util/ImageServer.jsx";
+import "util/SoundServer.jsx";
 import "page/AuthPage.jsx";
 import "page/top/TopPage.jsx";
 import "page/mypage/MyPage.jsx";
@@ -130,8 +131,9 @@ class _Main{
 		DicePage.setPage(app, rcli);
 		ChatPage.setPage(app, rcli, io);
 
-		// 画像サーバ
+		// コンテンツサーバ
 		ImageServer.setPage(app, "/img", node.__dirname + "/content", "testImageSecretKey");
+		SoundServer.setPage(app, "/snd", node.__dirname + "/content");
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";
