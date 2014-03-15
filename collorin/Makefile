@@ -34,5 +34,5 @@ content/main.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
 	$(MIN) -c -o $@ $<
 
 put:
-	rsync -av * uni:/home/tote/toterabo/srvtest/
+	rsync -av * uni:/home/tote/project/git/collorin/
 
