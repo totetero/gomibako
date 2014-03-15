@@ -33,7 +33,7 @@ class ChatCanvas extends Ccvs{
 	// 初期化
 	function init(response : variant) : void{
 		// フィールド
-		this.field = new GridField(this, Loader.imgs["grid"], response["grid"] as int[][]);
+		this.field = new GridField(this, Loader.imgs["img_grid"], response["grid"] as int[][]);
 		this.pathFinder = new ChatPathFinder(this.field);
 		// 初期カメラ位置
 		this.cx = this.calcx = (this.cxmax + this.cxmin) * 0.5;
@@ -140,7 +140,7 @@ class ChatCharacter{
 		this.y = charaInfo["y"] as int * 16 + 8;
 		this.r = charaInfo["r"] as int * Math.PI * 0.25;
 
-		var img = Loader.imgs["dot_" + this.code];
+		var img = Loader.imgs["img_dot_" + this.code];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);

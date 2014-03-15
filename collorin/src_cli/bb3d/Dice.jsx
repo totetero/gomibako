@@ -27,7 +27,7 @@ class DrawDice{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(size : number){
-		this._img = Loader.imgs["dice"];
+		this._img = Loader.imgs["img_dice"];
 		// オフスクリーンcanvasの準備
 		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this._context = this._canvas.getContext("2d") as CanvasRenderingContext2D;

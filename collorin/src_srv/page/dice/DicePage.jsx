@@ -57,7 +57,7 @@ class DicePage{
 		];
 
 		// さいころ画像
-		imgs["dice"] = "img/dice/test.png";
+		imgs["img_dice"] = "img/dice/test.png";
 
 		// キャラクター情報
 		var charaInfoList = [[
@@ -76,7 +76,7 @@ class DicePage{
 		for(var i = 0; i < charaInfoList.length; i++){
 			for(var j = 0; j < charaInfoList[i].length; j++){
 				var code = charaInfoList[i][j]["code"] as string;
-				imgs["dot_" + code] = "img/character/" + code + "/dot.png";
+				imgs["img_dot_" + code] = "img/character/" + code + "/dot.png";
 				imgs["b64_icon_" + code] = "img/character/" + code + "/icon.png";
 				imgs["b64_bust_" + code] = "img/character/" + code + "/bust.png";
 				imgs["b64_damage_" + code] = "img/character/" + code + "/damage.png";

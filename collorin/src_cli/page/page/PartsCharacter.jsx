@@ -58,7 +58,7 @@ class PartsCharaListItem extends PartsCharacter{
 		this.bodyDiv.className = "core-chara-item";
 		this.iconDiv = this.bodyDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement;
 		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
-		this.iconDiv.style.backgroundImage = "url(" + Loader.b64imgs["b64_icon_" + this.code] + ")";
+		this.iconDiv.style.backgroundImage = "url(" + Loader.b64s["b64_icon_" + this.code] + ")";
 
 	}
 }
@@ -101,7 +101,7 @@ class SECpopupInfoChara extends SECpopup{
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._data.name;
-		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64imgs["b64_bust_" + this._data.code] + ")";
+		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64s["b64_bust_" + this._data.code] + ")";
 
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);

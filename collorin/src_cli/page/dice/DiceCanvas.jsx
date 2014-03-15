@@ -180,7 +180,7 @@ class DiceCharacter{
 		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
 		this.r = charaInfo["r"] as number;
 
-		var img = Loader.imgs["dot_" + this.code];
+		var img = Loader.imgs["img_dot_" + this.code];
 		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);

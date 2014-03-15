@@ -9,20 +9,19 @@ import "js/web.jsx";
 class Loader{
 	// 画像リスト
 	static var imgs = {} : Map.<HTMLImageElement>;
-	static var b64imgs = {} : Map.<string>;
+	static var b64s = {} : Map.<string>;
 
 	// ----------------------------------------------------------------
 	// 画像リクエスト送信
 	static function loadImg(request : Map.<string>, successFunc : function():void, failureFunc : function():void) : void{
 		var url = "/img";
-		
+
 		// 画像重複ロード確認
 		var count = 0;
 		for(var tag in request){
-			var isBase64 = (tag.indexOf("b64_") == 0);
-			if(isBase64 && Loader.b64imgs[tag] != null){
-				delete request[tag];
-			}else if(!isBase64 && Loader.imgs[tag] != null){
+			var hasImg = ((tag.indexOf("img_") == 0) && Loader.imgs[tag] != null);
+			var hasB64 = ((tag.indexOf("b64_") == 0) && Loader.b64s[tag] != null);
+			if(hasImg || hasB64){
 				delete request[tag];
 			}else{
 				count++;
@@ -103,11 +102,7 @@ class Loader{
 							// base64形式から画像オブジェクト作成
 							if(count > 0){
 								for(var tag in b64imgs){
-									if(tag.indexOf("b64_") == 0){
-										// css用画像
-										Loader.b64imgs[tag] = b64imgs[tag];
-										if(--count == 0){successFunc();}
-									}else{
+									if(tag.indexOf("img_") == 0){
 										// canvas用画像
 										var img = dom.createElement("img") as HTMLImageElement;
 										img.onload = function(e : Event){
@@ -116,7 +111,11 @@ class Loader{
 										};
 										img.src = b64imgs[tag];
 										Loader.imgs[tag] = img;
-									}
+									}else if(tag.indexOf("b64_") == 0){
+										// css用画像
+										Loader.b64s[tag] = b64imgs[tag];
+										if(--count == 0){successFunc();}
+									} 
 								}
 							}else{
 								successFunc();

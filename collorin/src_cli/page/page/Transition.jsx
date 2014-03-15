@@ -340,7 +340,7 @@ class PECopenCharacter extends EventCartridge{
 				PECopenCharacter._code = this._code;
 				var type = "b64_bust_";
 				if(this._type == "damage"){type = "b64_damage_";}
-				PECopenCharacter._div.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64imgs[type + this._code] + ")");
+				PECopenCharacter._div.style.backgroundImage = (this._code == "") ? "none" : ("url(" + Loader.b64s[type + this._code] + ")");
 			}
 			return (this._action < 16);
 		}else{return false;}
