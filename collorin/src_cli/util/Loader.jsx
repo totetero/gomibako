@@ -10,6 +10,7 @@ class Loader{
 	// 画像リスト
 	static var imgs = {} : Map.<HTMLImageElement>;
 	static var b64s = {} : Map.<string>;
+	static var csss = {} : Map.<boolean>;
 
 	// ----------------------------------------------------------------
 	// 画像リクエスト送信
@@ -21,7 +22,8 @@ class Loader{
 		for(var tag in request){
 			var hasImg = ((tag.indexOf("img_") == 0) && Loader.imgs[tag] != null);
 			var hasB64 = ((tag.indexOf("b64_") == 0) && Loader.b64s[tag] != null);
-			if(hasImg || hasB64){
+			var hasCss = ((tag.indexOf("css_") == 0) && Loader.csss[tag]);
+			if(hasImg || hasB64 || hasCss){
 				delete request[tag];
 			}else{
 				count++;
@@ -138,6 +140,69 @@ class Loader{
 			// 読み込むものが無い
 			successFunc();
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 音楽リクエスト送信
+	static function loadSnd(request : Map.<string>, successFunc : function(buffers:Map.<ArrayBuffer>):void, failureFunc : function():void) : void{
+		var url = "/snd";
+
+		// リクエスト開始準備
+		var xhr = new XMLHttpRequest();
+		if(request != null){xhr.open("POST", url, true);}else{xhr.open("GET", url, true);}
+		xhr.setRequestHeader("Content-Type","application/json");
+		xhr.responseType = "arraybuffer";
+		// リクエスト状態変化関数
+		xhr.onreadystatechange = function(e : Event) : void{
+			if(xhr.readyState == 4){
+				if(xhr.status == 200){
+					// リクエスト正常終了
+					var ctype = xhr.getResponseHeader("Content-Type").toLowerCase();
+					if(ctype.indexOf("application/json") < 0 && ctype.indexOf("application/octet-stream") < 0){
+						// リダイレクトっぽい！！
+						dom.document.location.href = url;
+					}else{
+						// 受け取ったデータを処理
+						var buffer = xhr.response as ArrayBuffer;
+						var uint8Array = new Uint8Array(buffer);
+						var buffers = {} : Map.<ArrayBuffer>;
+						var index = 0;
+						var totalLength = uint8Array.length;
+						while(index < totalLength){
+							// ファイルのタグ名長さ読み取り
+							var len1 = uint8Array[index++];
+							var len2 = uint8Array[index++] << 8;
+							var len3 = uint8Array[index++] << 16;
+							var len4 = uint8Array[index++] << 24;
+							var length = len1 + len2 + len3 + len4;
+							// タグ名記録
+							var tag = "";
+							for(var i = 0; i < length; i++){tag += String.fromCharCode(uint8Array[index + i]);}
+							index += length;
+							// ファイルのバイナリ長さ読み取り
+							var len1 = uint8Array[index++];
+							var len2 = uint8Array[index++] << 8;
+							var len3 = uint8Array[index++] << 16;
+							var len4 = uint8Array[index++] << 24;
+							var length = len1 + len2 + len3 + len4;
+							// バイナリ記録
+							buffers[tag] = buffer.slice(index, index + length);
+							index += length;
+						}
+						successFunc(buffers);
+					}
+				}else{
+					// リクエスト異常終了
+					log "error " + xhr.status;
+					failureFunc();
+				}
+				xhr = null;
+			}
+		};
+		// 通信開始
+		xhr.send(JSON.stringify({
+			urls: request
+		}));
 	}
 
 	// ----------------------------------------------------------------

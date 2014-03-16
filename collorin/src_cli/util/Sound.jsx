@@ -1,53 +1,69 @@
 import "js.jsx";
 import "js/web.jsx";
 
+import "Loader.jsx";
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
 // サウンドクラス
 class Sound{
-	static var _playable : boolean;
-	static var playing : boolean;
+	static var bgmVolume = -1;
+	static var sefVolume = -1;
+	static var _playable = false;
 
 	// WebAudioAPI用
 	static var _context : AudioContext;
-	static var _bgmbuffer : Sound.WebAudioAPIbuffer;
-	static var _sebuffer : Map.<Sound.WebAudioAPIbuffer>;
-
-	// Audioタグ用
-	static var _bgmaudio : HTMLAudioElement;
+	static var _buffer : Map.<AudioBuffer>;
+	static var _bgmSource : AudioBufferSourceNode;
+	static var _sefSource : AudioBufferSourceNode[];
 
 	// ----------------------------------------------------------------
 	// 初期化
-	static function init(bgmurl : string) : void{
-		Sound._playable = false;
-		Sound.playing = (dom.window.localStorage.getItem("soundPlaying") == "on");
+	static function init() : void{
 		// WebAudioAPIのAudioContextを作成
-		try{Sound._context = new webkitAudioContext();}catch(e : Error){}
+		if(Sound._context == null){try{Sound._context = new AudioContext();}catch(e : Error){}}
+		if(Sound._context == null){try{Sound._context = new webkitAudioContext();}catch(e : Error){}}
 		if(Sound._context != null){
 			// WebAudioAPIのAudioContext作成成功
-			Sound._sebuffer = {} :  Map.<Sound.WebAudioAPIbuffer>;
-			Sound._sebuffer["coin"] = new Sound.WebAudioAPIbuffer("/sound/se/se_coinget_1.m4a", null);
-			Sound._sebuffer["dice"] = new Sound.WebAudioAPIbuffer("/sound/se/se_pow_1.m4a", null);
-			Sound._bgmbuffer = new Sound.WebAudioAPIbuffer(bgmurl, function(){if(Sound._playable && Sound.playing){Sound.playing = false; Sound.toggle();}});
-		}else{
-			// WebAudioAPIが使えないのでAudioタグで我慢する
-			Sound._bgmaudio = dom.document.createElement("audio") as HTMLAudioElement;
-			Sound._bgmaudio.src = bgmurl;
-			Sound._bgmaudio.addEventListener("canplay", function(e:Event){if(Sound._playable && Sound.playing){Sound.playing = false; Sound.toggle();}}, false);
-			Sound._bgmaudio.addEventListener("ended", function(e:Event){Sound._bgmaudio.currentTime = 0; Sound._bgmaudio.play();}, false);
-			Sound._bgmaudio.load();
+			var bgmVolume = dom.window.localStorage.getItem("setting_bgmVolume");
+			var sefVolume = dom.window.localStorage.getItem("setting_sefVolume");
+			Sound.bgmVolume = Math.max(0, (bgmVolume != null) ? bgmVolume as number : 1);
+			Sound.sefVolume = Math.max(0, (sefVolume != null) ? sefVolume as number : 1);
+			Sound._buffer = {} : Map.<AudioBuffer>;
+			Sound._sefSource = new AudioBufferSourceNode[];
+			Loader.loadSnd(null, function(buffers : Map.<ArrayBuffer>) : void{
+				var count = 0;
+				for(var tag in buffers){count++;}
+				for(var tag in buffers){
+					(function(tag : string){
+						Sound._context.decodeAudioData(buffers[tag], function(buffer : AudioBuffer){
+							Sound._buffer[tag] = buffer;
+							if(--count == 0){
+								// すべての登録が終わった
+								//if(Sound._playable && Sound.playing){
+								//	Sound.playing = false;
+								//	Sound.toggle();
+								//}
+							}
+						});
+					})(tag);
+				}
+			}, function() : void{});
 		}
 	}
 
 	// ----------------------------------------------------------------
-	// サウンド再生可能
+	// タップによるサウンド再生許可
 	static function setPlayable() : void{
-		Sound._playable = true;
-		if(Sound.playing){Sound.playing = false; Sound.toggle();}
+		if(!Sound._playable && !!Sound._context){
+			Sound._playable = true;
+			Sound.playSE("ok");
+		}
 	}
 
+	/*
 	// ----------------------------------------------------------------
 	// サウンドON/OFF切り替え
 	static function toggle() : void{
@@ -64,12 +80,9 @@ class Sound{
 					source.loop = true;
 					source.buffer = Sound._bgmbuffer.buffer;
 					source.connect(Sound._context.destination);
-					source.noteOn(Sound._context.currentTime);
+					source.start(Sound._context.currentTime);
 					Sound._bgmbuffer.source = source;
 				}
-			}else{
-				// Audioタグ用BGM再生
-				Sound._bgmaudio.play();
 			}
 		}else{
 			// サウンドOFF
@@ -83,50 +96,28 @@ class Sound{
 					Sound._bgmbuffer.source = null;
 				}
 				// SE停止
-				for(var i in Sound._sebuffer){
-					if(Sound._sebuffer[i].source != null){
-						Sound._sebuffer[i].source.noteOff(0);
-						Sound._sebuffer[i].source = null;
+				for(var i in Sound._sefbuffer){
+					if(Sound._sefbuffer[i].source != null){
+						Sound._sefbuffer[i].source.noteOff(0);
+						Sound._sefbuffer[i].source = null;
 					}
 				}
-			}else{
-				// Audioタグ用BGM停止
-				Sound._bgmaudio.pause();
 			}
 		}
 	}
+	*/
 
 	// ----------------------------------------------------------------
 	// 効果音再生
-	static function play(se : string) : void{
-		if(Sound.playing && Sound._playable && Sound._context != null && Sound._sebuffer[se] != null && Sound._sebuffer[se].buffer != null){
+	static function playSE(seid : string) : void{
+		var tag = "sef_" + seid;
+		if(Sound._playable && Sound._buffer[tag] != null && Sound.sefVolume > 0){
 			// SE再生
 			var source = Sound._context.createBufferSource();
-			source.buffer = Sound._sebuffer[se].buffer;
+			source.buffer = Sound._buffer[tag];
 			source.connect(Sound._context.destination);
-			source.noteOn(Sound._context.currentTime);
-			Sound._sebuffer[se].source = source;
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// WebAudioAPI用バッファークラス 補助クラス
-	class WebAudioAPIbuffer{
-		var buffer : AudioBuffer;
-		var source : AudioBufferSourceNode;
-		// コンストラクタ
-		function constructor(url : string, callback : function():void){
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', url);
-			xhr.responseType = "arraybuffer";
-			xhr.addEventListener("load", function(e : Event){
-				var binary = xhr.response as ArrayBuffer;
-				Sound._context.decodeAudioData(binary, function(buffer : AudioBuffer){
-					this.buffer = buffer;
-					if(callback != null){callback();}
-				});
-			});
-			xhr.send();
+			source.start(Sound._context.currentTime);
+			//Sound._source[tag] = source;
 		}
 	}
 }
