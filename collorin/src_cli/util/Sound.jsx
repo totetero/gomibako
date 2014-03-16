@@ -11,6 +11,7 @@ import "Loader.jsx";
 class Sound{
 	static var bgmVolume = -1;
 	static var sefVolume = -1;
+	static var _loaded = false;
 	static var _playable = false;
 	static var _playing = "";
 
@@ -60,10 +61,12 @@ class Sound{
 							Sound._buffer[tag] = buffer;
 							if(--count == 0){
 								// すべての登録が終わった
-								//if(Sound._playable && Sound.playing){
-								//	Sound.playing = false;
-								//	Sound.toggle();
-								//}
+								Sound._loaded = true;
+								if(Sound._playable && Sound._playing != ""){
+									var bgmid = Sound._playing;
+									Sound._playing = "";
+									Sound.playBGM(bgmid);
+								}
 							}
 						});
 					})(tag);
@@ -77,18 +80,27 @@ class Sound{
 	static function setPlayable() : void{
 		if(!Sound._playable && !!Sound._context){
 			Sound._playable = true;
-			Sound.playSE("ok");
+			if(Sound._loaded && Sound._playing != ""){
+				var bgmid = Sound._playing;
+				Sound._playing = "";
+				Sound.playBGM(bgmid);
+			}else{
+				// 無音再生
+				var source = Sound._context.createBufferSource();
+				source.connect(Sound._context.destination);
+				Sound._sourceStart(source, Sound._context.currentTime);
+			}
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// BGM再生
 	static function playBGM(bgmid : string) : void{
-		var tag = "bgm_" + bgmid;
 		// 同じBGMなら何もしない
-		if(Sound._playing == tag){return;}
-		Sound._playing = tag;
+		if(Sound._playing == bgmid || bgmid == ""){return;}
+		Sound._playing = bgmid;
 
+		var tag = "bgm_" + bgmid;
 		if(Sound._playable && Sound._buffer[tag] != null){
 			var fadeTime = 1.0;
 			if(Sound._bgmSource != null){
