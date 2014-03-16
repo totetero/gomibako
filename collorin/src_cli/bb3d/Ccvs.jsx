@@ -53,7 +53,7 @@ class Ccvs{
 		this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
 		// ピクセルレシオ設定
 		var PixelRatio = 1;
-		var quality = dom.window.sessionStorage.getItem("setting_quality");
+		var quality = dom.window.localStorage.getItem("setting_quality");
 		if(quality == "high"){PixelRatio = dom.window.devicePixelRatio;}
 		if(quality == "low"){PixelRatio = 0.5;}
 		if(PixelRatio == 1){

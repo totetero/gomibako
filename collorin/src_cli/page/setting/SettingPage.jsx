@@ -230,7 +230,7 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 
 		if(dom.window.devicePixelRatio <= 1){this.getItem("high").inactive = true;}
 
-		var quality = dom.window.sessionStorage.getItem("setting_quality");
+		var quality = dom.window.localStorage.getItem("setting_quality");
 		if(quality != "high" && quality != "low"){quality = "middle";}
 		this.getItem(quality).selected = true;
 	}
@@ -238,7 +238,7 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// 選択時の動作
 	override function select(tag : string) : void{
-		dom.window.sessionStorage.setItem("setting_quality", tag);
+		dom.window.localStorage.setItem("setting_quality", tag);
 	}
 }
 
