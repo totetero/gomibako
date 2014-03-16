@@ -12,12 +12,16 @@ class Sound{
 	static var bgmVolume = -1;
 	static var sefVolume = -1;
 	static var _playable = false;
+	static var _playing = "";
 
 	// WebAudioAPI用
 	static var _context : AudioContext;
 	static var _buffer : Map.<AudioBuffer>;
 	static var _bgmSource : AudioBufferSourceNode;
-	static var _sefSource : AudioBufferSourceNode[];
+	static var _bgmFadeInGain : GainNode;
+	static var _bgmFadeOutGain : GainNode;
+	static var _bgmVolumeGain : GainNode;
+	static var _sefVolumeGain : GainNode;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -31,8 +35,22 @@ class Sound{
 			var sefVolume = dom.window.localStorage.getItem("setting_sefVolume");
 			Sound.bgmVolume = Math.max(0, (bgmVolume != null) ? bgmVolume as number : 1);
 			Sound.sefVolume = Math.max(0, (sefVolume != null) ? sefVolume as number : 1);
+
+			Sound._bgmVolumeGain = Sound._context.createGain();
+			Sound._bgmVolumeGain.connect(Sound._context.destination);
+			Sound._bgmVolumeGain.gain.value = 0.1;
+
+			Sound._sefVolumeGain = Sound._context.createGain();
+			Sound._sefVolumeGain.connect(Sound._context.destination);
+			Sound._sefVolumeGain.gain.value = 0.1;
+
+			Sound._bgmFadeInGain = Sound._context.createGain();
+			Sound._bgmFadeInGain.connect(Sound._bgmVolumeGain);
+
+			Sound._bgmFadeOutGain = Sound._context.createGain();
+			Sound._bgmFadeOutGain.connect(Sound._bgmVolumeGain);
+
 			Sound._buffer = {} : Map.<AudioBuffer>;
-			Sound._sefSource = new AudioBufferSourceNode[];
 			Loader.loadSnd(null, function(buffers : Map.<ArrayBuffer>) : void{
 				var count = 0;
 				for(var tag in buffers){count++;}
@@ -63,61 +81,63 @@ class Sound{
 		}
 	}
 
-	/*
 	// ----------------------------------------------------------------
-	// サウンドON/OFF切り替え
-	static function toggle() : void{
-		if(!Sound.playing){
-			// サウンドON
-			Sound.playing = true;
-			dom.window.localStorage.setItem("soundPlaying", "on");
+	// BGM再生
+	static function playBGM(bgmid : string) : void{
+		var tag = "bgm_" + bgmid;
+		// 同じBGMなら何もしない
+		if(Sound._playing == tag){return;}
+		Sound._playing = tag;
 
-			if(!Sound._playable){
-			}else if(Sound._context != null){
-				// WebAudioAPI用BGM再生
-				if(Sound._bgmbuffer.buffer != null){
-					var source = Sound._context.createBufferSource();
-					source.loop = true;
-					source.buffer = Sound._bgmbuffer.buffer;
-					source.connect(Sound._context.destination);
-					source.start(Sound._context.currentTime);
-					Sound._bgmbuffer.source = source;
-				}
+		if(Sound._playable && Sound._buffer[tag] != null){
+			var fadeTime = 1.0;
+			if(Sound._bgmSource != null){
+				// 前のBGM停止
+				var temp = Sound._bgmFadeInGain;
+				Sound._bgmFadeInGain = Sound._bgmFadeOutGain;
+				Sound._bgmFadeOutGain = temp;
+				Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
+				Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
+				Sound._bgmSource.stop(Sound._context.currentTime + fadeTime);
 			}
-		}else{
-			// サウンドOFF
-			Sound.playing = false;
-			dom.window.localStorage.setItem("soundPlaying", "off");
-
-			if(Sound._context != null){
-				// WebAudioAPI用BGM停止
-				if(Sound._bgmbuffer.source != null){
-					Sound._bgmbuffer.source.noteOff(0);
-					Sound._bgmbuffer.source = null;
-				}
-				// SE停止
-				for(var i in Sound._sefbuffer){
-					if(Sound._sefbuffer[i].source != null){
-						Sound._sefbuffer[i].source.noteOff(0);
-						Sound._sefbuffer[i].source = null;
-					}
-				}
-			}
+			// 新しいBGM再生
+			Sound._bgmFadeInGain.gain.setValueAtTime(0, Sound._context.currentTime);
+			Sound._bgmFadeInGain.gain.linearRampToValueAtTime(1, Sound._context.currentTime + fadeTime);
+			Sound._bgmSource = Sound._context.createBufferSource();
+			Sound._bgmSource.loop = true;
+			Sound._bgmSource.buffer = Sound._buffer[tag];
+			Sound._bgmSource.connect(Sound._bgmFadeInGain);
+			Sound._bgmSource.start(Sound._context.currentTime);
 		}
 	}
-	*/
+
+	// ----------------------------------------------------------------
+	// BGM停止
+	static function stopBGM() : void{
+		Sound._playing = "";
+
+		if(Sound._playable && Sound._bgmSource != null){
+			var fadeTime = 1.0;
+			var temp = Sound._bgmFadeInGain;
+			Sound._bgmFadeInGain = Sound._bgmFadeOutGain;
+			Sound._bgmFadeOutGain = temp;
+			Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
+			Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
+			Sound._bgmSource.stop(Sound._context.currentTime + fadeTime);
+			Sound._bgmSource = null;
+		}
+	}
 
 	// ----------------------------------------------------------------
 	// 効果音再生
 	static function playSE(seid : string) : void{
 		var tag = "sef_" + seid;
-		if(Sound._playable && Sound._buffer[tag] != null && Sound.sefVolume > 0){
+		if(Sound._playable && Sound._buffer[tag] != null){
 			// SE再生
 			var source = Sound._context.createBufferSource();
 			source.buffer = Sound._buffer[tag];
-			source.connect(Sound._context.destination);
+			source.connect(Sound._sefVolumeGain);
 			source.start(Sound._context.currentTime);
-			//Sound._source[tag] = source;
 		}
 	}
 }
