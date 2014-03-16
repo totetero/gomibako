@@ -36,18 +36,18 @@ class Sound{
 			Sound.bgmVolume = Math.max(0, (bgmVolume != null) ? bgmVolume as number : 1);
 			Sound.sefVolume = Math.max(0, (sefVolume != null) ? sefVolume as number : 1);
 
-			Sound._bgmVolumeGain = Sound._context.createGain();
+			Sound._bgmVolumeGain = Sound._contextCreateGain();
 			Sound._bgmVolumeGain.connect(Sound._context.destination);
 			Sound._bgmVolumeGain.gain.value = 0.1;
 
-			Sound._sefVolumeGain = Sound._context.createGain();
+			Sound._sefVolumeGain = Sound._contextCreateGain();
 			Sound._sefVolumeGain.connect(Sound._context.destination);
 			Sound._sefVolumeGain.gain.value = 0.1;
 
-			Sound._bgmFadeInGain = Sound._context.createGain();
+			Sound._bgmFadeInGain = Sound._contextCreateGain();
 			Sound._bgmFadeInGain.connect(Sound._bgmVolumeGain);
 
-			Sound._bgmFadeOutGain = Sound._context.createGain();
+			Sound._bgmFadeOutGain = Sound._contextCreateGain();
 			Sound._bgmFadeOutGain.connect(Sound._bgmVolumeGain);
 
 			Sound._buffer = {} : Map.<AudioBuffer>;
@@ -98,7 +98,7 @@ class Sound{
 				Sound._bgmFadeOutGain = temp;
 				Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
 				Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
-				Sound._bgmSource.stop(Sound._context.currentTime + fadeTime);
+				Sound._sourceStop(Sound._bgmSource, Sound._context.currentTime + fadeTime);
 			}
 			// 新しいBGM再生
 			Sound._bgmFadeInGain.gain.setValueAtTime(0, Sound._context.currentTime);
@@ -107,7 +107,7 @@ class Sound{
 			Sound._bgmSource.loop = true;
 			Sound._bgmSource.buffer = Sound._buffer[tag];
 			Sound._bgmSource.connect(Sound._bgmFadeInGain);
-			Sound._bgmSource.start(Sound._context.currentTime);
+			Sound._sourceStart(Sound._bgmSource, Sound._context.currentTime);
 		}
 	}
 
@@ -123,7 +123,7 @@ class Sound{
 			Sound._bgmFadeOutGain = temp;
 			Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
 			Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
-			Sound._bgmSource.stop(Sound._context.currentTime + fadeTime);
+			Sound._sourceStop(Sound._bgmSource, Sound._context.currentTime + fadeTime);
 			Sound._bgmSource = null;
 		}
 	}
@@ -137,9 +137,15 @@ class Sound{
 			var source = Sound._context.createBufferSource();
 			source.buffer = Sound._buffer[tag];
 			source.connect(Sound._sefVolumeGain);
-			source.start(Sound._context.currentTime);
+			Sound._sourceStart(source, Sound._context.currentTime);
 		}
 	}
+
+	// ----------------------------------------------------------------
+	// webAudioAPIの後方互換性
+	static function _contextCreateGain() : GainNode{return ((js.eval("!!Sound._context.createGain") as boolean) ? Sound._context.createGain() : Sound._context.createGainNode());}
+	static function _sourceStart(source : AudioBufferSourceNode, when : number) : void{if(js.eval("!!source.start") as boolean){source.start(when);}else{source.noteOn(when);}}
+	static function _sourceStop(source : AudioBufferSourceNode, when : number) : void{if(js.eval("!!source.stop") as boolean){source.stop(when);}else{source.noteOff(when);}}
 }
 
 // ----------------------------------------------------------------
