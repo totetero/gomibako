@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
@@ -32,6 +33,7 @@ class MyPage extends Page{
 		// プロパティ設定
 		this.type = "mypage";
 		this.depth = 1;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------
@@ -98,14 +100,14 @@ class SECmyPageMain extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// コンテンツボタン
-		if(this._btnList["world"].trigger){Page.transitionsPage("world");}
-		if(this._btnList["quest"].trigger){Page.transitionsPage("quest");}
-		if(this._btnList["chara"].trigger){Page.transitionsPage("chara");}
-		if(this._btnList["item"].trigger){Page.transitionsPage("item");}
+		if(this._btnList["world"].trigger){Sound.playSE("ok"); Page.transitionsPage("world");}
+		if(this._btnList["quest"].trigger){Sound.playSE("ok"); Page.transitionsPage("quest");}
+		if(this._btnList["chara"].trigger){Sound.playSE("ok"); Page.transitionsPage("chara");}
+		if(this._btnList["item"].trigger){Sound.playSE("ok"); Page.transitionsPage("item");}
 
 		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){dom.document.location.href = "/top";}
+		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Sound.playSE("ng"); dom.document.location.href = "/top";}
 
 		return true;
 	}

@@ -35,6 +35,7 @@ class QuestPage extends Page{
 		// プロパティ設定
 		this.type = "quest";
 		this.depth = 11;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------

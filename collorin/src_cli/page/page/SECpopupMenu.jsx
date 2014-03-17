@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Sound.jsx";
 
 import "Page.jsx";
 import "PartsButton.jsx";
@@ -68,20 +69,21 @@ class SECpopupMenu extends SECpopup{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// コンテンツボタン
-		if(this._btnList["world"].trigger){this._btnList["world"].trigger = false; Page.transitionsPage("world");}
-		if(this._btnList["quest"].trigger){this._btnList["quest"].trigger = false; Page.transitionsPage("quest");}
-		if(this._btnList["chara"].trigger){this._btnList["chara"].trigger = false; Page.transitionsPage("chara");}
-		if(this._btnList["item"].trigger){this._btnList["item"].trigger = false; Page.transitionsPage("item");}
-		if(this._btnList["friend"].trigger){this._btnList["friend"].trigger = false; Page.transitionsPage("friend");}
-		if(this._btnList["refbook"].trigger){this._btnList["refbook"].trigger = false; Page.transitionsPage("refbook");}
-		if(this._btnList["setting"].trigger){this._btnList["setting"].trigger = false; Page.transitionsPage("setting");}
-		if(this._btnList["help"].trigger){this._btnList["help"].trigger = false; Page.transitionsPage("help");}
+		if(this._btnList["world"].trigger){this._btnList["world"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("world");}}
+		if(this._btnList["quest"].trigger){this._btnList["quest"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("quest");}}
+		if(this._btnList["chara"].trigger){this._btnList["chara"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("chara");}}
+		if(this._btnList["item"].trigger){this._btnList["item"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("item");}}
+		if(this._btnList["friend"].trigger){this._btnList["friend"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("friend");}}
+		if(this._btnList["refbook"].trigger){this._btnList["refbook"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("refbook");}}
+		if(this._btnList["setting"].trigger){this._btnList["setting"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("setting");}}
+		if(this._btnList["help"].trigger){this._btnList["help"].trigger = false; if(active){Sound.playSE("ok"); Page.transitionsPage("help");}}
 
 		// 閉じるボタン
 		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
+				Sound.playSE("ng");
 				this._page.serialPush(this._cartridge);
 				return false;
 			}

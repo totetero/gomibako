@@ -88,6 +88,8 @@ abstract class Page extends EventPlayer{
 	// 画面遷移時演出用プロパティ
 	var type : string;
 	var depth : int = 0;
+	// ページBGM
+	var bgm = "";
 
 	// 開始直前の初期化処理
 	function init() : void{}

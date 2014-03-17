@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../../bb3d/Dice.jsx";
 import "../page/Transition.jsx";
 
@@ -56,12 +57,14 @@ class SECdiceRoll extends EventCartridge{
 
 		// なげるボタン
 		if(Ctrl.trigger_zb){
+			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceThrow(this._page));
 			exist = false;
 		}
 
 		// もどるボタン
 		if(Ctrl.trigger_xb){
+			Sound.playSE("ng");
 			this._page.ccvs.dices.length = 0;
 			this._page.serialPush(this._cartridge);
 			exist = false;
@@ -118,6 +121,7 @@ class SECdiceThrow extends EventCartridge{
 
 		// 演出終了もしくはスキップボタン
 		if(!throwing || Ctrl.trigger_xb){
+			if(Ctrl.trigger_xb){Sound.playSE("ok");}
 			this._page.ccvs.dices.length = 0;
 			this._page.serialPush(new SECdiceMove(this._page));
 			exist = false;

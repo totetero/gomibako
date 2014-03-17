@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/SECpopupMenu.jsx";
@@ -63,14 +64,14 @@ class SECcharaTabSell extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// タブボタン
-		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}
-		if(this._btnList["supp"].trigger){this._page.toggleTab("supp"); return false;}
-		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
-		if(this._btnList["pwup"].trigger){this._page.toggleTab("pwup"); return false;}
+		if(this._btnList["team"].trigger){Sound.playSE("ok"); this._page.toggleTab("team"); return false;}
+		if(this._btnList["supp"].trigger){Sound.playSE("ok"); this._page.toggleTab("supp"); return false;}
+		if(this._btnList["rest"].trigger){Sound.playSE("ok"); this._page.toggleTab("rest"); return false;}
+		if(this._btnList["pwup"].trigger){Sound.playSE("ok"); this._page.toggleTab("pwup"); return false;}
 
 		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
+		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Sound.playSE("ng"); Page.transitionsPage("mypage");}
 
 		return true;
 	}

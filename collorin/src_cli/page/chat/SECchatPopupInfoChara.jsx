@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/Sound.jsx";
 import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
 import "../page/SECpopup.jsx";
@@ -69,6 +70,7 @@ class SECchatPopupInfoChara extends SECpopup{
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
+				Sound.playSE("ng");
 				this._page.serialPush(new SECchatMain(this._page));
 				return false;
 			}

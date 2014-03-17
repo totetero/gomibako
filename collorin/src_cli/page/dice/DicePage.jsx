@@ -46,6 +46,7 @@ class DicePage extends Page{
 		// プロパティ設定
 		this.type = "dice";
 		this.depth = 21;
+		this.bgm = "test02";
 	}
 
 	// ----------------------------------------------------------------

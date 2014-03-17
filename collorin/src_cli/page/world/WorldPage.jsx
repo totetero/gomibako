@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
@@ -26,6 +27,7 @@ class WorldPage extends Page{
 		// プロパティ設定
 		this.type = "world";
 		this.depth = 11;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------
@@ -90,16 +92,18 @@ class SECworldPageMain extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		if(this._btnList["btn1"].trigger){
+			Sound.playSE("ok");
 			Page.transitionsPage("dice");
 		}
 
 		if(this._btnList["btn2"].trigger){
+			Sound.playSE("ok");
 			Page.transitionsPage("chat");
 		}
 
 		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
+		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Sound.playSE("ng"); Page.transitionsPage("mypage");}
 
 		return true;
 	}

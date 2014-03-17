@@ -42,6 +42,7 @@ class ItemPage extends Page{
 		// プロパティ設定
 		this.type = "item";
 		this.depth = 11;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------

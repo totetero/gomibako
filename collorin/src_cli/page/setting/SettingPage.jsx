@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/PartsScroll.jsx";
@@ -43,6 +44,7 @@ class SettingPage extends Page{
 		// プロパティ設定
 		this.type = "setting";
 		this.depth = 11;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------
@@ -152,17 +154,17 @@ class SECsettingPageMain extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
 		// テキストエリアボタン
-		if(this._scroller.btnList["nickname"].trigger){this._page.serialPush(new SECsettingPopupTextareaNickname(this._page, this)); return false;}
-		if(this._scroller.btnList["comment"].trigger){this._page.serialPush(new SECsettingPopupTextareaComment(this._page, this)); return false;}
+		if(this._scroller.btnList["nickname"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECsettingPopupTextareaNickname(this._page, this)); return false;}
+		if(this._scroller.btnList["comment"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECsettingPopupTextareaComment(this._page, this)); return false;}
 
 		// ピッカーボタン
-		if(this._scroller.btnList["quality"].trigger){this._page.serialPush(this._qualityPicker.beforeOpen(this._page, this)); return false;}
-		if(this._scroller.btnList["bgm"].trigger){this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this)); return false;}
-		if(this._scroller.btnList["se"].trigger){this._page.serialPush(this._sePicker.beforeOpen(this._page, this)); return false;}
+		if(this._scroller.btnList["quality"].trigger){Sound.playSE("ok"); this._page.serialPush(this._qualityPicker.beforeOpen(this._page, this)); return false;}
+		if(this._scroller.btnList["bgm"].trigger){Sound.playSE("ok"); this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this)); return false;}
+		if(this._scroller.btnList["se"].trigger){Sound.playSE("ok"); this._page.serialPush(this._sePicker.beforeOpen(this._page, this)); return false;}
 
 		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
+		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Sound.playSE("ng"); Page.transitionsPage("mypage");}
 
 		return true;
 	}

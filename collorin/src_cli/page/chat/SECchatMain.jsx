@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/Transition.jsx";
@@ -112,6 +113,7 @@ class SECchatMain extends EventCartridge{
 
 		// メッセージの投稿
 		if(Ctrl.trigger_enter || this._btnList["send"].trigger){
+			Sound.playSE("ok");
 			Ctrl.trigger_enter = false;
 			this._btnList["send"].trigger = false;
 			this._page.socket.sendSerif(this._input.value);
@@ -120,6 +122,7 @@ class SECchatMain extends EventCartridge{
 
 		// 退出ボタン
 		if(this._btnList["exit"].trigger){
+			Sound.playSE("ng");
 			Page.transitionsPage("world");
 		}
 

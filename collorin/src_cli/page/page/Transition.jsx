@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../../util/Util.jsx";
 
 import "Page.jsx";
@@ -57,7 +58,8 @@ class SECtransitionsPage extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		this._action++;
+		var exist = (++this._action < 10);
+
 		// 描画
 		if(this._currentPage != null){
 			// ページの遷移演出
@@ -70,7 +72,11 @@ class SECtransitionsPage extends EventCartridge{
 				if(this._same){Util.cssTranslate(this._nextPage.div, 320 * (num * num - 1), 0);}
 			}
 		}
-		return (this._action < 10);
+
+		// ページ遷移完了後にBGM変更
+		if(!exist){Sound.playBGM(this._nextPage.bgm);}
+
+		return exist;
 	}
 
 	// ----------------------------------------------------------------

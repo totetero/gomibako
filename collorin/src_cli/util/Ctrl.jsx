@@ -234,8 +234,8 @@ class Ctrl{
 
 	// ----------------------------------------------------------------
 	// コントローラー要素 マウス状態関数
-	static function _lctrl_mdnfn(e : Event) : void{Ctrl._lmdn = true; Ctrl._btnfn(e, true, false);}
-	static function _rctrl_mdnfn(e : Event) : void{Ctrl._rmdn = true; Ctrl._btnfn(e, false, false);}
+	static function _lctrl_mdnfn(e : Event) : void{Ctrl._lmdn = true; Ctrl._btnfn(e, true, false); Sound.setPlayable();}
+	static function _rctrl_mdnfn(e : Event) : void{Ctrl._rmdn = true; Ctrl._btnfn(e, false, false); Sound.setPlayable();}
 	static function _lctrl_mmvfn(e : Event) : void{if(Ctrl._lmdn){Ctrl._btnfn(e, true, false);}}
 	static function _rctrl_mmvfn(e : Event) : void{if(Ctrl._rmdn){Ctrl._btnfn(e, false, false);}}
 	static function _lctrl_mupfn(e : Event) : void{if(Ctrl._lmdn){Ctrl._lmdn = false; Ctrl._btnfn(e, true, true);}}

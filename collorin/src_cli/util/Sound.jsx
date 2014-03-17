@@ -100,9 +100,9 @@ class Sound{
 		if(Sound._playing == bgmid || bgmid == ""){return;}
 		Sound._playing = bgmid;
 
-		var tag = "bgm_" + bgmid;
-		if(Sound._playable && Sound._buffer[tag] != null){
+		if(Sound._playable){
 			var fadeTime = 1.0;
+			var tag = "bgm_" + bgmid;
 			if(Sound._bgmSource != null){
 				// 前のBGM停止
 				var temp = Sound._bgmFadeInGain;
@@ -111,33 +111,25 @@ class Sound{
 				Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
 				Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
 				Sound._sourceStop(Sound._bgmSource, Sound._context.currentTime + fadeTime);
+				Sound._bgmSource = null;
 			}
-			// 新しいBGM再生
-			Sound._bgmFadeInGain.gain.setValueAtTime(0, Sound._context.currentTime);
-			Sound._bgmFadeInGain.gain.linearRampToValueAtTime(1, Sound._context.currentTime + fadeTime);
-			Sound._bgmSource = Sound._context.createBufferSource();
-			Sound._bgmSource.loop = true;
-			Sound._bgmSource.buffer = Sound._buffer[tag];
-			Sound._bgmSource.connect(Sound._bgmFadeInGain);
-			Sound._sourceStart(Sound._bgmSource, Sound._context.currentTime);
+			if(Sound._buffer[tag] != null && bgmid != "none"){
+				// 新しいBGM再生
+				Sound._bgmFadeInGain.gain.setValueAtTime(0, Sound._context.currentTime);
+				Sound._bgmFadeInGain.gain.linearRampToValueAtTime(1, Sound._context.currentTime + fadeTime);
+				Sound._bgmSource = Sound._context.createBufferSource();
+				Sound._bgmSource.loop = true;
+				Sound._bgmSource.buffer = Sound._buffer[tag];
+				Sound._bgmSource.connect(Sound._bgmFadeInGain);
+				Sound._sourceStart(Sound._bgmSource, Sound._context.currentTime);
+			}
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// BGM停止
 	static function stopBGM() : void{
-		Sound._playing = "";
-
-		if(Sound._playable && Sound._bgmSource != null){
-			var fadeTime = 1.0;
-			var temp = Sound._bgmFadeInGain;
-			Sound._bgmFadeInGain = Sound._bgmFadeOutGain;
-			Sound._bgmFadeOutGain = temp;
-			Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
-			Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
-			Sound._sourceStop(Sound._bgmSource, Sound._context.currentTime + fadeTime);
-			Sound._bgmSource = null;
-		}
+		Sound.playBGM("none");
 	}
 
 	// ----------------------------------------------------------------

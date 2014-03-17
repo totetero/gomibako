@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/SECpopupMenu.jsx";
@@ -60,11 +61,11 @@ class SECquestTabFine extends EventCartridge{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// タブボタン
-		if(this._btnList["curr"].trigger){this._page.toggleTab("curr"); return false;}
+		if(this._btnList["curr"].trigger){Sound.playSE("ok"); this._page.toggleTab("curr"); return false;}
 
 		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
+		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Sound.playSE("ng"); Page.transitionsPage("mypage");}
 
 		return true;
 	}

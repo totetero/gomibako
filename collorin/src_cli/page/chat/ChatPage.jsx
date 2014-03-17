@@ -34,6 +34,7 @@ class ChatPage extends Page{
 		// プロパティ設定
 		this.type = "chat";
 		this.depth = 21;
+		this.bgm = "test02";
 	}
 
 	// ----------------------------------------------------------------

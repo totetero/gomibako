@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 
@@ -118,6 +119,7 @@ class SECpopupInfoChara extends SECpopup{
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
+				Sound.playSE("ng");
 				this._page.serialPush(this._cartridge);
 				return false;
 			}

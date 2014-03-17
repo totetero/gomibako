@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
@@ -49,11 +50,13 @@ class SECdiceMap extends EventCartridge{
 			log "field " + hex.x + " " + hex.y;
 		}, function() : void{
 			// キャラクター押下
+			Sound.playSE("ok");
 			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
 		});
 
 		// もどるボタン
 		if(Ctrl.trigger_xb){
+			Sound.playSE("ng");
 			this._page.serialPush(this._cartridge);
 			exist = false;
 		}

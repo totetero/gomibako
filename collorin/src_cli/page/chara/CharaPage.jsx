@@ -43,6 +43,7 @@ class CharaPage extends Page{
 		// プロパティ設定
 		this.type = "chara";
 		this.depth = 11;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------

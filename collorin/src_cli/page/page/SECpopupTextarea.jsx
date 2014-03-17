@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 
 import "Page.jsx";
 import "PartsButton.jsx";
@@ -69,6 +70,7 @@ abstract class SECpopupTextarea extends SECpopup{
 			this._btnList["ok"].trigger = false;
 			this._btnList["close"].trigger = false;
 			if(active){
+				Sound.playSE(ok ? "ok" : "ng");
 				if(ok){this.enter(this._input.value);}
 				this._input.className = "";
 				this._page.serialPush(this._cartridge);

@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Sound.jsx";
 import "../page/Page.jsx";
 import "../page/PartsButton.jsx";
 import "../page/PartsScroll.jsx";
@@ -148,6 +149,7 @@ class SECcharaTabSupp extends EventCartridge{
 			// 要素ボタン
 			var btn = this._scroller.btnList["charaItem" + i];
 			if(btn.trigger){
+				Sound.playSE("ok");
 				btn.trigger = false;
 				item.select = !this._charaList[i].select;
 			}
@@ -155,6 +157,7 @@ class SECcharaTabSupp extends EventCartridge{
 			// アイコンボタン
 			var btn = this._scroller.btnList["charaIcon" + i];
 			if(btn.trigger){
+				Sound.playSE("ok");
 				this._page.serialPush(new SECpopupInfoChara(this._page, this, item));
 				return false;
 			}
@@ -173,23 +176,24 @@ class SECcharaTabSupp extends EventCartridge{
 		btn.inactive = !(count > 0);
 		if(btn.trigger){
 			// テスト とりあえず通信
+			Sound.playSE("ok");
 			this._page.serialPush(new SECload("/chara/supp", null, function(response : variant) : void{this.parse(response);}));
 			this._page.serialPush(this);
 			return false;
 		}
 
 		// 並べ替えピッカーボタン
-		if(this._btnList["pick"].trigger){this._page.serialPush(this._picker.beforeOpen(this._page, this)); return false;}
+		if(this._btnList["pick"].trigger){Sound.playSE("ok"); this._page.serialPush(this._picker.beforeOpen(this._page, this)); return false;}
 
 		// タブボタン
-		if(this._btnList["team"].trigger){this._page.toggleTab("team"); return false;}
-		if(this._btnList["rest"].trigger){this._page.toggleTab("rest"); return false;}
-		if(this._btnList["pwup"].trigger){this._page.toggleTab("pwup"); return false;}
-		if(this._btnList["sell"].trigger){this._page.toggleTab("sell"); return false;}
+		if(this._btnList["team"].trigger){Sound.playSE("ok"); this._page.toggleTab("team"); return false;}
+		if(this._btnList["rest"].trigger){Sound.playSE("ok"); this._page.toggleTab("rest"); return false;}
+		if(this._btnList["pwup"].trigger){Sound.playSE("ok"); this._page.toggleTab("pwup"); return false;}
+		if(this._btnList["sell"].trigger){Sound.playSE("ok"); this._page.toggleTab("sell"); return false;}
 
 		// ヘッダーボタン
-		if(this._btnList["menu"].trigger){this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Page.transitionsPage("mypage");}
+		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
+		if(this._btnList["back"].trigger){Sound.playSE("ng"); Page.transitionsPage("mypage");}
 
 		return true;
 	}

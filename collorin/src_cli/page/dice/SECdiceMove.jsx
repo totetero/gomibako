@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Sound.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
@@ -62,20 +63,24 @@ class SECdiceMove extends EventCartridge{
 			log "field " + hex.x + " " + hex.y;
 		}, function() : void{
 			// キャラクター押下
+			Sound.playSE("ok");
 			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
 		});
 
 		if(Ctrl.trigger_cb){
 			// マップボタン
+			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceMap(this._page, this));
 			exist = false;
 		}else if(Ctrl.trigger_sb){
 			// メニューボタン
+			Sound.playSE("ok");
 			Ctrl.trigger_sb = false;
 		}else if(player.dstList.length > 0){
 			// ヘックス目的地移動完了を待つ
 		}else if(Ctrl.trigger_xb){
 			// 一つ戻るボタン
+			Sound.playSE("ng");
 			Ctrl.trigger_xb = false;
 			if(this._srcList.length > 0){
 				this._pip++;

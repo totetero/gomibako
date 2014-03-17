@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Sound.jsx";
 
 import "Page.jsx";
 import "PartsButton.jsx";
@@ -163,6 +164,7 @@ class SECpopupPicker extends SECpopup{
 			if(btn.trigger){
 				btn.trigger = false;
 				if(active){
+					Sound.playSE("ok");
 					// 選択フラグ設定
 					for(var j = 0; j < this._itemList.length; j++){
 						this._scroller.btnList[this._itemList[j].tag].div.className = (i == j) ? "item select" : "item";
@@ -181,6 +183,7 @@ class SECpopupPicker extends SECpopup{
 			this._btnList["close"].trigger = false;
 			this._btnList["outer"].trigger = false;
 			if(active){
+				Sound.playSE("ng");
 				this._page.serialPush(this._cartridge);
 				return false;
 			}
