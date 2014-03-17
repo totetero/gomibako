@@ -19,6 +19,7 @@ class SECtransitionsPage extends EventCartridge{
 	var _next : boolean;
 	var _same : boolean;
 	var _action : int = 0;
+	var _skip : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -53,12 +54,17 @@ class SECtransitionsPage extends EventCartridge{
 				Page.containerDiv.appendChild(this._currentPage.div);
 			}
 		}
+
+		// 遷移演出スキップ設定
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		var exist = (++this._action < 10);
+		this._action++;
+		if(this._skip){this._action = 10;}
+		var exist = (this._action < 10);
 
 		// 描画
 		if(this._currentPage != null){
@@ -100,6 +106,7 @@ class PECopenHeader extends EventCartridge{
 	var _goal : int;
 	var _action : int = 0;
 	var _exist = true;
+	var _skip : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -117,6 +124,8 @@ class PECopenHeader extends EventCartridge{
 		// 位置記録
 		this._start = PECopenHeader._position;
 		this._goal = (this._type > 0) ? 0 : PECopenHeader.hide;
+		// 遷移演出スキップ設定
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
 		return true;
 	}
 
@@ -125,6 +134,7 @@ class PECopenHeader extends EventCartridge{
 	override function calc() : boolean{
 		if(this._exist){
 			this._action++;
+			if(this._skip){this._action = 10;}
 			PECopenHeader._position = this._start + (this._goal - this._start) * (this._action / 10);
 			// 描画
 			if(this._start != this._goal){Util.cssTranslate(Page.headerDiv, 0, PECopenHeader._position);}

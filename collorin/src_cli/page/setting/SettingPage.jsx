@@ -26,6 +26,7 @@ class SettingPage extends Page{
 					<div class="nickname"><div class="label">ニックネーム</div><div class="field"></div></div>
 					<div class="comment"><div class="label">コメント</div><div class="field"></div></div>
 					<div class="quality"><div class="label">ゲーム画質</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
+					<div class="transition"><div class="label">ページ遷移演出</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
 					<div class="bgm"><div class="label">BGM</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
 					<div class="sef"><div class="label">効果音</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
 				</div>
@@ -91,6 +92,7 @@ class SECsettingPageMain extends EventCartridge{
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
 	var _qualityPicker : SECsettingPopupPickerQuality;
+	var _transitionPicker : SECsettingPopupPickerTransition;
 	var _bgmPicker : SECsettingPopupPickerBgm;
 	var _sefPicker : SECsettingPopupPickerSef;
 
@@ -100,6 +102,7 @@ class SECsettingPageMain extends EventCartridge{
 		this._page = page;
 
 		this._qualityPicker = new SECsettingPopupPickerQuality();
+		this._transitionPicker = new SECsettingPopupPickerTransition();
 		this._bgmPicker = new SECsettingPopupPickerBgm();
 		this._sefPicker = new SECsettingPopupPickerSef();
 	}
@@ -110,6 +113,7 @@ class SECsettingPageMain extends EventCartridge{
 		var nicknameDiv = this._page.div.getElementsByClassName("nickname").item(0).getElementsByClassName("field").item(0) as HTMLDivElement;
 		var commentDiv = this._page.div.getElementsByClassName("comment").item(0).getElementsByClassName("field").item(0) as HTMLDivElement;
 		var qualityDiv = this._page.div.getElementsByClassName("quality").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
+		var transitionDiv = this._page.div.getElementsByClassName("transition").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 		var bgmDiv = this._page.div.getElementsByClassName("bgm").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 		var sefDiv = this._page.div.getElementsByClassName("sef").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
 
@@ -119,6 +123,7 @@ class SECsettingPageMain extends EventCartridge{
 
 		// ピッカー設定
 		this._qualityPicker.setLabel(qualityDiv);
+		this._transitionPicker.setLabel(transitionDiv);
 		this._bgmPicker.setLabel(bgmDiv);
 		this._sefPicker.setLabel(sefDiv);
 
@@ -136,6 +141,7 @@ class SECsettingPageMain extends EventCartridge{
 		this._scroller.btnList["nickname"] = new PartsButton(nicknameDiv, true);
 		this._scroller.btnList["comment"] = new PartsButton(commentDiv, true);
 		this._scroller.btnList["quality"] = new PartsButton(qualityDiv, true);
+		this._scroller.btnList["transition"] = new PartsButton(transitionDiv, true);
 		this._scroller.btnList["bgm"] = new PartsButton(bgmDiv, true);
 		this._scroller.btnList["sef"] = new PartsButton(sefDiv, true);
 
@@ -159,6 +165,7 @@ class SECsettingPageMain extends EventCartridge{
 
 		// ピッカーボタン
 		if(this._scroller.btnList["quality"].trigger){Sound.playSE("ok"); this._page.serialPush(this._qualityPicker.beforeOpen(this._page, this)); return false;}
+		if(this._scroller.btnList["transition"].trigger){Sound.playSE("ok"); this._page.serialPush(this._transitionPicker.beforeOpen(this._page, this)); return false;}
 		if(this._scroller.btnList["bgm"].trigger){Sound.playSE("ok"); this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this)); return false;}
 		if(this._scroller.btnList["sef"].trigger){Sound.playSE("ok"); this._page.serialPush(this._sefPicker.beforeOpen(this._page, this)); return false;}
 
@@ -241,6 +248,29 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 	// 選択時の動作
 	override function select(tag : string) : void{
 		dom.window.localStorage.setItem("setting_quality", tag);
+	}
+}
+
+// ページ遷移演出のピッカー
+class SECsettingPopupPickerTransition extends SECpopupPicker{
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(){
+		super("ページ遷移演出", [
+			new SECpopupPickerItem("on", "ON"),
+			new SECpopupPickerItem("off", "OFF")
+		]);
+
+		var transition = dom.window.localStorage.getItem("setting_transition");
+		if(transition != "off"){transition = "on";}
+		this.getItem(transition).selected = true;
+	}
+
+	// ----------------------------------------------------------------
+	// 選択時の動作
+	override function select(tag : string) : void{
+		dom.window.localStorage.setItem("setting_transition", tag);
+		this.checkSkip(tag);
 	}
 }
 

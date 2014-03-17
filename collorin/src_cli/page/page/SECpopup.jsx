@@ -18,6 +18,7 @@ abstract class SECpopup extends EventCartridge{
 	function popupDispose() : void{}
 
 	var _openStep : int;
+	var _skip : boolean;
 
 	// ----------------------------------------------------------------
 	// 初期化
@@ -26,8 +27,13 @@ abstract class SECpopup extends EventCartridge{
 		this.popupInit();
 		this.popupDiv.style.opacity = "0";
 		this._openStep = -5;
+		this.checkSkip(dom.window.localStorage.getItem("setting_transition"));
 		return false;
 	}
+
+	// ----------------------------------------------------------------
+	// 設定ページ用の遷移演出ポップアップ用バックドア
+	function checkSkip(tag : Nullable.<string>) : void{this._skip = (tag == "off");}
 
 	// ----------------------------------------------------------------
 	// 計算
@@ -35,6 +41,8 @@ abstract class SECpopup extends EventCartridge{
 		if(this._openStep != 0){this._openStep++;}
 		var active = (this._openStep == 0);
 		if(!this.popupCalc(active) && active){this._openStep = 1;}
+		if(this._skip && this._openStep < 0){this._openStep = 0;}
+		if(this._skip && this._openStep > 0){this._openStep = 5;}
 		var num = this._openStep / 5;
 		this.popupDiv.style.opacity = (1 - Math.abs(num)) as string;
 		Util.cssTranslate(this.windowDiv, Math.abs(num) * num * 50, 0);
