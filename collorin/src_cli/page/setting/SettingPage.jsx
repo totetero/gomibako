@@ -256,8 +256,15 @@ class SECsettingPopupPickerBgm extends SECpopupPicker{
 			new SECpopupPickerItem("off", "OFF")
 		]);
 
-		var volume = dom.window.localStorage.getItem("setting_bgmVolume");
-		this.getItem(volume).selected = true;
+		if(Sound.isSupported){
+			var volume = dom.window.localStorage.getItem("setting_bgmVolume");
+			this.getItem(volume).selected = true;
+		}else{
+			this.getItem("high").inactive = true;
+			this.getItem("middle").inactive = true;
+			this.getItem("low").inactive = true;
+			this.getItem("off").selected = true;
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -279,8 +286,15 @@ class SECsettingPopupPickerSef extends SECpopupPicker{
 			new SECpopupPickerItem("off", "OFF")
 		]);
 
-		var volume = dom.window.localStorage.getItem("setting_sefVolume");
-		this.getItem(volume).selected = true;
+		if(Sound.isSupported){
+			var volume = dom.window.localStorage.getItem("setting_sefVolume");
+			this.getItem(volume).selected = true;
+		}else{
+			this.getItem("high").inactive = true;
+			this.getItem("middle").inactive = true;
+			this.getItem("low").inactive = true;
+			this.getItem("off").selected = true;
+		}
 	}
 
 	// ----------------------------------------------------------------

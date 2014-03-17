@@ -9,6 +9,7 @@ import "Loader.jsx";
 
 // サウンドクラス
 class Sound{
+	static var isSupported = false;
 	static var _loaded = false;
 	static var _playable = false;
 	static var _playing = "";
@@ -30,6 +31,8 @@ class Sound{
 		if(Sound._context == null){try{Sound._context = new webkitAudioContext();}catch(e : Error){}}
 		if(Sound._context != null){
 			// WebAudioAPIのAudioContext作成成功
+			Sound.isSupported = true;
+
 			Sound._bgmVolumeGain = Sound._contextCreateGain();
 			Sound._bgmVolumeGain.connect(Sound._context.destination);
 			Sound.setBgmVolume(dom.window.localStorage.getItem("setting_bgmVolume"));
