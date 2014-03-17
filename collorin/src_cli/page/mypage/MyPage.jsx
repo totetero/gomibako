@@ -107,7 +107,7 @@ class SECmyPageMain extends EventCartridge{
 
 		// ヘッダーボタン
 		if(this._btnList["menu"].trigger){Sound.playSE("ok"); this._page.serialPush(new SECpopupMenu(this._page, this)); return false;}
-		if(this._btnList["back"].trigger){Sound.playSE("ng"); dom.document.location.href = "/top";}
+		if(this._btnList["back"].trigger){this._btnList["back"].trigger = false; dom.document.location.href = "/top";}
 
 		return true;
 	}
