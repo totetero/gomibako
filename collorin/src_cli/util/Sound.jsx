@@ -9,8 +9,6 @@ import "Loader.jsx";
 
 // サウンドクラス
 class Sound{
-	static var bgmVolume = -1;
-	static var sefVolume = -1;
 	static var _loaded = false;
 	static var _playable = false;
 	static var _playing = "";
@@ -32,18 +30,13 @@ class Sound{
 		if(Sound._context == null){try{Sound._context = new webkitAudioContext();}catch(e : Error){}}
 		if(Sound._context != null){
 			// WebAudioAPIのAudioContext作成成功
-			var bgmVolume = dom.window.localStorage.getItem("setting_bgmVolume");
-			var sefVolume = dom.window.localStorage.getItem("setting_sefVolume");
-			Sound.bgmVolume = Math.max(0, (bgmVolume != null) ? bgmVolume as number : 1);
-			Sound.sefVolume = Math.max(0, (sefVolume != null) ? sefVolume as number : 1);
-
 			Sound._bgmVolumeGain = Sound._contextCreateGain();
 			Sound._bgmVolumeGain.connect(Sound._context.destination);
-			Sound._bgmVolumeGain.gain.value = 0.1;
+			Sound.setBgmVolume(dom.window.localStorage.getItem("setting_bgmVolume"));
 
 			Sound._sefVolumeGain = Sound._contextCreateGain();
 			Sound._sefVolumeGain.connect(Sound._context.destination);
-			Sound._sefVolumeGain.gain.value = 0.1;
+			Sound.setSefVolume(dom.window.localStorage.getItem("setting_sefVolume"));
 
 			Sound._bgmFadeInGain = Sound._contextCreateGain();
 			Sound._bgmFadeInGain.connect(Sound._bgmVolumeGain);
@@ -143,6 +136,30 @@ class Sound{
 			source.connect(Sound._sefVolumeGain);
 			Sound._sourceStart(source, Sound._context.currentTime);
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// BGM音量設定
+	static function setBgmVolume(tag : Nullable.<string>) : void{
+		if(tag != "high" && tag != "middle" && tag != "low" && tag != "off"){tag = "off";}
+		dom.window.localStorage.setItem("setting_bgmVolume", tag);
+
+		if(tag == "high"){Sound._bgmVolumeGain.gain.value = 0.9;}
+		else if(tag == "middle"){Sound._bgmVolumeGain.gain.value = 0.4;}
+		else if(tag == "low"){Sound._bgmVolumeGain.gain.value = 0.1;}
+		else{Sound._bgmVolumeGain.gain.value = 0.0;}
+	}
+
+	// ----------------------------------------------------------------
+	// 効果音音量設定
+	static function setSefVolume(tag : Nullable.<string>) : void{
+		if(tag != "high" && tag != "middle" && tag != "low" && tag != "off"){tag = "off";}
+		dom.window.localStorage.setItem("setting_sefVolume", tag);
+
+		if(tag == "high"){Sound._sefVolumeGain.gain.value = 0.9;}
+		else if(tag == "middle"){Sound._sefVolumeGain.gain.value = 0.4;}
+		else if(tag == "low"){Sound._sefVolumeGain.gain.value = 0.1;}
+		else{Sound._sefVolumeGain.gain.value = 0.0;}
 	}
 
 	// ----------------------------------------------------------------
