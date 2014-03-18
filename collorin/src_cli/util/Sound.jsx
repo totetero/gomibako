@@ -144,6 +144,7 @@ class Sound{
 	// ----------------------------------------------------------------
 	// BGM音量設定
 	static function setBgmVolume(tag : Nullable.<string>) : void{
+		if(!Sound.isSupported){return;}
 		if(tag != "high" && tag != "middle" && tag != "low" && tag != "off"){tag = "off";}
 		dom.window.localStorage.setItem("setting_bgmVolume", tag);
 
@@ -156,6 +157,7 @@ class Sound{
 	// ----------------------------------------------------------------
 	// 効果音音量設定
 	static function setSefVolume(tag : Nullable.<string>) : void{
+		if(!Sound.isSupported){return;}
 		if(tag != "high" && tag != "middle" && tag != "low" && tag != "off"){tag = "off";}
 		dom.window.localStorage.setItem("setting_sefVolume", tag);
 
