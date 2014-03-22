@@ -36,10 +36,10 @@ class SoundServer{
 
 			// 基本セット
 			urls = {
-				"bgm_test01": "snd/bgm/bgm_stagebgm_09_hq",
-				"bgm_test02": "snd/bgm/bgm_stagebgm_07_hq",
-				"sef_ok": "snd/se/se_maoudamashii_system28",
-				"sef_ng": "snd/se/se_maoudamashii_system25"
+				"bgm_test01": "/snd/bgm/bgm_stagebgm_09_hq",
+				"bgm_test02": "/snd/bgm/bgm_stagebgm_07_hq",
+				"sef_ok": "/snd/se/se_maoudamashii_system28",
+				"sef_ng": "/snd/se/se_maoudamashii_system25"
 			};
 
 			urlResp(req, res, urls);
@@ -78,7 +78,7 @@ class SoundServer{
 			this._callback = callback;
 			// 画像を読み込む
 			for(var tag in urls){this._count++;}
-			if(this._count > 0){for(var tag in urls){this.load(path + "/" + urls[tag], tag);}}
+			if(this._count > 0){for(var tag in urls){this.load(path + urls[tag], tag);}}
 			else{this._callback(null);}
 		}
 

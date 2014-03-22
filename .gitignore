@@ -1,8 +1,10 @@
 node_modules
 
 game.js
+toolImgCrypt.js
 content/main.js
 content/main.css
+content/imgCrypt
 
 *.min.js
 *.min.css

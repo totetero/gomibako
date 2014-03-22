@@ -13,6 +13,8 @@ SRC_CLI_DIR = src_cli
 test: game.js content/main.js content/main.css
 	node game.js
 
+tool: toolImgCrypt.js
+
 db:
 	mongod &
 	redis-server &
@@ -22,6 +24,9 @@ clean:
 
 game.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
 	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/Main.jsx
+
+toolImgCrypt.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
+	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/ToolImgCrypt.jsx
 
 content/main.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
 	$(JSX) --executable web --output $@ $(SRC_CLI_DIR)/Main.jsx

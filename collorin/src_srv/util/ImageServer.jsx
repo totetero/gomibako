@@ -36,7 +36,7 @@ class ImageServer{
 
 			// 基本セット
 			urls = {
-				"img_dot_player0": "img/character/player0/dot.png",
+				"img_dot_player0": "/img/character/player0/dot.png",
 			};
 
 			urlResp(req, res, urls);
@@ -50,7 +50,8 @@ class ImageServer{
 				// アドレスの復号化
 				for(var tag in urls){
 					var decipher = crypto.createDecipher("aes192", ImageServer.key);
-					urls[tag] = decipher.update(urls[tag], "base64", "ascii") + decipher.final("ascii");
+					var filename = String.decodeURIComponent(urls[tag]);
+					urls[tag] = decipher.update(filename, "base64", "ascii") + decipher.final("ascii");
 				}
 
 				urlResp(req, res, urls);
@@ -71,7 +72,8 @@ class ImageServer{
 	static function convertAddress(imgs : Map.<string>) : Map.<string>{
 		for(var tag in imgs){
 			var cipher = crypto.createCipher("aes192", ImageServer.key);
-			imgs[tag] = cipher.update(imgs[tag], "ascii", "base64") + cipher.final("base64");
+			var filename = cipher.update(imgs[tag], "ascii", "base64") + cipher.final("base64");
+			imgs[tag] = String.encodeURIComponent(filename);
 		}
 		return imgs;
 	}
@@ -89,7 +91,7 @@ class ImageServer{
 			this._callback = callback;
 			// 画像を読み込む
 			for(var tag in urls){this._count++;}
-			if(this._count > 0){for(var tag in urls){this.load(path + "/" + urls[tag], tag);}}
+			if(this._count > 0){for(var tag in urls){this.load(path + urls[tag], tag);}}
 			else{this._callback("");}
 		}
 
@@ -143,7 +145,7 @@ class ImageServer{
 			this._callback = callback;
 			// 画像を読み込む
 			for(var tag in urls){this._count++;}
-			if(this._count > 0){for(var tag in urls){this.load(path + "/" + urls[tag], tag);}}
+			if(this._count > 0){for(var tag in urls){this.load(path + urls[tag], tag);}}
 			else{this._callback(null);}
 		}
 
