@@ -24,25 +24,66 @@ class Loader{
 	// ----------------------------------------------------------------
 	// 画像リクエスト送信
 	static function loadImg(request : Map.<string>, successFunc : function():void, failureFunc : function():void) : void{
-		var url = "/img";
+		var localUrl = true ? "" : "file:///android_asset/imgCrypt";
+		var networkUrl = "/img";
 
-		// 画像重複ロード確認
-		var count = 0;
-		for(var tag in request){
-			var hasImg = ((tag.indexOf("img_") == 0) && Loader.imgs[tag] != null);
-			var hasCss = ((tag.indexOf("css_") == 0) && Loader.csss[tag] != null);
-			if(hasImg || hasCss){
-				delete request[tag];
-			}else{
-				count++;
+		// 画像重複ロード防止と数の確認
+		var countUrl = function() : int{
+			var count = 0;
+			for(var tag in request){
+				var hasImg = ((tag.indexOf("img_") == 0) && Loader.imgs[tag] != null);
+				var hasCss = ((tag.indexOf("css_") == 0) && Loader.csss[tag] != null);
+				if(hasImg || hasCss){
+					delete request[tag];
+				}else{
+					count++;
+				}
 			}
-		}
+			return count;
+		};
 
-		if(count > 0){
-			var isBin = js.eval("dom.window.ArrayBuffer") as boolean;
+		// ローカルから画像をとる ネイティブ用
+		var loadLocal = function(callback : function():void) : void{
+			// ローカルアドレスが無ければスキップ
+			if(localUrl == ""){callback(); return;}
+			// 数を数えてロードの必要がなければスキップ
+			var count = countUrl();
+			if(count <= 0){callback(); return;}
+			// 画像ローカルロード
+			for(var tag in request){
+				(function(tag : string, url : string, img : HTMLImageElement){
+					img.onload = function(e : Event){
+						// ローカルにファイルがみつかった場合
+						if(tag.indexOf("img_") == 0){
+							// canvas用画像
+							Loader.imgs[tag] = img;
+						}else if(tag.indexOf("css_") == 0){
+							// css用画像
+							var sheet = Loader.style.sheet as CSSStyleSheet;
+							Loader.csss[tag] = tag.replace(/^css_/, "cssimg_");
+							sheet.insertRule("." + Loader.csss[tag] + "{background-image: url(" + url + ")}", sheet.cssRules.length);
+						}
+						if(--count == 0){callback();}
+					};
+					img.onerror = function(e : Event){
+						// ローカルにファイルが存在しない場合
+						if(--count == 0){callback();}
+					};
+					img.src = url;
+				})(tag, localUrl + "/" + request[tag], dom.createElement("img") as HTMLImageElement);
+			}
+		};
+
+		// ネットワークから画像をとる
+		var loadNetwork = function(callback : function():void) : void{
+			// 数を数えてロードの必要がなければスキップ
+			var count = countUrl();
+			if(count <= 0){callback(); return;}
+			// ArrayBuffer対応確認
+			var isBin = js.eval("!!dom.window.ArrayBuffer") as boolean;
 			// リクエスト開始準備
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", url, true);
+			xhr.open("POST", networkUrl, true);
 			xhr.setRequestHeader("Content-Type","application/json");
 			xhr.responseType = isBin ? "arraybuffer" : "text";
 			// リクエスト状態変化関数
@@ -53,7 +94,7 @@ class Loader{
 						var ctype = xhr.getResponseHeader("Content-Type").toLowerCase();
 						if(ctype.indexOf("application/json") < 0 && ctype.indexOf("application/octet-stream") < 0){
 							// リダイレクトっぽい！！
-							dom.document.location.href = url;
+							dom.document.location.href = networkUrl;
 						}else{
 							// 受け取ったデータを処理
 							var b64imgs = {} : Map.<string>;
@@ -101,7 +142,7 @@ class Loader{
 										var img = dom.createElement("img") as HTMLImageElement;
 										img.onload = function(e : Event){
 											// すべての登録が終わったらコールバック
-											if(--count == 0){successFunc();}
+											if(--count == 0){callback();}
 										};
 										img.src = b64imgs[tag];
 										Loader.imgs[tag] = img;
@@ -110,11 +151,11 @@ class Loader{
 										var sheet = Loader.style.sheet as CSSStyleSheet;
 										Loader.csss[tag] = tag.replace(/^css_/, "cssimg_");
 										sheet.insertRule("." + Loader.csss[tag] + "{background-image: url(" + b64imgs[tag] + ")}", sheet.cssRules.length);
-										if(--count == 0){successFunc();}
+										if(--count == 0){callback();}
 									} 
 								}
 							}else{
-								successFunc();
+								callback();
 							}
 						}
 					}else{
@@ -130,10 +171,12 @@ class Loader{
 				isBin: isBin,
 				urls: request
 			}));
-		}else{
-			// 読み込むものが無い
-			successFunc();
-		}
+		};
+
+		// ローカルでの存在を確認し、無ければネットワークからとってくる
+		loadLocal(function() : void{
+			loadNetwork(successFunc);
+		});
 	}
 
 	// ----------------------------------------------------------------

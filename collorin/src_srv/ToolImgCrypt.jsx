@@ -62,10 +62,11 @@ class _Main{
 				var isJpg = (cp0 == 0xff && cp1 == 0xd8 && cm2 == 0xff && cm1 == 0xd9);
 				if(isPng || isGif || isJpg){
 					// 画像ならパスをハッシュ化してコピー
-					var dstFile = srcFile.replace(/^.\/content\/img/, "/img");
-					var cipher = crypto.createCipher("aes192", "testImageSecretKey");
-					var filename = cipher.update(dstFile, "ascii", "base64") + cipher.final("base64");
-					dstFile = "./content/imgCrypt/" + String.encodeURIComponent(filename);
+					//var dstFile = srcFile.replace(/^.\/content\/img/, "/img");
+					//var cipher = crypto.createCipher("aes192", "testImageSecretKey");
+					//var filename = cipher.update(dstFile, "ascii", "base64") + cipher.final("base64");
+					//dstFile = "./content/imgCrypt/" + String.encodeURIComponent(filename);
+					var dstFile = "./content/imgCrypt/" + srcFile.replace(/^.\/content\/img/, "/img").replace(/\//g, "_");
 					fs.writeFileSync(dstFile, data);
 				}
 			}

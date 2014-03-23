@@ -49,9 +49,10 @@ class ImageServer{
 
 				// アドレスの復号化
 				for(var tag in urls){
-					var decipher = crypto.createDecipher("aes192", ImageServer.key);
-					var filename = String.decodeURIComponent(urls[tag]);
-					urls[tag] = decipher.update(filename, "base64", "ascii") + decipher.final("ascii");
+					//var decipher = crypto.createDecipher("aes192", ImageServer.key);
+					//var filename = String.decodeURIComponent(urls[tag]);
+					//urls[tag] = decipher.update(filename, "base64", "ascii") + decipher.final("ascii");
+					urls[tag] = urls[tag].replace(/_/g, "/");
 				}
 
 				urlResp(req, res, urls);
@@ -71,9 +72,10 @@ class ImageServer{
 	// アドレスを暗号化
 	static function convertAddress(imgs : Map.<string>) : Map.<string>{
 		for(var tag in imgs){
-			var cipher = crypto.createCipher("aes192", ImageServer.key);
-			var filename = cipher.update(imgs[tag], "ascii", "base64") + cipher.final("base64");
-			imgs[tag] = String.encodeURIComponent(filename);
+			//var cipher = crypto.createCipher("aes192", ImageServer.key);
+			//var filename = cipher.update(imgs[tag], "ascii", "base64") + cipher.final("base64");
+			//imgs[tag] = String.encodeURIComponent(filename);
+			imgs[tag] = imgs[tag].replace(/\//g, "_");
 		}
 		return imgs;
 	}
