@@ -47,7 +47,7 @@ class SECchatPopupInfoChara extends SECpopup{
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._chara.name;
-		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).style.backgroundImage = "url(" + Loader.b64s["b64_bust_" + this._chara.code] + ")";
+		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).className = "chara cssimg_bust_" + this._chara.code;
 
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);

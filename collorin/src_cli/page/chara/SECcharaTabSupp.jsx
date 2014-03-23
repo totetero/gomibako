@@ -19,7 +19,7 @@ import "CharaPage.jsx";
 class SECcharaTabSupp extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div>
+		<div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow cssimg_core_picker_arrow"></div></div>
 		<div class="core-btn supply">補給</div>
 		<div class="scrollContainerContainer">
 			<div class="scrollContainerBorder">

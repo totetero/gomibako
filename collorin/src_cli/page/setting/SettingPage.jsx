@@ -25,10 +25,10 @@ class SettingPage extends Page{
 				<div class="scroll">
 					<div class="nickname"><div class="label">ニックネーム</div><div class="field"></div></div>
 					<div class="comment"><div class="label">コメント</div><div class="field"></div></div>
-					<div class="quality"><div class="label">ゲーム画質</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
-					<div class="transition"><div class="label">ページ遷移演出</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
-					<div class="bgm"><div class="label">BGM</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
-					<div class="sef"><div class="label">効果音</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div></div>
+					<div class="quality"><div class="label">ゲーム画質</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow cssimg_core_picker_arrow"></div></div></div>
+					<div class="transition"><div class="label">ページ遷移演出</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow cssimg_core_picker_arrow"></div></div></div>
+					<div class="bgm"><div class="label">BGM</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow cssimg_core_picker_arrow"></div></div></div>
+					<div class="sef"><div class="label">効果音</div><div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow cssimg_core_picker_arrow"></div></div></div>
 				</div>
 				<div class="core-ybar"></div>
 			</div>

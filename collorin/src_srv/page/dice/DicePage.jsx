@@ -77,9 +77,9 @@ class DicePage{
 			for(var j = 0; j < charaInfoList[i].length; j++){
 				var code = charaInfoList[i][j]["code"] as string;
 				imgs["img_dot_" + code] = "/img/character/" + code + "/dot.png";
-				imgs["b64_icon_" + code] = "/img/character/" + code + "/icon.png";
-				imgs["b64_bust_" + code] = "/img/character/" + code + "/bust.png";
-				imgs["b64_damage_" + code] = "/img/character/" + code + "/damage.png";
+				imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
+				imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
+				imgs["css_damage_" + code] = "/img/character/" + code + "/damage.png";
 			}
 		}
 

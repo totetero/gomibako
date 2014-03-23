@@ -2,6 +2,7 @@ import "timer.jsx";
 import "js/web.jsx";
 
 import "util/Ctrl.jsx";
+import "util/Loader.jsx";
 import "util/CssImgs.jsx";
 import "util/Sound.jsx";
 import "page/page/Page.jsx";
@@ -48,6 +49,7 @@ class _Main{
 
 		// プログラム初期化
 		Ctrl.init();
+		Loader.init();
 		CssImgs.init();
 		Sound.init();
 		Page.init();

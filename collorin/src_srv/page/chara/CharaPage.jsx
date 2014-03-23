@@ -40,8 +40,8 @@ class CharaPage{
 			// キャラクター情報の画像読み込み
 			for(var i = 0; i < charaInfoList.length; i++){
 				var code = charaInfoList[i]["code"] as string;
-				imgs["b64_icon_" + code] = "/img/character/" + code + "/icon.png";
-				imgs["b64_bust_" + code] = "/img/character/" + code + "/bust.png";
+				imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
+				imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
 			}
 
 			jdat["list"] = charaInfoList;

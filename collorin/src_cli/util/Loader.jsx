@@ -9,8 +9,17 @@ import "js/web.jsx";
 class Loader{
 	// 画像リスト
 	static var imgs = {} : Map.<HTMLImageElement>;
-	static var b64s = {} : Map.<string>;
-	static var csss = {} : Map.<boolean>;
+	static var csss = {} : Map.<string>;
+	static var style : HTMLStyleElement;
+
+	// ----------------------------------------------------------------
+	// 初期化
+	static function init() : void{
+		// スタイルシート準備
+		Loader.style = dom.document.createElement("style") as HTMLStyleElement;
+		Loader.style.type = "text/css";
+		dom.document.head.appendChild(Loader.style);
+	}
 
 	// ----------------------------------------------------------------
 	// 画像リクエスト送信
@@ -21,9 +30,8 @@ class Loader{
 		var count = 0;
 		for(var tag in request){
 			var hasImg = ((tag.indexOf("img_") == 0) && Loader.imgs[tag] != null);
-			var hasB64 = ((tag.indexOf("b64_") == 0) && Loader.b64s[tag] != null);
-			var hasCss = ((tag.indexOf("css_") == 0) && Loader.csss[tag]);
-			if(hasImg || hasB64 || hasCss){
+			var hasCss = ((tag.indexOf("css_") == 0) && Loader.csss[tag] != null);
+			if(hasImg || hasCss){
 				delete request[tag];
 			}else{
 				count++;
@@ -97,9 +105,11 @@ class Loader{
 										};
 										img.src = b64imgs[tag];
 										Loader.imgs[tag] = img;
-									}else if(tag.indexOf("b64_") == 0){
+									}else if(tag.indexOf("css_") == 0){
 										// css用画像
-										Loader.b64s[tag] = b64imgs[tag];
+										var sheet = Loader.style.sheet as CSSStyleSheet;
+										Loader.csss[tag] = tag.replace(/^css_/, "cssimg_");
+										sheet.insertRule("." + Loader.csss[tag] + "{background-image: url(" + b64imgs[tag] + ")}", sheet.cssRules.length);
 										if(--count == 0){successFunc();}
 									} 
 								}

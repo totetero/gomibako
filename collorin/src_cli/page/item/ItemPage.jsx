@@ -19,7 +19,7 @@ import "SECitemTabShop.jsx";
 class ItemPage extends Page{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow"></div></div>
+		<div class="core-picker-btn"><div class="core-picker-label"></div><div class="core-picker-arrow cssimg_core_picker_arrow"></div></div>
 		<div class="body"></div>
 		<div class="tab list">一覧</div>
 		<div class="tab make">作成</div>
