@@ -1,6 +1,8 @@
 import "js.jsx";
 import "js/web.jsx";
 
+import "mock/MockServer.jsx";
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -221,6 +223,10 @@ class Loader{
 	// ----------------------------------------------------------------
 	// XMLhttpリクエスト送信
 	static function loadxhr(url : string, request : variant, successFunc : function(response:variant):void, failureFunc : function():void) : void{
+		// モックサーバ処理
+		var response = MockServer.loadxhr(url, request);
+		if(response != null){successFunc(response); return;}
+
 		// リクエスト開始準備
 		var xhr = new XMLHttpRequest();
 		if(request != null){xhr.open("POST", url, true);}else{xhr.open("GET", url, true);}
