@@ -11,14 +11,9 @@ class SoundServer{
 			if(urls != null){
 				// 拡張子追加
 				var extension = ".m4a";
-				var userAgent = (req.headers['user-agent'] as string).toLowerCase();;
-				if(userAgent.indexOf("firefox") != -1 || userAgent.indexOf("opera") != -1){
-					extension = ".ogg";
-				}
-				log userAgent, extension;
-				for(var tag in urls){
-					urls[tag] += extension;
-				}
+				var userAgent = (req.headers['user-agent'] as string).toLowerCase();
+				if(userAgent.indexOf("firefox") != -1 || userAgent.indexOf("opera") != -1){extension = ".ogg";}
+				for(var tag in urls){urls[tag] += extension;}
 
 				// binary音楽のリクエスト
 				new SoundServer.soundLoaderBin(path, urls, function(data : Buffer) : void{
