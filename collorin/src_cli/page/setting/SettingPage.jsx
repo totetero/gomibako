@@ -144,6 +144,10 @@ class SECsettingPageMain extends EventCartridge{
 		this._scroller.btnList["transition"] = new PartsButton(transitionDiv, true);
 		this._scroller.btnList["bgm"] = new PartsButton(bgmDiv, true);
 		this._scroller.btnList["sef"] = new PartsButton(sefDiv, true);
+		if(!Sound.isSupported){
+			this._scroller.btnList["bgm"].inactive = true;
+			this._scroller.btnList["sef"].inactive = true;
+		}
 
 		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;
