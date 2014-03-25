@@ -25,7 +25,7 @@ class MockServer{
 		if(count > 0){
 			for(var tag in request){
 				(function(tag : string){
-					var url = "imgCrypt/" + request[tag];
+					var url = request[tag].replace(/^\//, "");
 					var img = dom.createElement("img") as HTMLImageElement;
 					img.onload = function(e : Event){
 						// ローカルにファイルがみつかった場合
@@ -78,7 +78,7 @@ class MockServer{
 		if(count > 0){
 			for(var tag in request){
 				(function(tag : string){
-					var url = "snd/" + request[tag].replace(/^\/snd\//, "");
+					var url = request[tag].replace(/^\//, "");
 					var xhr = new XMLHttpRequest();
 					xhr.open("GET", url);
 					xhr.responseType = "arraybuffer";
@@ -128,10 +128,10 @@ class MockServer{
 					{"name":"test01","code":"enemy1"},
 				],
 				"imgs":{
-					"css_icon_player1":"_img_character_player1_icon.png",
-					"css_bust_player1":"_img_character_player1_bust.png",
-					"css_icon_enemy1":"_img_character_enemy1_icon.png",
-					"css_bust_enemy1":"_img_character_enemy1_bust.png"
+					"css_icon_player1":"/img/character/player1/icon.png",
+					"css_bust_player1":"/img/character/player1/bust.png",
+					"css_icon_enemy1":"/img/character/enemy1/icon.png",
+					"css_bust_enemy1":"/img/character/enemy1/bust.png"
 				}
 			});
 		}else if(url.indexOf("/chara/rest") == 0){
