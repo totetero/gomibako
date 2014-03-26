@@ -2,6 +2,7 @@ import "../../util/Loader.jsx";
 import "../../util/Socket.jsx";
 
 import "ChatCanvas.jsx";
+import "ChatCharacter.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
