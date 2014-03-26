@@ -2,6 +2,7 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
+import "../../util/Util.jsx";
 import "../page/Page.jsx";
 import "../page/Transition.jsx";
 import "../page/SECload.jsx";
@@ -52,6 +53,8 @@ class DicePage extends Page{
 		this.div = dom.document.createElement("div") as HTMLDivElement;
 		this.div.className = "page dice";
 		this.div.innerHTML = DicePage._htmlTag;
+		// 敵ステータスアイコン反転
+		Util.cssTransform(this.div.getElementsByClassName("status enemy").item(0).getElementsByClassName("icon").item(0) as HTMLDivElement, "scaleX(-1)");
 		// キャンバス
 		this.ccvs = new DiceCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
