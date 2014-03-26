@@ -7,6 +7,7 @@ import "../page/Transition.jsx";
 
 import "DicePage.jsx";
 import "DiceCharacter.jsx";
+import "PECdiceGauge.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceThrow.jsx";
 import "SECdicePopupInfoChara.jsx";
@@ -40,6 +41,7 @@ class SECdiceCommand extends EventCartridge{
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("さいころ", "", "マップ", "メニュー"));
 		this._page.parallelPush(new PECopenCharacter(this._player.code, "normal"));
+		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._player, -1));
 		return false;
 	}
 

@@ -21,6 +21,9 @@ class PECdiceMessage extends EventCartridge{
 	var _action : int = 0;
 	var _exist = true;
 
+	// メッセージ要素
+	var _messageDiv : HTMLDivElement;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage, message : string, force : boolean, time : int){
@@ -28,6 +31,8 @@ class PECdiceMessage extends EventCartridge{
 		this._message = message;
 		this._force = force;
 		this._time = time;
+		// DOM獲得
+		this._messageDiv = page.div.getElementsByClassName("message").item(0) as HTMLDivElement;
 	}
 
 	// ----------------------------------------------------------------
@@ -43,25 +48,25 @@ class PECdiceMessage extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 計算
-	override function calc() : boolean{		
+	override function calc() : boolean{
 		if(this._exist){
 			if(this._message == ""){
 				PECdiceMessage._position = PECdiceMessage.hide;
-				this._page.messageDiv.style.opacity = "0";
+				this._messageDiv.style.opacity = "0";
 				return false;
 			}else{
-				if(this._action == 0){this._page.messageDiv.innerHTML = this._message;}
+				if(this._action == 0){this._messageDiv.innerHTML = this._message;}
 				if(this._action++ < this._time || this._time < 0){
 					var dpos = PECdiceMessage._position - 0;
 					if(Math.abs(dpos) > 0.01){
 						PECdiceMessage._position -= dpos * 0.2;
-						Util.cssTranslate(this._page.messageDiv, 0, PECdiceMessage._position);
-						this._page.messageDiv.style.opacity = (1 - PECdiceMessage._position / PECdiceMessage.hide) as string;
+						Util.cssTranslate(this._messageDiv, 0, PECdiceMessage._position);
+						this._messageDiv.style.opacity = (1 - PECdiceMessage._position / PECdiceMessage.hide) as string;
 					}else if(this._time < 0){return false;}
 					return true;
 				}else{
 					PECdiceMessage._position = PECdiceMessage.hide;
-					this._page.messageDiv.style.opacity = "0";
+					this._messageDiv.style.opacity = "0";
 					return false;
 				}
 			}

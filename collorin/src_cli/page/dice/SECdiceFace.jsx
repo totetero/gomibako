@@ -6,6 +6,7 @@ import "../page/Transition.jsx";
 
 import "DicePage.jsx";
 import "DiceCharacter.jsx";
+import "PECdiceGauge.jsx";
 import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
 
@@ -37,6 +38,8 @@ class SECdiceFace extends EventCartridge{
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "", "", ""));
 		this._page.parallelPush(new PECopenCharacter("", ""));
+		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara0, -1));
+		this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, -1));
 		// キャラクターが向き合う
 		var r = Math.atan2(this._chara1.y - this._chara0.y, this._chara1.x - this._chara0.x);
 		this._chara0.r = r;
@@ -93,6 +96,8 @@ class SECdiceFace extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara0, 90));
+		this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, 90));
 	}
 }
 

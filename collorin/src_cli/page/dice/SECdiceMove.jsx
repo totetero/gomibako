@@ -7,7 +7,7 @@ import "../page/Transition.jsx";
 
 import "DicePage.jsx";
 import "DiceCharacter.jsx";
-import "DiceMessage.jsx";
+import "PECdiceMessage.jsx";
 import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceFace.jsx";
