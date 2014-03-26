@@ -5,7 +5,7 @@ import "../../util/Ctrl.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
-import "DiceCanvas.jsx";
+import "DiceCharacter.jsx";
 import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
 

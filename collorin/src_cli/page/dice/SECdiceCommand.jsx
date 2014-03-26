@@ -6,7 +6,7 @@ import "../../util/Sound.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
-import "DiceCanvas.jsx";
+import "DiceCharacter.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceThrow.jsx";
 
