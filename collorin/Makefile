@@ -10,7 +10,7 @@ SRC_SRV_DIR = src_srv
 SRC_CLI_DIR = src_cli
 
 # ---- test ----
-test: start
+test: build
 
 start: build
 	node game.js

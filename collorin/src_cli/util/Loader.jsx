@@ -1,7 +1,7 @@
 import "js.jsx";
 import "js/web.jsx";
 
-import "mock/MockServer.jsx";
+import "mock/MockMain.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -41,7 +41,7 @@ class Loader{
 		}
 
 		// モックサーバ処理
-		if(MockServer.loadImg(request, successFunc)){return;}
+		if(MockMain.loadImg(request, successFunc)){return;}
 
 		if(count > 0){
 			// ArrayBuffer対応確認
@@ -148,7 +148,7 @@ class Loader{
 		var url = "/snd";
 
 		// モックサーバ処理
-		if(MockServer.loadSnd(request, successFunc)){return;}
+		if(MockMain.loadSnd(request, successFunc)){return;}
 
 		// リクエスト開始準備
 		var xhr = new XMLHttpRequest();
@@ -188,7 +188,7 @@ class Loader{
 	// XMLhttpリクエスト送信
 	static function loadxhr(url : string, request : variant, successFunc : function(response:variant):void, failureFunc : function():void) : void{
 		// モックサーバ処理
-		if(MockServer.loadxhr(url, request, successFunc)){return;}
+		if(MockMain.loadxhr(url, request, successFunc)){return;}
 
 		// リクエスト開始準備
 		var xhr = new XMLHttpRequest();

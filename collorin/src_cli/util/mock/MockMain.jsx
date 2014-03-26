@@ -5,7 +5,7 @@ import "js/web.jsx";
 // ----------------------------------------------------------------
 
 /*// 非活性モッククラス
-class MockServer{
+class MockMain{
 	static function loadImg(request : Map.<string>, successFunc : function():void) : boolean{return false;}
 	static function loadSnd(request : Map.<string>, successFunc : function(buffers:Map.<ArrayBuffer>):void) : boolean{return false;}
 	static function loadxhr(url : string, request : variant, successFunc : function(response:variant):void) : boolean{return false;}
@@ -13,7 +13,8 @@ class MockServer{
 
 //*// 活性モッククラス
 import "../Loader.jsx";
-class MockServer{
+import "MockDice.jsx";
+class MockMain{
 	// ----------------------------------------------------------------
 	// 画像リクエストエミュレート
 	static function loadImg(request : Map.<string>, successFunc : function():void) : boolean{
@@ -155,7 +156,8 @@ class MockServer{
 		}else if(url.indexOf("/help") == 0){
 			successFunc({"test": "モックヘルプ"});
 		}else if(url.indexOf("/dice") == 0){
-			successFunc({"test": "モックすごろく"});
+			//successFunc({"test": "モックすごろく"});
+			MockDice.loadxhr(url, request, successFunc);
 		}else if(url.indexOf("/chat") == 0){
 			successFunc({"test": "モックチャット"});
 		}
