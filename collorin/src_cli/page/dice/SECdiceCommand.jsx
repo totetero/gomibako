@@ -9,6 +9,7 @@ import "DicePage.jsx";
 import "DiceCharacter.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceThrow.jsx";
+import "SECdicePopupInfoChara.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -56,7 +57,8 @@ class SECdiceCommand extends EventCartridge{
 		}, function() : void{
 			// キャラクター押下
 			Sound.playSE("ok");
-			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
+			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedType][ccvs.tappedCharacter], 0));
+			exist = false;
 		});
 
 		// さいころボタン

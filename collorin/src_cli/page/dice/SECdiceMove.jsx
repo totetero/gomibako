@@ -11,6 +11,7 @@ import "DiceMessage.jsx";
 import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceFace.jsx";
+import "SECdicePopupInfoChara.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -64,7 +65,8 @@ class SECdiceMove extends EventCartridge{
 		}, function() : void{
 			// キャラクター押下
 			Sound.playSE("ok");
-			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
+			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedType][ccvs.tappedCharacter], 0));
+			exist = false;
 		});
 
 		if(Ctrl.trigger_cb){

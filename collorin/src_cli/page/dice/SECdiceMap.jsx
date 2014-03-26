@@ -6,6 +6,7 @@ import "../../util/Sound.jsx";
 import "../page/Transition.jsx";
 
 import "DicePage.jsx";
+import "SECdicePopupInfoChara.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -51,7 +52,8 @@ class SECdiceMap extends EventCartridge{
 		}, function() : void{
 			// キャラクター押下
 			Sound.playSE("ok");
-			log ccvs.member[ccvs.tappedType][ccvs.tappedCharacter];
+			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedType][ccvs.tappedCharacter], 1));
+			exist = false;
 		});
 
 		// もどるボタン
