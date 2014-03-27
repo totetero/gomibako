@@ -30,8 +30,8 @@ class DiceCharacter extends PartsCharacter{
 	// コンストラクタ
 	function constructor(ccvs : DiceCanvas, charaInfo : variant){
 		super(charaInfo);
-		this.hp = 50;
-		this.sp = 50;
+		this.hp = 100;
+		this.sp = 100;
 		this.maxhp = 100;
 		this.maxsp = 100;
 		var hexx = charaInfo["x"] as int;

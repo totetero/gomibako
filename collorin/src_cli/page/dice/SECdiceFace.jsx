@@ -64,6 +64,9 @@ class SECdiceFace extends EventCartridge{
 				if(++this._action >= 10){
 					this._mode = 1;
 					this._action = 0;
+					// テスト
+					this._chara1.hp -= 30;
+					this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, -1));
 				}
 				break;
 			case 1:
