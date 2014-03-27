@@ -14,7 +14,6 @@ class PECdiceMessage extends EventCartridge{
 	static const hide = -160;
 	static var _current : PECdiceMessage;
 	static var _position = PECdiceMessage.hide;
-	var _page : DicePage;
 	var _message : string;
 	var _force : boolean;
 	var _time : int;
@@ -27,7 +26,6 @@ class PECdiceMessage extends EventCartridge{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage, message : string, force : boolean, time : int){
-		this._page = page;
 		this._message = message;
 		this._force = force;
 		this._time = time;

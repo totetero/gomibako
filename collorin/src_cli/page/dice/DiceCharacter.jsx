@@ -13,6 +13,11 @@ class DiceCharacter extends PartsCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
 
+	var hp : int;
+	var sp : int;
+	var maxhp : int;
+	var maxsp : int;
+
 	var exist = true;
 	var x : number;
 	var y : number;
@@ -25,6 +30,10 @@ class DiceCharacter extends PartsCharacter{
 	// コンストラクタ
 	function constructor(ccvs : DiceCanvas, charaInfo : variant){
 		super(charaInfo);
+		this.hp = 50;
+		this.sp = 50;
+		this.maxhp = 100;
+		this.maxsp = 100;
 		var hexx = charaInfo["x"] as int;
 		var hexy = charaInfo["y"] as int;
 		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
