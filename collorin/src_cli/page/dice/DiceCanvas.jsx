@@ -3,6 +3,7 @@ import "js/web.jsx";
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
 import "../../bb3d/DrawUnit.jsx";
+import "../../bb3d/DrawEffect.jsx";
 import "../../bb3d/HexField.jsx";
 import "../../bb3d/Dice.jsx";
 
@@ -17,8 +18,9 @@ class DiceCanvas extends Ccvs{
 	var field : HexField;
 	var member = new DiceCharacter[][];
 	var dices = new DrawThrowDice[];
-
+	var effect = new DrawEffect[];
 	var center : DiceCharacter[];
+
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
 	var tapped : boolean;
@@ -144,9 +146,11 @@ class DiceCanvas extends Ccvs{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
+		for(var i = 0; i < this.member.length; i++){for(var j = 0; j < this.member[i].length; j++){this.member[i][j].preDraw(this);}}
+		for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
+
 		this.context.clearRect(0, 0, this.width, this.height);
 		this.field.draw(this, this.cx, this.cy, this.tapped);
-		for(var i = 0; i < this.member.length; i++){for(var j = 0; j < this.member[i].length; j++){this.member[i][j].preDraw(this);}}
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}

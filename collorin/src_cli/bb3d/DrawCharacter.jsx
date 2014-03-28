@@ -408,7 +408,7 @@ class DrawShadow extends DrawUnit{
 	var _drx : number;
 	var _dry : number;
 	var _drScale : number;
-	
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(size : number){

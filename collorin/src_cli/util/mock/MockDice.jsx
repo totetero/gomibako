@@ -53,6 +53,9 @@ class MockDice{
 		// さいころ画像
 		imgs["img_dice"] = "/img/dice/test.png";
 
+		// エフェクト画像
+		imgs["img_effect_star01"] = "/img/effect/star01.png";
+
 		// キャラクター情報
 		var charaInfoList = [[
 			// プレイヤー情報

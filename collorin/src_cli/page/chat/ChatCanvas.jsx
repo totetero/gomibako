@@ -101,9 +101,10 @@ class ChatCanvas extends Ccvs{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
+		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
+
 		this.context.clearRect(0, 0, this.width, this.height);
 		this.field.draw(this, this.cx, this.cy, this.tapped);
-		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 	}

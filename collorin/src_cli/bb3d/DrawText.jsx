@@ -151,7 +151,7 @@ class DrawBalloon extends DrawUnit{
 			psx *= 1 + size;
 			psy *= 1 - size;
 		}
-		
+
 		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
 		var py = (this._dry - psy * 1.0 + ccvs.height * 0.5) as int;
 		ccvs.context.drawImage(this._canvas, px, py, psx, psy);
