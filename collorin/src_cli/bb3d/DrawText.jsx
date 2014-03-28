@@ -126,9 +126,15 @@ class DrawBalloon extends DrawUnit{
 	}
 
 	// ----------------------------------------------------------------
+	// 計算
+	function calc() : void{
+		this._action++;
+	}
+
+	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(ccvs : Ccvs, x : number, y : number, z : number, s : number) : void{
-		if(this._action++ < this._time || this._time < 0){
+		if(this._action <= this._time || this._time < 0){
 			this.visible = true;
 			// 位置
 			this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);

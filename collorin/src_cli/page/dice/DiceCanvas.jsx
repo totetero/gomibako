@@ -27,6 +27,7 @@ class DiceCanvas extends Ccvs{
 	var tappedType : int;
 	var tappedCharacter : int;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
 		super(canvas, 320, 480, Math.PI / 180 * 30, Math.PI / 180 * 45, 1);
@@ -89,6 +90,12 @@ class DiceCanvas extends Ccvs{
 				this.member[i][j].calc(this);
 				if(!this.member[i][j].exist){this.member[i].splice(j--, 1);}
 			}
+		}
+
+		// エフェクト計算
+		for(var i = 0; i < this.effect.length; i++){
+			this.effect[i].calc();
+			if(!this.effect[i].exist){this.effect.splice(i--, 1);}
 		}
 
 		// さいころ計算
@@ -154,6 +161,13 @@ class DiceCanvas extends Ccvs{
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
+	}
+
+	// ----------------------------------------------------------------
+	// エフェクト追加
+	function pushEffect(effect : DrawEffect) : void{
+		this.effect.push(effect);
+		this.clist.push(effect);
 	}
 }
 

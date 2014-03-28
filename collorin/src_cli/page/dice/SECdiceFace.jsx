@@ -68,9 +68,9 @@ class SECdiceFace extends EventCartridge{
 					// テスト
 					this._chara1.hp -= 30;
 					this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, -1));
-					var testHop = new DrawEffectHopImage();
-					this._page.ccvs.effect.push(testHop);
-					this._page.ccvs.clist.push(testHop);
+					for(var i = 0; i < 3; i++){
+						this._page.ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
+					}
 				}
 				break;
 			case 1:

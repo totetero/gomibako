@@ -96,6 +96,7 @@ class ChatCharacter extends PartsCharacter{
 			this.motion = (this.dstList.length > 0) ? "walk" : "stand";
 			this.action++;
 		}
+		this._balloon.calc();
 	}
 
 	// ----------------------------------------------------------------
