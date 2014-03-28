@@ -13,7 +13,7 @@ import "DrawUnit.jsx";
 abstract class DrawEffect extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画準備
-	abstract function preDraw(ccvs : Ccvs, x : number, y : number) : void;
+	abstract function preDraw(ccvs : Ccvs, cx : number, cy : number) : void;
 }
 
 // ----------------------------------------------------------------
@@ -49,11 +49,11 @@ class DrawEffectHopImage extends DrawEffect{
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	override function preDraw(ccvs : Ccvs, x : number, y : number) : void{
+	override function preDraw(ccvs : Ccvs, cx : number, cy : number) : void{
 		this.visible = true;
 		// テスト
-		var x = this._x - x;
-		var y = this._y - y;
+		var x = this._x - cx;
+		var y = this._y - cy;
 		var z = 0;
 		var s = 1;
 		// 位置
