@@ -2,7 +2,7 @@ import "js/web.jsx";
 
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
-import "../../bb3d/Character.jsx";
+import "../../bb3d/DrawUnit.jsx";
 import "../../bb3d/HexField.jsx";
 import "../../bb3d/Dice.jsx";
 

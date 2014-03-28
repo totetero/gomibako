@@ -1,5 +1,6 @@
 import "../../util/Loader.jsx";
-import "../../bb3d/Character.jsx";
+import "../../bb3d/DrawCharacter.jsx";
+import "../../bb3d/DrawEffect.jsx";
 import "../page/PartsCharacter.jsx";
 
 import "DiceCanvas.jsx";
@@ -41,7 +42,7 @@ class DiceCharacter extends PartsCharacter{
 		this.r = charaInfo["r"] as number;
 
 		var img = Loader.imgs["img_dot_" + this.code];
-		var drawInfo = new DrawInfo(charaInfo["drawInfo"]);
+		var drawInfo = new DrawCharacterInfo(charaInfo["drawInfo"]);
 		var size = charaInfo["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);
 		this._shadow = new DrawShadow(size);

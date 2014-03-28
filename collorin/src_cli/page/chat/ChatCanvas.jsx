@@ -3,7 +3,7 @@ import "js/web.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
-import "../../bb3d/Character.jsx";
+import "../../bb3d/DrawUnit.jsx";
 import "../../bb3d/GridField.jsx";
 
 import "ChatCharacter.jsx";
