@@ -18,6 +18,7 @@ class ChatCanvas extends Ccvs{
 	var field : GridField;
 	var player : ChatCharacter;
 	var member = new ChatCharacter[];
+
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
 	var pathFinder : ChatPathFinder;

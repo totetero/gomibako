@@ -15,11 +15,12 @@ import "DiceCharacter.jsx";
 // キャンバス
 class DiceCanvas extends Ccvs{
 	var field : HexField;
-	var center : DiceCharacter[];
 	var member = new DiceCharacter[][];
 	var dices = new DrawThrowDice[];
-	var clist : DrawUnit[] = new DrawUnit[];
-	var slist : DrawUnit[] = new DrawUnit[];
+
+	var center : DiceCharacter[];
+	var clist = new DrawUnit[];
+	var slist = new DrawUnit[];
 	var tapped : boolean;
 	var tappedType : int;
 	var tappedCharacter : int;
