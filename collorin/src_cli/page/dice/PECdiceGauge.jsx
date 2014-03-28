@@ -124,10 +124,10 @@ class PECdicePlayerGauge extends PECdiceGauge{
 		// ゲージの引き継ぎと動作重複禁止
 		if(PECdicePlayerGauge._current != null){
 			if(this.chara == PECdicePlayerGauge._current.chara){
-				PECdicePlayerGauge._current.exist = false;
 				this.hprate0 = PECdicePlayerGauge._current.hprate0;
 				this.sprate0 = PECdicePlayerGauge._current.sprate0;
 			}
+			PECdicePlayerGauge._current.exist = false;
 		}
 		PECdicePlayerGauge._current = this;
 		return true;
@@ -158,10 +158,10 @@ class PECdiceEnemyGauge extends PECdiceGauge{
 		// ゲージの引き継ぎと動作重複禁止
 		if(PECdiceEnemyGauge._current != null){
 			if(this.chara == PECdiceEnemyGauge._current.chara){
-				PECdiceEnemyGauge._current.exist = false;
 				this.hprate0 = PECdiceEnemyGauge._current.hprate0;
 				this.sprate0 = PECdiceEnemyGauge._current.sprate0;
 			}
+			PECdiceEnemyGauge._current.exist = false;
 		}
 		PECdiceEnemyGauge._current = this;
 		return true;
