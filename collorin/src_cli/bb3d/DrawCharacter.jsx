@@ -399,3 +399,57 @@ class DrawCharacterWeapon extends DrawUnit{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// 影クラス
+class DrawShadow extends DrawUnit{
+	static var _canvas : HTMLCanvasElement = null;
+
+	var _size : number;
+
+	var _drx : number;
+	var _dry : number;
+	var _drScale : number;
+	
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(size : number){
+		// 影画像作成
+		if(DrawShadow._canvas == null){
+			DrawShadow._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+			var context = DrawShadow._canvas.getContext("2d") as CanvasRenderingContext2D;
+			DrawShadow._canvas.width = DrawShadow._canvas.height = 32;
+			context.fillStyle = "rgba(0, 0, 0, 0.5)";
+			context.arc(16, 16, 15, 0, Math.PI * 2.0, true);
+			context.fill();
+		}
+		// 影の大きさ
+		this._size = size;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	function preDraw(ccvs : Ccvs, x : number, y : number, z : number) : void{
+		this.visible = true;
+		// 位置
+		this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);
+		var y0 = ccvs.scale * (x * ccvs.sinv + y * ccvs.cosv);
+		var z0 = ccvs.scale * z;
+		this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
+		this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
+		this._drScale = ccvs.scale * this._size;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw(ccvs : Ccvs) : void{
+		var psx = (16 * this._drScale) as int;
+		var psy = (psx * ccvs.sinh) as int;
+		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
+		var py = (this._dry - psy * 0.5 + ccvs.height * 0.5) as int;
+		ccvs.context.drawImage(DrawShadow._canvas, px, py, psx, psy);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+

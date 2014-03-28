@@ -1,6 +1,6 @@
 import "../../util/Loader.jsx";
 import "../../bb3d/DrawCharacter.jsx";
-import "../../bb3d/DrawEffect.jsx";
+import "../../bb3d/DrawText.jsx";
 import "../page/PartsCharacter.jsx";
 
 import "ChatCanvas.jsx";
