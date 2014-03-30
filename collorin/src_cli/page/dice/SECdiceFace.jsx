@@ -89,7 +89,7 @@ class SECdiceFace extends EventCartridge{
 				this._chara0.motion = "stand";
 				this._chara1.motion = "stand";
 				if(++this._action >= 10){
-					this._page.serialPush(new SECdiceCommand(this._page));
+//					this._page.serialPush(new SECdiceCommand(this._page));
 					exist = false;
 				}
 				break;

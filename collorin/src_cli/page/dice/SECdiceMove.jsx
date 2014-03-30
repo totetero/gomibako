@@ -26,10 +26,10 @@ class SECdiceMove extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage){
+	function constructor(page : DicePage, response : variant){
 		this._page = page;
-		this._player = this._page.ccvs.member[0][0];
-		this._pip = 5;
+		this._player = this._page.ccvs.member[response["id"] as string];
+		this._pip = response["pip"] as int;
 	}
 
 	// ----------------------------------------------------------------
@@ -54,7 +54,6 @@ class SECdiceMove extends EventCartridge{
 	// 計算
 	override function calc() : boolean{
 		var ccvs = this._page.ccvs;
-		var player = ccvs.center[0];
 		var exist = true;
 
 		// キャンバス計算
@@ -65,7 +64,7 @@ class SECdiceMove extends EventCartridge{
 		}, function() : void{
 			// キャラクター押下
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedType][ccvs.tappedCharacter], 0));
+			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedCharacter], 0));
 			exist = false;
 		});
 
@@ -78,7 +77,7 @@ class SECdiceMove extends EventCartridge{
 			// メニューボタン
 			Sound.playSE("ok");
 			Ctrl.trigger_sb = false;
-		}else if(player.dstList.length > 0){
+		}else if(this._player.dstList.length > 0){
 			// ヘックス目的地移動完了を待つ
 		}else if(Ctrl.trigger_xb){
 			// 一つ戻るボタン
@@ -86,7 +85,7 @@ class SECdiceMove extends EventCartridge{
 			Ctrl.trigger_xb = false;
 			if(this._srcList.length > 0){
 				this._pip++;
-				player.dstList.unshift(this._srcList.shift());
+				this._player.dstList.unshift(this._srcList.shift());
 				this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", false, -1));
 			}
 		}else if(this._pip > 0){
@@ -104,7 +103,7 @@ class SECdiceMove extends EventCartridge{
 			else{isMove = false;}
 			if(isMove){
 				// プレイヤーの現在座標
-				var hex = ccvs.field.getHexFromCoordinate(player.x, player.y);
+				var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
 				var x0 = hex.x;
 				var y0 = hex.y;
 				var x1 = x0;
@@ -141,29 +140,27 @@ class SECdiceMove extends EventCartridge{
 				}
 				if(x1 != x0 || y1 != y0){
 					// 対面イベント確認
-					for(var i = 0; i < ccvs.member.length; i++){
-						if(i != 0 && i != 1){continue;}
-						for(var j = 0; j < ccvs.member[i].length; j++){
-							var member = ccvs.member[i][j];
-							if(player == member){continue;}
-							var hex = ccvs.field.getHexFromCoordinate(member.x, member.y);
-							if(x1 == hex.x && y1 == hex.y){
-								// 対面イベント発生 キャラクターが向き合う
-								var r = Math.atan2(member.y - player.y, member.x - player.x);
-								player.r = r;
-								member.r = r + Math.PI;
-								// 移動完了
-								log this._dstList;
-								this._page.serialPush(new SECdiceFace(this._page, player, member));
-								exist = false;
-							}
+					for(var id in ccvs.member){
+						var member = ccvs.member[id];
+						if(member.side != "player" && member.side != "enemy"){continue;}
+						if(this._player == member){continue;}
+						var hex = ccvs.field.getHexFromCoordinate(member.x, member.y);
+						if(x1 == hex.x && y1 == hex.y){
+							// 対面イベント発生 キャラクターが向き合う
+							var r = Math.atan2(member.y - this._player.y, member.x - this._player.x);
+							this._player.r = r;
+							member.r = r + Math.PI;
+							// 移動完了
+							log this._dstList;
+							this._page.serialPush(new SECdiceFace(this._page, this._player, member));
+							exist = false;
 						}
 						if(!exist){break;}
 					}
 					if(exist){
 						// 対面イベントが発生しないならば移動先のヘックスに移動する
-						player.dstList.unshift([x1, y1] : int[]);
-						if(this._srcList.length > 0 && player.dstList[0][0] == this._srcList[0][0] && player.dstList[0][1] == this._srcList[0][1]){
+						this._player.dstList.unshift([x1, y1] : int[]);
+						if(this._srcList.length > 0 && this._player.dstList[0][0] == this._srcList[0][0] && this._player.dstList[0][1] == this._srcList[0][1]){
 							this._pip++;
 							this._srcList.shift();
 							this._dstList.pop();
@@ -172,7 +169,7 @@ class SECdiceMove extends EventCartridge{
 							this._srcList.unshift([x0, y0] : int[]);
 							this._dstList.push([x1, y1] : int[]);
 						}
-						player.motion = "walk";
+						this._player.motion = "walk";
 						this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", false, -1));
 						// 強制停止系のイベントタイルを確認する
 						if(this._srcList.length > 0 && ccvs.field.getHexFromIndex(x1, y1).type == 2){
@@ -184,7 +181,7 @@ class SECdiceMove extends EventCartridge{
 		}else{
 			// 移動完了
 			log this._dstList;
-			this._page.serialPush(new SECdiceCommand(this._page));
+//			this._page.serialPush(new SECdiceCommand(this._page));
 			exist = false;
 		}
 

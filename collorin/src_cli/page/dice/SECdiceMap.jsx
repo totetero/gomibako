@@ -52,7 +52,7 @@ class SECdiceMap extends EventCartridge{
 		}, function() : void{
 			// キャラクター押下
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedType][ccvs.tappedCharacter], 1));
+			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedCharacter], 1));
 			exist = false;
 		});
 

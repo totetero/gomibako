@@ -13,6 +13,7 @@ class DiceCharacter extends PartsCharacter{
 	var _character : DrawCharacter;
 	var _shadow : DrawShadow;
 
+	var side : string;
 	var hp : int;
 	var sp : int;
 	var maxhp : int;
@@ -30,6 +31,7 @@ class DiceCharacter extends PartsCharacter{
 	// コンストラクタ
 	function constructor(ccvs : DiceCanvas, charaInfo : variant){
 		super(charaInfo);
+		this.side = charaInfo["side"] as string;
 		this.hp = 100;
 		this.sp = 100;
 		this.maxhp = 100;

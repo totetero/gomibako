@@ -10,6 +10,7 @@ import "../page/SECload.jsx";
 import "DiceCanvas.jsx";
 import "SECdiceThrow.jsx";
 import "SECdiceCommand.jsx";
+import "SECdiceMove.jsx";
 import "SECdiceMap.jsx";
 
 // ----------------------------------------------------------------
@@ -59,7 +60,10 @@ class DicePage extends Page{
 		this.ccvs = new DiceCanvas(this.div.getElementsByTagName("canvas").item(0) as HTMLCanvasElement);
 
 		// イベント設定
-		this.serialPush(new SECloadDice(this, {"stage": "test"}));
+		this.serialPush(new SECload("/dice", {"type": "entry"}, function(response : variant) : void{
+			// ロード完了 データの形成
+			this.parseCommand(response["list"] as variant[]);
+		}));
 		this.serialPush(new ECone(function() : void{
 			// ページ遷移前描画
 			this.ccvs.draw();
@@ -73,26 +77,33 @@ class DicePage extends Page{
 	}
 
 	// ----------------------------------------------------------------
+	// ロードしたデータの解析
+	function parseCommand(list : variant[]) : void{
+		for(var i = 0; i < list.length; i++){
+			switch(list[i]["type"] as string){
+				case "entry": this.ccvs.init(list[i]); break;
+				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// ロードしたデータの解析
+	function parseDice(list : variant[]) : int[]{
+		var pip : int[] = null;
+		for(var i = 0; i < list.length; i++){
+			switch(list[i]["type"] as string){
+				case "dice": pip = list[i]["pip"] as int[]; break;
+				case "move": this.serialPush(new SECdiceMove(this, list[i])); break;
+			}
+		}
+		return pip;
+	}
+
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-	}
-}
-
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-
-// すごろくページ情報読み込み
-class SECloadDice extends SECload{
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(page : DicePage, request : variant){
-		super("/dice", request, function(response : variant) : void{
-			// ロード完了 データの形成
-			page.ccvs.init(response);
-			page.serialPush(new SECdiceCommand(page));
-		});
 	}
 }
 

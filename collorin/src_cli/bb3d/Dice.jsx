@@ -305,7 +305,7 @@ class DrawThrowDice extends DrawDice{
 	var _throwMode = 0;
 	var _throwAction = 0;
 
-	var pip = 1; // TODO test初期値
+	var pip = 0;
 	var throwing = false;
 
 	// ----------------------------------------------------------------

@@ -22,9 +22,9 @@ class SECdiceCommand extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage){
+	function constructor(page : DicePage, response : variant){
 		this._page = page;
-		this._player = this._page.ccvs.member[0][0];
+		this._player = this._page.ccvs.member[response["id"] as string];
 	}
 
 	// ----------------------------------------------------------------
@@ -59,14 +59,17 @@ class SECdiceCommand extends EventCartridge{
 		}, function() : void{
 			// キャラクター押下
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedType][ccvs.tappedCharacter], 0));
+			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedCharacter], 0));
 			exist = false;
 		});
 
 		// さいころボタン
 		if(Ctrl.trigger_zb){
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceRoll(this._page, this));
+			this._page.serialPush(new SECdiceRoll(this._page, this, "", {
+				"type": "dice",
+				"num": 1,
+			}));
 			exist = false;
 		}
 
