@@ -19,15 +19,11 @@ class MockDice{
 			CharacterDrawInfo.init();
 		}
 
-		var jdat = {} : Map.<variant>;
 		var imgs = {} : Map.<string>;
 		var list = new variant[];
 
 		switch(request["type"] as string){
-			case "entry":
-				list.push(MockDice._entry(imgs));
-				list.push({type: "command", id: "p00"});
-				break;
+			case "entry": MockDice._entry(list, imgs); break;
 			case "dice":
 				var num = request["num"] as int;
 				var pipList = new int[];
@@ -46,6 +42,7 @@ class MockDice{
 				break;
 		}
 
+		var jdat = {} : Map.<variant>;
 		jdat["imgs"] = imgs;
 		jdat["list"] = list;
 		successFunc(jdat);
@@ -53,7 +50,7 @@ class MockDice{
 
 	// ----------------------------------------------------------------
 	// ゲーム開始
-	static function _entry(imgs : Map.<string>) : variant{
+	static function _entry(list : variant[], imgs : Map.<string>) : void{
 		var jdat = {} : Map.<variant>;
 		jdat["type"] = "entry";
 
@@ -111,7 +108,8 @@ class MockDice{
 		}
 
 		jdat["charaInfo"] = charaInfoList;
-		return jdat;
+		list.push(jdat);
+		list.push({type: "command", id: "p00"});
 	}
 }
 

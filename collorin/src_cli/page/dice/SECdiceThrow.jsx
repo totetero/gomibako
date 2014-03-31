@@ -109,15 +109,19 @@ class SECdiceThrow extends EventCartridge{
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		// さいころ通信
 		Loader.loadxhr("/dice", this._request, function(response : variant) : void{
-			// 通信成功
-			this._request = null;
-			var pip = this._page.parseDice(response["list"] as variant[]);
-			// さいころ目を設定
-			for(var i = 0; i < this._page.ccvs.dices.length; i++){this._page.ccvs.dices[i].pip = pip[i];}
-			// トリガーリセット
-			Ctrl.trigger_xb = false;
-			// コントローラーを表示
-			this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
+			Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
+				// 通信成功
+				this._request = null;
+				var pip = this._page.parseDice(response["list"] as variant[]);
+				// さいころ目を設定
+				for(var i = 0; i < this._page.ccvs.dices.length; i++){this._page.ccvs.dices[i].pip = pip[i];}
+				// トリガーリセット
+				Ctrl.trigger_xb = false;
+				// コントローラーを表示
+				this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
+			}, function():void{
+				// 画像ロード失敗
+			});
 		}, function() : void{
 			// 情報ロード失敗
 		});
@@ -137,7 +141,7 @@ class SECdiceThrow extends EventCartridge{
 			// さいころ完了確認
 			var throwing = false;
 			for(var i = 0; i < ccvs.dices.length; i++){throwing = throwing || ccvs.dices[i].throwing;}
-        
+
 			// 演出終了もしくはスキップボタン
 			if(!throwing || Ctrl.trigger_xb){
 				if(Ctrl.trigger_xb){Sound.playSE("ok");}
