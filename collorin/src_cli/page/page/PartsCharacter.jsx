@@ -20,9 +20,9 @@ class PartsCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(data : variant){
-		this.code = data["code"] as string;
-		this.name = data["name"] as string;
+	function constructor(response : variant){
+		this.code = response["code"] as string;
+		this.name = response["name"] as string;
 	}
 }
 

@@ -28,16 +28,16 @@ class ChatCharacter extends PartsCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(ccvs : ChatCanvas, charaInfo : variant){
-		super(charaInfo);
-		this.uid = charaInfo["uid"] as int;
-		this.x = charaInfo["x"] as int * 16 + 8;
-		this.y = charaInfo["y"] as int * 16 + 8;
-		this.r = charaInfo["r"] as int * Math.PI * 0.25;
+	function constructor(ccvs : ChatCanvas, response : variant){
+		super(response);
+		this.uid = response["uid"] as int;
+		this.x = response["x"] as int * 16 + 8;
+		this.y = response["y"] as int * 16 + 8;
+		this.r = response["r"] as int * Math.PI * 0.25;
 
 		var img = Loader.imgs["img_dot_" + this.code];
-		var drawInfo = new DrawCharacterInfo(charaInfo["drawInfo"]);
-		var size = charaInfo["size"] as number;
+		var drawInfo = new DrawCharacterInfo(response["drawInfo"]);
+		var size = response["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);
 		this._nametag = new DrawText(this.name);
 		this._balloon = new DrawBalloon();
@@ -46,7 +46,7 @@ class ChatCharacter extends PartsCharacter{
 		ccvs.clist.push(this._nametag);
 		ccvs.clist.push(this._balloon);
 		ccvs.slist.push(this._shadow);
-		this.setTalk(charaInfo["serif"] as string);
+		this.setTalk(response["serif"] as string);
 	}
 
 	// ----------------------------------------------------------------

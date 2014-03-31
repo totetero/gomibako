@@ -29,22 +29,22 @@ class DiceCharacter extends PartsCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(ccvs : DiceCanvas, charaInfo : variant){
-		super(charaInfo);
-		this.side = charaInfo["side"] as string;
+	function constructor(ccvs : DiceCanvas, response : variant){
+		super(response);
+		this.side = response["side"] as string;
 		this.hp = 100;
 		this.sp = 100;
 		this.maxhp = 100;
 		this.maxsp = 100;
-		var hexx = charaInfo["x"] as int;
-		var hexy = charaInfo["y"] as int;
+		var hexx = response["x"] as int;
+		var hexy = response["y"] as int;
 		this.x = ccvs.field.calcHexCoordx(hexx, hexy);
 		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
-		this.r = charaInfo["r"] as number;
+		this.r = response["r"] as number;
 
 		var img = Loader.imgs["img_dot_" + this.code];
-		var drawInfo = new DrawCharacterInfo(charaInfo["drawInfo"]);
-		var size = charaInfo["size"] as number;
+		var drawInfo = new DrawCharacterInfo(response["drawInfo"]);
+		var size = response["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);
 		this._shadow = new DrawShadow(size);
 		ccvs.clist.push(this._character);
