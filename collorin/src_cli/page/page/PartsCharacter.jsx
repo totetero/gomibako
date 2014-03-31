@@ -52,8 +52,8 @@ class PartsCharaListItem extends PartsCharacter{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(data : variant){
-		super(data);
+	function constructor(response : variant){
+		super(response);
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
 		this.bodyDiv.className = "core-chara-item";
