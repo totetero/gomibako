@@ -38,13 +38,24 @@ class SECdiceFace extends EventCartridge{
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "", "", ""));
 		this._page.parallelPush(new PECopenCharacter("", ""));
-		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara0, -1));
-		this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, -1));
+		this._setGauge(-1);
 		// キャラクターが向き合う
 		var r = Math.atan2(this._chara1.y - this._chara0.y, this._chara1.x - this._chara0.x);
 		this._chara0.r = r;
 		this._chara1.r = r + Math.PI;
 		return false;
+	}
+
+	// ----------------------------------------------------------------
+	// ゲージ設定
+	function _setGauge(time : int) : void{
+		if(this._chara1.side == "player" && this._chara0.side != "player"){
+			this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara1, time));
+			this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara0, time));
+		}else{
+			this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara0, time));
+			this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, time));
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -66,7 +77,7 @@ class SECdiceFace extends EventCartridge{
 					this._action = 0;
 					// テスト
 					this._chara1.hp -= 30;
-					this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, -1));
+					this._setGauge(-1);
 					for(var i = 0; i < 3; i++){
 						this._page.ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
 					}
@@ -101,8 +112,7 @@ class SECdiceFace extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara0, 90));
-		this._page.parallelPush(new PECdiceEnemyGauge(this._page, this._chara1, 90));
+		this._setGauge(90);
 	}
 }
 

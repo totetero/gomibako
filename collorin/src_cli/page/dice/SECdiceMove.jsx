@@ -150,11 +150,14 @@ class SECdiceMove extends EventCartridge{
 							var r = Math.atan2(member.y - this._player.y, member.x - this._player.x);
 							this._player.r = r;
 							member.r = r + Math.PI;
+							// カメラ設定
+							var camera = 0;
+							if(this._player.side != member.side){
+								camera = 2;
+								this._page.ccvs.center = [this._player, member];
+							}
 							// 移動完了
-							log this._dstList;
-							this._page.serialPush(new SECloadDice(this._page, 2, {type: "move"}));
-							// 中心キャラクター設定
-							this._page.ccvs.center = [this._player, member];
+							this._page.serialPush(new SECloadDice(this._page, camera, {type: "move", dst: this._dstList, face: id}));
 							exist = false;
 						}
 						if(!exist){break;}
@@ -182,8 +185,7 @@ class SECdiceMove extends EventCartridge{
 			}
 		}else{
 			// 移動完了
-			log this._dstList;
-			this._page.serialPush(new SECloadDice(this._page, 0, {type: "move"}));
+			this._page.serialPush(new SECloadDice(this._page, 0, {type: "move", dst: this._dstList}));
 			exist = false;
 		}
 
@@ -217,6 +219,13 @@ class SECloadDice extends SECload{
 		});
 		this._ccvs = page.ccvs;
 		this._camera = camera;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : boolean{
+		super.init();
+		return false;
 	}
 
 	// ----------------------------------------------------------------

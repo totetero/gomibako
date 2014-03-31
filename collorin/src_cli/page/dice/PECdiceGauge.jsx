@@ -121,6 +121,7 @@ class PECdicePlayerGauge extends PECdiceGauge{
 	override function init() : boolean{
 		this.hprate0 = this.hprate1 = this.chara.hp / this.chara.maxhp;
 		this.sprate0 = this.sprate1 = this.chara.sp / this.chara.maxsp;
+
 		// ゲージの引き継ぎと動作重複禁止
 		if(PECdicePlayerGauge._current != null){
 			if(this.chara == PECdicePlayerGauge._current.chara){
@@ -130,6 +131,15 @@ class PECdicePlayerGauge extends PECdiceGauge{
 			PECdicePlayerGauge._current.exist = false;
 		}
 		PECdicePlayerGauge._current = this;
+
+		// 同キャラの同時出現禁止
+		if(PECdiceEnemyGauge._current != null){
+			if(this.chara == PECdiceEnemyGauge._current.chara){
+				PECdiceEnemyGauge._current.exist = false;
+				PECdiceEnemyGauge._current._statusDiv.style.opacity = "0";
+			}
+		}
+
 		return true;
 	}
 
@@ -155,6 +165,7 @@ class PECdiceEnemyGauge extends PECdiceGauge{
 	override function init() : boolean{
 		this.hprate0 = this.hprate1 = this.chara.hp / this.chara.maxhp;
 		this.sprate0 = this.sprate1 = this.chara.sp / this.chara.maxsp;
+
 		// ゲージの引き継ぎと動作重複禁止
 		if(PECdiceEnemyGauge._current != null){
 			if(this.chara == PECdiceEnemyGauge._current.chara){
@@ -164,6 +175,15 @@ class PECdiceEnemyGauge extends PECdiceGauge{
 			PECdiceEnemyGauge._current.exist = false;
 		}
 		PECdiceEnemyGauge._current = this;
+
+		// 同キャラの同時出現禁止
+		if(PECdicePlayerGauge._current != null){
+			if(this.chara == PECdicePlayerGauge._current.chara){
+				PECdicePlayerGauge._current.exist = false;
+				PECdicePlayerGauge._current._statusDiv.style.opacity = "0";
+			}
+		}
+
 		return true;
 	}
 
