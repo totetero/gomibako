@@ -8,7 +8,6 @@ import "../page/Transition.jsx";
 import "DicePage.jsx";
 import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
-import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
 
 // ----------------------------------------------------------------
@@ -24,10 +23,10 @@ class SECdiceFace extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage, chara0 : DiceCharacter, chara1 : DiceCharacter){
+	function constructor(page : DicePage, response : variant){
 		this._page = page;
-		this._chara0 = chara0;
-		this._chara1 = chara1;
+		this._chara0 = this._page.ccvs.member[response["id0"] as string];
+		this._chara1 = this._page.ccvs.member[response["id1"] as string];
 	}
 
 	// ----------------------------------------------------------------
@@ -89,7 +88,6 @@ class SECdiceFace extends EventCartridge{
 				this._chara0.motion = "stand";
 				this._chara1.motion = "stand";
 				if(++this._action >= 10){
-//					this._page.serialPush(new SECdiceCommand(this._page));
 					exist = false;
 				}
 				break;

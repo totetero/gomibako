@@ -8,10 +8,9 @@ import "../page/Transition.jsx";
 import "../page/SECload.jsx";
 
 import "DiceCanvas.jsx";
-import "SECdiceThrow.jsx";
 import "SECdiceCommand.jsx";
 import "SECdiceMove.jsx";
-import "SECdiceMap.jsx";
+import "SECdiceFace.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -83,6 +82,7 @@ class DicePage extends Page{
 			switch(list[i]["type"] as string){
 				case "entry": this.ccvs.init(list[i]); break;
 				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
+				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
 			}
 		}
 	}

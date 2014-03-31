@@ -4,13 +4,13 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 import "../page/Transition.jsx";
+import "../page/SECload.jsx";
 
 import "DicePage.jsx";
+import "DiceCanvas.jsx";
 import "DiceCharacter.jsx";
 import "PECdiceMessage.jsx";
-import "SECdiceCommand.jsx";
 import "SECdiceMap.jsx";
-import "SECdiceFace.jsx";
 import "SECdicePopupInfoChara.jsx";
 
 // ----------------------------------------------------------------
@@ -152,7 +152,9 @@ class SECdiceMove extends EventCartridge{
 							member.r = r + Math.PI;
 							// 移動完了
 							log this._dstList;
-							this._page.serialPush(new SECdiceFace(this._page, this._player, member));
+							this._page.serialPush(new SECloadDice(this._page, 2, {type: "move"}));
+							// 中心キャラクター設定
+							this._page.ccvs.center = [this._player, member];
 							exist = false;
 						}
 						if(!exist){break;}
@@ -181,7 +183,7 @@ class SECdiceMove extends EventCartridge{
 		}else{
 			// 移動完了
 			log this._dstList;
-//			this._page.serialPush(new SECdiceCommand(this._page));
+			this._page.serialPush(new SECloadDice(this._page, 0, {type: "move"}));
 			exist = false;
 		}
 
@@ -194,6 +196,41 @@ class SECdiceMove extends EventCartridge{
 	// 破棄
 	override function dispose() : void{
 		this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// すごろくページ情報読み込み
+class SECloadDice extends SECload{
+	var _ccvs : DiceCanvas;
+	var _camera : int;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : DicePage, camera : int, request : variant){
+		super("/dice", request, function(response : variant) : void{
+			// ロード完了 データの形成
+			page.parseCommand(response["list"] as variant[]);
+		});
+		this._ccvs = page.ccvs;
+		this._camera = camera;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		// キャンバス計算
+		this._ccvs.calc(true, this._camera, null, null);
+
+		// ローダー計算
+		var exist = super.calc();
+
+		// キャンバス描画
+		this._ccvs.draw();
+		return exist;
 	}
 }
 
