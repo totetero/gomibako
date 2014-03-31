@@ -72,6 +72,24 @@ class MockDice{
 			new MockDiceHexFieldCell(4, 2, 1),
 		];
 
+		// フィールド隣人確認
+		for(var i = 0; i < MockDice.hex.length; i++){
+			MockDice.hex[i].next = new int[];
+			for(var j = 0; j < MockDice.hex.length; j++){
+				var x0 = MockDice.hex[i].x;
+				var y0 = MockDice.hex[i].y;
+				var x1 = MockDice.hex[j].x;
+				var y1 = MockDice.hex[j].y;
+				if(x1 == x0 + 1 && y1 == y0 + 0){MockDice.hex[i].next.push(j);}
+				if(x1 == x0 + 0 && y1 == y0 + 1){MockDice.hex[i].next.push(j);}
+				if(x1 == x0 - 1 && y1 == y0 + 1){MockDice.hex[i].next.push(j);}
+				if(x1 == x0 - 1 && y1 == y0 + 0){MockDice.hex[i].next.push(j);}
+				if(x1 == x0 + 0 && y1 == y0 - 1){MockDice.hex[i].next.push(j);}
+				if(x1 == x0 + 1 && y1 == y0 - 1){MockDice.hex[i].next.push(j);}
+
+			}
+		}
+
 		// キャラクター情報
 		MockDice.cinfo = [
 			new MockDiceCharaInfo("p00", "player", "player1", "human", 1, 7, Math.PI * 1.5, 1.2),
@@ -136,15 +154,25 @@ class MockDice{
 	// ----------------------------------------------------------------
 	// 移動処理
 	static function _move(list : variant[], imgs : Map.<string>, request : variant) : void{
-		if(request["face"] != null){
-			var id0 = MockDice.turnId;
-			var id1 = request["face"] as string;
+		// 移動キャラクター情報獲得
+		var id0 = MockDice.turnId;
+		var chara0 : MockDiceCharaInfo = null;
+		for(var i = 0; i < MockDice.cinfo.length; i++){
+			if(MockDice.cinfo[i].id == id0){chara0 = MockDice.cinfo[i];}
+		}
 
-			// キャラクター情報獲得
-			var chara0 : MockDiceCharaInfo = null;
+		// 移動の確認
+		var dst = request["dst"] as int[][];
+		for(var i = 0; i < dst.length; i++){
+			chara0.x = dst[i][0];
+			chara0.y = dst[i][1];
+		}
+
+		if(request["face"] != null){
+			// 対面キャラクター情報獲得
+			var id1 = request["face"] as string;
 			var chara1 : MockDiceCharaInfo = null;
 			for(var i = 0; i < MockDice.cinfo.length; i++){
-				if(MockDice.cinfo[i].id == id0){chara0 = MockDice.cinfo[i];}
 				if(MockDice.cinfo[i].id == id1){chara1 = MockDice.cinfo[i];}
 			}
 
@@ -174,7 +202,11 @@ class MockDice{
 		MockDice.turnId = turnChara.id;
 
 		if(turnChara.side == "player"){
+			// コマンド入力待ち
 			list.push({type: "command", id: MockDice.turnId});
+		}else if(turnChara.side == "enemy"){
+			// ターン切り替え
+			MockDice._turn(list, imgs);
 		}else{
 			// ターン切り替え
 			MockDice._turn(list, imgs);
@@ -212,6 +244,7 @@ class MockDiceHexFieldCell{
 	var x : int;
 	var y : int;
 	var type : int;
+	var next : int[];
 	function constructor(x : int, y : int, type : int){
 		this.x = x;
 		this.y = y;
