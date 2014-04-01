@@ -142,29 +142,32 @@ class SECdiceMoveManual extends EventCartridge{
 				}
 				if(x1 != x0 || y1 != y0){
 					// 対面イベント確認
+					var faceId = "";
 					for(var id in ccvs.member){
 						var member = ccvs.member[id];
-						if(member.side != "player" && member.side != "enemy"){continue;}
 						if(this._player == member){continue;}
 						var hex = ccvs.field.getHexFromCoordinate(member.x, member.y);
 						if(x1 == hex.x && y1 == hex.y){
-							// 対面イベント発生 キャラクターが向き合う
-							var r = Math.atan2(member.y - this._player.y, member.x - this._player.x);
-							this._player.r = r;
-							member.r = r + Math.PI;
-							// カメラ設定
-							var camera = 0;
-							if(this._player.side != member.side){
-								camera = 2;
-								this._page.ccvs.center = [this._player, member];
-							}
-							// 移動完了
-							this._page.serialPush(new SECloadDice(this._page, camera, {type: "move", dst: this._dstList, face: id}));
-							exist = false;
+							faceId = id;
+							break;
 						}
-						if(!exist){break;}
 					}
-					if(exist){
+					if(faceId != ""){
+						// 対面イベント発生 キャラクターが向き合う
+						var member = ccvs.member[faceId];
+						var r = Math.atan2(member.y - this._player.y, member.x - this._player.x);
+						this._player.r = r;
+						member.r = r + Math.PI;
+						// カメラ設定
+						var camera = 0;
+						if(this._player.side != member.side){
+							camera = 2;
+							this._page.ccvs.center = [this._player, member];
+						}
+						// 移動完了
+						this._page.serialPush(new SECloadDice(this._page, camera, {type: "move", dst: this._dstList, face: faceId}));
+						exist = false;
+					}else{
 						// 対面イベントが発生しないならば移動先のヘックスに移動する
 						this._player.dstList.unshift([x1, y1] : int[]);
 						if(this._srcList.length > 0 && this._player.dstList[0][0] == this._srcList[0][0] && this._player.dstList[0][1] == this._srcList[0][1]){

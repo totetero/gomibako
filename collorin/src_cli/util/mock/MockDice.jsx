@@ -11,9 +11,9 @@ class MockDice{
 	static var isInit : boolean;
 
 	// 管理情報
-	static var hex : MockDiceHexFieldCell[];
-	static var cinfo : MockDiceCharaInfo[];
-	static var turnId : string;
+	static var _hex : MockDiceHexFieldCell[];
+	static var _cinfo : MockDiceCharaInfo[];
+	static var _turnId : string;
 
 	// ----------------------------------------------------------------
 	// XMLhttpリクエストエミュレート
@@ -46,7 +46,7 @@ class MockDice{
 		// 管理情報作成
 
 		// フィールド情報
-		MockDice.hex = [
+		MockDice._hex = [
 			new MockDiceHexFieldCell(0, 3, 1),
 			new MockDiceHexFieldCell(0, 4, 1),
 			new MockDiceHexFieldCell(0, 5, 2),
@@ -73,29 +73,14 @@ class MockDice{
 			new MockDiceHexFieldCell(4, 2, 1),
 		];
 
-		// フィールド隣人確認
-		for(var i = 0; i < MockDice.hex.length; i++){
-			MockDice.hex[i].next = new int[];
-			for(var j = 0; j < MockDice.hex.length; j++){
-				var x0 = MockDice.hex[i].x;
-				var y0 = MockDice.hex[i].y;
-				var x1 = MockDice.hex[j].x;
-				var y1 = MockDice.hex[j].y;
-				if(x1 == x0 + 1 && y1 == y0 + 0){MockDice.hex[i].next.push(j);}
-				if(x1 == x0 + 0 && y1 == y0 + 1){MockDice.hex[i].next.push(j);}
-				if(x1 == x0 - 1 && y1 == y0 + 1){MockDice.hex[i].next.push(j);}
-				if(x1 == x0 - 1 && y1 == y0 + 0){MockDice.hex[i].next.push(j);}
-				if(x1 == x0 + 0 && y1 == y0 - 1){MockDice.hex[i].next.push(j);}
-				if(x1 == x0 + 1 && y1 == y0 - 1){MockDice.hex[i].next.push(j);}
-			}
-		}
-
 		// キャラクター情報
-		MockDice.cinfo = [
+		MockDice._cinfo = [
 			new MockDiceCharaInfo("p00", "player", "player1", "human", 1, 7, Math.PI * 1.5, 1.2),
 			new MockDiceCharaInfo("p01", "player", "player2", "human", 2, 7, Math.PI * 1.5, 1.2),
 			new MockDiceCharaInfo("e00", "enemy", "enemy1", "human", 2, 4, Math.PI * 0.5, 1.2),
 		];
+
+		MockDice._turnId = "";
 
 		// --------------------------------
 		// 送信情報作成
@@ -104,8 +89,8 @@ class MockDice{
 
 		// 送信用フィールド情報
 		var jdatHex = new variant[];
-		for(var i = 0; i < MockDice.hex.length; i++){
-			var hex = MockDice.hex[i];
+		for(var i = 0; i < MockDice._hex.length; i++){
+			var hex = MockDice._hex[i];
 			jdatHex.push({
 				x: hex.x,
 				y: hex.y,
@@ -116,8 +101,8 @@ class MockDice{
 
 		// 送信用キャラクター情報
 		var jdatCharaInfo = {} : Map.<variant>;
-		for(var i = 0; i < MockDice.cinfo.length; i++){
-			var cinfo = MockDice.cinfo[i];
+		for(var i = 0; i < MockDice._cinfo.length; i++){
+			var cinfo = MockDice._cinfo[i];
 			// 送信用キャラクター情報作成
 			jdatCharaInfo[cinfo.id] = {
 				side: cinfo.side,
@@ -137,7 +122,7 @@ class MockDice{
 		jdat["charaInfo"] = jdatCharaInfo;
 
 		// 初期カメラ位置
-		jdat["camera"] = [MockDice.cinfo[0].x, MockDice.cinfo[0].y];
+		jdat["camera"] = [MockDice._cinfo[0].x, MockDice._cinfo[0].y];
 
 		// さいころ画像
 		imgs["img_dice"] = "/img/dice/test.png";
@@ -162,17 +147,17 @@ class MockDice{
 			pipTotal += pip;
 		}
 		list.push({type: "dice", pip: pipList});
-		list.push({type: "moveManual", id: MockDice.turnId, pip: pipTotal});
+		list.push({type: "moveManual", id: MockDice._turnId, pip: pipTotal});
 	}
 
 	// ----------------------------------------------------------------
 	// 移動処理
 	static function _move(list : variant[], imgs : Map.<string>, request : variant) : void{
 		// 移動キャラクター情報獲得
-		var id0 = MockDice.turnId;
+		var id0 = MockDice._turnId;
 		var chara0 : MockDiceCharaInfo = null;
-		for(var i = 0; i < MockDice.cinfo.length; i++){
-			if(MockDice.cinfo[i].id == id0){chara0 = MockDice.cinfo[i];}
+		for(var i = 0; i < MockDice._cinfo.length; i++){
+			if(MockDice._cinfo[i].id == id0){chara0 = MockDice._cinfo[i];}
 		}
 
 		// 移動の確認
@@ -186,8 +171,8 @@ class MockDice{
 			// 対面キャラクター情報獲得
 			var id1 = request["face"] as string;
 			var chara1 : MockDiceCharaInfo = null;
-			for(var i = 0; i < MockDice.cinfo.length; i++){
-				if(MockDice.cinfo[i].id == id1){chara1 = MockDice.cinfo[i];}
+			for(var i = 0; i < MockDice._cinfo.length; i++){
+				if(MockDice._cinfo[i].id == id1){chara1 = MockDice._cinfo[i];}
 			}
 
 			if(chara0.side != chara1.side){list.push({type: "face", id0: id0, id1: id1});}
@@ -201,28 +186,77 @@ class MockDice{
 	// ターン開始処理
 	static function _turn(list : variant[], imgs : Map.<string>) : void{
 		var turnChara : MockDiceCharaInfo = null;
-		if(MockDice.turnId == ""){
+		if(MockDice._turnId == ""){
 			// 最初のターン
-			turnChara = MockDice.cinfo[0];
+			turnChara = MockDice._cinfo[0];
 		}else{
 			// ターン切り替え
-			for(var i = 0; i < MockDice.cinfo.length; i++){
-				if(MockDice.cinfo[i].id == MockDice.turnId){
-					turnChara = MockDice.cinfo[(i + 1) % MockDice.cinfo.length];
+			for(var i = 0; i < MockDice._cinfo.length; i++){
+				if(MockDice._cinfo[i].id == MockDice._turnId){
+					turnChara = MockDice._cinfo[(i + 1) % MockDice._cinfo.length];
 					break;
 				}
 			}
 		}
-		MockDice.turnId = turnChara.id;
+		MockDice._turnId = turnChara.id;
 
 		if(turnChara.side == "player"){
 			// コマンド入力待ち
-			list.push({type: "command", id: MockDice.turnId});
+			list.push({type: "command", id: MockDice._turnId});
 		}else if(turnChara.side == "enemy"){
-			// テスト行動
+			// ランダム行動
 			var pip = Math.floor(1 + Math.random() * 6);
-			var src = [turnChara.x, turnChara.y];
-			list.push({type: "moveAuto", id: turnChara.id, dst: [[2, 3], [2, 2], [1, 2], [0, 3], [0, 4], [0, 5], [1, 5], [2, 4]]});
+			var dst = new int[][];
+			var x0 = turnChara.x;
+			var y0 = turnChara.y;
+			var x1 = x0;
+			var y1 = y0;
+			var faceId = "";
+			for(var i = 0; i < pip; i++){
+				// 直前にいなかった隣接ヘックス確認
+				var temp = new int[][];
+				for(var j = 0; j < MockDice._hex.length; j++){
+					var x2 = MockDice._hex[j].x;
+					var y2 = MockDice._hex[j].y;
+					if(x2 == x0 && y2 == y0){continue;}
+					if(x2 == x1 + 1 && y2 == y1 + 0){temp.push([x2, y2]);}
+					if(x2 == x1 + 0 && y2 == y1 + 1){temp.push([x2, y2]);}
+					if(x2 == x1 - 1 && y2 == y1 + 1){temp.push([x2, y2]);}
+					if(x2 == x1 - 1 && y2 == y1 + 0){temp.push([x2, y2]);}
+					if(x2 == x1 + 0 && y2 == y1 - 1){temp.push([x2, y2]);}
+					if(x2 == x1 + 1 && y2 == y1 - 1){temp.push([x2, y2]);}
+				}
+				if(temp.length > 0){
+					// 隣接ヘックスランダム選択
+					var next = temp[Math.floor(temp.length * Math.random())];
+					// 対面イベント確認
+					for(var j = 0; j < MockDice._cinfo.length; j++){
+						var cinfo = MockDice._cinfo[j];
+						if(cinfo.x == next[0] && cinfo.y == next[1]){
+							faceId = cinfo.id;
+							break;
+						}
+					}
+					if(faceId != ""){
+						// 対面イベント発生 移動完了
+						break;
+					}else{
+						// ヘックス移動
+						x0 = x1;
+						y0 = y1;
+						x1 = next[0];
+						y1 = next[1];
+						dst.push(next);
+					}
+				}else{
+					// 移動先が無い
+					break;
+				}
+			}
+			turnChara.x = x1;
+			turnChara.y = y1;
+			if(dst.length > 0){list.push({type: "moveAuto", id: turnChara.id, dst: dst});}
+			if(faceId != ""){list.push({type: "face", id0: turnChara.id, id1: faceId});}
 			// ターン切り替え
 			MockDice._turn(list, imgs);
 		}else{
@@ -230,7 +264,6 @@ class MockDice{
 			MockDice._turn(list, imgs);
 		}
 	}
-
 }
 
 // ----------------------------------------------------------------
@@ -262,7 +295,6 @@ class MockDiceHexFieldCell{
 	var x : int;
 	var y : int;
 	var type : int;
-	var next : int[];
 	function constructor(x : int, y : int, type : int){
 		this.x = x;
 		this.y = y;

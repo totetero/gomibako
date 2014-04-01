@@ -64,7 +64,7 @@ class SECdiceMoveAuto extends EventCartridge{
 			var hexy = this._chara.dstList[this._chara.dstList.length - 1][1];
 			var x1 = ccvs.field.calcHexCoordx(hexx, hexy);
 			var y1 = ccvs.field.calcHexCoordy(hexx, hexy);
-			if(this._chara.dstList.length > 0){
+			if(this._chara.dstList.length > 1){
 				var hexx = this._chara.dstList[this._chara.dstList.length - 2][0];
 				var hexy = this._chara.dstList[this._chara.dstList.length - 2][1];
 				var x0 = ccvs.field.calcHexCoordx(hexx, hexy);
