@@ -125,6 +125,9 @@ class MockDice{
 		// 初期カメラ位置
 		jdat["camera"] = [MockDice._cinfo[0].x, MockDice._cinfo[0].y];
 
+		// 背景画像
+		jdat["background"] = "test";
+		imgs["img_background_test"] = "/img/background/test.png";
 		// さいころ画像
 		imgs["img_dice"] = "/img/dice/test.png";
 		// エフェクト画像

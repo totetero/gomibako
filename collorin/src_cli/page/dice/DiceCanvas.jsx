@@ -1,5 +1,6 @@
 import "js/web.jsx";
 
+import "../../util/Loader.jsx";
 import "../../util/Ctrl.jsx";
 import "../../bb3d/Ccvs.jsx";
 import "../../bb3d/DrawUnit.jsx";
@@ -26,6 +27,12 @@ class DiceCanvas extends Ccvs{
 	var tapped : boolean;
 	var tappedCharacter : string;
 
+	// 背景
+	var _bgimg : HTMLImageElement;
+	var _bgcolor1 : string;
+	var _bgcolor2 : string;
+	var _bgaction = 0;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(canvas : HTMLCanvasElement){
@@ -47,6 +54,17 @@ class DiceCanvas extends Ccvs{
 		var hexy = response["camera"][1] as int;
 		this.cx = this.calcx = this.field.calcHexCoordx(hexx, hexy);
 		this.cy = this.calcy = this.field.calcHexCoordy(hexx, hexy);
+		// 背景
+		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
+		var canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+		var context = canvas.getContext("2d") as CanvasRenderingContext2D;
+		canvas.width = 1;
+		canvas.height = this._bgimg.height;
+		context.drawImage(this._bgimg, 0, 0);
+		var data1 = context.getImageData(0, 0, 1, 1).data;
+		var data2 = context.getImageData(0, this._bgimg.height - 1, 1, 1).data;
+		this._bgcolor1 = "rgb(" + data1[0] + "," + data1[1] + "," + data1[2] + ")";
+		this._bgcolor2 = "rgb(" + data2[0] + "," + data2[1] + "," + data2[2] + ")";
 	}
 
 	// ----------------------------------------------------------------
@@ -148,11 +166,27 @@ class DiceCanvas extends Ccvs{
 		for(var id in this.member){this.member[id].preDraw(this);}
 		for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
 
-		this.context.clearRect(0, 0, this.width, this.height);
+		this._drawBackground();
 		this.field.draw(this, this.cx, this.cy, this.tapped);
 		DrawUnit.drawList(this, this.slist);
 		DrawUnit.drawList(this, this.clist);
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
+	}
+
+	// ----------------------------------------------------------------
+	// 背景描画
+	function _drawBackground() : void{
+		//this.context.clearRect(0, 0, this.width, this.height);
+		this.context.fillStyle = this._bgcolor1;
+		this.context.fillRect(0, 0, this.width, this.height * 0.5);
+		this.context.fillStyle = this._bgcolor2;
+		this.context.fillRect(0, this.height * 0.5, this.width, this.height * 0.5);
+		var x = -(this._bgaction++) % this._bgimg.width;
+		var y = (this.height - this._bgimg.height) * 0.5;
+		while(x < this.width){
+			this.context.drawImage(this._bgimg, x, y);
+			x += this._bgimg.width;
+		}
 	}
 
 	// ----------------------------------------------------------------
