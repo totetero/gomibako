@@ -10,6 +10,7 @@ import "../../../src_srv/data/CharacterDrawInfo.jsx";
 class MockDice{
 	static var isInit : boolean;
 
+	// 管理情報
 	static var hex : MockDiceHexFieldCell[];
 	static var cinfo : MockDiceCharaInfo[];
 	static var turnId : string;
@@ -41,8 +42,8 @@ class MockDice{
 	// ----------------------------------------------------------------
 	// ゲーム開始
 	static function _entry(list : variant[], imgs : Map.<string>) : void{
-		var jdat = {} : Map.<variant>;
-		jdat["type"] = "entry";
+		// --------------------------------
+		// 管理情報作成
 
 		// フィールド情報
 		MockDice.hex = [
@@ -86,7 +87,6 @@ class MockDice{
 				if(x1 == x0 - 1 && y1 == y0 + 0){MockDice.hex[i].next.push(j);}
 				if(x1 == x0 + 0 && y1 == y0 - 1){MockDice.hex[i].next.push(j);}
 				if(x1 == x0 + 1 && y1 == y0 - 1){MockDice.hex[i].next.push(j);}
-
 			}
 		}
 
@@ -97,18 +97,29 @@ class MockDice{
 			new MockDiceCharaInfo("e00", "enemy", "enemy1", "human", 2, 4, Math.PI * 0.5, 1.2),
 		];
 
-		// さいころ画像
-		imgs["img_dice"] = "/img/dice/test.png";
+		// --------------------------------
+		// 送信情報作成
+		var jdat = {} : Map.<variant>;
+		jdat["type"] = "entry";
 
-		// エフェクト画像
-		imgs["img_effect_star01"] = "/img/effect/star01.png";
+		// 送信用フィールド情報
+		var jdatHex = new variant[];
+		for(var i = 0; i < MockDice.hex.length; i++){
+			var hex = MockDice.hex[i];
+			jdatHex.push({
+				x: hex.x,
+				y: hex.y,
+				type: hex.type,
+			});
+		}
+		jdat["hex"] = jdatHex;
 
-		// キャラクター情報
-		var charaInfoList = {} : Map.<variant>;
+		// 送信用キャラクター情報
+		var jdatCharaInfo = {} : Map.<variant>;
 		for(var i = 0; i < MockDice.cinfo.length; i++){
 			var cinfo = MockDice.cinfo[i];
 			// 送信用キャラクター情報作成
-			charaInfoList[cinfo.id] = {
+			jdatCharaInfo[cinfo.id] = {
 				side: cinfo.side,
 				code: cinfo.code,
 				drawInfo: CharacterDrawInfo.data[cinfo.drawInfo],
@@ -123,13 +134,16 @@ class MockDice{
 			imgs["css_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
 			imgs["css_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
 		}
+		jdat["charaInfo"] = jdatCharaInfo;
 
 		// 初期カメラ位置
 		jdat["camera"] = [MockDice.cinfo[0].x, MockDice.cinfo[0].y];
 
-		// ゲーム情報
-		jdat["hex"] = MockDice.hex;
-		jdat["charaInfo"] = charaInfoList;
+		// さいころ画像
+		imgs["img_dice"] = "/img/dice/test.png";
+		// エフェクト画像
+		imgs["img_effect_star01"] = "/img/effect/star01.png";
+
 		list.push(jdat);
 
 		// ターン開始
@@ -205,6 +219,9 @@ class MockDice{
 			// コマンド入力待ち
 			list.push({type: "command", id: MockDice.turnId});
 		}else if(turnChara.side == "enemy"){
+			// テスト行動
+			var pip = Math.floor(1 + Math.random() * 6);
+			var src = [turnChara.x, turnChara.y];
 			// ターン切り替え
 			MockDice._turn(list, imgs);
 		}else{
