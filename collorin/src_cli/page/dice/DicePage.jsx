@@ -9,7 +9,8 @@ import "../page/SECload.jsx";
 
 import "DiceCanvas.jsx";
 import "SECdiceCommand.jsx";
-import "SECdiceMove.jsx";
+import "SECdiceMoveAuto.jsx";
+import "SECdiceMoveManual.jsx";
 import "SECdiceFace.jsx";
 
 // ----------------------------------------------------------------
@@ -83,6 +84,7 @@ class DicePage extends Page{
 				case "entry": this.ccvs.init(list[i]); break;
 				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
 				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
+				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
 			}
 		}
 	}
@@ -94,7 +96,7 @@ class DicePage extends Page{
 		for(var i = 0; i < list.length; i++){
 			switch(list[i]["type"] as string){
 				case "dice": pip = list[i]["pip"] as int[]; break;
-				case "move": this.serialPush(new SECdiceMove(this, list[i])); break;
+				case "moveManual": this.serialPush(new SECdiceMoveManual(this, list[i])); break;
 			}
 		}
 		return pip;

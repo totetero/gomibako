@@ -87,7 +87,6 @@ class DiceCharacter extends PartsCharacter{
 				this.r = Math.atan2(y, x);
 				this.x += speed * Math.cos(this.r);
 				this.y += speed * Math.sin(this.r);
-				
 			}
 			this.motion = (this.dstList.length > 0) ? "walk" : "stand";
 			this.action++;

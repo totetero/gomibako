@@ -8,7 +8,6 @@ import "../page/Transition.jsx";
 import "DicePage.jsx";
 import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
-import "SECdiceMap.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

@@ -9,6 +9,7 @@ import "../page/SECload.jsx";
 import "DicePage.jsx";
 import "DiceCanvas.jsx";
 import "DiceCharacter.jsx";
+import "PECdiceGauge.jsx";
 import "PECdiceMessage.jsx";
 import "SECdiceMap.jsx";
 import "SECdicePopupInfoChara.jsx";
@@ -17,7 +18,7 @@ import "SECdicePopupInfoChara.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECdiceMove extends EventCartridge{
+class SECdiceMoveManual extends EventCartridge{
 	var _page : DicePage;
 	var _player : DiceCharacter;
 	var _pip : int;
@@ -46,6 +47,7 @@ class SECdiceMove extends EventCartridge{
 		this._page.parallelPush(new PECopenLctrl(true));
 		this._page.parallelPush(new PECopenRctrl("", "一歩戻る", "マップ", "メニュー"));
 		this._page.parallelPush(new PECopenCharacter("", ""));
+		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._player, -1));
 		this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", true, -1));
 		return false;
 	}

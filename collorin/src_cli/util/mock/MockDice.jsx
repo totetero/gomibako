@@ -162,7 +162,7 @@ class MockDice{
 			pipTotal += pip;
 		}
 		list.push({type: "dice", pip: pipList});
-		list.push({type: "move", id: MockDice.turnId, pip: pipTotal});
+		list.push({type: "moveManual", id: MockDice.turnId, pip: pipTotal});
 	}
 
 	// ----------------------------------------------------------------
@@ -222,6 +222,7 @@ class MockDice{
 			// テスト行動
 			var pip = Math.floor(1 + Math.random() * 6);
 			var src = [turnChara.x, turnChara.y];
+			list.push({type: "moveAuto", id: turnChara.id, dst: [[2, 3], [2, 2], [1, 2], [0, 3], [0, 4], [0, 5], [1, 5], [2, 4]]});
 			// ターン切り替え
 			MockDice._turn(list, imgs);
 		}else{
