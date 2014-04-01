@@ -22,6 +22,7 @@ class SECdiceMoveManual extends EventCartridge{
 	var _page : DicePage;
 	var _player : DiceCharacter;
 	var _pip : int;
+	var _display = false;
 	var _srcList = new int[][];
 	var _dstList = new int[][];
 
@@ -48,7 +49,8 @@ class SECdiceMoveManual extends EventCartridge{
 		this._page.parallelPush(new PECopenRctrl("", "一歩戻る", "マップ", "メニュー"));
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._player, -1));
-		this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", true, -1));
+		this._page.parallelPush(new PECdiceMessage(this._page, "あと" + this._pip + "マス", !this._display, -1));
+		this._display = true;
 		return false;
 	}
 
@@ -166,6 +168,7 @@ class SECdiceMoveManual extends EventCartridge{
 						}
 						// 移動完了
 						this._page.serialPush(new SECloadDice(this._page, camera, {type: "move", dst: this._dstList, face: faceId}));
+						this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 						exist = false;
 					}else{
 						// 対面イベントが発生しないならば移動先のヘックスに移動する
@@ -191,6 +194,7 @@ class SECdiceMoveManual extends EventCartridge{
 		}else{
 			// 移動完了
 			this._page.serialPush(new SECloadDice(this._page, 0, {type: "move", dst: this._dstList}));
+			this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 			exist = false;
 		}
 
@@ -202,7 +206,6 @@ class SECdiceMoveManual extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 	}
 }
 
