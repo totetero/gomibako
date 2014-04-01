@@ -101,3 +101,89 @@ class DrawEffectHopImage extends DrawEffect{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// はねる数値エフェクトクラス
+class DrawEffectHopNumber extends DrawEffect{
+	var _canvas : HTMLCanvasElement;
+	var _drx : number;
+	var _dry : number;
+	var _drScale : number;
+	// 位置情報
+	var _x : number;
+	var _y : number;
+	var _z : number;
+	var _vx : number;
+	var _vy : number;
+	var _vz : number;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(txt : string, x : number, y : number){
+		var size = 20;
+		var lineWidth = 5;
+		this._canvas = dom.window.document.createElement("canvas") as HTMLCanvasElement;
+		var context = this._canvas.getContext("2d") as CanvasRenderingContext2D;
+		this._canvas.width = size * txt.length + lineWidth;
+		this._canvas.height = size + lineWidth;
+		context.textAlign = "center";
+		context.textBaseline = "middle";
+		context.font = size as string + "px 'monospace'";
+		context.lineWidth = lineWidth;
+		context.strokeStyle = "white";
+		context.strokeText(txt, this._canvas.width * 0.5, this._canvas.height * 0.5);
+		context.fillStyle = "black";
+		context.fillText(txt, this._canvas.width * 0.5, this._canvas.height * 0.5);
+		// 位置初期化
+		this._x = x;
+		this._y = y;
+		this._z = 0;
+		var r = Math.PI * 2 * Math.random();
+		var s = 1;
+		this._vx = s * Math.cos(r);
+		this._vy = s * Math.sin(r);
+		this._vz = 9 + (Math.random() - 0.5) * 2;
+	}
+
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : void{
+		// 位置計算
+		this._vz -= 1;
+		this._x += this._vx;
+		this._y += this._vy;
+		this._z += this._vz;
+		if(this._z < 0){this.exist = false;}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	override function preDraw(ccvs : Ccvs, cx : number, cy : number) : void{
+		this.visible = true;
+		// 位置
+		var x = this._x - cx;
+		var y = this._y - cy;
+		var z = this._z;
+		var s = 1;
+		this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);
+		var y0 = ccvs.scale * (x * ccvs.sinv + y * ccvs.cosv);
+		var z0 = ccvs.scale * z;
+		this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
+		this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
+		this._drScale = ccvs.scale * s;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw(ccvs : Ccvs) : void{
+		var psx = (this._canvas.width * 0.5 * this._drScale) as int;
+		var psy = (this._canvas.height * 0.5 * this._drScale) as int;
+		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
+		var py = (this._dry - psy * 0.5 + ccvs.height * 0.5) as int;
+		ccvs.context.drawImage(this._canvas, px, py, psx, psy);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+

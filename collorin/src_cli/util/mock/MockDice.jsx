@@ -14,6 +14,7 @@ class MockDice{
 	static var _hex : MockDiceHexFieldCell[];
 	static var _cinfo : MockDiceCharaInfo[];
 	static var _turnId : string;
+	static var _pip : int;
 
 	// ----------------------------------------------------------------
 	// XMLhttpリクエストエミュレート
@@ -146,6 +147,7 @@ class MockDice{
 			pipList.push(pip);
 			pipTotal += pip;
 		}
+		MockDice._pip = pipTotal;
 		list.push({type: "dice", pip: pipList});
 		list.push({type: "moveManual", id: MockDice._turnId, pip: pipTotal});
 	}
@@ -175,7 +177,8 @@ class MockDice{
 				if(MockDice._cinfo[i].id == id1){chara1 = MockDice._cinfo[i];}
 			}
 
-			if(chara0.side != chara1.side){list.push({type: "face", id0: id0, id1: id1});}
+			var value = 10 + 5 * (MockDice._pip - dst.length);
+			if(chara0.side != chara1.side){list.push({type: "face", id0: id0, id1: id1, value: value});}
 		}
 
 		// ターン切り替え
@@ -253,10 +256,17 @@ class MockDice{
 					break;
 				}
 			}
-			turnChara.x = x1;
-			turnChara.y = y1;
-			if(dst.length > 0){list.push({type: "moveAuto", id: turnChara.id, dst: dst});}
-			if(faceId != ""){list.push({type: "face", id0: turnChara.id, id1: faceId});}
+			if(dst.length > 0){
+				// 移動発生
+				turnChara.x = x1;
+				turnChara.y = y1;
+				list.push({type: "moveAuto", id: turnChara.id, dst: dst});
+			}
+			if(faceId != ""){
+				// 対面発生
+				var value = 10 + 5 * (pip - dst.length);
+				list.push({type: "face", id0: turnChara.id, id1: faceId, value: value});
+			}
 			// ターン切り替え
 			MockDice._turn(list, imgs);
 		}else{

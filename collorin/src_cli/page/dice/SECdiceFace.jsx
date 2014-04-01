@@ -17,6 +17,7 @@ class SECdiceFace extends EventCartridge{
 	var _page : DicePage;
 	var _chara0 : DiceCharacter;
 	var _chara1 : DiceCharacter;
+	var _value : int;
 	var _mode : int = 0;
 	var _action : int = 0;
 
@@ -26,6 +27,7 @@ class SECdiceFace extends EventCartridge{
 		this._page = page;
 		this._chara0 = this._page.ccvs.member[response["id0"] as string];
 		this._chara1 = this._page.ccvs.member[response["id1"] as string];
+		this._value = response["value"] as int;
 	}
 
 	// ----------------------------------------------------------------
@@ -75,8 +77,9 @@ class SECdiceFace extends EventCartridge{
 					this._mode = 1;
 					this._action = 0;
 					// テスト
-					this._chara1.hp -= 30;
+					this._chara1.hp -= this._value;
 					this._setGauge(-1);
+					this._page.ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
 					for(var i = 0; i < 3; i++){
 						this._page.ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
 					}
