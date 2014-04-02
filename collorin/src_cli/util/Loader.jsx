@@ -243,7 +243,14 @@ class Loader{
 			var len4 = uint8Array[index++] << 24;
 			var length = len1 + len2 + len3 + len4;
 			// バイナリ記録
-			buffers[tag] = buffer.slice(index, index + length);
+			if(js.eval("!!buffer.slice") as boolean){
+				buffers[tag] = buffer.slice(index, index + length);
+			}else{
+				var newBuf = new ArrayBuffer(length);
+				var newArr = new Uint8Array(newBuf);
+				for(var i = 0; i < length; i++){newArr[i] = uint8Array[index + i];}
+				buffers[tag] = newBuf;
+			}
 			index += length;
 		}
 		return buffers;
