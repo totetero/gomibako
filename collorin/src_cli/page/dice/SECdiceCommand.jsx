@@ -10,6 +10,7 @@ import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceThrow.jsx";
+import "SECdicePopupMenu.jsx";
 import "SECdicePopupInfoChara.jsx";
 
 // ----------------------------------------------------------------
@@ -83,7 +84,8 @@ class SECdiceCommand extends EventCartridge{
 		// メニューボタン
 		if(Ctrl.trigger_sb){
 			Sound.playSE("ok");
-			Ctrl.trigger_sb = false;
+			this._page.serialPush(new SECdicePopupMenu(this._page, this, 0));
+			exist = false;
 		}
 
 		// キャンバス描画

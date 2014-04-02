@@ -3,6 +3,7 @@
 /* -------------------------------- */
 
 #screen >.pageContainer .page.dice{
+	// キャンバス
 	canvas{
 		position: absolute;
 		left: 50%;
@@ -13,6 +14,7 @@
 		margin-top: -240px;
 	}
 
+	// --------------------------------
 	// ステータス
 	.status{
 		position: absolute;
@@ -93,6 +95,7 @@
 		}
 	}
 
+	// --------------------------------
 	// メッセージフィールド
 	.message{
 		position: absolute;
@@ -118,6 +121,46 @@
 			border: solid 2px black;
 			border-radius: 12px;
 		}
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- メニュー -------- */
+
+.core-popup.dice.menu{
+	.core-window{
+		left: 53px;
+		width: 208px;
+		height: 176px;
+		margin-top: -91px;
+	}
+
+	.title{
+		width: 208px;
+		height: 30px;
+		line-height: 34px;
+		text-align: center;
+	}
+
+	.info{
+		top: 30px;
+		width: 208px;
+		height: 30px;
+		line-height: 34px;
+		text-align: center;
+	}
+
+	.core-btn{
+		width: 100px;
+		height: 26px;
+		line-height: 30px;
+		text-align: center;
+
+		&.setting{left: 51px; top: 65px;}
+		&.back{left: 51px; top: 102px;}
+		&.close{width: 80px; left: 61px; top: 139px;}
 	}
 }
 
