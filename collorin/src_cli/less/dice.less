@@ -137,23 +137,39 @@
 		width: 300px;
 		height: 220px;
 		margin-top: -110px;
-		background-color: rgba(255, 255, 255, 0.5);
 	}
 
 	.title{
-		width: 300px;
+		position: absolute;
+		left: 100px;
+		width: 100px;
 		height: 30px;
 		line-height: 34px;
 		text-align: center;
+		background-color: rgba(255, 255, 255, 0.75);
 	}
 
 	.core-btn{
-		width: 100px;
+		left: 5px; 
+		width: 284px;
 		height: 26px;
 		line-height: 30px;
 		text-align: center;
+		background-color: rgba(255, 255, 255, 0.75);
 
-		&.close{width: 80px; left: 214px; top: 188px;}
+		&.active{
+			background-color: rgba(128, 128, 128, 0.75);
+		}
+
+		&.inactive{
+			opacity: 0.5;
+		}
+
+		&.skill1{top: 35px;}
+		&.skill2{top: 72px;}
+		&.skill3{top: 109px;}
+		&.skill4{top: 146px;}
+		&.close{width: 80px; left: 107px; top: 183px;}
 	}
 }
 
@@ -186,13 +202,14 @@
 	}
 
 	.core-btn{
+		left: 51px; 
 		width: 100px;
 		height: 26px;
 		line-height: 30px;
 		text-align: center;
 
-		&.setting{left: 51px; top: 65px;}
-		&.back{left: 51px; top: 102px;}
+		&.setting{top: 65px;}
+		&.back{top: 102px;}
 		&.close{width: 80px; left: 61px; top: 139px;}
 	}
 }
@@ -233,13 +250,13 @@
 	.bgm{.label, .core-picker-btn{top: 35px;}}
 	.sef{.label, .core-picker-btn{top: 78px;}}
 
-	.core-btn{
-		width: 100px;
+	.core-btn.close{
+		left: 72px;
+		top: 121px;
+		width: 80px;
 		height: 26px;
 		line-height: 30px;
 		text-align: center;
-
-		&.close{width: 80px; left: 72px; top: 121px;}
 	}
 }
 
