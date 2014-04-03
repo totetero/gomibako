@@ -10,6 +10,7 @@ import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
 import "SECdiceMap.jsx";
 import "SECdiceThrow.jsx";
+import "SECdicePopupSkill.jsx";
 import "SECdicePopupMenu.jsx";
 import "SECdicePopupInfoChara.jsx";
 
@@ -35,12 +36,13 @@ class SECdiceCommand extends EventCartridge{
 		this._page.ccvs.center = [this._player];
 		// トリガーリセット
 		Ctrl.trigger_zb = false;
+		Ctrl.trigger_xb = false;
 		Ctrl.trigger_cb = false;
 		Ctrl.trigger_sb = false;
 		this._page.ccvs.trigger_mup = false;
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
-		this._page.parallelPush(new PECopenRctrl("さいころ", "", "マップ", "メニュー"));
+		this._page.parallelPush(new PECopenRctrl("さいころ", "スキル", "マップ", "メニュー"));
 		this._page.parallelPush(new PECopenCharacter(this._player.code, "normal"));
 		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._player, -1));
 		return false;
@@ -71,6 +73,13 @@ class SECdiceCommand extends EventCartridge{
 				"type": "dice",
 				"num": 1,
 			}));
+			exist = false;
+		}
+
+		// スキルボタン
+		if(Ctrl.trigger_xb){
+			Sound.playSE("ok");
+			this._page.serialPush(new SECdicePopupSkill(this._page, this));
 			exist = false;
 		}
 
