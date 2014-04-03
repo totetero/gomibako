@@ -1,6 +1,6 @@
 import "../../util/Loader.jsx";
 import "../../bb3d/DrawCharacter.jsx";
-import "../page/PartsCharacter.jsx";
+import "../core/PartsCharacter.jsx";
 
 import "DiceCanvas.jsx";
 

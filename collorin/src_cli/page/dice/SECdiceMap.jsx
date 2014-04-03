@@ -3,7 +3,7 @@ import "js/web.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
-import "../page/Transition.jsx";
+import "../core/Transition.jsx";
 
 import "DicePage.jsx";
 import "SECdicePopupInfoChara.jsx";

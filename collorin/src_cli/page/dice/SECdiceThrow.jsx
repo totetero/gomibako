@@ -5,7 +5,7 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 import "../../bb3d/Dice.jsx";
-import "../page/Transition.jsx";
+import "../core/Transition.jsx";
 
 import "DicePage.jsx";
 import "PECdiceMessage.jsx";

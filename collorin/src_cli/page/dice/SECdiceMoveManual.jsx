@@ -3,8 +3,8 @@ import "js/web.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
-import "../page/Transition.jsx";
-import "../page/SECload.jsx";
+import "../core/Transition.jsx";
+import "../core/SECload.jsx";
 
 import "DicePage.jsx";
 import "DiceCanvas.jsx";

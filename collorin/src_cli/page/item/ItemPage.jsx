@@ -3,10 +3,10 @@ import "js/web.jsx";
 import "../../util/Loader.jsx";
 import "../../util/EventCartridge.jsx";
 import "../../util/Ctrl.jsx";
-import "../page/Page.jsx";
-import "../page/Transition.jsx";
-import "../page/SECload.jsx";
-import "../page/SECpopupMenu.jsx";
+import "../core/Page.jsx";
+import "../core/Transition.jsx";
+import "../core/SECload.jsx";
+import "../core/SECpopupMenu.jsx";
 
 import "SECitemTabList.jsx";
 import "SECitemTabMake.jsx";

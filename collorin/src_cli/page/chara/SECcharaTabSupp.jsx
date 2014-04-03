@@ -2,13 +2,13 @@ import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
 import "../../util/Sound.jsx";
-import "../page/Page.jsx";
-import "../page/PartsButton.jsx";
-import "../page/PartsScroll.jsx";
-import "../page/PartsCharacter.jsx";
-import "../page/SECload.jsx";
-import "../page/SECpopupMenu.jsx";
-import "../page/SECpopupPicker.jsx";
+import "../core/Page.jsx";
+import "../core/PartsButton.jsx";
+import "../core/PartsScroll.jsx";
+import "../core/PartsCharacter.jsx";
+import "../core/SECload.jsx";
+import "../core/SECpopupMenu.jsx";
+import "../core/SECpopupPicker.jsx";
 
 import "CharaPage.jsx";
 

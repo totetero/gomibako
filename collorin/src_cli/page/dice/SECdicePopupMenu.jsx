@@ -3,10 +3,10 @@ import "js/web.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 import "../../util/EventCartridge.jsx";
-import "../page/Page.jsx";
-import "../page/PartsButton.jsx";
-import "../page/SECpopup.jsx";
-import "../page/Transition.jsx";
+import "../core/Page.jsx";
+import "../core/PartsButton.jsx";
+import "../core/SECpopup.jsx";
+import "../core/Transition.jsx";
 
 import "DicePage.jsx";
 

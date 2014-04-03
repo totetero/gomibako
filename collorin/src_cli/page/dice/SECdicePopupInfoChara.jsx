@@ -1,6 +1,6 @@
 import "../../util/EventCartridge.jsx";
-import "../page/PartsCharacter.jsx";
-import "../page/Transition.jsx";
+import "../core/PartsCharacter.jsx";
+import "../core/Transition.jsx";
 
 import "DicePage.jsx";
 import "DiceCanvas.jsx";

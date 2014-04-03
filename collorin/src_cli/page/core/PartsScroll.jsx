@@ -3,7 +3,7 @@ import "js/web.jsx";
 import "../../util/Ctrl.jsx";
 import "../../util/Util.jsx";
 
-import "../page/PartsButton.jsx";
+import "PartsButton.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

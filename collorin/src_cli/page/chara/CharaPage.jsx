@@ -1,9 +1,9 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
-import "../page/Page.jsx";
-import "../page/Transition.jsx";
-import "../page/SECload.jsx";
+import "../core/Page.jsx";
+import "../core/Transition.jsx";
+import "../core/SECload.jsx";
 
 import "SECcharaTabTeam.jsx";
 import "SECcharaTabSupp.jsx";
