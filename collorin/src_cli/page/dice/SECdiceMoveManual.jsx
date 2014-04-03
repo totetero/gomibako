@@ -12,6 +12,7 @@ import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
 import "PECdiceMessage.jsx";
 import "SECdiceMap.jsx";
+import "SECdicePopupMenu.jsx";
 import "SECdicePopupInfoChara.jsx";
 
 // ----------------------------------------------------------------
@@ -80,7 +81,8 @@ class SECdiceMoveManual extends EventCartridge{
 		}else if(Ctrl.trigger_sb){
 			// メニューボタン
 			Sound.playSE("ok");
-			Ctrl.trigger_sb = false;
+			this._page.serialPush(new SECdicePopupMenu(this._page, this, 0));
+			exist = false;
 		}else if(this._player.dstList.length > 0){
 			// ヘックス目的地移動完了を待つ
 		}else if(Ctrl.trigger_xb){

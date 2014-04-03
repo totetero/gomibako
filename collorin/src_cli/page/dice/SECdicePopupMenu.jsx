@@ -9,6 +9,7 @@ import "../core/SECpopup.jsx";
 import "../core/Transition.jsx";
 
 import "DicePage.jsx";
+import "SECdicePopupMenuSetting.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -72,6 +73,16 @@ class SECdicePopupMenu extends SECpopup{
 
 		// ボタン計算
 		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		// 設定ボタン
+		if(this._btnList["setting"].trigger){
+			this._btnList["setting"].trigger = false;
+			if(active){
+				Sound.playSE("ok");
+				this._page.serialPush(new SECdicePopupMenuSetting(this._page, this._cartridge, this._camera));
+				exist = false;
+			}
+		}
 
 		// 中断ボタン
 		if(this._btnList["back"].trigger){
