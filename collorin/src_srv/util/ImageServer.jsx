@@ -16,17 +16,23 @@ class ImageServer{
 				if(req.body["isBin"] as boolean){
 					// binary画像のリクエスト
 					new ImageServer.ImageLoaderBin(path, urls, function(data : Buffer) : void{
-						res.contentType("application/octet-stream").send(data);
+						res.setHeader("Content-Type", "application/octet-stream");
+						//res.setHeader("cache-control", "no-cache");
+						res.send(data);
 					});
 				}else{
 					// base64画像のリクエスト
 					new ImageServer.ImageLoaderB64(path, urls, function(data : string) : void{
-						res.contentType("application/json").send(data);
+						res.setHeader("Content-Type", "application/json");
+						//res.setHeader("cache-control", "no-cache");
+						res.send(data);
 					});
 				}
 			}else{
 				// リクエスト無し
-				res.contentType("application/json").send(null);
+				res.setHeader("Content-Type", "application/json");
+				//res.setHeader("cache-control", "no-cache");
+				res.send(null);
 			}
 		};
 

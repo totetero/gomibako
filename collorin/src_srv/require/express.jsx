@@ -60,7 +60,7 @@ native class ExResponse{
 	function send(body : Buffer) : ExResponse;
 	function render(path : string) : ExResponse;
 	function render(path : string, options : variant) : ExResponse;
-	function contentType(type : string) : ExResponse;
+	function setHeader(name : string, value : string) : ExResponse;
 }
 
 native class ExSession{

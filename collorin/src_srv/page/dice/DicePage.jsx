@@ -24,7 +24,9 @@ class DicePage{
 			// test
 			MockDice.loadxhr("/dice", req.body, function(response : variant) : void{
 				response["imgs"] = ImageServer.convertAddress(response["imgs"] as Map.<string>);
-				res.contentType("application/json").send(JSON.stringify(response));
+				res.setHeader("Content-Type", "application/json");
+				res.setHeader("cache-control", "no-cache");
+				res.send(JSON.stringify(response));
 			});
 		});
 	}

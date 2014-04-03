@@ -13,7 +13,9 @@ class SettingPage{
 			if(nickname == null){nickname = req.user.nickname;}
 			if(comment == null){comment = "こんにちわん";}
 
-			res.contentType("application/json").send(JSON.stringify({
+			res.setHeader("Content-Type", "application/json");
+			res.setHeader("cache-control", "no-cache");
+			res.send(JSON.stringify({
 				"nickname": nickname,
 				"comment":  comment,
 			}));
