@@ -56,15 +56,21 @@ class DiceCanvas extends Ccvs{
 		this.cy = this.calcy = this.field.calcHexCoordy(hexx, hexy);
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
-		var canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
-		var context = canvas.getContext("2d") as CanvasRenderingContext2D;
-		canvas.width = 1;
-		canvas.height = this._bgimg.height;
-		context.drawImage(this._bgimg, 0, 0);
-		var data1 = context.getImageData(0, 0, 1, 1).data;
-		var data2 = context.getImageData(0, this._bgimg.height - 1, 1, 1).data;
-		this._bgcolor1 = "rgb(" + data1[0] + "," + data1[1] + "," + data1[2] + ")";
-		this._bgcolor2 = "rgb(" + data2[0] + "," + data2[1] + "," + data2[2] + ")";
+		// chromeなどのlocal cross originで止まられても困るのでtry&catch
+		try{
+			var canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+			var context = canvas.getContext("2d") as CanvasRenderingContext2D;
+			canvas.width = 1;
+			canvas.height = this._bgimg.height;
+			context.drawImage(this._bgimg, 0, 0);
+			var data1 = context.getImageData(0, 0, 1, 1).data;
+			var data2 = context.getImageData(0, this._bgimg.height - 1, 1, 1).data;
+			this._bgcolor1 = "rgb(" + data1[0] + "," + data1[1] + "," + data1[2] + ")";
+			this._bgcolor2 = "rgb(" + data2[0] + "," + data2[1] + "," + data2[2] + ")";
+		}catch(e : Error){
+			log "---- maybe local cross origin ----";
+			this._bgcolor1 = this._bgcolor2 = "black";
+		}
 	}
 
 	// ----------------------------------------------------------------
