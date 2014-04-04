@@ -8,6 +8,7 @@ import "../../bb3d/Dice.jsx";
 import "../core/Transition.jsx";
 
 import "DicePage.jsx";
+import "PECdiceGauge.jsx";
 import "PECdiceMessage.jsx";
 
 // ----------------------------------------------------------------
@@ -112,9 +113,14 @@ class SECdiceThrow extends EventCartridge{
 			Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
 				// 通信成功
 				this._request = null;
-				var pip = this._page.parseDice(response["list"] as variant[]);
+				var diceResponse = this._page.parse(response["list"] as variant[]);
 				// さいころ目を設定
+				var pip = diceResponse["pip"] as int[];
 				for(var i = 0; i < this._page.ccvs.dices.length; i++){this._page.ccvs.dices[i].pip = pip[i];}
+				// テスト SP消費
+				var chara = this._page.ccvs.member[diceResponse["id"] as string];
+				chara.sp -= 10;
+				this._page.parallelPush(new PECdicePlayerGauge(this._page, chara, -1));
 				// トリガーリセット
 				Ctrl.trigger_xb = false;
 				// コントローラーを表示

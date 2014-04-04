@@ -152,7 +152,7 @@ class MockDice{
 			pipTotal += pip;
 		}
 		MockDice._pip = pipTotal;
-		list.push({type: "dice", pip: pipList, fix: fix});
+		list.push({type: "dice", id: MockDice._turnId, pip: pipList, fix: fix});
 		list.push({type: "moveManual", id: MockDice._turnId, pip: pipTotal});
 	}
 

@@ -62,7 +62,7 @@ class DicePage extends Page{
 		// イベント設定
 		this.serialPush(new SECload("/dice", {"type": "entry"}, function(response : variant) : void{
 			// ロード完了 データの形成
-			this.parseCommand(response["list"] as variant[]);
+			this.parse(response["list"] as variant[]);
 		}));
 		this.serialPush(new ECone(function() : void{
 			// ページ遷移前描画
@@ -78,28 +78,19 @@ class DicePage extends Page{
 
 	// ----------------------------------------------------------------
 	// ロードしたデータの解析
-	function parseCommand(list : variant[]) : void{
+	function parse(list : variant[]) : variant{
+		var response : variant = null;
 		for(var i = 0; i < list.length; i++){
 			switch(list[i]["type"] as string){
 				case "entry": this.ccvs.init(list[i]); break;
 				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
+				case "dice": response = list[i]; break;
 				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
 				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
-			}
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// ロードしたデータの解析
-	function parseDice(list : variant[]) : int[]{
-		var pip : int[] = null;
-		for(var i = 0; i < list.length; i++){
-			switch(list[i]["type"] as string){
-				case "dice": pip = list[i]["pip"] as int[]; break;
 				case "moveManual": this.serialPush(new SECdiceMoveManual(this, list[i])); break;
 			}
 		}
-		return pip;
+		return response;
 	}
 
 	// ----------------------------------------------------------------

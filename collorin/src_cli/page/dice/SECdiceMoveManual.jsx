@@ -225,7 +225,7 @@ class SECloadDice extends SECload{
 	function constructor(page : DicePage, camera : int, request : variant){
 		super("/dice", request, function(response : variant) : void{
 			// ロード完了 データの形成
-			page.parseCommand(response["list"] as variant[]);
+			page.parse(response["list"] as variant[]);
 		});
 		this._ccvs = page.ccvs;
 		this._camera = camera;
