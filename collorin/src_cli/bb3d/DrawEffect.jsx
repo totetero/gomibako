@@ -143,7 +143,6 @@ class DrawEffectHopNumber extends DrawEffect{
 		this._vz = 9 + (Math.random() - 0.5) * 2;
 	}
 
-
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : void{
@@ -180,6 +179,76 @@ class DrawEffectHopNumber extends DrawEffect{
 		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
 		var py = (this._dry - psy * 0.5 + ccvs.height * 0.5) as int;
 		ccvs.context.drawImage(this._canvas, px, py, psx, psy);
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// ビーム画像エフェクトクラス
+class DrawEffectBeam extends DrawEffect{
+	var _drx : number;
+	var _dry : number;
+	var _drScale : number;
+	// 位置情報
+	var _x : number;
+	var _y : number;
+	var _z : number;
+	var _s : number;
+	// 使い捨て情報
+	var _used = false;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(x : number, y : number, z : number, s : number){
+		this._x = x;
+		this._y = y;
+		this._z = z;
+		this._s = s;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : void{
+		// 使い捨て
+		if(!this._used){this._used = true;}
+		else{this.exist = false;}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	override function preDraw(ccvs : Ccvs, cx : number, cy : number) : void{
+		if(this._used){
+			this.visible = true;
+			// 位置
+			var x = this._x - cx;
+			var y = this._y - cy;
+			var z = this._z;
+			var s = this._s;
+			this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);
+			var y0 = ccvs.scale * (x * ccvs.sinv + y * ccvs.cosv);
+			var z0 = ccvs.scale * z;
+			this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
+			this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
+			this._drScale = ccvs.scale * s;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw(ccvs : Ccvs) : void{
+		var s = (16 * this._drScale) as int;
+		var x = (this._drx + ccvs.width * 0.5) as int;
+		var y = (this._dry + ccvs.height * 0.5) as int;
+		ccvs.context.save();
+		ccvs.context.globalCompositeOperation = "lighter";
+		var grd = ccvs.context.createRadialGradient(x, y, 0, x, y, s * 0.5);
+		grd.addColorStop(0, "rgba(255, 255, 255, 1)");
+		grd.addColorStop(1, "rgba(0, 0, 0, 0)");
+		ccvs.context.fillStyle = grd;
+		ccvs.context.fillRect(x - s * 0.5, y - s * 0.5, s, s);
+		ccvs.context.restore();
 	}
 }
 
