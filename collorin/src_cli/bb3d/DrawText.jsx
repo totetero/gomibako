@@ -12,10 +12,6 @@ import "DrawUnit.jsx";
 class DrawText extends DrawUnit{
 	var _canvas : HTMLCanvasElement = null;
 
-	var _drx : number;
-	var _dry : number;
-	var _drScale : number;
-
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(txt : string){
@@ -36,25 +32,12 @@ class DrawText extends DrawUnit{
 	}
 
 	// ----------------------------------------------------------------
-	// 描画準備
-	function preDraw(ccvs : Ccvs, x : number, y : number, z : number, s : number) : void{
-		this.visible = true;
-		// 位置
-		this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);
-		var y0 = ccvs.scale * (x * ccvs.sinv + y * ccvs.cosv);
-		var z0 = ccvs.scale * z;
-		this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
-		this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
-		this._drScale = ccvs.scale * s;
-	}
-
-	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var psx = (this._canvas.width * 0.5 * this._drScale) as int;
-		var psy = (this._canvas.height * 0.5 * this._drScale) as int;
-		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
-		var py = (this._dry - psy * 0.5 + ccvs.height * 0.5) as int;
+		var psx = (this._canvas.width * 0.5 * this.drScale) as int;
+		var psy = (this._canvas.height * 0.5 * this.drScale) as int;
+		var px = (this.drx - psx * 0.5 + ccvs.width * 0.5) as int;
+		var py = (this.dry - psy * 0.5 + ccvs.height * 0.5) as int;
 		ccvs.context.drawImage(this._canvas, px, py, psx, psy);
 	}
 }
@@ -68,9 +51,6 @@ class DrawBalloon extends DrawUnit{
 	var _canvas : HTMLCanvasElement = null;
 	var _context : CanvasRenderingContext2D;
 
-	var _drx : number;
-	var _dry : number;
-	var _drScale : number;
 	var _action : int;
 	var _time : int;
 
@@ -133,24 +113,17 @@ class DrawBalloon extends DrawUnit{
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	function preDraw(ccvs : Ccvs, x : number, y : number, z : number, s : number) : void{
+	override function preDraw(ccvs : Ccvs, x : number, y : number, z : number, s : number) : void{
 		if(this._action <= this._time || this._time < 0){
-			this.visible = true;
-			// 位置
-			this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);
-			var y0 = ccvs.scale * (x * ccvs.sinv + y * ccvs.cosv);
-			var z0 = ccvs.scale * z;
-			this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
-			this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
-			this._drScale = ccvs.scale * s;
+			super.preDraw(ccvs, x, y, z, s);
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var psx = (this._canvas.width * 0.5 * this._drScale) as int;
-		var psy = (this._canvas.height * 0.5 * this._drScale) as int;
+		var psx = (this._canvas.width * 0.5 * this.drScale) as int;
+		var psy = (this._canvas.height * 0.5 * this.drScale) as int;
 
 		if(this._action < 10){
 			var size = 0.2 * Math.sin(Math.PI * 2 * this._action / 10);
@@ -158,8 +131,8 @@ class DrawBalloon extends DrawUnit{
 			psy *= 1 - size;
 		}
 
-		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
-		var py = (this._dry - psy * 1.0 + ccvs.height * 0.5) as int;
+		var px = (this.drx - psx * 0.5 + ccvs.width * 0.5) as int;
+		var py = (this.dry - psy * 1.0 + ccvs.height * 0.5) as int;
 		ccvs.context.drawImage(this._canvas, px, py, psx, psy);
 	}
 }

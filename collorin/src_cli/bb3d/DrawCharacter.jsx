@@ -27,7 +27,7 @@ class DrawCharacter extends DrawUnit{
 	var _parts = {} : Map.<DrawCharacterParts[]>;
 	var _pose : Map.<Map.<number[]>[]>;
 	var _weapon : DrawCharacterWeapon;
-	var _size : number;
+	var _scale : number;
 
 	// パーツ描画用変数
 	var _img : HTMLImageElement;
@@ -35,7 +35,6 @@ class DrawCharacter extends DrawUnit{
 	var drX0 : number;
 	var drY0 : number;
 	var drZ0 : number;
-	var drScale : number;
 	var drRotv : number;
 	var drSin : number;
 	var drCos : number;
@@ -52,10 +51,10 @@ class DrawCharacter extends DrawUnit{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(img : HTMLImageElement, drawInfo : DrawCharacterInfo, size : number){
+	function constructor(img : HTMLImageElement, drawInfo : DrawCharacterInfo, scale : number){
 		this._img = img;
 		this._pose = drawInfo.pose;
-		this._size = size;
+		this._scale = scale;
 		// キャラクター画像彩色用キャンバス設定
 		this.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this.canvas.width = this._img.width;
@@ -120,7 +119,7 @@ class DrawCharacter extends DrawUnit{
 		this.drZ0 = ccvs.scale * z;
 		this.drz = this.drY0 * ccvs.cosh + this.drZ0 * ccvs.sinh;
 		// 大きさ
-		this.drScale = ccvs.scale * this._size;
+		this.drScale = ccvs.scale * this._scale;
 		// ボディローカルな角度と三角関数
 		this.drRotv = ccvs.rotv + r;
 		this.drSin = Math.sin(this.drRotv);
@@ -139,6 +138,16 @@ class DrawCharacter extends DrawUnit{
 				}
 			}
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// パーツの描画準備
+	function preDrawParts(ccvs : Ccvs, parts : DrawUnit, x1 : number, y1 : number, z1 : number) : void{
+		parts.drx = this.drX0 + this.drScale * 35 * (x1 * this.drCos - y1 * this.drSin);
+		var y0 = this.drY0 + this.drScale * 35 * (x1 * this.drSin + y1 * this.drCos);
+		var z0 = this.drZ0 + this.drScale * 35 * (z1 - 0.05);
+		parts.dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
+		parts.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
 	}
 
 	// ----------------------------------------------------------------
@@ -168,8 +177,6 @@ class DrawCharacterParts extends DrawUnit{
 	// 左右反転フラグ
 	var _swap : boolean;
 
-	var _drx : number;
-	var _dry : number;
 	var _dru : int;
 	var _drv : int;
 	var _yswap : boolean;
@@ -240,11 +247,7 @@ class DrawCharacterParts extends DrawUnit{
 		var y1 = pose[2] + y2;
 		var z1 = pose[3] + z2;
 		// グローバル座標
-		this._drx = this._character.drX0 + this._character.drScale * 35 * (x1 * this._character.drCos - y1 * this._character.drSin);
-		var y0 = this._character.drY0 + this._character.drScale * 35 * (x1 * this._character.drSin + y1 * this._character.drCos);
-		var z0 = this._character.drZ0 + this._character.drScale * 35 * (z1 - 0.05);
-		this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
-		this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
+		this._character.preDrawParts(ccvs, this, x1, y1, z1);
 
 		// 視点を考慮したuv座標設定
 		this._dru = this._u + av * this._uvsize;
@@ -256,8 +259,8 @@ class DrawCharacterParts extends DrawUnit{
 	override function draw(ccvs : Ccvs) : void{
 		var s2 = (this._uvsize * this._character.drScale) as int;
 		var s1 = (s2 * 0.5) as int;
-		var xc = (this._drx + ccvs.width * 0.5) as int;
-		var yc = (this._dry + ccvs.height * 0.5) as int;
+		var xc = (this.drx + ccvs.width * 0.5) as int;
+		var yc = (this.dry + ccvs.height * 0.5) as int;
 		var xm = xc - s1;
 		var ym = yc - s1;
 		var xp = xc + s1;
@@ -290,8 +293,6 @@ class DrawCharacterWeapon extends DrawUnit{
 	var _character : DrawCharacter;
 	var _canvas : HTMLCanvasElement = null;
 
-	var _drx : number;
-	var _dry : number;
 	var _drr : number;
 	var _action : int;
 
@@ -372,19 +373,15 @@ class DrawCharacterWeapon extends DrawUnit{
 		var y1 = pose[2];
 		var z1 = pose[3];
 		// グローバル座標
-		this._drx = this._character.drX0 + this._character.drScale * 35 * (x1 * this._character.drCos - y1 * this._character.drSin);
-		var y0 = this._character.drY0 + this._character.drScale * 35 * (x1 * this._character.drSin + y1 * this._character.drCos);
-		var z0 = this._character.drZ0 + this._character.drScale * 35 * (z1 - 0.05);
-		this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
-		this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
+		this._character.preDrawParts(ccvs, this, x1, y1, z1);
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
 		var ps = this._canvas.height * this._character.drScale;
-		var px = this._drx + ccvs.width * 0.5;
-		var py = this._dry + ccvs.height * 0.5;
+		var px = this.drx + ccvs.width * 0.5;
+		var py = this.dry + ccvs.height * 0.5;
 		ccvs.context.save();
 		ccvs.context.translate(px, py);
 		ccvs.context.scale(1, ccvs.sinh);
@@ -403,15 +400,11 @@ class DrawCharacterWeapon extends DrawUnit{
 class DrawShadow extends DrawUnit{
 	static var _canvas : HTMLCanvasElement = null;
 
-	var _size : number;
-
-	var _drx : number;
-	var _dry : number;
-	var _drScale : number;
+	var _scale : number;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(size : number){
+	function constructor(scale : number){
 		// 影画像作成
 		if(DrawShadow._canvas == null){
 			DrawShadow._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
@@ -422,29 +415,22 @@ class DrawShadow extends DrawUnit{
 			context.fill();
 		}
 		// 影の大きさ
-		this._size = size;
+		this._scale = scale;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(ccvs : Ccvs, x : number, y : number, z : number) : void{
-		this.visible = true;
-		// 位置
-		this._drx = ccvs.scale * (x * ccvs.cosv - y * ccvs.sinv);
-		var y0 = ccvs.scale * (x * ccvs.sinv + y * ccvs.cosv);
-		var z0 = ccvs.scale * z;
-		this._dry = y0 * ccvs.sinh - z0 * ccvs.cosh;
-		this.drz = y0 * ccvs.cosh + z0 * ccvs.sinh;
-		this._drScale = ccvs.scale * this._size;
+		super.preDraw(ccvs, x, y, z, this._scale);
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var psx = (16 * this._drScale) as int;
+		var psx = (16 * this.drScale) as int;
 		var psy = (psx * ccvs.sinh) as int;
-		var px = (this._drx - psx * 0.5 + ccvs.width * 0.5) as int;
-		var py = (this._dry - psy * 0.5 + ccvs.height * 0.5) as int;
+		var px = (this.drx - psx * 0.5 + ccvs.width * 0.5) as int;
+		var py = (this.dry - psy * 0.5 + ccvs.height * 0.5) as int;
 		ccvs.context.drawImage(DrawShadow._canvas, px, py, psx, psy);
 	}
 }
