@@ -257,7 +257,7 @@ class DrawCharacterParts extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var s2 = (this._uvsize * this._character.drScale) as int;
+		var s2 = (this._uvsize * 0.5 * this._character.drScale) as int;
 		var s1 = (s2 * 0.5) as int;
 		var xc = (this.drx + ccvs.width * 0.5) as int;
 		var yc = (this.dry + ccvs.height * 0.5) as int;
@@ -310,22 +310,22 @@ class DrawCharacterWeapon extends DrawUnit{
 					// ステップ毎の軌跡開始角度と終了角度
 					var rslist = [-45 * Math.PI / 180, -45 * Math.PI / 180, -45 * Math.PI / 180, 45 * Math.PI / 180];
 					var rglist = [-45 * Math.PI / 180, -20 * Math.PI / 180,  45 * Math.PI / 180, 45 * Math.PI / 180];
-					this._canvas.height = 48;
+					this._canvas.height = 96;
 					this._canvas.width = this._canvas.height * rslist.length;
 					// 剣の長さ
-					var len0 = 10;
-					var len1 = 33;
+					var len0 = 20;
+					var len1 = 66;
 					// 剣と軌跡の色と太さ
 					switch(weapon){
 						case "whiteSword":
 							context.strokeStyle = "#fff";
 							context.fillStyle = "rgba(255, 255, 255 , 0.5)";
-							context.lineWidth = 3;
+							context.lineWidth = 6;
 							break;
 						case "redSword":
 							context.strokeStyle = "#f00";
 							context.fillStyle = "rgba(255, 0, 0 , 0.5)";
-							context.lineWidth = 3;
+							context.lineWidth = 6;
 							break;
 					}
 					// 剣と軌跡描画
@@ -379,7 +379,7 @@ class DrawCharacterWeapon extends DrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(ccvs : Ccvs) : void{
-		var ps = this._canvas.height * this._character.drScale;
+		var ps = this._canvas.height * 0.5 * this._character.drScale;
 		var px = this.drx + ccvs.width * 0.5;
 		var py = this.dry + ccvs.height * 0.5;
 		ccvs.context.save();
