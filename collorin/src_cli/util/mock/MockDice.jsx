@@ -143,15 +143,16 @@ class MockDice{
 	// さいころ投擲
 	static function _dice(list : variant[], imgs : Map.<string>, request : variant) : void{
 		var num = request["num"] as int;
+		var fix = request["fix"] as int;
 		var pipList = new int[];
 		var pipTotal = 0;
 		for(var i = 0; i < num; i++){
-			var pip = Math.floor(1 + Math.random() * 6);
+			var pip = fix > 0 ? fix : Math.floor(1 + Math.random() * 6);
 			pipList.push(pip);
 			pipTotal += pip;
 		}
 		MockDice._pip = pipTotal;
-		list.push({type: "dice", pip: pipList});
+		list.push({type: "dice", pip: pipList, fix: fix});
 		list.push({type: "moveManual", id: MockDice._turnId, pip: pipTotal});
 	}
 

@@ -59,7 +59,6 @@ class SECdicePopupSkill extends SECpopup{
 		this._btnList["skill4"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn skill4").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
-		this._btnList["skill2"].inactive = true;
 		this._btnList["skill3"].inactive = true;
 		this._btnList["skill4"].inactive = true;
 	}
@@ -84,6 +83,21 @@ class SECdicePopupSkill extends SECpopup{
 				this._page.serialPush(new SECdiceRoll(this._page, this._cartridge, "ダブルさいころ", {
 					"type": "dice",
 					"num": 2,
+					"fix": 0,
+				}));
+				exist = false;
+			}
+		}
+
+		// テスト スキル2ボタン
+		if(this._btnList["skill2"].trigger){
+			this._btnList["skill2"].trigger = false;
+			if(active){
+				Sound.playSE("ok");
+				this._page.serialPush(new SECdiceRoll(this._page, this._cartridge, "6が出るさいころ", {
+					"type": "dice",
+					"num": 1,
+					"fix": 6,
 				}));
 				exist = false;
 			}

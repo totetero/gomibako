@@ -37,7 +37,7 @@ class SECdiceRoll extends EventCartridge{
 		var num = this._request["num"] as int;
 		this._page.ccvs.dices.length = 0;
 		for(var i = 0; i < num; i++){
-			this._page.ccvs.dices.push(new DrawThrowDice(num, i));
+			this._page.ccvs.dices.push(new DrawThrowDice(num, i, this._request["fix"] as int));
 		}
 		// トリガーリセット
 		Ctrl.trigger_zb = false;

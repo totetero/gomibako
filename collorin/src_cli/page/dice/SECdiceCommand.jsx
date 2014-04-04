@@ -72,6 +72,7 @@ class SECdiceCommand extends EventCartridge{
 			this._page.serialPush(new SECdiceRoll(this._page, this, "", {
 				"type": "dice",
 				"num": 1,
+				"fix": 0,
 			}));
 			exist = false;
 		}

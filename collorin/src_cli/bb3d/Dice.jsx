@@ -13,6 +13,7 @@ class DrawDice{
 	var _pos0 : number[][];
 	var _pos1 : number[][];
 	var _size : number;
+	var _fix : int;
 
 	var _img : HTMLImageElement;
 	var _canvas : HTMLCanvasElement;
@@ -26,7 +27,7 @@ class DrawDice{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(size : number){
+	function constructor(size : number, fix : int){
 		this._img = Loader.imgs["img_dice"];
 		// オフスクリーンcanvasの準備
 		this._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
@@ -55,6 +56,8 @@ class DrawDice{
 		for(var i = 0; i < this._pos0.length; i++){this._pos1[i] = new number[];}
 		// サイコロの大きさ
 		this._size = size;
+		// 固定さいころ設定
+		this._fix = fix;
 	}
 
 	// ----------------------------------------------------------------
@@ -146,12 +149,13 @@ class DrawDice{
 				var lineFlag = (i == 0);
 				var type = lineFlag ? -1 : 0;
 				// 面描画
-				this.drawPolygon(lineFlag ? -1 : 1, pos[ 0], pos[ 1], pos[ 2], pos[ 3]);
-				this.drawPolygon(lineFlag ? -1 : 6, pos[ 4], pos[ 5], pos[ 6], pos[ 7]);
-				this.drawPolygon(lineFlag ? -1 : 2, pos[ 8], pos[ 9], pos[10], pos[11]);
-				this.drawPolygon(lineFlag ? -1 : 5, pos[12], pos[13], pos[14], pos[15]);
-				this.drawPolygon(lineFlag ? -1 : 3, pos[16], pos[17], pos[18], pos[19]);
-				this.drawPolygon(lineFlag ? -1 : 4, pos[20], pos[21], pos[22], pos[23]);
+				var extra = lineFlag ? -1 : this._fix;
+				this.drawPolygon(extra != 0 ? extra : 1, pos[ 0], pos[ 1], pos[ 2], pos[ 3]);
+				this.drawPolygon(extra != 0 ? extra : 6, pos[ 4], pos[ 5], pos[ 6], pos[ 7]);
+				this.drawPolygon(extra != 0 ? extra : 2, pos[ 8], pos[ 9], pos[10], pos[11]);
+				this.drawPolygon(extra != 0 ? extra : 5, pos[12], pos[13], pos[14], pos[15]);
+				this.drawPolygon(extra != 0 ? extra : 3, pos[16], pos[17], pos[18], pos[19]);
+				this.drawPolygon(extra != 0 ? extra : 4, pos[20], pos[21], pos[22], pos[23]);
 				// 頂点の三角形
 				this.drawPolygon(type, pos[ 0], pos[13], pos[23], null);
 				this.drawPolygon(type, pos[ 1], pos[22], pos[11], null);
@@ -310,8 +314,8 @@ class DrawThrowDice extends DrawDice{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(num : int, index : int){
-		super(50 - 3 * num);
+	function constructor(num : int, index : int, fix : int){
+		super(50 - 3 * num, fix);
 		this.x = DrawThrowDice._layout[num - 1][index * 2 + 0];
 		this.y = DrawThrowDice._layout[num - 1][index * 2 + 1];
 		this.setRandomQuat();
