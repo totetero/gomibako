@@ -27,6 +27,8 @@ class DiceCanvas extends Ccvs{
 	var tapped : boolean;
 	var tappedCharacter : string;
 
+	// マスクカラー
+	var _maskColor = "";
 	// 背景
 	var _bgimg : HTMLImageElement;
 	var _bgaction = 0;
@@ -144,7 +146,11 @@ class DiceCanvas extends Ccvs{
 		}
 
 		// キャラクター描画設定
-		for(var id in this.member){this.member[id].setColor((this.tappedCharacter == id) ? "rgba(255, 255, 255, 0.5)" : "");}
+		if(this._maskColor == ""){
+			for(var id in this.member){
+				this.member[id].setColor((this.tappedCharacter == id) ? "rgba(255, 255, 255, 0.5)" : "");
+			}
+		}
 		// フィールド描画設定
 		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter == "");
 	}
@@ -155,10 +161,20 @@ class DiceCanvas extends Ccvs{
 		for(var id in this.member){this.member[id].preDraw(this);}
 		for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
 
+		// 背景描画
 		this._drawBackground();
+		// 地面描画
 		this.field.draw(this, this.cx, this.cy, this.tapped);
+		// 影描画
 		DrawUnit.drawList(this, this.slist);
+		// 画面を暗くする
+		if(this._maskColor != ""){
+			this.context.fillStyle = this._maskColor;
+			this.context.fillRect(0, 0, this.width, this.height);
+		}
+		// エフェクトとキャラクター描画
 		DrawUnit.drawList(this, this.clist);
+		// さいころ描画
 		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
 	}
 
@@ -171,6 +187,16 @@ class DiceCanvas extends Ccvs{
 		while(x < this.width){
 			this.context.drawImage(this._bgimg, x, 0, width, 480);
 			x += width;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// マスクカラー設定
+	function setMaskColor(color : string) : void{
+		if(this._maskColor == color){return;}
+		this._maskColor = color;
+		for(var id in this.member){
+			this.member[id].setColor(color);
 		}
 	}
 

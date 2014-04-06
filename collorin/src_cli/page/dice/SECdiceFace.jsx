@@ -76,17 +76,20 @@ class SECdiceFace extends EventCartridge{
 				if(++this._action >= 10){
 					this._mode = 1;
 					this._action = 0;
+				}
+				break;
+			case 1:
+				// アクション後半
+				if(this._action == 0){
 					// テスト
 					this._chara1.hp -= this._value;
 					this._setGauge(-1);
+					// エフェクト
 					this._page.ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
 					for(var i = 0; i < 3; i++){
 						this._page.ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
 					}
 				}
-				break;
-			case 1:
-				// アクション後半
 				this._chara0.motion = "attack2";
 				this._chara0.action = this._action;
 				this._chara1.motion = "damage";
@@ -98,8 +101,10 @@ class SECdiceFace extends EventCartridge{
 				break;
 			case 2:
 				// アクション完了後
-				this._chara0.motion = "stand";
-				this._chara1.motion = "stand";
+				if(this._action == 0){
+					this._chara0.motion = "stand";
+					this._chara1.motion = "stand";
+				}
 				if(++this._action >= 10){
 					exist = false;
 				}

@@ -112,6 +112,8 @@ class DiceCharacter extends PartsCharacter{
 				if(act < this._character.getLen(this.motion)){this._character.preDraw(ccvs, x, y, 0, this.r, this.motion, act);}
 				else{this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0);}
 				break;
+			case "charge": this._character.preDraw(ccvs, x, y, 0, this.r, "charge", 0); break;
+			case "beam": this._character.preDraw(ccvs, x, y, 0, this.r, "beam", 0); break;
 			default: this._character.preDraw(ccvs, x, y, 0, this.r, "stand", 0); break;
 		}
 	}
