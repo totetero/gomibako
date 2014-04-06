@@ -44,13 +44,27 @@ class SECdiceBeam extends EventCartridge{
 		this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		this._setGauge(-1);
+		// キャラクターが向き合う
+		var r = Math.atan2(this._charas[0].y - this._chara.y, this._charas[0].x - this._chara.x);
+		this._chara.r = r;
+		for(var i = 0; i < this._charas.length; i++){
+			this._charas[i].r = r + Math.PI;
+		}
 		return false;
 	}
 
 	// ----------------------------------------------------------------
 	// ゲージ設定
 	function _setGauge(time : int) : void{
-		this._page.parallelPush(new PECdicePlayerGauge(this._page, this._chara, time));
+		var chara0 = this._chara;
+		var chara1 = this._charas[0];
+		if(chara1.side == "player" && chara0.side != "player"){
+			this._page.parallelPush(new PECdicePlayerGauge(this._page, chara1, time));
+			this._page.parallelPush(new PECdiceEnemyGauge(this._page, chara0, time));
+		}else{
+			this._page.parallelPush(new PECdicePlayerGauge(this._page, chara0, time));
+			this._page.parallelPush(new PECdiceEnemyGauge(this._page, chara1, time));
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -123,9 +137,12 @@ class SECdiceBeam extends EventCartridge{
 					ccvs.setMaskColor("");
 					this._chara.motion = "stand";
 					this._page.ccvs.center = this._charas;
+					// テスト
 					for(var i = 0; i < this._charas.length; i++){
+						this._charas[i].hp -= this._values[i];
 						this._page.ccvs.pushEffect(new DrawEffectHopNumber(this._values[i] as string, this._charas[i].x, this._charas[i].y));
 					}
+					this._setGauge(-1);
 					// コントローラーを隠す
 					this._page.parallelPush(new PECopenRctrl("", "", "", ""));
 				}

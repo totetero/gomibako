@@ -83,9 +83,9 @@ class SECdiceFace extends EventCartridge{
 				if(this._action == 0){
 					// テスト
 					this._chara1.hp -= this._value;
+					this._page.ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
 					this._setGauge(-1);
 					// エフェクト
-					this._page.ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
 					for(var i = 0; i < 3; i++){
 						this._page.ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
 					}
