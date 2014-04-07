@@ -99,6 +99,12 @@ class SECdiceDiceRoll extends EventCartridge{
 // さいころ回転と方向転換
 class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 	var _player : DiceCharacter;
+	var _movable0 : boolean;
+	var _movable1 : boolean;
+	var _movable2 : boolean;
+	var _movable3 : boolean;
+	var _movable4 : boolean;
+	var _movable5 : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -110,14 +116,80 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
+		var ccvs = this._page.ccvs;
 		var exist = super.init();
 		this._page.parallelPush(new PECopenLctrl(true));
+		// プレイヤーの現在座標
+		var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
+		var x0 = hex.x;
+		var y0 = hex.y;
+		var x1 = x0;
+		var y1 = y0;
+		// 周囲の存在するヘックスを調べる
+		this._movable0 = (ccvs.field.getHexFromIndex(x0 + 1, y0 + 0).type > 0);
+		this._movable1 = (ccvs.field.getHexFromIndex(x0 + 0, y0 + 1).type > 0);
+		this._movable2 = (ccvs.field.getHexFromIndex(x0 - 1, y0 + 1).type > 0);
+		this._movable3 = (ccvs.field.getHexFromIndex(x0 - 1, y0 + 0).type > 0);
+		this._movable4 = (ccvs.field.getHexFromIndex(x0 + 0, y0 - 1).type > 0);
+		this._movable5 = (ccvs.field.getHexFromIndex(x0 + 1, y0 - 1).type > 0);
+		// 存在するヘックスのうち、もとの向きが一番近いヘックスの方向を向く
+		var rot0 = 180;
+		var pr = this._player.r * 180 / Math.PI;
+		while(pr < -180){pr += 360;}
+		while(pr > 180){pr -= 360;}
+		if(this._movable0){var rot1 = pr -   0; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 1; y1 = y0 + 0; this._player.r = Math.PI * 0 / 3;}}
+		if(this._movable1){var rot1 = pr -  60; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 0; y1 = y0 + 1; this._player.r = Math.PI * 1 / 3;}}
+		if(this._movable2){var rot1 = pr - 120; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 - 1; y1 = y0 + 1; this._player.r = Math.PI * 2 / 3;}}
+		if(this._movable3){var rot1 = pr + 180; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 - 1; y1 = y0 + 0; this._player.r = Math.PI * 3 / 3;}}
+		if(this._movable4){var rot1 = pr + 120; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 0; y1 = y0 - 1; this._player.r = Math.PI * 4 / 3;}}
+		if(this._movable5){var rot1 = pr +  60; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 1; y1 = y0 - 1; this._player.r = Math.PI * 5 / 3;}}
 		return exist;
 	}
 
 	// ----------------------------------------------------------------
 	// 十字キー計算
 	override function calcArrow(request : variant) : void{
+		var ccvs = this._page.ccvs;
+		var dir = 0;
+		var isMove = true;
+		if     (Ctrl.krt && Ctrl.kup){dir = 1.75;}
+		else if(Ctrl.klt && Ctrl.kup){dir = 1.25;}
+		else if(Ctrl.klt && Ctrl.kdn){dir = 0.75;}
+		else if(Ctrl.krt && Ctrl.kdn){dir = 0.25;}
+		else if(Ctrl.krt){dir = 0.00;}
+		else if(Ctrl.kup){dir = 1.50;}
+		else if(Ctrl.klt){dir = 1.00;}
+		else if(Ctrl.kdn){dir = 0.50;}
+		else{isMove = false;}
+		if(isMove){
+			// プレイヤーの現在座標
+			var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
+			var x0 = hex.x;
+			var y0 = hex.y;
+			var x1 = x0;
+			var y1 = y0;
+			// 角度を使いやすい形に変換する
+			dir = 180 * (dir - ccvs.rotv / Math.PI);
+			while(dir < 0){dir += 360;}
+			while(dir > 360){dir -= 360;}
+			// 十字キーの先のヘックスを調べる
+			var index = -1;
+			if(this._movable0 && (dir < 30 + 45 || 330 - 45 < dir)){index = 0;}
+			if(this._movable1 && (dir < 90 + 45 || 30 - 45 + 360 < dir)){index = (index < 0) ? 1 : 6;}
+			if(this._movable2 &&  90 - 45 < dir && dir < 150 + 45){index = (index < 0) ? 2 : 6;}
+			if(this._movable3 && 150 - 45 < dir && dir < 210 + 45){index = (index < 0) ? 3 : 6;}
+			if(this._movable4 && 210 - 45 < dir && dir < 270 + 45){index = (index < 0) ? 4 : 6;}
+			if(this._movable5 && (dir < 330 + 45 - 360 || 270 - 45 < dir)){index = (index < 0) ? 5 : 6;}
+			// 移動先を変数に入れる
+			switch(index){
+				case 0: x1 = x0 + 1; y1 = y0 + 0; this._player.r = Math.PI * 0 / 3; break;
+				case 1: x1 = x0 + 0; y1 = y0 + 1; this._player.r = Math.PI * 1 / 3; break;
+				case 2: x1 = x0 - 1; y1 = y0 + 1; this._player.r = Math.PI * 2 / 3; break;
+				case 3: x1 = x0 - 1; y1 = y0 + 0; this._player.r = Math.PI * 3 / 3; break;
+				case 4: x1 = x0 + 0; y1 = y0 - 1; this._player.r = Math.PI * 4 / 3; break;
+				case 5: x1 = x0 + 1; y1 = y0 - 1; this._player.r = Math.PI * 5 / 3; break;
+			}
+		}
 	}
 }
 
