@@ -12,7 +12,7 @@ import "SECdiceCommand.jsx";
 import "SECdiceMoveAuto.jsx";
 import "SECdiceMoveManual.jsx";
 import "SECdiceFace.jsx";
-import "SECdiceBeam.jsx";
+import "SECdiceFaceBeam.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -87,7 +87,7 @@ class DicePage extends Page{
 				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
 				case "dice": response = list[i]; break;
 				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
-				case "beam": this.serialPush(new SECdiceBeam(this, list[i])); break;
+				case "beam": this.serialPush(new SECdiceFaceBeam(this, list[i])); break;
 				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
 				case "moveManual": this.serialPush(new SECdiceMoveManual(this, list[i])); break;
 			}

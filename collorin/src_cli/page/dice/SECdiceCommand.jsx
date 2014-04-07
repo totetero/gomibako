@@ -9,7 +9,7 @@ import "DicePage.jsx";
 import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
 import "SECdiceMap.jsx";
-import "SECdiceThrow.jsx";
+import "SECdiceDice.jsx";
 import "SECdicePopupSkill.jsx";
 import "SECdicePopupMenu.jsx";
 import "SECdicePopupInfoChara.jsx";
@@ -69,7 +69,7 @@ class SECdiceCommand extends EventCartridge{
 		// さいころボタン
 		if(Ctrl.trigger_zb){
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceRoll(this._page, this, "", {
+			this._page.serialPush(new SECdiceDiceRoll(this._page, this, "", {
 				"type": "dice",
 				"num": 1,
 				"fix": 0,
@@ -80,7 +80,7 @@ class SECdiceCommand extends EventCartridge{
 		// スキルボタン
 		if(Ctrl.trigger_xb){
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdicePopupSkill(this._page, this));
+			this._page.serialPush(new SECdicePopupSkill(this._page, this, this._player));
 			exist = false;
 		}
 

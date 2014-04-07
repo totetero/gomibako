@@ -31,6 +31,7 @@ class MockDice{
 		switch(request["type"] as string){
 			case "entry": MockDice._entry(list, imgs); break;
 			case "dice": MockDice._dice(list, imgs, request); break;
+			case "beam": MockDice._beam(list, imgs, request); break;
 			case "move": MockDice._move(list, imgs, request); break;
 		}
 
@@ -154,6 +155,26 @@ class MockDice{
 		MockDice._pip = pipTotal;
 		list.push({type: "dice", id: MockDice._turnId, pip: pipList, fix: fix});
 		list.push({type: "moveManual", id: MockDice._turnId, pip: pipTotal});
+	}
+
+	// ----------------------------------------------------------------
+	// ビーム照射
+	static function _beam(list : variant[], imgs : Map.<string>, request : variant) : void{
+		var num = request["num"] as int;
+		var fix = request["fix"] as int;
+		var pipList = new int[];
+		var pipTotal = 0;
+		for(var i = 0; i < num; i++){
+			var pip = fix > 0 ? fix : Math.floor(1 + Math.random() * 6);
+			pipList.push(pip);
+			pipTotal += pip;
+		}
+		MockDice._pip = pipTotal;
+		list.push({type: "dice", id: MockDice._turnId, pip: pipList, fix: fix});
+		list.push({type: "beam", id0: MockDice._turnId, id1: "e00", value: pipTotal});
+
+		// ターン切り替え
+		MockDice._turn(list, imgs);
 	}
 
 	// ----------------------------------------------------------------

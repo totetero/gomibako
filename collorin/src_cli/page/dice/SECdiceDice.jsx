@@ -8,6 +8,7 @@ import "../../bb3d/Dice.jsx";
 import "../core/Transition.jsx";
 
 import "DicePage.jsx";
+import "DiceCharacter.jsx";
 import "PECdiceGauge.jsx";
 import "PECdiceMessage.jsx";
 
@@ -15,8 +16,8 @@ import "PECdiceMessage.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
- // さいころ回転
-class SECdiceRoll extends EventCartridge{
+// さいころ回転
+class SECdiceDiceRoll extends EventCartridge{
 	var _page : DicePage;
 	var _cartridge : EventCartridge;
 	var _message : string;
@@ -60,10 +61,13 @@ class SECdiceRoll extends EventCartridge{
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
 
+		// 十字キー
+		this.calcArrow(this._request);
+
 		// なげるボタン
 		if(Ctrl.trigger_zb){
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceThrow(this._page, this._request));
+			this._page.serialPush(new SECdiceDiceThrow(this._page, this._request));
 			exist = false;
 		}
 
@@ -82,13 +86,47 @@ class SECdiceRoll extends EventCartridge{
 	}
 
 	// ----------------------------------------------------------------
+	// 十字キー計算
+	function calcArrow(request : variant) : void{
+	}
+
+	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 	}
 }
 
+// さいころ回転と方向転換
+class SECdiceDiceRollTurn extends SECdiceDiceRoll{
+	var _player : DiceCharacter;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : DicePage, cartridge : EventCartridge, message : string, request : variant, player : DiceCharacter){
+		super(page, cartridge, message, request);
+		this._player = player;
+	}
+
+	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : boolean{
+		var exist = super.init();
+		this._page.parallelPush(new PECopenLctrl(true));
+		return exist;
+	}
+
+	// ----------------------------------------------------------------
+	// 十字キー計算
+	override function calcArrow(request : variant) : void{
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 // さいころ投擲
-class SECdiceThrow extends EventCartridge{
+class SECdiceDiceThrow extends EventCartridge{
 	var _page : DicePage;
 	var _request : variant;
 

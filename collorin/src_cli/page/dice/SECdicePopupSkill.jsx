@@ -7,7 +7,8 @@ import "../core/SECpopup.jsx";
 import "../core/Transition.jsx";
 
 import "DicePage.jsx";
-import "SECdiceThrow.jsx";
+import "DiceCharacter.jsx";
+import "SECdiceDice.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -31,12 +32,14 @@ class SECdicePopupSkill extends SECpopup{
 	var _page : DicePage;
 	var _cartridge : EventCartridge;
 	var _btnList : Map.<PartsButton>;
+	var _player : DiceCharacter;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : DicePage, cartridge : EventCartridge){
+	function constructor(page : DicePage, cartridge : EventCartridge, player : DiceCharacter){
 		this._page = page;
 		this._cartridge = cartridge;
+		this._player = player;
 	}
 
 	// ----------------------------------------------------------------
@@ -59,7 +62,6 @@ class SECdicePopupSkill extends SECpopup{
 		this._btnList["skill4"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn skill4").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
-		this._btnList["skill3"].inactive = true;
 		this._btnList["skill4"].inactive = true;
 	}
 
@@ -80,7 +82,7 @@ class SECdicePopupSkill extends SECpopup{
 			this._btnList["skill1"].trigger = false;
 			if(active){
 				Sound.playSE("ok");
-				this._page.serialPush(new SECdiceRoll(this._page, this._cartridge, "ダブルさいころ", {
+				this._page.serialPush(new SECdiceDiceRoll(this._page, this._cartridge, "ダブルさいころ", {
 					"type": "dice",
 					"num": 2,
 					"fix": 0,
@@ -94,11 +96,25 @@ class SECdicePopupSkill extends SECpopup{
 			this._btnList["skill2"].trigger = false;
 			if(active){
 				Sound.playSE("ok");
-				this._page.serialPush(new SECdiceRoll(this._page, this._cartridge, "6が出るさいころ", {
+				this._page.serialPush(new SECdiceDiceRoll(this._page, this._cartridge, "6が出るさいころ", {
 					"type": "dice",
 					"num": 1,
 					"fix": 6,
 				}));
+				exist = false;
+			}
+		}
+
+		// テスト スキル3ボタン
+		if(this._btnList["skill3"].trigger){
+			this._btnList["skill3"].trigger = false;
+			if(active){
+				Sound.playSE("ok");
+				this._page.serialPush(new SECdiceDiceRollTurn(this._page, this._cartridge, "レーザービーム", {
+					"type": "beam",
+					"num": 1,
+					"fix": 0,
+				}, this._player));
 				exist = false;
 			}
 		}

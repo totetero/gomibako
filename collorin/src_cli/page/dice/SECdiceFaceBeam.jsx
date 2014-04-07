@@ -13,7 +13,7 @@ import "PECdiceGauge.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-class SECdiceBeam extends EventCartridge{
+class SECdiceFaceBeam extends EventCartridge{
 	var _page : DicePage;
 	var _charge : number;
 	var _chara : DiceCharacter;
