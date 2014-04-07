@@ -105,6 +105,7 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 	var _movable3 : boolean;
 	var _movable4 : boolean;
 	var _movable5 : boolean;
+	var _index : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -119,30 +120,25 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 		var ccvs = this._page.ccvs;
 		var exist = super.init();
 		this._page.parallelPush(new PECopenLctrl(true));
-		// プレイヤーの現在座標
+		// プレイヤー周囲の存在するヘックスを調べる
 		var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
-		var x0 = hex.x;
-		var y0 = hex.y;
-		var x1 = x0;
-		var y1 = y0;
-		// 周囲の存在するヘックスを調べる
-		this._movable0 = (ccvs.field.getHexFromIndex(x0 + 1, y0 + 0).type > 0);
-		this._movable1 = (ccvs.field.getHexFromIndex(x0 + 0, y0 + 1).type > 0);
-		this._movable2 = (ccvs.field.getHexFromIndex(x0 - 1, y0 + 1).type > 0);
-		this._movable3 = (ccvs.field.getHexFromIndex(x0 - 1, y0 + 0).type > 0);
-		this._movable4 = (ccvs.field.getHexFromIndex(x0 + 0, y0 - 1).type > 0);
-		this._movable5 = (ccvs.field.getHexFromIndex(x0 + 1, y0 - 1).type > 0);
-		// 存在するヘックスのうち、もとの向きが一番近いヘックスの方向を向く
+		this._movable0 = (ccvs.field.getHexFromIndex(hex.x + 1, hex.y + 0).type > 0);
+		this._movable1 = (ccvs.field.getHexFromIndex(hex.x + 0, hex.y + 1).type > 0);
+		this._movable2 = (ccvs.field.getHexFromIndex(hex.x - 1, hex.y + 1).type > 0);
+		this._movable3 = (ccvs.field.getHexFromIndex(hex.x - 1, hex.y + 0).type > 0);
+		this._movable4 = (ccvs.field.getHexFromIndex(hex.x + 0, hex.y - 1).type > 0);
+		this._movable5 = (ccvs.field.getHexFromIndex(hex.x + 1, hex.y - 1).type > 0);
+		// 存在するヘックスのうち、もとの向きが一番近いヘックスの方向をしらべる
 		var rot0 = 180;
 		var pr = this._player.r * 180 / Math.PI;
 		while(pr < -180){pr += 360;}
 		while(pr > 180){pr -= 360;}
-		if(this._movable0){var rot1 = pr -   0; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 1; y1 = y0 + 0; this._player.r = Math.PI * 0 / 3;}}
-		if(this._movable1){var rot1 = pr -  60; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 0; y1 = y0 + 1; this._player.r = Math.PI * 1 / 3;}}
-		if(this._movable2){var rot1 = pr - 120; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 - 1; y1 = y0 + 1; this._player.r = Math.PI * 2 / 3;}}
-		if(this._movable3){var rot1 = pr + 180; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 - 1; y1 = y0 + 0; this._player.r = Math.PI * 3 / 3;}}
-		if(this._movable4){var rot1 = pr + 120; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 0; y1 = y0 - 1; this._player.r = Math.PI * 4 / 3;}}
-		if(this._movable5){var rot1 = pr +  60; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; x1 = x0 + 1; y1 = y0 - 1; this._player.r = Math.PI * 5 / 3;}}
+		if(this._movable0){var rot1 = pr -   0; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 0;}}
+		if(this._movable1){var rot1 = pr -  60; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 1;}}
+		if(this._movable2){var rot1 = pr - 120; if(rot1 < -180){rot1 += 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 2;}}
+		if(this._movable3){var rot1 = pr + 180; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 3;}}
+		if(this._movable4){var rot1 = pr + 120; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 4;}}
+		if(this._movable5){var rot1 = pr +  60; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 5;}}
 		return exist;
 	}
 
@@ -162,12 +158,6 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 		else if(Ctrl.kdn){dir = 0.50;}
 		else{isMove = false;}
 		if(isMove){
-			// プレイヤーの現在座標
-			var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
-			var x0 = hex.x;
-			var y0 = hex.y;
-			var x1 = x0;
-			var y1 = y0;
 			// 角度を使いやすい形に変換する
 			dir = 180 * (dir - ccvs.rotv / Math.PI);
 			while(dir < 0){dir += 360;}
@@ -180,15 +170,23 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 			if(this._movable3 && 150 - 45 < dir && dir < 210 + 45){index = (index < 0) ? 3 : 6;}
 			if(this._movable4 && 210 - 45 < dir && dir < 270 + 45){index = (index < 0) ? 4 : 6;}
 			if(this._movable5 && (dir < 330 + 45 - 360 || 270 - 45 < dir)){index = (index < 0) ? 5 : 6;}
-			// 移動先を変数に入れる
-			switch(index){
-				case 0: x1 = x0 + 1; y1 = y0 + 0; this._player.r = Math.PI * 0 / 3; break;
-				case 1: x1 = x0 + 0; y1 = y0 + 1; this._player.r = Math.PI * 1 / 3; break;
-				case 2: x1 = x0 - 1; y1 = y0 + 1; this._player.r = Math.PI * 2 / 3; break;
-				case 3: x1 = x0 - 1; y1 = y0 + 0; this._player.r = Math.PI * 3 / 3; break;
-				case 4: x1 = x0 + 0; y1 = y0 - 1; this._player.r = Math.PI * 4 / 3; break;
-				case 5: x1 = x0 + 1; y1 = y0 - 1; this._player.r = Math.PI * 5 / 3; break;
+			if(0 <= index && index < 6){this._index = index;}
+		}
+
+		if(0 <= this._index && this._index < 6){
+			// プレイヤーの方向転換
+			this._player.r = Math.PI * this._index / 3;
+			// 移動先をリクエストに入れる
+			var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
+			switch(this._index){
+				case 0: request["dst"] = [hex.x + 1, hex.y + 0]; break;
+				case 1: request["dst"] = [hex.x + 0, hex.y + 1]; break;
+				case 2: request["dst"] = [hex.x - 1, hex.y + 1]; break;
+				case 3: request["dst"] = [hex.x - 1, hex.y + 0]; break;
+				case 4: request["dst"] = [hex.x + 0, hex.y - 1]; break;
+				case 5: request["dst"] = [hex.x + 1, hex.y - 1]; break;
 			}
+			this._index = -1;
 		}
 	}
 }
