@@ -135,6 +135,7 @@ class SECpopupPicker extends SECpopup{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
+		this._btnList["close"].sKey = true;
 
 		// スクロール作成
 		this._scroller = new PartsScroll(

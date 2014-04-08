@@ -43,10 +43,10 @@ class SECdiceDiceRoll extends EventCartridge{
 		}
 		// トリガーリセット
 		Ctrl.trigger_zb = false;
-		Ctrl.trigger_xb = false;
+		Ctrl.trigger_sb = false;
 		// コントローラーを表示
 		this.page.parallelPush(new PECopenLctrl(false));
-		this.page.parallelPush(new PECopenRctrl("なげる", "もどる", "", ""));
+		this.page.parallelPush(new PECopenRctrl("なげる", "", "", "もどる"));
 		this.page.parallelPush(new PECopenCharacter("", ""));
 		this.page.parallelPush(new PECdiceMessage(this.page, this.message, true, -1));
 		return false;
@@ -73,7 +73,7 @@ class SECdiceDiceRoll extends EventCartridge{
 		}
 
 		// もどるボタン
-		if(Ctrl.trigger_xb){
+		if(Ctrl.trigger_sb){
 			Sound.playSE("ng");
 			this.page.ccvs.dices.length = 0;
 			this.page.serialPush(this._cartridge);
@@ -233,9 +233,9 @@ class SECdiceDiceThrow extends EventCartridge{
 				chara.sp -= 10;
 				this._page.parallelPush(new PECdicePlayerGauge(this._page, chara, -1));
 				// トリガーリセット
-				Ctrl.trigger_xb = false;
+				Ctrl.trigger_sb = false;
 				// コントローラーを表示
-				this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
+				this._page.parallelPush(new PECopenRctrl("", "", "", "スキップ"));
 			}, function():void{
 				// 画像ロード失敗
 			});
@@ -260,8 +260,8 @@ class SECdiceDiceThrow extends EventCartridge{
 			for(var i = 0; i < ccvs.dices.length; i++){throwing = throwing || ccvs.dices[i].throwing;}
 
 			// 演出終了もしくはスキップボタン
-			if(!throwing || Ctrl.trigger_xb){
-				if(Ctrl.trigger_xb){Sound.playSE("ok");}
+			if(!throwing || Ctrl.trigger_sb){
+				if(Ctrl.trigger_sb){Sound.playSE("ok");}
 				this._page.ccvs.dices.length = 0;
 				this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 				exist = false;

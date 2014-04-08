@@ -29,11 +29,11 @@ class SECdiceMap extends EventCartridge{
 		// 中心キャラクター設定
 		this._page.ccvs.center = null;
 		// トリガーリセット
-		Ctrl.trigger_xb = false;
+		Ctrl.trigger_sb = false;
 		this._page.ccvs.trigger_mup = false;
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
-		this._page.parallelPush(new PECopenRctrl("", "もどる", "", ""));
+		this._page.parallelPush(new PECopenRctrl("", "", "", "戻る"));
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		return false;
 	}
@@ -57,7 +57,7 @@ class SECdiceMap extends EventCartridge{
 		});
 
 		// もどるボタン
-		if(Ctrl.trigger_xb){
+		if(Ctrl.trigger_sb){
 			Sound.playSE("ng");
 			this._page.serialPush(this._cartridge);
 			exist = false;

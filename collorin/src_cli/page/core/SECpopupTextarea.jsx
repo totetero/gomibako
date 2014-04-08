@@ -54,6 +54,7 @@ abstract class SECpopupTextarea extends SECpopup{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["ok"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn ok").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["close"].sKey = true;
 	}
 
 	// ----------------------------------------------------------------

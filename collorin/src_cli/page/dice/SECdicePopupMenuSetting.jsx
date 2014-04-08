@@ -70,6 +70,7 @@ class SECdicePopupMenuSetting extends SECpopup{
 		this._btnList["sef"] = new PartsButton(sefDiv, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
+		this._btnList["close"].sKey = true;
 		if(!Sound.isSupported){
 			this._btnList["bgm"].inactive = true;
 			this._btnList["sef"].inactive = true;

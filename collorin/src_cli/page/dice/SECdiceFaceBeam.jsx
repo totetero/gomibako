@@ -41,10 +41,10 @@ class SECdiceFaceBeam extends EventCartridge{
 		// 中心キャラクター設定
 		this._page.ccvs.center = [this._chara];
 		// トリガーリセット
-		Ctrl.trigger_xb = false;
+		Ctrl.trigger_sb = false;
 		// コントローラーを表示
 		this._page.parallelPush(new PECopenLctrl(false));
-		this._page.parallelPush(new PECopenRctrl("", "スキップ", "", ""));
+		this._page.parallelPush(new PECopenRctrl("", "", "", "スキップ"));
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		this._setGauge(-1);
 		// キャラクターが向き合う
@@ -86,7 +86,7 @@ class SECdiceFaceBeam extends EventCartridge{
 		ccvs.calc(true, (this._mode == 0) ? 2 : 0, null, null);
 
 		// スキップチェック
-		if((this._mode == 0 || this._mode == 1) && Ctrl.trigger_xb){
+		if((this._mode == 0 || this._mode == 1) && Ctrl.trigger_sb){
 			this._mode = 2;
 			this._action = 0;
 		}

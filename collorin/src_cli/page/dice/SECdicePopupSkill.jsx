@@ -24,7 +24,6 @@ class SECdicePopupSkill extends SECpopup{
 			<div class="core-btn skill1">ダブルさいころ</div>
 			<div class="core-btn skill2">6が出るさいころ</div>
 			<div class="core-btn skill3">レーザービーム</div>
-			<div class="core-btn skill4">使用済みスキル</div>
 			<div class="core-btn close">閉じる</div>
 		</div>
 	""";
@@ -59,10 +58,12 @@ class SECdicePopupSkill extends SECpopup{
 		this._btnList["skill1"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn skill1").item(0) as HTMLDivElement, true);
 		this._btnList["skill2"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn skill2").item(0) as HTMLDivElement, true);
 		this._btnList["skill3"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn skill3").item(0) as HTMLDivElement, true);
-		this._btnList["skill4"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn skill4").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
-		this._btnList["skill4"].inactive = true;
+		this._btnList["skill1"].zKey = true;
+		this._btnList["skill2"].xKey = true;
+		this._btnList["skill3"].cKey = true;
+		this._btnList["close"].sKey = true;
 	}
 
 	// ----------------------------------------------------------------
