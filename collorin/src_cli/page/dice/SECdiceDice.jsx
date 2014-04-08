@@ -18,17 +18,17 @@ import "PECdiceMessage.jsx";
 
 // さいころ回転
 class SECdiceDiceRoll extends EventCartridge{
-	var _page : DicePage;
+	var page : DicePage;
 	var _cartridge : EventCartridge;
-	var _message : string;
+	var message : string;
 	var _request : variant;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : DicePage, cartridge : EventCartridge, message : string, request : variant){
-		this._page = page;
+		this.page = page;
 		this._cartridge = cartridge;
-		this._message = message;
+		this.message = message;
 		this._request = request;
 	}
 
@@ -37,25 +37,25 @@ class SECdiceDiceRoll extends EventCartridge{
 	override function init() : boolean{
 		// さいころ初期化
 		var num = this._request["num"] as int;
-		this._page.ccvs.dices.length = 0;
+		this.page.ccvs.dices.length = 0;
 		for(var i = 0; i < num; i++){
-			this._page.ccvs.dices.push(new DrawThrowDice(num, i, this._request["fix"] as int));
+			this.page.ccvs.dices.push(new DrawThrowDice(num, i, this._request["fix"] as int));
 		}
 		// トリガーリセット
 		Ctrl.trigger_zb = false;
 		Ctrl.trigger_xb = false;
 		// コントローラーを表示
-		this._page.parallelPush(new PECopenLctrl(false));
-		this._page.parallelPush(new PECopenRctrl("なげる", "もどる", "", ""));
-		this._page.parallelPush(new PECopenCharacter("", ""));
-		this._page.parallelPush(new PECdiceMessage(this._page, this._message, true, -1));
+		this.page.parallelPush(new PECopenLctrl(false));
+		this.page.parallelPush(new PECopenRctrl("なげる", "もどる", "", ""));
+		this.page.parallelPush(new PECopenCharacter("", ""));
+		this.page.parallelPush(new PECdiceMessage(this.page, this.message, true, -1));
 		return false;
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		var ccvs = this._page.ccvs;
+		var ccvs = this.page.ccvs;
 		var exist = true;
 
 		// キャンバス計算
@@ -67,21 +67,22 @@ class SECdiceDiceRoll extends EventCartridge{
 		// なげるボタン
 		if(Ctrl.trigger_zb){
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceDiceThrow(this._page, this._request));
+			this.page.serialPush(new SECdiceDiceThrow(this.page, this._request));
+			this.page.parallelPush(new PECdiceMessage(this.page, this.message, false, -1));
 			exist = false;
 		}
 
 		// もどるボタン
 		if(Ctrl.trigger_xb){
 			Sound.playSE("ng");
-			this._page.ccvs.dices.length = 0;
-			this._page.serialPush(this._cartridge);
-			this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
+			this.page.ccvs.dices.length = 0;
+			this.page.serialPush(this._cartridge);
+			this.page.parallelPush(new PECdiceMessage(this.page, "", false, -1));
 			exist = false;
 		}
 
 		// キャンバス描画
-		this._page.ccvs.draw();
+		this.page.ccvs.draw();
 		return exist;
 	}
 
@@ -119,10 +120,10 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 	override function init() : boolean{
 		var exist = super.init();
 		// コントローラーを上書き
-		this._page.parallelPush(new PECopenLctrl(true));
-		this._page.parallelPush(new PECdiceMessage(this._page, this._message + "<br> 十字キーで方向を決めて！", true, -1));
+		this.page.parallelPush(new PECopenLctrl(true));
+		this.page.parallelPush(new PECdiceMessage(this.page, this.message + "<br> 十字キーで方向を決めて！", true, -1));
 		// プレイヤー周囲の存在するヘックスを調べる
-		var ccvs = this._page.ccvs;
+		var ccvs = this.page.ccvs;
 		var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
 		this._movable0 = (ccvs.field.getHexFromIndex(hex.x + 1, hex.y + 0).type > 0);
 		this._movable1 = (ccvs.field.getHexFromIndex(hex.x + 0, hex.y + 1).type > 0);
@@ -147,7 +148,7 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 	// ----------------------------------------------------------------
 	// 十字キー計算
 	override function calcArrow(request : variant) : void{
-		var ccvs = this._page.ccvs;
+		var ccvs = this.page.ccvs;
 		var dir = 0;
 		var isMove = true;
 		if     (Ctrl.krt && Ctrl.kup){dir = 1.75;}
@@ -262,7 +263,7 @@ class SECdiceDiceThrow extends EventCartridge{
 			if(!throwing || Ctrl.trigger_xb){
 				if(Ctrl.trigger_xb){Sound.playSE("ok");}
 				this._page.ccvs.dices.length = 0;
-				this._page.parallelPush(new PECdiceMessage(this._page, "", true, -1));
+				this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 				exist = false;
 			}
 		}

@@ -221,8 +221,15 @@ class MockDice{
 			});
 		}
 
+		// チャージ量計算
+		var chargeMin = 0.1;
+		var chargeMax = 0.9;
+		var pipMin = 1 * num;
+		var pipMax = 6 * num;
+		var charge = ((pipTotal - pipMin) / (pipMax - pipMin)) * (chargeMax - chargeMin) + chargeMin;
+
 		list.push({type: "dice", id: MockDice._turnId, pip: pipList, fix: fix});
-		list.push({type: "beam", id: MockDice._turnId, charge: 0.9, target: target});
+		list.push({type: "beam", id: MockDice._turnId, charge: charge, target: target});
 
 		// ターン切り替え
 		MockDice._turn(list, imgs);

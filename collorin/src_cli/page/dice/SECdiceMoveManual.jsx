@@ -112,8 +112,6 @@ class SECdiceMoveManual extends EventCartridge{
 				var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
 				var x0 = hex.x;
 				var y0 = hex.y;
-				var x1 = x0;
-				var y1 = y0;
 				// 周囲の存在するヘックスを調べる
 				var movable0 = (ccvs.field.getHexFromIndex(x0 + 1, y0 + 0).type > 0);
 				var movable1 = (ccvs.field.getHexFromIndex(x0 + 0, y0 + 1).type > 0);
@@ -136,6 +134,8 @@ class SECdiceMoveManual extends EventCartridge{
 				//if(movable5 && 270 - 45 < dir && dir < 330 + 45){index = (index < 0) ? 5 : 6;}
 				if(movable5 && (dir < 330 + 45 - 360 || 270 - 45 < dir)){index = (index < 0) ? 5 : 6;}
 				// 移動先を変数に入れる
+				var x1 = x0;
+				var y1 = y0;
 				switch(index){
 					case 0: x1 = x0 + 1; y1 = y0 + 0; break;
 					case 1: x1 = x0 + 0; y1 = y0 + 1; break;
