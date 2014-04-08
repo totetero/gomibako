@@ -17,14 +17,33 @@ class SECload extends EventCartridge{
 	var _action = 0;
 
 	// ----------------------------------------------------------------
-	// コンストラクタ
+	// ロード画面表示
+	static function loading(isDisplay : boolean, action : int) : void{
+		var display = isDisplay ? "block" : "none";
+		if(SECload._div.style.display != display){SECload._div.style.display = display;}
+
+		if(isDisplay){
+			// ロード文字列描画
+			if(action % 10 == 0){
+				switch(action / 10 % 4){
+					case 0: SECload._div.setAttribute("txt", "loading"); break;
+					case 1: SECload._div.setAttribute("txt", "loading."); break;
+					case 2: SECload._div.setAttribute("txt", "loading.."); break;
+					case 3: SECload._div.setAttribute("txt", "loading..."); break;
+				}
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// コンストラクタ 様々なロードに対応できるようにイベントプレイヤー式
 	function constructor(){
 		this.eventPlayer = new EventPlayer();
 		if(SECload._div == null){SECload._div = dom.document.getElementById("loading") as HTMLDivElement;}
 	}
 
 	// ----------------------------------------------------------------
-	// 情報読み込みコンストラクタ
+	// 基本情報読み込みコンストラクタ
 	function constructor(url : string, request : variant, callback : function(response:variant):void){
 		this();
 		this.eventPlayer.serialPush(new ECloadInfo(url, request, function(response : variant) : void{
@@ -44,20 +63,10 @@ class SECload extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		var exist = this.eventPlayer.calc();
 		this._action++;
-		// ロード画面表示
-		var display = ((exist || this._action < 15) && 5 < this._action) ? "block" : "none";
-		if(SECload._div.style.display != display){SECload._div.style.display = display;}
-		// ロード文字列描画
-		if(this._action % 10 == 0){
-			switch(this._action / 10 % 4){
-				case 0: SECload._div.setAttribute("txt", "loading"); break;
-				case 1: SECload._div.setAttribute("txt", "loading."); break;
-				case 2: SECload._div.setAttribute("txt", "loading.."); break;
-				case 3: SECload._div.setAttribute("txt", "loading..."); break;
-			}
-		}
+		var exist = this.eventPlayer.calc();
+		var display = (5 < this._action && (this._action < 15 || exist));
+		SECload.loading(display, this._action);
 		return (exist || (5 < this._action && this._action < 15));
 	}
 

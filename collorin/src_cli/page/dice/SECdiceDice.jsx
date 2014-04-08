@@ -6,6 +6,7 @@ import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 import "../../bb3d/Dice.jsx";
 import "../core/Transition.jsx";
+import "../core/SECload.jsx";
 
 import "DicePage.jsx";
 import "DiceCharacter.jsx";
@@ -202,6 +203,7 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 class SECdiceDiceThrow extends EventCartridge{
 	var _page : DicePage;
 	var _request : variant;
+	var _action = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -235,7 +237,7 @@ class SECdiceDiceThrow extends EventCartridge{
 				// トリガーリセット
 				Ctrl.trigger_sb = false;
 				// コントローラーを表示
-				this._page.parallelPush(new PECopenRctrl("", "", "", "スキップ"));
+				if(this._action < 35){this._page.parallelPush(new PECopenRctrl("", "", "", "スキップ"));}
 			}, function():void{
 				// 画像ロード失敗
 			});
@@ -254,7 +256,12 @@ class SECdiceDiceThrow extends EventCartridge{
 		// キャンバス計算
 		ccvs.calc(true, 0, null, null);
 
-		if(this._request == null){
+		// ローディング
+		if(35 < this._action || this._request != null){this._action++;}
+		var display = (35 < this._action && (this._action < 45 || this._request != null));
+		SECload.loading(display, this._action);
+
+		if(this._request == null && !display){
 			// さいころ完了確認
 			var throwing = false;
 			for(var i = 0; i < ccvs.dices.length; i++){throwing = throwing || ccvs.dices[i].throwing;}
