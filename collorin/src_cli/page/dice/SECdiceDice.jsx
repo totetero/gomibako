@@ -117,10 +117,12 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : boolean{
-		var ccvs = this._page.ccvs;
 		var exist = super.init();
+		// コントローラーを上書き
 		this._page.parallelPush(new PECopenLctrl(true));
+		this._page.parallelPush(new PECdiceMessage(this._page, this._message + "<br> 十字キーで方向を決めて！", true, -1));
 		// プレイヤー周囲の存在するヘックスを調べる
+		var ccvs = this._page.ccvs;
 		var hex = ccvs.field.getHexFromCoordinate(this._player.x, this._player.y);
 		this._movable0 = (ccvs.field.getHexFromIndex(hex.x + 1, hex.y + 0).type > 0);
 		this._movable1 = (ccvs.field.getHexFromIndex(hex.x + 0, hex.y + 1).type > 0);
@@ -260,6 +262,7 @@ class SECdiceDiceThrow extends EventCartridge{
 			if(!throwing || Ctrl.trigger_xb){
 				if(Ctrl.trigger_xb){Sound.playSE("ok");}
 				this._page.ccvs.dices.length = 0;
+				this._page.parallelPush(new PECdiceMessage(this._page, "", true, -1));
 				exist = false;
 			}
 		}

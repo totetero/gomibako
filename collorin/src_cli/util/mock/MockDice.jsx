@@ -143,6 +143,7 @@ class MockDice{
 	// ----------------------------------------------------------------
 	// さいころ投擲
 	static function _dice(list : variant[], imgs : Map.<string>, request : variant) : void{
+		// さいころの目作成
 		var num = request["num"] as int;
 		var fix = request["fix"] as int;
 		var pipList = new int[];
@@ -153,6 +154,7 @@ class MockDice{
 			pipTotal += pip;
 		}
 		MockDice._pip = pipTotal;
+
 		list.push({type: "dice", id: MockDice._turnId, pip: pipList, fix: fix});
 		list.push({type: "moveManual", id: MockDice._turnId, pip: pipTotal});
 	}
@@ -160,6 +162,7 @@ class MockDice{
 	// ----------------------------------------------------------------
 	// ビーム照射
 	static function _beam(list : variant[], imgs : Map.<string>, request : variant) : void{
+		// さいころの目作成
 		var num = request["num"] as int;
 		var fix = request["fix"] as int;
 		var pipList = new int[];
@@ -169,9 +172,57 @@ class MockDice{
 			pipList.push(pip);
 			pipTotal += pip;
 		}
-		MockDice._pip = pipTotal;
+
+		// 攻撃キャラクター情報獲得
+		var chara : MockDiceCharaInfo = null;
+		for(var i = 0; i < MockDice._cinfo.length; i++){
+			if(MockDice._cinfo[i].id == MockDice._turnId){chara = MockDice._cinfo[i];}
+		}
+		// 対象確認
+		var targetInfo = new MockDiceCharaInfo[];
+		var checkTarget = function(x : int, y : int, dx : int, dy : int) : void{
+			if(x == chara.x + dx && y == chara.y + dy){
+				for(var i = 0; i < 4; i++){
+					for(var j = 0; j < MockDice._cinfo.length; j++){
+						var cinfo = MockDice._cinfo[j];
+						if(x == cinfo.x && y == cinfo.y){
+							targetInfo.push(cinfo);
+						}
+					}
+					x += dx;
+					y += dy;
+					var shutFlag = true;
+					for(var j = 0; j < MockDice._hex.length; j++){
+						var hex = MockDice._hex[j];
+						if(x == hex.x && y == hex.y){
+							shutFlag = false;
+							break;
+						}
+					}
+					if(shutFlag){break;}
+				}
+			}
+		};
+		var x = (request["dst"] as int[])[0];
+		var y = (request["dst"] as int[])[1];
+		checkTarget(x, y,  1,  0);
+		checkTarget(x, y,  0,  1);
+		checkTarget(x, y, -1,  1);
+		checkTarget(x, y, -1,  0);
+		checkTarget(x, y,  0, -1);
+		checkTarget(x, y,  1, -1);
+
+		// ダメージ確認
+		var target = new variant[];
+		for(var i = 0; i < targetInfo.length; i++){
+			target.push({
+				id: targetInfo[i].id,
+				value: 10
+			});
+		}
+
 		list.push({type: "dice", id: MockDice._turnId, pip: pipList, fix: fix});
-		list.push({type: "beam", id0: MockDice._turnId, id1: "e00", value: pipTotal});
+		list.push({type: "beam", id: MockDice._turnId, charge: 0.9, target: target});
 
 		// ターン切り替え
 		MockDice._turn(list, imgs);

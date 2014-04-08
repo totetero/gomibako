@@ -17,8 +17,8 @@ class SECdiceFaceBeam extends EventCartridge{
 	var _page : DicePage;
 	var _charge : number;
 	var _chara : DiceCharacter;
-	var _charas : DiceCharacter[];
-	var _values : int[];
+	var _charas = new DiceCharacter[];
+	var _values = new int[];
 	var _mode : int = 0;
 	var _action : int = 0;
 
@@ -26,10 +26,13 @@ class SECdiceFaceBeam extends EventCartridge{
 	// コンストラクタ
 	function constructor(page : DicePage, response : variant){
 		this._page = page;
-		this._charge = 0.1;
-		this._chara = this._page.ccvs.member[response["id0"] as string];
-		this._charas = [this._page.ccvs.member[response["id1"] as string]];
-		this._values = [response["value"] as int];
+		this._charge = response["charge"] as number;
+		this._chara = this._page.ccvs.member[response["id"] as string];
+		var target = response["target"] as variant[];
+		for(var i = 0; i < target.length; i++){
+			this._charas[i] = this._page.ccvs.member[target[i]["id"] as string];
+			this._values[i] = target[i]["value"] as int;
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -45,10 +48,12 @@ class SECdiceFaceBeam extends EventCartridge{
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		this._setGauge(-1);
 		// キャラクターが向き合う
-		var r = Math.atan2(this._charas[0].y - this._chara.y, this._charas[0].x - this._chara.x);
-		this._chara.r = r;
-		for(var i = 0; i < this._charas.length; i++){
-			this._charas[i].r = r + Math.PI;
+		if(this._charas.length > 0){
+			var r = Math.atan2(this._charas[0].y - this._chara.y, this._charas[0].x - this._chara.x);
+			this._chara.r = r;
+			for(var i = 0; i < this._charas.length; i++){
+				this._charas[i].r = r + Math.PI;
+			}
 		}
 		return false;
 	}
@@ -57,13 +62,17 @@ class SECdiceFaceBeam extends EventCartridge{
 	// ゲージ設定
 	function _setGauge(time : int) : void{
 		var chara0 = this._chara;
-		var chara1 = this._charas[0];
-		if(chara1.side == "player" && chara0.side != "player"){
-			this._page.parallelPush(new PECdicePlayerGauge(this._page, chara1, time));
-			this._page.parallelPush(new PECdiceEnemyGauge(this._page, chara0, time));
+		if(this._charas.length > 0){
+			var chara1 = this._charas[0];
+			if(chara1.side == "player" && chara0.side != "player"){
+				this._page.parallelPush(new PECdicePlayerGauge(this._page, chara1, time));
+				this._page.parallelPush(new PECdiceEnemyGauge(this._page, chara0, time));
+			}else{
+				this._page.parallelPush(new PECdicePlayerGauge(this._page, chara0, time));
+				this._page.parallelPush(new PECdiceEnemyGauge(this._page, chara1, time));
+			}
 		}else{
 			this._page.parallelPush(new PECdicePlayerGauge(this._page, chara0, time));
-			this._page.parallelPush(new PECdiceEnemyGauge(this._page, chara1, time));
 		}
 	}
 
@@ -98,7 +107,10 @@ class SECdiceFaceBeam extends EventCartridge{
 				break;
 			case 1:
 				// アクションビーム
-				this._chara.motion = "beam";
+				if(this._action == 0){
+					this._chara.motion = "beam";
+					if(this._charas.length > 0){this._page.ccvs.center = this._charas;}
+				}
 				// ビームの太さ
 				var size = 0;
 				if(this._charge < 0.2){size = Math.min(3, Math.max(0.3, this._action - 0)) + Math.min(0, 40 - this._action);}
@@ -136,7 +148,7 @@ class SECdiceFaceBeam extends EventCartridge{
 				if(this._action == 0){
 					ccvs.setMaskColor("");
 					this._chara.motion = "stand";
-					this._page.ccvs.center = this._charas;
+					if(this._charas.length > 0){this._page.ccvs.center = this._charas;}
 					// テスト
 					for(var i = 0; i < this._charas.length; i++){
 						this._charas[i].hp -= this._values[i];
