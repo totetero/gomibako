@@ -170,6 +170,8 @@ class SECdiceMoveManual extends EventCartridge{
 						}
 						// 移動完了
 						this._page.serialPush(new SECloadDice(this._page, camera, {type: "move", dst: this._dstList, face: faceId}));
+						this._page.parallelPush(new PECopenLctrl(false));
+						this._page.parallelPush(new PECopenRctrl("", "", "", ""));
 						this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 						exist = false;
 					}else{
@@ -196,6 +198,8 @@ class SECdiceMoveManual extends EventCartridge{
 		}else{
 			// 移動完了
 			this._page.serialPush(new SECloadDice(this._page, 0, {type: "move", dst: this._dstList}));
+			this._page.parallelPush(new PECopenLctrl(false));
+			this._page.parallelPush(new PECopenRctrl("", "", "", ""));
 			this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
 			exist = false;
 		}
