@@ -12,6 +12,10 @@ class PartsButton{
 	var children : HTMLDivElement[];
 	var active : boolean;
 	var inactive : boolean;
+	var zKey = false;
+	var xKey = false;
+	var cKey = false;
+	var sKey = false;
 	var trigger : boolean;
 	var _inner : boolean;
 
@@ -28,6 +32,9 @@ class PartsButton{
 		if(this.inactive || !clickable){
 			// ボタン無効状態
 			this.active = false;
+		}else if((this.zKey && Ctrl.k_z) || (this.xKey && Ctrl.k_x) || (this.cKey && Ctrl.k_c) || (this.sKey && Ctrl.k_s)){
+			// 対応キー押下中
+			this.active = true;
 		}else if(Ctrl.mdn){
 			// ボタン押下中
 			var box = this.div.getBoundingClientRect();

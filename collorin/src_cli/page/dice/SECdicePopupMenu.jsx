@@ -60,6 +60,7 @@ class SECdicePopupMenu extends SECpopup{
 		this._btnList["back"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn back").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
+		this._btnList["close"].sKey = true;
 	}
 
 	// ----------------------------------------------------------------
