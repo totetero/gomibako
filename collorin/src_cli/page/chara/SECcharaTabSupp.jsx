@@ -85,7 +85,7 @@ class SECcharaTabSupp extends EventCartridge{
 		if(this._update){this._update = false; if(tag == ""){tag = this._picker.getTag();}}
 		if(tag != ""){
 			// ピッカーの選択されている要素が変わった場合
-			PartsCharaListItem.sort(this._charaList as PartsCharaListItem[], tag);
+			PartsCharaListItem.sort(this._charaList, tag);
 			// キャラクターリスト作成
 			scrollDiv.innerHTML = "";
 			for(var i = 0; i < this._charaList.length; i++){

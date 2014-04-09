@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 
 import "Page.jsx";
@@ -61,6 +62,14 @@ class SECpopupPicker extends SECpopup{
 	}
 
 	// ----------------------------------------------------------------
+	// 開く前の設定
+	function beforeOpen(page : Page, cartridge : EventCartridge) : SECpopupPicker{
+		this._page = page;
+		this._cartridge = cartridge;
+		return this;
+	}
+
+	// ----------------------------------------------------------------
 	// 要素の獲得
 	function getItem(tag : string) : SECpopupPickerItem{
 		for(var i = 0; i < this._itemList.length; i++){
@@ -93,14 +102,6 @@ class SECpopupPicker extends SECpopup{
 	}
 
 	// ----------------------------------------------------------------
-	// 開く前の設定
-	function beforeOpen(page : Page, cartridge : EventCartridge) : SECpopupPicker{
-		this._page = page;
-		this._cartridge = cartridge;
-		return this;
-	}
-
-	// ----------------------------------------------------------------
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core picker";
@@ -125,7 +126,8 @@ class SECpopupPicker extends SECpopup{
 		scrollDiv.innerHTML = scrollTag;
 		
 		// ウインドウサイズ調整
-		var pickerSize = Math.min(144, 38 * this._itemList.length - 2);
+		var maxPickerSize = Ctrl.sh - 240 + 144;
+		var pickerSize = Math.min(maxPickerSize, 38 * this._itemList.length - 2);
 		var windowSize = 220 - 144 + pickerSize;
 		this.windowDiv.style.height = windowSize + "px";
 		this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";

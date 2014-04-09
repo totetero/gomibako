@@ -5,6 +5,7 @@ import "../../util/Sound.jsx";
 import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
 import "../core/SECpopupMenu.jsx";
+import "../core/SECpopupCharacterPicker.jsx";
 
 import "CharaPage.jsx";
 
@@ -15,7 +16,8 @@ import "CharaPage.jsx";
 class SECcharaTabTeam extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div style="width:230px;margin:20px;margin-top:68px;font-size:12px;">
+		<div class="core-btn test">テスト</div>
+		<div style="width:230px;margin:20px;margin-top:100px;font-size:12px;">
 			•編成について<br>
 			マイページで表示するリーダーの設定と、
 			ステージで使用する3人までのチームを設定することができる。
@@ -30,13 +32,14 @@ class SECcharaTabTeam extends EventCartridge{
 
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
-	var _data : variant;
+	var _picker : SECpopupCharacterPicker;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
-		this._data = response;
+
+		this._picker = new SECpopupCharacterPicker("テスト", []);
 	}
 
 	// ----------------------------------------------------------------
@@ -59,6 +62,8 @@ class SECcharaTabTeam extends EventCartridge{
 		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
+		// 本体ボタン
+		this._btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-btn test").item(0) as HTMLDivElement, true);
 
 		return false;
 	}
@@ -67,6 +72,13 @@ class SECcharaTabTeam extends EventCartridge{
 	// 計算
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		// テストボタン
+		if(this._btnList["test"].trigger){
+			Sound.playSE("ok");
+			this._page.serialPush(this._picker.beforeOpen(this._page, this));
+			return false;
+		}	
 
 		// タブボタン
 		if(this._btnList["supp"].trigger){Sound.playSE("ok"); this._page.toggleTab("supp"); return false;}
