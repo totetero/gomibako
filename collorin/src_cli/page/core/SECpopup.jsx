@@ -26,7 +26,7 @@ abstract class SECpopup extends EventCartridge{
 	override function init() : void{
 		this.popupDiv = Page.popupDiv;
 		this.popupInit();
-		this.popupDiv.style.opacity = "0";
+		this.popupDiv.style.opacity = SECpopup.keepPopup ? "0.8" : "0";
 		this._openStep = -5;
 		this.checkSkip(dom.window.localStorage.getItem("setting_transition"));
 	}
