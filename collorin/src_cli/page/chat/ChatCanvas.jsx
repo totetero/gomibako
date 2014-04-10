@@ -111,7 +111,7 @@ class ChatCanvas extends Ccvs{
 			DrawUnit.drawList(this, this.clist);
 		}
 
-		// sec切り替え時に再計算しないための処理
+		// sec切り替え時に再計算再描画しないための処理
 		this.calced = !exist;
 		return exist;
 	}
