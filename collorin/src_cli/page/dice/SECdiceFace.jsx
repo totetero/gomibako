@@ -32,7 +32,7 @@ class SECdiceFace extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		// 中心キャラクター設定
 		this._page.ccvs.center = [this._chara0, this._chara1];
 		// コントローラーを表示
@@ -44,7 +44,6 @@ class SECdiceFace extends EventCartridge{
 		var r = Math.atan2(this._chara1.y - this._chara0.y, this._chara1.x - this._chara0.x);
 		this._chara0.r = r;
 		this._chara1.r = r + Math.PI;
-		return false;
 	}
 
 	// ----------------------------------------------------------------
@@ -65,55 +64,56 @@ class SECdiceFace extends EventCartridge{
 		var ccvs = this._page.ccvs;
 		var exist = true;
 
-		// キャンバス計算
-		ccvs.calc(true, (this._mode == 0 || this._mode == 1) ? 2 : 0, null, null);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(true, (this._mode == 0 || this._mode == 1) ? 2 : 0, null, null);
 
-		switch(this._mode){
-			case 0:
-				// アクション前半
-				this._chara0.motion = "attack1";
-				this._chara0.action = this._action;
-				if(++this._action >= 10){
-					this._mode = 1;
-					this._action = 0;
-				}
-				break;
-			case 1:
-				// アクション後半
-				if(this._action == 0){
-					// テスト
-					this._chara1.hp -= this._value;
-					this._page.ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
-					this._setGauge(-1);
-					// エフェクト
-					for(var i = 0; i < 3; i++){
-						this._page.ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
+			switch(this._mode){
+				case 0:
+					// アクション前半
+					this._chara0.motion = "attack1";
+					this._chara0.action = this._action;
+					if(++this._action >= 10){
+						this._mode = 1;
+						this._action = 0;
 					}
-				}
-				this._chara0.motion = "attack2";
-				this._chara0.action = this._action;
-				this._chara1.motion = "damage";
-				this._chara1.action = this._action;
-				if(++this._action >= 10){
-					this._mode = 2;
-					this._action = 0;
-				}
-				break;
-			case 2:
-				// アクション完了後
-				if(this._action == 0){
-					this._chara0.motion = "stand";
-					this._chara1.motion = "stand";
-				}
-				if(++this._action >= 10){
-					exist = false;
-				}
-				break;
+					break;
+				case 1:
+					// アクション後半
+					if(this._action == 0){
+						// テスト
+						this._chara1.hp -= this._value;
+						ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
+						this._setGauge(-1);
+						// エフェクト
+						for(var i = 0; i < 3; i++){
+							ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
+						}
+					}
+					this._chara0.motion = "attack2";
+					this._chara0.action = this._action;
+					this._chara1.motion = "damage";
+					this._chara1.action = this._action;
+					if(++this._action >= 10){
+						this._mode = 2;
+						this._action = 0;
+					}
+					break;
+				case 2:
+					// アクション完了後
+					if(this._action == 0){
+						this._chara0.motion = "stand";
+						this._chara1.motion = "stand";
+					}
+					if(++this._action >= 10){
+						exist = false;
+					}
+					break;
+			}
 		}
 
 		// キャンバス描画
-		this._page.ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------

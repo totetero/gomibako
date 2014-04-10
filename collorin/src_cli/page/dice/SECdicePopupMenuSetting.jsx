@@ -83,46 +83,47 @@ class SECdicePopupMenuSetting extends SECpopup{
 		var ccvs = this._page.ccvs;
 		var exist = true;
 
-		// キャンバス計算
-		ccvs.calc(false, this._camera, null, null);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(false, this._camera, null, null);
 
-		// ボタン計算
-		for(var name in this._btnList){this._btnList[name].calc(true);}
+			// ボタン計算
+			for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		// BGMピッカーボタン
-		if(this._btnList["bgm"].trigger){
-			this._btnList["bgm"].trigger = false;
-			if(active){
-				Sound.playSE("ok");
-				this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this));
-				exist = false;
+			// BGMピッカーボタン
+			if(this._btnList["bgm"].trigger){
+				this._btnList["bgm"].trigger = false;
+				if(active){
+					Sound.playSE("ok");
+					this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this));
+					exist = false;
+				}
 			}
-		}
 
-		// 効果音ピッカーボタン
-		if(this._btnList["sef"].trigger){
-			this._btnList["sef"].trigger = false;
-			if(active){
-				Sound.playSE("ok");
-				this._page.serialPush(this._sefPicker.beforeOpen(this._page, this));
-				exist = false;
+			// 効果音ピッカーボタン
+			if(this._btnList["sef"].trigger){
+				this._btnList["sef"].trigger = false;
+				if(active){
+					Sound.playSE("ok");
+					this._page.serialPush(this._sefPicker.beforeOpen(this._page, this));
+					exist = false;
+				}
 			}
-		}
 
-		// 閉じるボタン
-		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
-			this._btnList["close"].trigger = false;
-			this._btnList["outer"].trigger = false;
-			if(active){
-				Sound.playSE("ng");
-				this._page.serialPush(this._cartridge);
-				exist = false;
+			// 閉じるボタン
+			if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
+				this._btnList["close"].trigger = false;
+				this._btnList["outer"].trigger = false;
+				if(active){
+					Sound.playSE("ng");
+					this._page.serialPush(this._cartridge);
+					exist = false;
+				}
 			}
 		}
 
 		// キャンバス描画
-		ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------
@@ -151,15 +152,19 @@ class SECdicePopupPickerBgm extends SECsettingPopupPickerBgm{
 	// ----------------------------------------------------------------
 	// 計算
 	override function popupCalc(active : boolean) : boolean{
-		// キャンバス計算
-		this._ccvs.calc(false, this._camera, null, null);
+		var ccvs = this._ccvs;
+		var exist = true;
 
-		// ポップアップ計算
-		var exist = super.popupCalc(active);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(false, this._camera, null, null);
+
+			// ポップアップ計算
+			var exist = super.popupCalc(active);
+		}
 
 		// キャンバス描画
-		this._ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 }
 
@@ -179,15 +184,19 @@ class SECdicePopupPickerSef extends SECsettingPopupPickerSef{
 	// ----------------------------------------------------------------
 	// 計算
 	override function popupCalc(active : boolean) : boolean{
-		// キャンバス計算
-		this._ccvs.calc(false, this._camera, null, null);
+		var ccvs = this._ccvs;
+		var exist = true;
 
-		// ポップアップ計算
-		var exist = super.popupCalc(active);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(false, this._camera, null, null);
+
+			// ポップアップ計算
+			var exist = super.popupCalc(active);
+		}
 
 		// キャンバス描画
-		this._ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 }
 

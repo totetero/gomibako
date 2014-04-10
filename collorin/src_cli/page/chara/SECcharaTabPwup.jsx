@@ -47,7 +47,7 @@ class SECcharaTabPwup extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = SECcharaTabPwup._htmlTag;
@@ -65,8 +65,6 @@ class SECcharaTabPwup extends EventCartridge{
 		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
-
-		return false;
 	}
 
 	// ----------------------------------------------------------------

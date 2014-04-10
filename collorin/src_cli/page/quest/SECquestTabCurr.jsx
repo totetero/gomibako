@@ -44,7 +44,7 @@ class SECquestTabCurr extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = SECquestTabCurr._htmlTag;
@@ -59,8 +59,6 @@ class SECquestTabCurr extends EventCartridge{
 		// タブボタン
 		this._btnList["curr"] = new PartsButton(this._page.tabCurrDiv, true);
 		this._btnList["fine"] = new PartsButton(this._page.tabFineDiv, true);
-
-		return false;
 	}
 
 	// ----------------------------------------------------------------

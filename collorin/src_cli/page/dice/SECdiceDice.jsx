@@ -35,7 +35,7 @@ class SECdiceDiceRoll extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		// さいころ初期化
 		var num = this._request["num"] as int;
 		this.page.ccvs.dices.length = 0;
@@ -50,7 +50,6 @@ class SECdiceDiceRoll extends EventCartridge{
 		this.page.parallelPush(new PECopenRctrl("なげる", "", "", "もどる"));
 		this.page.parallelPush(new PECopenCharacter("", ""));
 		this.page.parallelPush(new PECdiceMessage(this.page, this.message, true, -1));
-		return false;
 	}
 
 	// ----------------------------------------------------------------
@@ -59,32 +58,33 @@ class SECdiceDiceRoll extends EventCartridge{
 		var ccvs = this.page.ccvs;
 		var exist = true;
 
-		// キャンバス計算
-		ccvs.calc(true, 0, null, null);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(true, 0, null, null);
 
-		// 十字キー
-		this.calcArrow(this._request);
+			// 十字キー
+			this.calcArrow(this._request);
 
-		// なげるボタン
-		if(Ctrl.trigger_zb){
-			Sound.playSE("ok");
-			this.page.serialPush(new SECdiceDiceThrow(this.page, this._request));
-			this.page.parallelPush(new PECdiceMessage(this.page, this.message, false, -1));
-			exist = false;
-		}
+			// なげるボタン
+			if(Ctrl.trigger_zb){
+				Sound.playSE("ok");
+				this.page.serialPush(new SECdiceDiceThrow(this.page, this._request));
+				this.page.parallelPush(new PECdiceMessage(this.page, this.message, false, -1));
+				exist = false;
+			}
 
-		// もどるボタン
-		if(Ctrl.trigger_sb){
-			Sound.playSE("ng");
-			this.page.ccvs.dices.length = 0;
-			this.page.serialPush(this._cartridge);
-			this.page.parallelPush(new PECdiceMessage(this.page, "", false, -1));
-			exist = false;
+			// もどるボタン
+			if(Ctrl.trigger_sb){
+				Sound.playSE("ng");
+				ccvs.dices.length = 0;
+				this.page.serialPush(this._cartridge);
+				this.page.parallelPush(new PECdiceMessage(this.page, "", false, -1));
+				exist = false;
+			}
 		}
 
 		// キャンバス描画
-		this.page.ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------
@@ -118,8 +118,8 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
-		var exist = super.init();
+	override function init() : void{
+		super.init();
 		// コントローラーを上書き
 		this.page.parallelPush(new PECopenLctrl(true));
 		this.page.parallelPush(new PECdiceMessage(this.page, this.message + "<br> 十字キーで方向を決めて！", true, -1));
@@ -143,7 +143,6 @@ class SECdiceDiceRollTurn extends SECdiceDiceRoll{
 		if(this._movable3){var rot1 = pr + 180; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 3;}}
 		if(this._movable4){var rot1 = pr + 120; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 4;}}
 		if(this._movable5){var rot1 = pr +  60; if(rot1 >  180){rot1 -= 360;} rot1 = Math.abs(rot1); if(rot0 > rot1){rot0 = rot1; this._index = 5;}}
-		return exist;
 	}
 
 	// ----------------------------------------------------------------
@@ -214,7 +213,7 @@ class SECdiceDiceThrow extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		// さいころ設定
 		for(var i = 0; i < this._page.ccvs.dices.length; i++){this._page.ccvs.dices[i].start();}
 		// コントローラーを表示
@@ -244,7 +243,6 @@ class SECdiceDiceThrow extends EventCartridge{
 		}, function() : void{
 			// 情報ロード失敗
 		});
-		return false;
 	}
 
 	// ----------------------------------------------------------------
@@ -253,31 +251,32 @@ class SECdiceDiceThrow extends EventCartridge{
 		var ccvs = this._page.ccvs;
 		var exist = true;
 
-		// キャンバス計算
-		ccvs.calc(true, 0, null, null);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(true, 0, null, null);
 
-		// ローディング
-		if(35 < this._action || this._request != null){this._action++;}
-		var display = (35 < this._action && (this._action < 45 || this._request != null));
-		SECload.loading(display, this._action);
+			// ローディング
+			if(35 < this._action || this._request != null){this._action++;}
+			var display = (35 < this._action && (this._action < 45 || this._request != null));
+			SECload.loading(display, this._action);
 
-		if(this._request == null && !display){
-			// さいころ完了確認
-			var throwing = false;
-			for(var i = 0; i < ccvs.dices.length; i++){throwing = throwing || ccvs.dices[i].throwing;}
+			if(this._request == null && !display){
+				// さいころ完了確認
+				var throwing = false;
+				for(var i = 0; i < ccvs.dices.length; i++){throwing = throwing || ccvs.dices[i].throwing;}
 
-			// 演出終了もしくはスキップボタン
-			if(!throwing || Ctrl.trigger_sb){
-				if(Ctrl.trigger_sb){Sound.playSE("ok");}
-				this._page.ccvs.dices.length = 0;
-				this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
-				exist = false;
+				// 演出終了もしくはスキップボタン
+				if(!throwing || Ctrl.trigger_sb){
+					if(Ctrl.trigger_sb){Sound.playSE("ok");}
+					ccvs.dices.length = 0;
+					this._page.parallelPush(new PECdiceMessage(this._page, "", false, -1));
+					exist = false;
+				}
 			}
 		}
 
 		// キャンバス描画
-		this._page.ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------

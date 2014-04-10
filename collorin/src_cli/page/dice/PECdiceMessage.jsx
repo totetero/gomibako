@@ -35,13 +35,12 @@ class PECdiceMessage extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		// 動作重複禁止
 		if(PECdiceMessage._current != null){PECdiceMessage._current._exist = false;}
 		PECdiceMessage._current = this;
 		// 位置設定
 		if(this._force){PECdiceMessage._position = PECdiceMessage.hide;}
-		return true;
 	}
 
 	// ----------------------------------------------------------------

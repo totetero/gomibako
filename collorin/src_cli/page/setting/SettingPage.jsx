@@ -109,7 +109,7 @@ class SECsettingPageMain extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		var nicknameDiv = this._page.div.getElementsByClassName("nickname").item(0).getElementsByClassName("field").item(0) as HTMLDivElement;
 		var commentDiv = this._page.div.getElementsByClassName("comment").item(0).getElementsByClassName("field").item(0) as HTMLDivElement;
 		var qualityDiv = this._page.div.getElementsByClassName("quality").item(0).getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
@@ -153,8 +153,6 @@ class SECsettingPageMain extends EventCartridge{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
-
-		return false;
 	}
 
 	// ----------------------------------------------------------------

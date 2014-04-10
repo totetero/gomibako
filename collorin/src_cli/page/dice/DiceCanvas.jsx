@@ -24,7 +24,8 @@ class DiceCanvas extends Ccvs{
 
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
-	var tapped : boolean;
+	var calced : boolean;
+	var _FieldTapped : boolean;
 	var tappedCharacter : string;
 
 	// マスクカラー
@@ -152,30 +153,39 @@ class DiceCanvas extends Ccvs{
 			}
 		}
 		// フィールド描画設定
-		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter == "");
+		this._FieldTapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter == "");
+		
+		// 背景画像のループ
+		this._bgaction++;
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
-	function draw() : void{
-		for(var id in this.member){this.member[id].preDraw(this);}
-		for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
+	function draw(exist : boolean) : boolean{
+		if(!this.calced){
+			for(var id in this.member){this.member[id].preDraw(this);}
+			for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
 
-		// 背景描画
-		this._drawBackground();
-		// 地面描画
-		this.field.draw(this, this.cx, this.cy, this.tapped);
-		// 影描画
-		DrawUnit.drawList(this, this.slist);
-		// 画面を暗くする
-		if(this._maskColor != ""){
-			this.context.fillStyle = this._maskColor;
-			this.context.fillRect(0, 0, this.width, this.height);
+			// 背景描画
+			this._drawBackground();
+			// 地面描画
+			this.field.draw(this, this.cx, this.cy, this._FieldTapped);
+			// 影描画
+			DrawUnit.drawList(this, this.slist);
+			// 画面を暗くする
+			if(this._maskColor != ""){
+				this.context.fillStyle = this._maskColor;
+				this.context.fillRect(0, 0, this.width, this.height);
+			}
+			// エフェクトとキャラクター描画
+			DrawUnit.drawList(this, this.clist);
+			// さいころ描画
+			for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
 		}
-		// エフェクトとキャラクター描画
-		DrawUnit.drawList(this, this.clist);
-		// さいころ描画
-		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
+
+		// sec切り替え時に再計算再描画しないための処理
+		this.calced = !exist;
+		return exist;
 	}
 
 	// ----------------------------------------------------------------
@@ -183,7 +193,7 @@ class DiceCanvas extends Ccvs{
 	function _drawBackground() : void{
 		//this.context.clearRect(0, 0, this.width, this.height);
 		var width = this._bgimg.width * 480 / this._bgimg.height;
-		var x = -(this._bgaction++) % width;
+		var x = -(this._bgaction % width);
 		while(x < this.width){
 			this.context.drawImage(this._bgimg, x, 0, width, 480);
 			x += width;

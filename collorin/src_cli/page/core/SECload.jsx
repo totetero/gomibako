@@ -56,8 +56,7 @@ class SECload extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
-		return true;
+	override function init() : void{
 	}
 
 	// ----------------------------------------------------------------
@@ -97,7 +96,7 @@ class ECloadInfo extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(!this._exist){
 			this._exist = true;
 			// 情報ロード開始
@@ -109,7 +108,6 @@ class ECloadInfo extends EventCartridge{
 				// 情報ロード失敗
 			});
 		}
-		return true;
 	}
 
 	// ----------------------------------------------------------------
@@ -137,7 +135,7 @@ class ECloadImgs extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(!this._exist){
 			this._exist = true;
 			// 画像ロード開始
@@ -148,7 +146,6 @@ class ECloadImgs extends EventCartridge{
 				// 画像ロード失敗
 			});
 		}
-		return true;
 	}
 
 	// ----------------------------------------------------------------

@@ -36,7 +36,7 @@ class SECitemTabMake extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = SECitemTabMake._htmlTag;
@@ -54,8 +54,6 @@ class SECitemTabMake extends EventCartridge{
 		this._btnList["make"] = new PartsButton(this._page.tabMakeDiv, true);
 		this._btnList["shop"] = new PartsButton(this._page.tabShopDiv, true);
 		this._btnList["pick"] = new PartsButton(this._page.pickDiv, true);
-
-		return false;
 	}
 
 	// ----------------------------------------------------------------

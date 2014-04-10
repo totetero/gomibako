@@ -67,7 +67,7 @@ class DicePage extends Page{
 		}));
 		this.serialPush(new ECone(function() : void{
 			// ページ遷移前描画
-			this.ccvs.draw();
+			this.ccvs.draw(false);
 			// コントローラー展開
 			this.parallelPush(new PECopenHeader("", 0));
 			this.parallelPush(new PECopenLctrl(false));

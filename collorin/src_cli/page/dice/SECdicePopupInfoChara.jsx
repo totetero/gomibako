@@ -37,15 +37,19 @@ class SECdicePopupInfoChara extends SECpopupInfoChara{
 	// ----------------------------------------------------------------
 	// 計算
 	override function popupCalc(active : boolean) : boolean{
-		// キャンバス計算
-		this._ccvs.calc(false, this._camera, null, null);
+		var ccvs = this._ccvs;
+		var exist = true;
 
-		// ポップアップ計算
-		var exist = super.popupCalc(active);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(false, this._camera, null, null);
+
+			// ポップアップ計算
+			exist = super.popupCalc(active);
+		}
 
 		// キャンバス描画
-		this._ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------

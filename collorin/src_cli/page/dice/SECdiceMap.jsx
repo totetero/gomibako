@@ -25,7 +25,7 @@ class SECdiceMap extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		// 中心キャラクター設定
 		this._page.ccvs.center = null;
 		// トリガーリセット
@@ -35,7 +35,6 @@ class SECdiceMap extends EventCartridge{
 		this._page.parallelPush(new PECopenLctrl(false));
 		this._page.parallelPush(new PECopenRctrl("", "", "", "戻る"));
 		this._page.parallelPush(new PECopenCharacter("", ""));
-		return false;
 	}
 
 	// ----------------------------------------------------------------
@@ -44,28 +43,29 @@ class SECdiceMap extends EventCartridge{
 		var ccvs = this._page.ccvs;
 		var exist = true;
 
-		// キャンバス計算
-		ccvs.calc(true, 1, function() : void{
-			// フィールド押下
-			var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
-			log "field " + hex.x + " " + hex.y;
-		}, function() : void{
-			// キャラクター押下
-			Sound.playSE("ok");
-			this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedCharacter], 1));
-			exist = false;
-		});
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(true, 1, function() : void{
+				// フィールド押下
+				var hex = ccvs.field.getHexFromCoordinate(ccvs.tx, ccvs.ty);
+				log "field " + hex.x + " " + hex.y;
+			}, function() : void{
+				// キャラクター押下
+				Sound.playSE("ok");
+				this._page.serialPush(new SECdicePopupInfoChara(this._page, this, ccvs.member[ccvs.tappedCharacter], 1));
+				exist = false;
+			});
 
-		// もどるボタン
-		if(Ctrl.trigger_sb){
-			Sound.playSE("ng");
-			this._page.serialPush(this._cartridge);
-			exist = false;
+			// もどるボタン
+			if(Ctrl.trigger_sb){
+				Sound.playSE("ng");
+				this._page.serialPush(this._cartridge);
+				exist = false;
+			}
 		}
 
 		// キャンバス描画
-		this._page.ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------

@@ -79,11 +79,10 @@ class SECfriendPageMain extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
-		return false;
 	}
 
 	// ----------------------------------------------------------------

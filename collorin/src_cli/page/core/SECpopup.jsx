@@ -22,13 +22,12 @@ abstract class SECpopup extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		this.popupDiv = Page.popupDiv;
 		this.popupInit();
 		this.popupDiv.style.opacity = "0";
 		this._openStep = -5;
 		this.checkSkip(dom.window.localStorage.getItem("setting_transition"));
-		return false;
 	}
 
 	// ----------------------------------------------------------------

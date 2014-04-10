@@ -72,68 +72,69 @@ class SECdicePopupSkill extends SECpopup{
 		var ccvs = this._page.ccvs;
 		var exist = true;
 
-		// キャンバス計算
-		ccvs.calc(false, 0, null, null);
+		if(!ccvs.calced){
+			// キャンバス計算
+			ccvs.calc(false, 0, null, null);
 
-		// ボタン計算
-		for(var name in this._btnList){this._btnList[name].calc(true);}
+			// ボタン計算
+			for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		// テスト スキル1ボタン
-		if(this._btnList["skill1"].trigger){
-			this._btnList["skill1"].trigger = false;
-			if(active){
-				Sound.playSE("ok");
-				this._page.serialPush(new SECdiceDiceRoll(this._page, this._cartridge, "ダブルさいころ", {
-					"type": "dice",
-					"num": 2,
-					"fix": 0,
-				}));
-				exist = false;
+			// テスト スキル1ボタン
+			if(this._btnList["skill1"].trigger){
+				this._btnList["skill1"].trigger = false;
+				if(active){
+					Sound.playSE("ok");
+					this._page.serialPush(new SECdiceDiceRoll(this._page, this._cartridge, "ダブルさいころ", {
+						"type": "dice",
+						"num": 2,
+						"fix": 0,
+					}));
+					exist = false;
+				}
 			}
-		}
 
-		// テスト スキル2ボタン
-		if(this._btnList["skill2"].trigger){
-			this._btnList["skill2"].trigger = false;
-			if(active){
-				Sound.playSE("ok");
-				this._page.serialPush(new SECdiceDiceRoll(this._page, this._cartridge, "6が出るさいころ", {
-					"type": "dice",
-					"num": 1,
-					"fix": 6,
-				}));
-				exist = false;
+			// テスト スキル2ボタン
+			if(this._btnList["skill2"].trigger){
+				this._btnList["skill2"].trigger = false;
+				if(active){
+					Sound.playSE("ok");
+					this._page.serialPush(new SECdiceDiceRoll(this._page, this._cartridge, "6が出るさいころ", {
+						"type": "dice",
+						"num": 1,
+						"fix": 6,
+					}));
+					exist = false;
+				}
 			}
-		}
 
-		// テスト スキル3ボタン
-		if(this._btnList["skill3"].trigger){
-			this._btnList["skill3"].trigger = false;
-			if(active){
-				Sound.playSE("ok");
-				this._page.serialPush(new SECdiceDiceRollTurn(this._page, this._cartridge, "レーザービーム", {
-					"type": "beam",
-					"num": 1,
-					"fix": 0,
-				}, this._player));
-				exist = false;
+			// テスト スキル3ボタン
+			if(this._btnList["skill3"].trigger){
+				this._btnList["skill3"].trigger = false;
+				if(active){
+					Sound.playSE("ok");
+					this._page.serialPush(new SECdiceDiceRollTurn(this._page, this._cartridge, "レーザービーム", {
+						"type": "beam",
+						"num": 1,
+						"fix": 0,
+					}, this._player));
+					exist = false;
+				}
 			}
-		}
 
-		// 閉じるボタン
-		if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
-			this._btnList["close"].trigger = false;
-			this._btnList["outer"].trigger = false;
-			if(active){
-				Sound.playSE("ng");
-				this._page.serialPush(this._cartridge);
-				exist = false;
+			// 閉じるボタン
+			if(this._btnList["close"].trigger || this._btnList["outer"].trigger){
+				this._btnList["close"].trigger = false;
+				this._btnList["outer"].trigger = false;
+				if(active){
+					Sound.playSE("ng");
+					this._page.serialPush(this._cartridge);
+					exist = false;
+				}
 			}
 		}
 
 		// キャンバス描画
-		ccvs.draw();
-		return exist;
+		return ccvs.draw(exist);
 	}
 
 	// ----------------------------------------------------------------

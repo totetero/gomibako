@@ -118,7 +118,7 @@ class PECdicePlayerGauge extends PECdiceGauge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		this.hprate0 = this.hprate1 = this.chara.hp / this.chara.maxhp;
 		this.sprate0 = this.sprate1 = this.chara.sp / this.chara.maxsp;
 
@@ -139,8 +139,6 @@ class PECdicePlayerGauge extends PECdiceGauge{
 				PECdiceEnemyGauge._current._statusDiv.style.opacity = "0";
 			}
 		}
-
-		return true;
 	}
 
 	// ----------------------------------------------------------------
@@ -162,7 +160,7 @@ class PECdiceEnemyGauge extends PECdiceGauge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		this.hprate0 = this.hprate1 = this.chara.hp / this.chara.maxhp;
 		this.sprate0 = this.sprate1 = this.chara.sp / this.chara.maxsp;
 
@@ -183,8 +181,6 @@ class PECdiceEnemyGauge extends PECdiceGauge{
 				PECdicePlayerGauge._current._statusDiv.style.opacity = "0";
 			}
 		}
-
-		return true;
 	}
 
 	// ----------------------------------------------------------------

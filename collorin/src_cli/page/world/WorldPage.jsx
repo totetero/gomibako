@@ -77,13 +77,12 @@ class SECworldPageMain extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["btn1"] = new PartsButton(this._page.div.getElementsByClassName("core-btn b1").item(0) as HTMLDivElement, true);
 		this._btnList["btn2"] = new PartsButton(this._page.div.getElementsByClassName("core-btn b2").item(0) as HTMLDivElement, true);
 		this._btnList["back"] = new PartsButton(Page.backDiv, true);
 		this._btnList["menu"] = new PartsButton(Page.menuDiv, true);
-		return false;
 	}
 
 	// ----------------------------------------------------------------

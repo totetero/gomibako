@@ -44,7 +44,7 @@ class SECcharaTabTeam extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = SECcharaTabTeam._htmlTag;
@@ -64,8 +64,6 @@ class SECcharaTabTeam extends EventCartridge{
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
 		// 本体ボタン
 		this._btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-btn test").item(0) as HTMLDivElement, true);
-
-		return false;
 	}
 
 	// ----------------------------------------------------------------

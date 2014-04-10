@@ -22,7 +22,8 @@ class ChatCanvas extends Ccvs{
 	var clist = new DrawUnit[];
 	var slist = new DrawUnit[];
 	var pathFinder : ChatPathFinder;
-	var tapped : boolean;
+	var calced : boolean;
+	var _FieldTapped : boolean;
 	var tappedCharacter : int;
 
 	// ----------------------------------------------------------------
@@ -95,18 +96,24 @@ class ChatCanvas extends Ccvs{
 		// キャラクター描画設定
 		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this.tappedCharacter == i) ? "rgba(255, 255, 255, 0.5)" : "");}
 		// フィールド描画設定
-		this.tapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter < 0);
+		this._FieldTapped = (this.mdn && !Ctrl.mmv && pressField != null && this.tappedCharacter < 0);
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
-	function draw() : void{
-		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
+	function draw(exist : boolean) : boolean{
+		if(!this.calced){
+			for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
 
-		this.context.clearRect(0, 0, this.width, this.height);
-		this.field.draw(this, this.cx, this.cy, this.tapped);
-		DrawUnit.drawList(this, this.slist);
-		DrawUnit.drawList(this, this.clist);
+			this.context.clearRect(0, 0, this.width, this.height);
+			this.field.draw(this, this.cx, this.cy, this._FieldTapped);
+			DrawUnit.drawList(this, this.slist);
+			DrawUnit.drawList(this, this.clist);
+		}
+
+		// sec切り替え時に再計算しないための処理
+		this.calced = !exist;
+		return exist;
 	}
 }
 

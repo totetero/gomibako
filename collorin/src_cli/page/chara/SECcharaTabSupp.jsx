@@ -69,7 +69,7 @@ class SECcharaTabSupp extends EventCartridge{
 
 	// ----------------------------------------------------------------
 	// 初期化
-	override function init() : boolean{
+	override function init() : void{
 		if(this._page.bodyDiv.className.indexOf("supp") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = SECcharaTabSupp._htmlTag;
@@ -131,8 +131,6 @@ class SECcharaTabSupp extends EventCartridge{
 		var count = 0;
 		for(var i = 0; i < this._charaList.length; i++){if(this._charaList[i].select){count++;}}
 		this._btnList["supply"].inactive = !(count > 0);
-
-		return false;
 	}
 
 	// ----------------------------------------------------------------
