@@ -96,7 +96,6 @@ class SECdicePopupMenuSetting extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					this._page.serialPush(this._bgmPicker.beforeOpen(this._page, this));
-					SECpopup.keepPopup = true;
 					exist = false;
 				}
 			}
@@ -107,7 +106,6 @@ class SECdicePopupMenuSetting extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					this._page.serialPush(this._sefPicker.beforeOpen(this._page, this));
-					SECpopup.keepPopup = true;
 					exist = false;
 				}
 			}

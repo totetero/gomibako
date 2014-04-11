@@ -82,7 +82,6 @@ class SECdicePopupMenu extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					this._page.serialPush(new SECdicePopupMenuSetting(this._page, this._cartridge, this._camera));
-					SECpopup.keepPopup = true;
 					exist = false;
 				}
 			}

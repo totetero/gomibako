@@ -43,10 +43,18 @@ class EventPlayer{
 //	}
 
 	// --------------------------------
+	// イベントの確認
+
+	// 次の直列イベント確認
+	function getSerialNext() : EventCartridge{
+		return this._serialList.length > 0 ? this._serialList[0] : null;
+	}
+
+	// --------------------------------
 	// イベントの処理
 	function calc() : boolean{
 		// 直列イベントの処理
-		this.calcSerial();
+		this._calcSerial();
 		// 並列イベントの処理
 		for(var i = 0; i < this._parallelList.length; i++){
 			if(!this._parallelList[i].calc()){
@@ -58,7 +66,7 @@ class EventPlayer{
 		return this._serialCurrent != null || this._parallelList.length > 0;
 	}
 	// 直列イベントの処理 再帰関数
-	function calcSerial() : void{
+	function _calcSerial() : void{
 		if(this._serialCurrent != null && !this._serialCurrent.calc()){
 			this._serialCurrent.dispose();
 			this._serialCurrent = null;
@@ -67,7 +75,7 @@ class EventPlayer{
 			if(this._serialList.length > 0){
 				this._serialCurrent = this._serialList.shift();
 				this._serialCurrent.init();
-				this.calcSerial();
+				this._calcSerial();
 			}
 		}
 	}
