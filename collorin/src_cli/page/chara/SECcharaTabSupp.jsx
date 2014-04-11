@@ -34,31 +34,29 @@ class SECcharaTabSupp extends EventCartridge{
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
-	var _picker : SECpopupPicker;
+	var _sortPicker : SECpopupPicker;
 	var _charaList : PartsCharaListItem[];
-	var _update : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
-		this.parse(response);
+		this._parse(response);
 
 		// 並べ替え要素作成
-		this._picker = new SECpopupPicker("並べ替え", [
+		this._sortPicker = new SECpopupPicker("並べ替え", [
 			new SECpopupPickerItem("test1", "新着順"),
 			new SECpopupPickerItem("test2", "Lv順"),
 			new SECpopupPickerItem("test3", "atk順"),
 			new SECpopupPickerItem("test4", "grd順"),
 			new SECpopupPickerItem("test5", "luk順"),
 		]);
-		this._picker.getItem("test1").selected = true;
+		this._sortPicker.getItem("test1").selected = true;
 	}
 
 	// ----------------------------------------------------------------
 	// ロード完了時 データの形成
-	function parse(response : variant) : void{
-		this._update = true;
+	function _parse(response : variant) : void{
 		// キャラクターリスト作成
 		var list = response["list"] as variant[];
 		this._charaList = new PartsCharaListItem[];
@@ -81,16 +79,13 @@ class SECcharaTabSupp extends EventCartridge{
 		var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
 		// ピッカー設定
-		var tag = this._picker.setLabel(pickDiv);
-		if(this._update){this._update = false; if(tag == ""){tag = this._picker.getTag();}}
-		if(tag != ""){
-			// ピッカーの選択されている要素が変わった場合
-			PartsCharaListItem.sort(this._charaList, tag);
-			// キャラクターリスト作成
-			scrollDiv.innerHTML = "";
-			for(var i = 0; i < this._charaList.length; i++){
-				scrollDiv.appendChild(this._charaList[i].bodyDiv);
-			}
+		var selectedItem = this._sortPicker.getSelectedItem();
+		(pickDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = selectedItem.name;
+		// キャラクターリスト作成
+		PartsCharaListItem.sort(this._charaList, selectedItem.tag);
+		scrollDiv.innerHTML = "";
+		for(var i = 0; i < this._charaList.length; i++){
+			scrollDiv.appendChild(this._charaList[i].bodyDiv);
 		}
 
 		// ボタン作成
@@ -175,13 +170,13 @@ class SECcharaTabSupp extends EventCartridge{
 		if(btn.trigger){
 			// テスト とりあえず通信
 			Sound.playSE("ok");
-			this._page.serialPush(new SECload("/chara/supp", null, function(response : variant) : void{this.parse(response);}));
+			this._page.serialPush(new SECload("/chara/supp", null, function(response : variant) : void{this._parse(response);}));
 			this._page.serialPush(this);
 			return false;
 		}
 
 		// 並べ替えピッカーボタン
-		if(this._btnList["pick"].trigger){Sound.playSE("ok"); this._page.serialPush(this._picker.beforeOpen(this._page, this)); return false;}
+		if(this._btnList["pick"].trigger){Sound.playSE("ok"); this._page.serialPush(this._sortPicker.beforeOpen(this._page, this)); return false;}
 
 		// タブボタン
 		if(this._btnList["team"].trigger){Sound.playSE("ok"); this._page.toggleTab("team"); return false;}

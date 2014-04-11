@@ -10,9 +10,40 @@ class CharaPage{
 	static function setPage(app : ExApplication) : void{
 		// 編成
 		app.get("/chara/team", function(req : ExRequest, res : ExResponse, next : function():void) : void{
+			var jdat = {} : Map.<variant>;
+			var imgs = {} : Map.<string>;
+
+			var codeList = [
+				"player0",
+				"player1",
+				"player2",
+				"player3",
+				"enemy1",
+				"enemy2",
+				"enemy3",
+			];
+
+			// キャラクター情報
+			var charaInfoList = new variant[];
+			for(var i = 0; i < 10; i++){
+				var name = "test" + ("0" + i).slice(-2);
+				//var code = codeList[Math.floor(Math.random() * codeList.length)];
+				var code = codeList[i % codeList.length];
+				charaInfoList.push({name: name, code: code});
+			}
+
+			// キャラクター情報の画像読み込み
+			for(var i = 0; i < charaInfoList.length; i++){
+				var code = charaInfoList[i]["code"] as string;
+				imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
+				imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
+			}
+
+			jdat["list"] = charaInfoList;
+			jdat["imgs"] = ImageServer.convertAddress(imgs);
 			res.setHeader("Content-Type", "application/json");
 			res.setHeader("cache-control", "no-cache");
-			res.send(JSON.stringify({"test": "キャラクター 編成"}));
+			res.send(JSON.stringify(jdat));
 		});
 
 		// 補給

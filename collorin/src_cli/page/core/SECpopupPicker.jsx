@@ -40,9 +40,7 @@ class SECpopupPicker extends SECpopup{
 				<div class="scroll"></div>
 				<div class="core-ybar"></div>
 			</div>
-			<div class="buttonContainer">
-				<div class="core-btn close">閉じる</div>
-			</div>
+			<div class="buttonContainer"><div class="core-btn close">閉じる</div></div>
 		</div>
 	""";
 
@@ -52,7 +50,6 @@ class SECpopupPicker extends SECpopup{
 	var _itemList : SECpopupPickerItem[];
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
-	var _selected = -1;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -80,25 +77,16 @@ class SECpopupPicker extends SECpopup{
 		return null;
 	}
 
-	// ----------------------------------------------------------------
-	// 選択されている要素のタグ獲得
-	function getTag() : string{
-		for(var i = 0; i < this._itemList.length; i++){if(this._itemList[i].selected){return this._itemList[i].tag;}}
-		return "";
-	}
 
 	// ----------------------------------------------------------------
-	// ピッカーボタンのラベル設定 選択要素が変わっていた場合はそのタグも返す
-	function setLabel(div : HTMLDivElement) : string{
-		var selected = -1;
-		for(var i = 0; i < this._itemList.length; i++){if(this._itemList[i].selected){selected = i; break;}}
-		if(this._selected != selected){
-			this._selected = selected;
-			var label = (selected < 0) ? "" : this._itemList[selected].name;
-			(div.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = label;
-			return this._itemList[selected].tag;
+	// 選択されている要素の獲得
+	function getSelectedItem() : SECpopupPickerItem{
+		for(var i = 0; i < this._itemList.length; i++){
+			if(this._itemList[i].selected){
+				return this._itemList[i];
+			}
 		}
-		return "";
+		return null;
 	}
 
 	// ----------------------------------------------------------------
@@ -110,6 +98,15 @@ class SECpopupPicker extends SECpopup{
 		(this.windowDiv.getElementsByClassName("title").item(0) as HTMLDivElement).innerHTML = this._title;
 		var scrollContainerDiv = this.windowDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement;
 		var scrollDiv = this.windowDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
+
+		// ウインドウサイズ調整
+		var itemSize = 32 + 44;
+		var maxPickerSize = Ctrl.sh - itemSize - 20;
+		var pickerSize = Math.min(maxPickerSize, 38 * this._itemList.length - 2);
+		var windowSize = itemSize + pickerSize;
+		this.windowDiv.style.height = windowSize + "px";
+		this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";
+		scrollContainerDiv.style.height = pickerSize + "px";
 
 		// 要素作成
 		var scrollTag = "";
@@ -124,14 +121,6 @@ class SECpopupPicker extends SECpopup{
 			scrollTag += "<div class='" + className + "'>" + item.name + "</div><div class='border'></div>";
 		}
 		scrollDiv.innerHTML = scrollTag;
-		
-		// ウインドウサイズ調整
-		var maxPickerSize = Ctrl.sh - 240 + 144;
-		var pickerSize = Math.min(maxPickerSize, 38 * this._itemList.length - 2);
-		var windowSize = 220 - 144 + pickerSize;
-		this.windowDiv.style.height = windowSize + "px";
-		this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";
-		scrollContainerDiv.style.height = pickerSize + "px";
 
 		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;

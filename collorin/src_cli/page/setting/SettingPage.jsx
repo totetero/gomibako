@@ -122,10 +122,10 @@ class SECsettingPageMain extends EventCartridge{
 		commentDiv.innerHTML = this._page.comment;
 
 		// ピッカー設定
-		this._qualityPicker.setLabel(qualityDiv);
-		this._transitionPicker.setLabel(transitionDiv);
-		this._bgmPicker.setLabel(bgmDiv);
-		this._sefPicker.setLabel(sefDiv);
+		(qualityDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._qualityPicker.getSelectedItem().name;
+		(transitionDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._transitionPicker.getSelectedItem().name;
+		(bgmDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._bgmPicker.getSelectedItem().name;
+		(sefDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._sefPicker.getSelectedItem().name;
 
 		// スクロール作成
 		if(this._scroller == null){

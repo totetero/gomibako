@@ -61,8 +61,8 @@ class SECdicePopupMenuSetting extends SECpopup{
 		// ピッカー設定
 		this._bgmPicker = new SECdicePopupPickerBgm(this._page, this._camera);
 		this._sefPicker = new SECdicePopupPickerSef(this._page, this._camera);
-		this._bgmPicker.setLabel(bgmDiv);
-		this._sefPicker.setLabel(sefDiv);
+		(bgmDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._bgmPicker.getSelectedItem().name;
+		(sefDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = this._sefPicker.getSelectedItem().name;
 
 		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;

@@ -120,7 +120,19 @@ class MockMain{
 		}else if(url.indexOf("/quest/fine") == 0){
 			successFunc({"test": "モッククエスト 完了クエスト"});
 		}else if(url.indexOf("/chara/team") == 0){
-			successFunc({"test": "モックキャラクタ 編成"});
+			//successFunc({"test": "モックキャラクタ 編成"});
+			successFunc({
+				"list":[
+					{"name":"test00","code":"player1"},
+					{"name":"test01","code":"enemy1"},
+				],
+				"imgs":{
+					"css_icon_player1":"/img/character/player1/icon.png",
+					"css_bust_player1":"/img/character/player1/bust.png",
+					"css_icon_enemy1":"/img/character/enemy1/icon.png",
+					"css_bust_enemy1":"/img/character/enemy1/bust.png"
+				}
+			});
 		}else if(url.indexOf("/chara/supp") == 0){
 			//successFunc({"test": "モックキャラクタ 補給"});
 			successFunc({

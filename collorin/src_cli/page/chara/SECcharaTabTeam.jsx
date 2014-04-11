@@ -4,7 +4,9 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Sound.jsx";
 import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
+import "../core/PartsCharacter.jsx";
 import "../core/SECpopupMenu.jsx";
+import "../core/SECpopupPicker.jsx";
 import "../core/SECpopupCharacterPicker.jsx";
 
 import "CharaPage.jsx";
@@ -32,14 +34,37 @@ class SECcharaTabTeam extends EventCartridge{
 
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
-	var _picker : SECpopupCharacterPicker;
+	var _charaPicker : SECpopupCharacterPicker;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
+		this._parse(response);
 
-		this._picker = new SECpopupCharacterPicker("テスト", []);
+		// キャラクターリスト作成
+		var list = response["list"] as variant[];
+		var charaList = new PartsCharaListItem[];
+		for(var i = 0; i < list.length; i++){
+			charaList.push(new PartsCharaListItem(list[i]));
+		}
+
+		// 並べ替え要素作成
+		var sortPicker = new SECpopupPicker("並べ替え", [
+			new SECpopupPickerItem("test1", "新着順"),
+			new SECpopupPickerItem("test2", "Lv順"),
+			new SECpopupPickerItem("test3", "atk順"),
+			new SECpopupPickerItem("test4", "grd順"),
+			new SECpopupPickerItem("test5", "luk順"),
+		]);
+		sortPicker.getItem("test1").selected = true;
+
+		this._charaPicker = new SECpopupCharacterPicker("テスト", charaList, sortPicker);
+	}
+
+	// ----------------------------------------------------------------
+	// ロード完了時 データの形成
+	function _parse(response : variant) : void{
 	}
 
 	// ----------------------------------------------------------------
@@ -74,7 +99,7 @@ class SECcharaTabTeam extends EventCartridge{
 		// テストボタン
 		if(this._btnList["test"].trigger){
 			Sound.playSE("ok");
-			this._page.serialPush(this._picker.beforeOpen(this._page, this));
+			this._page.serialPush(this._charaPicker.beforeOpen(this._page, this));
 			return false;
 		}	
 
