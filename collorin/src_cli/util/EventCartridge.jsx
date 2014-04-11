@@ -33,14 +33,14 @@ class EventPlayer{
 		this._parallelList.push(pec);
 	}
 
-	// 直列イベントの割り込み
-	function serialCutting(sec : EventCartridge) : void{
-		if(this._serialCurrent != null){
-			this._serialList.unshift(this._serialCurrent);
-			this._serialCurrent = null;
-		}
-		this._serialList.unshift(sec);
-	}
+//	// 直列イベントの割り込み
+//	function serialCutting(sec : EventCartridge) : void{
+//		if(this._serialCurrent != null){
+//			this._serialList.unshift(this._serialCurrent);
+//			this._serialCurrent = null;
+//		}
+//		this._serialList.unshift(sec);
+//	}
 
 	// --------------------------------
 	// イベントの処理

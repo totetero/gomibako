@@ -145,7 +145,7 @@ class SECpopupPicker extends SECpopup{
 			this.windowDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 		);
 		// 選択されている要素をできるだけ中心に持ってくる
-		this._scroller.scrolly = pickerSize * 0.5 - 18 - selectedIndex * 38;;
+		this._scroller.scrolly = pickerSize * 0.5 - 18 - selectedIndex * 38;
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		for(var i = 0; i < this._itemList.length; i++){
