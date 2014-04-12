@@ -63,13 +63,11 @@ class SECcharaTabTeam extends EventCartridge{
 
 		// 並べ替え要素作成
 		this.sortPicker = new SECpopupPicker("並べ替え", [
-			new SECpopupPickerItem("test1", "新着順"),
-			new SECpopupPickerItem("test2", "Lv順"),
-			new SECpopupPickerItem("test3", "atk順"),
-			new SECpopupPickerItem("test4", "grd順"),
-			new SECpopupPickerItem("test5", "luk順"),
+			new SECpopupPickerItem("level", "レベル順"),
+			new SECpopupPickerItem("type", "種類順"),
+			new SECpopupPickerItem("new", "新着順"),
 		]);
-		this.sortPicker.getItem("test1").selected = true;
+		this.sortPicker.getItem("level").selected = true;
 	}
 
 	// ----------------------------------------------------------------
