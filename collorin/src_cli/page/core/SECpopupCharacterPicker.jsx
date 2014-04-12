@@ -38,6 +38,8 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	var _sortPicker : SECpopupPicker;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
+	var _prevscrolly = 0;
+	var _prevtag = "";
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -73,7 +75,11 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 			// ピッカー設定
 			var selectedItem = this._sortPicker.getSelectedItem();
 			(pickDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = selectedItem.name;
-			PartsCharaListItem.sort(this._charaList, selectedItem.tag);
+			if(this._prevtag != selectedItem.tag){
+				this._prevtag = selectedItem.tag;
+				PartsCharaListItem.sort(this._charaList, selectedItem.tag);
+				this._prevscrolly = 0;
+			}
 		}else{
 			(this.windowDiv.getElementsByClassName("pickerContainer").item(0) as HTMLDivElement).style.display = "none";
 		}
@@ -95,6 +101,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 			scrollContainerDiv, scrollDiv, null,
 			this.windowDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 		);
+		this._scroller.scrolly = this._prevscrolly;
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		for(var i = 0; i < this._charaList.length; i++){
@@ -134,6 +141,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					this._page.serialPush(new SECpopupInfoChara(this._page, this, this._charaList[i]));
+					this._prevscrolly = this._scroller.scrolly;
 					return false;
 				}
 			}
@@ -146,6 +154,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					this._page.serialPush(this._sortPicker.beforeOpen(this._page, this));
+					this._prevscrolly = this._scroller.scrolly;
 					return false;
 				}
 			}

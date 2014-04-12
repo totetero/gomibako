@@ -36,6 +36,7 @@ class SECcharaTabSupp extends EventCartridge{
 	var _scroller : PartsScroll;
 	var _sortPicker : SECpopupPicker;
 	var _charaList : PartsCharaListItem[];
+	var _prevtag = "";
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -81,8 +82,12 @@ class SECcharaTabSupp extends EventCartridge{
 		// ピッカー設定
 		var selectedItem = this._sortPicker.getSelectedItem();
 		(pickDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = selectedItem.name;
+		if(this._prevtag != selectedItem.tag){
+			this._prevtag = selectedItem.tag;
+			PartsCharaListItem.sort(this._charaList, selectedItem.tag);
+			if(this._scroller != null){this._scroller.scrolly = 0;}
+		}
 		// キャラクターリスト作成
-		PartsCharaListItem.sort(this._charaList, selectedItem.tag);
 		scrollDiv.innerHTML = "";
 		for(var i = 0; i < this._charaList.length; i++){
 			scrollDiv.appendChild(this._charaList[i].bodyDiv);
