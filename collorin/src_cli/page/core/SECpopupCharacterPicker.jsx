@@ -16,7 +16,7 @@ import "SECpopupPicker.jsx";
 // ----------------------------------------------------------------
 
 // ピッカーポップアップ
-class SECpopupCharacterPicker extends SECpopup{
+abstract class SECpopupCharacterPicker extends SECpopup{
 	// HTMLタグ
 	static const _htmlTag = """
 		<div class="core-background"></div>
@@ -35,24 +35,18 @@ class SECpopupCharacterPicker extends SECpopup{
 	var _cartridge : EventCartridge;
 	var _title : string;
 	var _charaList : PartsCharaListItem[];
+	var _sortPicker : SECpopupPicker;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
-	var _sortPicker : SECpopupPicker;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(title : string, charaList : PartsCharaListItem[], sortPicker : SECpopupPicker){
+	function constructor(page : Page, cartridge : EventCartridge, title : string, charaList : PartsCharaListItem[], sortPicker : SECpopupPicker){
+		this._page = page;
+		this._cartridge = cartridge;
 		this._title = title;
 		this._charaList = charaList;
 		this._sortPicker = sortPicker;
-	}
-
-	// ----------------------------------------------------------------
-	// 開く前の設定
-	function beforeOpen(page : Page, cartridge : EventCartridge) : SECpopupCharacterPicker{
-		this._page = page;
-		this._cartridge = cartridge;
-		return this;
 	}
 
 	// ----------------------------------------------------------------
@@ -120,14 +114,14 @@ class SECpopupCharacterPicker extends SECpopup{
 
 		// キャラクターリストボタン
 		for(var i = 0; i < this._charaList.length; i++){
-			var item = this._charaList[i];
-
 			// 要素ボタン
 			var btn = this._scroller.btnList["charaItem" + i];
 			if(btn.trigger){
 				btn.trigger = false;
 				if(active){
 					Sound.playSE("ok");
+					// 選択完了
+					this.select(this._charaList[i]);
 					this._page.serialPush(this._cartridge);
 					return false;
 				}
@@ -139,16 +133,10 @@ class SECpopupCharacterPicker extends SECpopup{
 				btn.trigger = false;
 				if(active){
 					Sound.playSE("ok");
-					this._page.serialPush(new SECpopupInfoChara(this._page, this, item));
+					this._page.serialPush(new SECpopupInfoChara(this._page, this, this._charaList[i]));
 					return false;
 				}
 			}
-
-			// 選択状態描画
-			var div = item.bodyDiv;
-			var isSelect = div.className.indexOf(" select") >= 0;
-			if(item.select && !isSelect){div.className += " select";}
-			else if(!item.select && isSelect){div.className = div.className.replace(/ select/g , "");}
 		}
 
 		if(this._sortPicker != null){
@@ -176,6 +164,10 @@ class SECpopupCharacterPicker extends SECpopup{
 
 		return true;
 	}
+
+	// ----------------------------------------------------------------
+	// 選択時の動作 継承用
+	abstract function select(chara : PartsCharaListItem) : void;
 
 	// ----------------------------------------------------------------
 	// 破棄

@@ -6,6 +6,7 @@ import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
 import "../core/PartsScroll.jsx";
 import "../core/PartsCharacter.jsx";
+import "../core/SECload.jsx";
 import "../core/SECpopupMenu.jsx";
 import "../core/SECpopupPicker.jsx";
 import "../core/SECpopupCharacterPicker.jsx";
@@ -43,37 +44,37 @@ class SECcharaTabTeam extends EventCartridge{
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
-	var _charaPicker : SECpopupCharacterPicker;
+	var charaList : PartsCharaListItem[];
+	var sortPicker : SECpopupPicker;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
-		this._parse(response);
+		this.parse(response);
 
 		// キャラクターリスト作成
 		var list = response["list"] as variant[];
-		var charaList = new PartsCharaListItem[];
+		this.charaList = new PartsCharaListItem[];
 		for(var i = 0; i < list.length; i++){
-			charaList.push(new PartsCharaListItem(list[i]));
+			this.charaList.push(new PartsCharaListItem(list[i]));
 		}
 
 		// 並べ替え要素作成
-		var sortPicker = new SECpopupPicker("並べ替え", [
+		this.sortPicker = new SECpopupPicker("並べ替え", [
 			new SECpopupPickerItem("test1", "新着順"),
 			new SECpopupPickerItem("test2", "Lv順"),
 			new SECpopupPickerItem("test3", "atk順"),
 			new SECpopupPickerItem("test4", "grd順"),
 			new SECpopupPickerItem("test5", "luk順"),
 		]);
-		sortPicker.getItem("test1").selected = true;
-
-		this._charaPicker = new SECpopupCharacterPicker("テスト", charaList, sortPicker);
+		this.sortPicker.getItem("test1").selected = true;
 	}
 
 	// ----------------------------------------------------------------
 	// ロード完了時 データの形成
-	function _parse(response : variant) : void{
+	function parse(response : variant) : void{
+		log response;
 	}
 
 	// ----------------------------------------------------------------
@@ -122,9 +123,10 @@ class SECcharaTabTeam extends EventCartridge{
 		// テストボタン
 		if(this._scroller.btnList["test"].trigger){
 			Sound.playSE("ok");
-			this._page.serialPush(this._charaPicker.beforeOpen(this._page, this));
+			// TODO 選択できないキャラクターはthis._charaListのselectフラグ？
+			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "テスト"));
 			return false;
-		}	
+		}
 
 		// タブボタン
 		if(this._btnList["supp"].trigger){Sound.playSE("ok"); this._page.toggleTab("supp"); return false;}
@@ -142,6 +144,30 @@ class SECcharaTabTeam extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
+	var _cPage : CharaPage;
+	var _parent : SECcharaTabTeam;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, title : string){
+		super(page, cartridge, title, cartridge.charaList, cartridge.sortPicker);
+		this._cPage = page;
+		this._parent = cartridge;
+	}
+
+	// ----------------------------------------------------------------
+	// 選択時の動作 継承用
+	override function select(chara : PartsCharaListItem) : void{
+		// テスト とりあえず通信
+		this._cPage.serialPush(new SECload("/chara/team", null, function(response : variant) : void{this._parent.parse(response);}));
 	}
 }
 

@@ -84,8 +84,7 @@ abstract class SECpopupTextarea extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// 入力確定時の動作 継承用
-	function enter(value : string) : void{
-	}
+	abstract function enter(value : string) : void;
 
 	// ----------------------------------------------------------------
 	// 破棄
