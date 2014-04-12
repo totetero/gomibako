@@ -85,6 +85,7 @@ class SECcharaTabSupp extends EventCartridge{
 		if(this._prevtag != selectedItem.tag){
 			this._prevtag = selectedItem.tag;
 			PartsCharaListItem.sort(this._charaList, selectedItem.tag);
+			// ソート時スクロールリセット
 			if(this._scroller != null){this._scroller.scrolly = 0;}
 		}
 		// キャラクターリスト作成

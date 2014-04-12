@@ -46,6 +46,7 @@ class SECcharaTabTeam extends EventCartridge{
 	var _scroller : PartsScroll;
 	var charaList : PartsCharaListItem[];
 	var sortPicker : SECpopupPicker;
+	var prevscrolly = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -124,7 +125,7 @@ class SECcharaTabTeam extends EventCartridge{
 		if(this._scroller.btnList["test"].trigger){
 			Sound.playSE("ok");
 			// TODO 選択できないキャラクターはthis._charaListのselectフラグ？
-			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "テスト"));
+			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "テスト", this.prevscrolly));
 			return false;
 		}
 
@@ -157,17 +158,23 @@ class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, title : string){
-		super(page, cartridge, title, cartridge.charaList, cartridge.sortPicker);
+	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, title : string, scrolly : int){
+		super(page, cartridge, title, cartridge.charaList, cartridge.sortPicker, scrolly);
 		this._cPage = page;
 		this._parent = cartridge;
 	}
 
 	// ----------------------------------------------------------------
-	// 選択時の動作 継承用
+	// 選択時の動作
 	override function onSelect(chara : PartsCharaListItem) : void{
 		// テスト とりあえず通信
 		this._cPage.serialPush(new SECload("/chara/team", null, function(response : variant) : void{this._parent.parse(response);}));
+	}
+
+	// ----------------------------------------------------------------
+	// 閉じるときの動作
+	override function onClose(scrolly : int) : void{
+		this._parent.prevscrolly = scrolly;
 	}
 }
 

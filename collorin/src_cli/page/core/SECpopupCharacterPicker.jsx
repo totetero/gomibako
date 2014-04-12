@@ -38,17 +38,18 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	var _sortPicker : SECpopupPicker;
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
-	var _prevscrolly = 0;
+	var _prevscrolly : int;
 	var _prevtag = "";
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : EventCartridge, title : string, charaList : PartsCharaListItem[], sortPicker : SECpopupPicker){
+	function constructor(page : Page, cartridge : EventCartridge, title : string, charaList : PartsCharaListItem[], sortPicker : SECpopupPicker, scrolly : int){
 		this._page = page;
 		this._cartridge = cartridge;
 		this._title = title;
 		this._charaList = charaList;
 		this._sortPicker = sortPicker;
+		this._prevscrolly = scrolly;
 	}
 
 	// ----------------------------------------------------------------
@@ -78,7 +79,8 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 			if(this._prevtag != selectedItem.tag){
 				this._prevtag = selectedItem.tag;
 				PartsCharaListItem.sort(this._charaList, selectedItem.tag);
-				this._prevscrolly = 0;
+				// ソート時スクロールリセット ただし最初はのぞく
+				if(this._scroller != null){this._prevscrolly = 0;}
 			}
 		}else{
 			(this.windowDiv.getElementsByClassName("pickerContainer").item(0) as HTMLDivElement).style.display = "none";
@@ -129,6 +131,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 					Sound.playSE("ok");
 					// 選択完了
 					this.onSelect(this._charaList[i]);
+					this.onClose(this._scroller.scrolly);
 					this._page.serialPush(this._cartridge);
 					return false;
 				}
@@ -166,6 +169,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 			this._btnList["outer"].trigger = false;
 			if(active){
 				Sound.playSE("ng");
+				this.onClose(this._scroller.scrolly);
 				this._page.serialPush(this._cartridge);
 				return false;
 			}
@@ -177,6 +181,10 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	// ----------------------------------------------------------------
 	// 選択時の動作 継承用
 	abstract function onSelect(chara : PartsCharaListItem) : void;
+
+	// ----------------------------------------------------------------
+	// 閉じるときの動作 継承用
+	function onClose(scrolly : int) : void{}
 
 	// ----------------------------------------------------------------
 	// 破棄
