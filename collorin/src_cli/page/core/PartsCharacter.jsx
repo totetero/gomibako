@@ -36,6 +36,12 @@ class PartsCharaListItem extends PartsCharacter{
 	static const _htmlTag = """
 		<div class="core-chara-icon"></div>
 		<div class="core-chara-name"></div>
+		<div class="core-chara-level">Lv.999</div>
+		<div class="core-chara-sphere"></div>
+		<div class="core-chara-sphere"></div>
+		<div class="core-chara-sphere"></div>
+		<div class="core-chara-gauge hp"><div class="param"></div><div class="wrap"></div></div>
+		<div class="core-chara-gauge sp"><div class="param"></div><div class="wrap"></div></div>
 	""";
 
 	// 並べ替え

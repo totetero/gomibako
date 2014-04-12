@@ -1,0 +1,148 @@
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- ピッカー -------- */
+
+// ピッカーボタン
+.core-picker-btn{
+	position: absolute;
+	width: 135px;
+	height: 38px;
+
+	.core-picker-label{
+		position: absolute;
+		left: 35px;
+		top: 3px;
+		width: 97px;
+		height: 26px;
+		line-height: 28px;
+		text-align: center;
+		border: solid 3px white;
+		border-left: none;
+		border-radius: 0 12px 12px 0;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: 0px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-left: none;
+			border-radius: 0 12px 12px 0;
+		}
+	}
+
+	.core-picker-arrow{
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 32px;
+		height: 32px;
+		border: solid 3px white;
+		border-radius: 12px 10px 10px 12px;
+		background-color: rgba(255, 255, 255, 0.5);
+		background-size: 32px 32px;
+		background-repeat: no-repeat;
+		background-position: center;
+
+		&::before{
+			content: '';
+			position: absolute;
+			left: -2px;
+			top: -2px;
+			width: 100%;
+			height: 100%;
+			border: solid 2px black;
+			border-radius: 12px 10px 10px 12px;
+		}
+	}
+
+	&.active{
+		.core-picker-label, .core-picker-arrow{background-color: rgba(0, 0, 0, 0.5);}
+	}
+
+	&.inactive{
+		opacity: 0.5;
+	}
+}
+
+// ピッカーポップアップ
+.core-popup.core.picker{
+	.core-window{
+		left: 57px;
+		width: 200px;
+	}
+
+	.title{
+		width: 200px;
+		height: 30px;
+		line-height: 34px;
+		text-align: center;
+		border-bottom: solid 2px black;
+	}
+
+	.scrollContainer{
+		position: relative;
+		width: 200px;
+		height: 144px;
+		background-color: rgba(255, 255, 255, 0.5);
+		
+		overflow: hidden;
+
+		.scroll{
+			position: absolute;
+
+			.item{
+				width: 200px;
+				height: 36px;
+				line-height: 38px;
+				text-align: center;
+
+				&.select{
+					background-color: rgba(0, 0, 0, 0.3);
+				}
+
+				&.active{
+					background-color: rgba(0, 0, 0, 0.5);
+				}
+
+				&.inactive{
+					opacity: 0.5;
+				}
+			}
+
+			.border{
+				width: 160px;
+				height: 2px;
+				margin: 0 20px;
+				background-color: black;
+
+				&:last-child{height: 0px;}
+			}
+		}
+	}
+
+	.buttonContainer{
+		position: relative;
+		width: 200px;
+		height: 42px;
+		border-top: solid 2px black;
+		
+		.core-btn.close{
+			left: 57px;
+			top: 5px;
+			width: 80px;
+			height: 26px;
+			line-height: 30px;
+			text-align: center;
+		}
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+

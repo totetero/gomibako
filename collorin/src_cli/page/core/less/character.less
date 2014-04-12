@@ -1,0 +1,215 @@
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- キャラクター情報 -------- */
+
+// キャラクター情報リスト要素
+.core-chara-item{
+	position: relative;
+	width: 180px;
+	height: 60px;
+	&:nth-child(odd){background-color: rgba(127, 127, 127, 0.5);}
+	&:nth-child(even){background-color: rgba(196, 196, 196, 0.5);}
+
+	.core-chara-icon{
+		position: absolute;
+		left: 5px;
+		top: 5px;
+		width: 50px;
+		height: 50px;
+		background-size:50px 50px;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&.active{
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+	}
+
+	.core-chara-name{
+		position: absolute;
+		left: 60px;
+		top: 5px;
+		width: 115px;
+		height: 20px;
+		font-size: 16px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.core-chara-level{
+		position: absolute;
+		left: 60px;
+		top: 25px;
+		width: 50px;
+		height: 15px;
+		font-size: 10px;
+	}
+
+	.core-chara-sphere{
+		position: absolute;
+		top: 40px;
+		width: 15px;
+		height: 15px;
+		border-radius: 5px;
+		background-color: rgba(255, 255, 255, 0.5);
+		&:nth-child(4){left: 60px;}
+		&:nth-child(5){left: 75px;}
+		&:nth-child(6){left: 90px;}
+	}
+
+	.core-chara-gauge{
+		position: absolute;
+		left: 111px;
+		width: 54px;
+		height: 10px;
+		border-radius: 10px;
+		background-color: rgba(255, 255, 255, 0.5);
+
+		&.hp{
+			top: 30px;
+			.param{background-color:red;}
+		}
+
+		&.sp{
+			top: 45px;
+			.param{background-color:blue;}
+		}
+
+		.param{
+			position: absolute;
+			left: 2px;
+			top: 2px;
+			width: 30px;
+			height: 6px;
+			border-radius: 3px;
+		}
+
+		.wrap{
+			position: absolute;
+			left: 0px;
+			top: 0px;
+			width: 50px;
+			height: 6px;
+			line-height: 8px;
+			border: solid 2px white;
+			border-radius: 5px;
+		}
+	}
+
+	&.active{
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	&.inactive{
+		opacity: 0.5;
+	}
+}
+
+// キャラクター情報ポップアップ
+.core-popup.core.infoChara{
+	.sidebar{
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 30px;
+		height: 220px;
+		border-radius: 10px 0 0 10px;
+		background-color: blue;
+	}
+
+	.name{
+		position: absolute;
+		left: 150px;
+		top: 10px;
+	}
+
+	.chara{
+		position: absolute;
+		left: 40px;
+		top: 10px;
+		width: 100px;
+		height: 200px;
+		background-size:160px 240px;
+		background-position: -30px -40px;
+	}
+
+	.core-btn.close{
+		right: 5px;
+		bottom: 5px;
+		width: 80px;
+		height: 26px;
+		line-height: 30px;
+		text-align: center;
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------- キャラクターピッカー -------- */
+
+// キャラクターピッカーポップアップ
+.core-popup.core.characterPicker{
+	.core-window{
+		left: 67px;
+		width: 180px;
+	}
+
+	.title{
+		width: 180px;
+		height: 30px;
+		line-height: 34px;
+		text-align: center;
+		border-bottom: solid 2px black;
+	}
+
+	.pickerContainer{
+		position: relative;
+		width: 180px;
+		height: 48px;
+		line-height: 34px;
+		text-align: center;
+		border-bottom: solid 2px black;
+
+		// 並べ替えボタン
+		.core-picker-btn{
+			left: 22px;
+			top: 5px;
+		}
+	}
+
+	.scrollContainer{
+		position: relative;
+		width: 180px;
+		height: 144px;
+		background-color: rgba(255, 255, 255, 0.5);
+		
+		overflow: hidden;
+
+		.scroll{
+			position: absolute;
+		}
+	}
+
+	.buttonContainer{
+		position: relative;
+		width: 180px;
+		height: 42px;
+		border-top: solid 2px black;
+		
+		.core-btn.close{
+			left: 47px;
+			top: 5px;
+			width: 80px;
+			height: 26px;
+			line-height: 30px;
+			text-align: center;
+		}
+	}
+}
+
+/* -------------------------------- */
+/* -------------------------------- */
+/* -------------------------------- */
+
