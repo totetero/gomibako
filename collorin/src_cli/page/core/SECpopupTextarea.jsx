@@ -72,7 +72,7 @@ abstract class SECpopupTextarea extends SECpopup{
 			this._btnList["close"].trigger = false;
 			if(active){
 				Sound.playSE(ok ? "ok" : "ng");
-				if(ok){this.enter(this._input.value);}
+				if(ok){this.onEnter(this._input.value);}
 				this._input.className = "";
 				this._page.serialPush(this._cartridge);
 				return false;
@@ -84,7 +84,7 @@ abstract class SECpopupTextarea extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// 入力確定時の動作 継承用
-	abstract function enter(value : string) : void;
+	abstract function onEnter(value : string) : void;
 
 	// ----------------------------------------------------------------
 	// 破棄

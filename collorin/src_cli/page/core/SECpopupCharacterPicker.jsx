@@ -128,7 +128,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					// 選択完了
-					this.select(this._charaList[i]);
+					this.onSelect(this._charaList[i]);
 					this._page.serialPush(this._cartridge);
 					return false;
 				}
@@ -176,7 +176,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作 継承用
-	abstract function select(chara : PartsCharaListItem) : void;
+	abstract function onSelect(chara : PartsCharaListItem) : void;
 
 	// ----------------------------------------------------------------
 	// 破棄

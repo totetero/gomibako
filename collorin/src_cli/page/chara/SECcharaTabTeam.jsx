@@ -165,7 +165,7 @@ class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作 継承用
-	override function select(chara : PartsCharaListItem) : void{
+	override function onSelect(chara : PartsCharaListItem) : void{
 		// テスト とりあえず通信
 		this._cPage.serialPush(new SECload("/chara/team", null, function(response : variant) : void{this._parent.parse(response);}));
 	}

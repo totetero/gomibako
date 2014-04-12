@@ -201,7 +201,7 @@ class SECsettingPopupTextareaNickname extends SECpopupTextarea{
 
 	// ----------------------------------------------------------------
 	// 入力確定時の動作
-	override function enter(value : string) : void{
+	override function onEnter(value : string) : void{
 		if(value != this._sPage.nickname){
 			this._sPage.serialPush(new SECload("/setting?nickname=" + value, null, function(response : variant) : void{this._sPage.parse(response);}));
 		}
@@ -221,7 +221,7 @@ class SECsettingPopupTextareaComment extends SECpopupTextarea{
 
 	// ----------------------------------------------------------------
 	// 入力確定時の動作
-	override function enter(value : string) : void{
+	override function onEnter(value : string) : void{
 		if(value != this._sPage.comment){
 			this._sPage.serialPush(new SECload("/setting?comment=" + value, null, function(response : variant) : void{this._sPage.parse(response);}));
 		}
@@ -248,7 +248,7 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作
-	override function select(tag : string) : void{
+	override function onSelect(tag : string) : void{
 		dom.window.localStorage.setItem("setting_quality", tag);
 	}
 }
@@ -270,7 +270,7 @@ class SECsettingPopupPickerTransition extends SECpopupPicker{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作
-	override function select(tag : string) : void{
+	override function onSelect(tag : string) : void{
 		dom.window.localStorage.setItem("setting_transition", tag);
 		this.checkSkip(tag);
 	}
@@ -301,7 +301,7 @@ class SECsettingPopupPickerBgm extends SECpopupPicker{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作
-	override function select(tag : string) : void{
+	override function onSelect(tag : string) : void{
 		Sound.setBgmVolume(tag);
 	}
 }
@@ -331,7 +331,7 @@ class SECsettingPopupPickerSef extends SECpopupPicker{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作
-	override function select(tag : string) : void{
+	override function onSelect(tag : string) : void{
 		Sound.setSefVolume(tag);
 	}
 }

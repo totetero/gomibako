@@ -163,7 +163,7 @@ class SECpopupPicker extends SECpopup{
 						this._itemList[j].selected = (i == j);
 					}
 					// 選択完了
-					this.select(this._itemList[i].tag);
+					this.onSelect(this._itemList[i].tag);
 					this._page.serialPush(this._cartridge);
 					return false;
 				}
@@ -186,8 +186,7 @@ class SECpopupPicker extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// 選択時の動作 継承用
-	function select(tag : string) : void{
-	}
+	function onSelect(tag : string) : void{}
 
 	// ----------------------------------------------------------------
 	// 破棄
