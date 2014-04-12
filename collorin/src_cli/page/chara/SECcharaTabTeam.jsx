@@ -4,6 +4,7 @@ import "../../util/EventCartridge.jsx";
 import "../../util/Sound.jsx";
 import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
+import "../core/PartsScroll.jsx";
 import "../core/PartsCharacter.jsx";
 import "../core/SECpopupMenu.jsx";
 import "../core/SECpopupPicker.jsx";
@@ -18,22 +19,30 @@ import "CharaPage.jsx";
 class SECcharaTabTeam extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div class="core-btn test">テスト</div>
-		<div style="width:230px;margin:20px;margin-top:100px;font-size:12px;">
-			•編成について<br>
-			マイページで表示するリーダーの設定と、
-			ステージで使用する3人までのチームを設定することができる。
-			<br><br>
-			•補給について<br>
-			補給タブではSP回復アイテムを消費することによってSPを回復することができる。
-			SPはステージで行動すると消費する値であり、消費量はキャラクターやステージによって異なる。
-			SP回復アイテムは時間経過で入手することができ、いわゆるスタミナの役割を果たす。
-			SP回復アイテムはショップでも購入できる。
+		<div class="scrollContainerContainer">
+			<div class="scrollContainer">
+				<div class="scroll">
+					<div class="core-btn test">テスト</div>
+					<div style="width:230px;margin:20px;margin-top:52px;font-size:12px;">
+						•編成について<br>
+						マイページで表示するリーダーの設定と、
+						ステージで使用する3人までのチームを設定することができる。
+						<br><br>
+						•補給について<br>
+						補給タブではSP回復アイテムを消費することによってSPを回復することができる。
+						SPはステージで行動すると消費する値であり、消費量はキャラクターやステージによって異なる。
+						SP回復アイテムは時間経過で入手することができ、いわゆるスタミナの役割を果たす。
+						SP回復アイテムはショップでも購入できる。
+					</div>
+				</div>
+				<div class="core-ybar"></div>
+			</div>
 		</div>
 	""";
 
 	var _page : CharaPage;
 	var _btnList : Map.<PartsButton>;
+	var _scroller : PartsScroll;
 	var _charaPicker : SECpopupCharacterPicker;
 
 	// ----------------------------------------------------------------
@@ -74,6 +83,8 @@ class SECcharaTabTeam extends EventCartridge{
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.innerHTML = SECcharaTabTeam._htmlTag;
 			this._page.bodyDiv.className = "body team";
+
+			this._scroller = null;
 		}
 
 		// ボタン作成
@@ -87,17 +98,29 @@ class SECcharaTabTeam extends EventCartridge{
 		this._btnList["rest"] = new PartsButton(this._page.tabRestDiv, true);
 		this._btnList["pwup"] = new PartsButton(this._page.tabPwupDiv, true);
 		this._btnList["sell"] = new PartsButton(this._page.tabSellDiv, true);
-		// 本体ボタン
-		this._btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-btn test").item(0) as HTMLDivElement, true);
+
+		// スクロール作成
+		if(this._scroller == null){
+			this._scroller = new PartsScroll(
+				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
+				this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+				null,
+				this._page.bodyDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
+			);
+		}
+		// スクロールボタン作成
+		this._scroller.btnList = {} : Map.<PartsButton>;
+		this._scroller.btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-btn test").item(0) as HTMLDivElement, true);
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
+		this._scroller.calc(true);
+		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
 		// テストボタン
-		if(this._btnList["test"].trigger){
+		if(this._scroller.btnList["test"].trigger){
 			Sound.playSE("ok");
 			this._page.serialPush(this._charaPicker.beforeOpen(this._page, this));
 			return false;
