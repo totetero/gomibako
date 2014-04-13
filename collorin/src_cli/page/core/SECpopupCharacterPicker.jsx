@@ -27,13 +27,17 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 				<div class="scroll"></div>
 				<div class="core-ybar"></div>
 			</div>
-			<div class="buttonContainer"><div class="core-btn close">閉じる</div></div>
+			<div class="buttonContainer">
+				<div class="core-btn remove">外す</div>
+				<div class="core-btn close">閉じる</div>
+			</div>
 		</div>
 	""";
 
 	var _page : Page;
 	var _cartridge : EventCartridge;
 	var _title : string;
+	var _isRemovable : boolean;
 	var _charaList : PartsCharaListItem[];
 	var _sortPicker : SECpopupPicker;
 	var _btnList : Map.<PartsButton>;
@@ -43,10 +47,11 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : EventCartridge, title : string, charaList : PartsCharaListItem[], sortPicker : SECpopupPicker, scrolly : int){
+	function constructor(page : Page, cartridge : EventCartridge, title : string, isRemovable : boolean, charaList : PartsCharaListItem[], sortPicker : SECpopupPicker, scrolly : int){
 		this._page = page;
 		this._cartridge = cartridge;
 		this._title = title;
+		this._isRemovable = isRemovable;
 		this._charaList = charaList;
 		this._sortPicker = sortPicker;
 		this._prevscrolly = scrolly;
@@ -97,6 +102,9 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
 		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
 		this._btnList["close"].sKey = true;
+		// 外すボタン
+		if(this._isRemovable){this._btnList["remove"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn remove").item(0) as HTMLDivElement, true);}
+		(this.windowDiv.getElementsByClassName("buttonContainer").item(0) as HTMLDivElement).className = "buttonContainer" + (this._isRemovable ? " removable" : "");
 
 		// スクロール作成
 		this._scroller = new PartsScroll(
@@ -160,6 +168,19 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 					this._prevscrolly = this._scroller.scrolly;
 					return false;
 				}
+			}
+		}
+
+		// 外すボタン
+		if(this._isRemovable && this._btnList["remove"].trigger){
+			this._btnList["remove"].trigger = false;
+			if(active){
+				Sound.playSE("ok");
+				// 選択完了
+				this.onSelect(null);
+				this.onClose(this._scroller.scrolly);
+				this._page.serialPush(this._cartridge);
+				return false;
 			}
 		}
 

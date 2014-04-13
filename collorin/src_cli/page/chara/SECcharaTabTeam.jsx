@@ -282,7 +282,7 @@ class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, title : string, code : string, id : string, scrolly : int){
-		super(page, cartridge, title, cartridge.charaList, cartridge.sortPicker, scrolly);
+		super(page, cartridge, title, (code != "partner" && id != ""), cartridge.charaList, cartridge.sortPicker, scrolly);
 		this._cPage = page;
 		this._parent = cartridge;
 		this._code = code;
@@ -292,9 +292,10 @@ class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 	// ----------------------------------------------------------------
 	// 選択時の動作
 	override function onSelect(chara : PartsCharaListItem) : void{
-		if(this._id != chara.id){
+		var id = (chara != null) ? chara.id : "";
+		if(this._id != id){
 			// 通信
-			var url = "/chara/team?code=" + this._code + "&id=" + chara.id;
+			var url = "/chara/team?code=" + this._code + "&id=" + id;
 			this._cPage.serialPush(new SECload(url, null, function(response : variant) : void{this._parent.parse(response);}));
 		}
 	}
