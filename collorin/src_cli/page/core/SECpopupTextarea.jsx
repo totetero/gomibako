@@ -54,6 +54,7 @@ abstract class SECpopupTextarea extends SECpopup{
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["ok"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn ok").item(0) as HTMLDivElement, true);
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);
+		this._btnList["outer"] = new PartsButton(this.windowDiv, false);
 		this._btnList["close"].sKey = true;
 	}
 
@@ -66,10 +67,11 @@ abstract class SECpopupTextarea extends SECpopup{
 		if(active && this._input.className != "core textarea"){this._input.className = "core textarea";}
 
 		// ボタン押下時
-		if(this._btnList["ok"].trigger || this._btnList["close"].trigger){
+		if(this._btnList["ok"].trigger || this._btnList["close"].trigger || this._btnList["outer"].trigger){
 			var ok = this._btnList["ok"].trigger;
 			this._btnList["ok"].trigger = false;
 			this._btnList["close"].trigger = false;
+			this._btnList["outer"].trigger = false;
 			if(active){
 				Sound.playSE(ok ? "ok" : "ng");
 				if(ok){this.onEnter(this._input.value);}
