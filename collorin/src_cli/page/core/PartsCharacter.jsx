@@ -61,11 +61,13 @@ class PartsCharaListItem extends PartsCharacter{
 	function constructor(response : variant){
 		super(response);
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
-		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
 		this.bodyDiv.className = "core-chara-item";
+		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
+		// アイコン設定
 		this.iconDiv = this.bodyDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement;
-		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
 		this.iconDiv.className = "core-chara-icon cssimg_icon_" + this.code;
+		// 名前設定
+		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
 	}
 }
 

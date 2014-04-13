@@ -44,8 +44,8 @@ class SECitemTabList extends EventCartridge{
 	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECitemTabList._htmlTag;
 			this._page.bodyDiv.className = "body list";
+			this._page.bodyDiv.innerHTML = SECitemTabList._htmlTag;
 			this._page.pickLabelDiv.innerHTML = "ほげ";
 		}
 

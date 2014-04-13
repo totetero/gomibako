@@ -50,8 +50,8 @@ class SECcharaTabPwup extends EventCartridge{
 	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECcharaTabPwup._htmlTag;
 			this._page.bodyDiv.className = "body pwup";
+			this._page.bodyDiv.innerHTML = SECcharaTabPwup._htmlTag;
 		}
 
 		// ボタン作成

@@ -23,7 +23,6 @@ class SECcharaTabTeam extends EventCartridge{
 		<div class="scrollContainerContainer">
 			<div class="scrollContainer">
 				<div class="scroll">
-					<div class="core-btn test">テスト</div>
 					<div style="width:230px;margin:20px;margin-top:52px;font-size:12px;">
 						•編成について<br>
 						マイページで表示するリーダーの設定と、
@@ -81,11 +80,36 @@ class SECcharaTabTeam extends EventCartridge{
 	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECcharaTabTeam._htmlTag;
 			this._page.bodyDiv.className = "body team";
+			this._page.bodyDiv.innerHTML = SECcharaTabTeam._htmlTag;
 
 			this._scroller = null;
 		}
+		var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
+
+		// test
+		scrollDiv.innerHTML = "";
+		var partnerDiv = dom.document.createElement("div") as HTMLDivElement;
+		partnerDiv.className = "team";
+		partnerDiv.innerHTML = """<div class="label">パートナー</div>""";
+		partnerDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		scrollDiv.appendChild(partnerDiv);
+
+		var teamDiv = dom.document.createElement("div") as HTMLDivElement;
+		teamDiv.className = "team";
+		teamDiv.innerHTML = """<div class="label">あんこうチーム</div>""";
+		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		scrollDiv.appendChild(teamDiv);
+
+		var teamDiv = dom.document.createElement("div") as HTMLDivElement;
+		teamDiv.className = "team";
+		teamDiv.innerHTML = """<div class="label">くらげさんチーム</div>""";
+		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		teamDiv.innerHTML += """<div class="core-chara-item"></div>""";
+		scrollDiv.appendChild(teamDiv);
 
 		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;
@@ -103,14 +127,14 @@ class SECcharaTabTeam extends EventCartridge{
 		if(this._scroller == null){
 			this._scroller = new PartsScroll(
 				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
-				this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+				scrollDiv,
 				null,
 				this._page.bodyDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 			);
 		}
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
-		this._scroller.btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-btn test").item(0) as HTMLDivElement, true);
+		this._scroller.btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-chara-item").item(0) as HTMLDivElement, true);
 	}
 
 	// ----------------------------------------------------------------

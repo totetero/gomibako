@@ -71,8 +71,8 @@ class SECcharaTabSupp extends EventCartridge{
 	override function init() : void{
 		if(this._page.bodyDiv.className.indexOf("supp") < 0){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECcharaTabSupp._htmlTag;
 			this._page.bodyDiv.className = "body supp";
+			this._page.bodyDiv.innerHTML = SECcharaTabSupp._htmlTag;
 
 			this._scroller = null;
 		}

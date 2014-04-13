@@ -39,8 +39,8 @@ class SECitemTabMake extends EventCartridge{
 	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECitemTabMake._htmlTag;
 			this._page.bodyDiv.className = "body make";
+			this._page.bodyDiv.innerHTML = SECitemTabMake._htmlTag;
 			this._page.pickLabelDiv.innerHTML = "ふが";
 		}
 

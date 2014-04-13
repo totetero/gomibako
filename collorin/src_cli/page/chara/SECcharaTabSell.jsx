@@ -39,8 +39,8 @@ class SECcharaTabSell extends EventCartridge{
 	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
 			// タブ変更時にDOM生成
-			this._page.bodyDiv.innerHTML = SECcharaTabSell._htmlTag;
 			this._page.bodyDiv.className = "body sell";
+			this._page.bodyDiv.innerHTML = SECcharaTabSell._htmlTag;
 		}
 
 		// ボタン作成
