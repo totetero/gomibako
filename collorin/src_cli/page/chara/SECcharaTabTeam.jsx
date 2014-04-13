@@ -52,6 +52,7 @@ class SECcharaTabTeam extends EventCartridge{
 	var _partner : PartsCharaListItem;
 	// チームデータ
 	var _teamName : string[];
+	var _teamLock : boolean[];
 	var _teamMembers : PartsCharaListItem[][];
 
 	// ----------------------------------------------------------------
@@ -92,10 +93,12 @@ class SECcharaTabTeam extends EventCartridge{
 
 		// チームデータ読み取り
 		this._teamName = new string[];
+		this._teamLock = new boolean[];
 		this._teamMembers = new PartsCharaListItem[][];
 		var teams = response["teams"] as variant[];
 		for(var i = 0; i < teams.length; i++){
-			this._teamName.push(teams[i]["name"] as string);
+			this._teamName[i] = teams[i]["name"] as string;
+			this._teamLock[i] = teams[i]["lock"] as boolean;
 			this._teamMembers[i] = new PartsCharaListItem[];
 			var members = teams[i]["members"] as string[];
 			for(var j = 0; j < members.length; j++){
@@ -105,6 +108,16 @@ class SECcharaTabTeam extends EventCartridge{
 						this._teamMembers[i][j] = this.charaList[k];
 						break;
 					}
+				}
+			}
+		}
+
+		// ロック解析
+		for(var i = 0; i < this.charaList.length; i++){this.charaList[i].select = false;}
+		for(var i = 0; i < this._teamLock.length; i++){
+			if(this._teamLock[i]){
+				for(var j = 0; j < this._teamMembers[i].length; j++){
+					this._teamMembers[i][j].select = true;
 				}
 			}
 		}
@@ -132,7 +145,7 @@ class SECcharaTabTeam extends EventCartridge{
 		// チーム要素作成
 		for(var i = 0; i < this._teamName.length; i++){
 			var teamDiv = dom.document.createElement("div") as HTMLDivElement;
-			teamDiv.className = "team";
+			teamDiv.className = "team" + (this._teamLock[i] ? " inactive" : "");
 			teamDiv.innerHTML = """<div class="label">""" + this._teamName[i] + "</div>";
 			for(var j = 0; j < 3; j++){
 				var member = this._teamMembers[i][j];
@@ -170,10 +183,10 @@ class SECcharaTabTeam extends EventCartridge{
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		var labelDivs = scrollDiv.getElementsByClassName("label");
 		var itemDivs = scrollDiv.getElementsByClassName("core-chara-item");
-		var iconDivs = scrollDiv.getElementsByClassName("core-chara-icon");
 		// パートナーボタン
-		var itemBtn = new PartsButton(itemDivs.item(0) as HTMLDivElement, true);
-		var iconBtn = new PartsButton(iconDivs.item(0) as HTMLDivElement, true);
+		var itemDiv = itemDivs.item(0) as HTMLDivElement;
+		var itemBtn = new PartsButton(itemDiv, true);
+		var iconBtn = new PartsButton(itemDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement, true);
 		this._scroller.btnList["partnerItem"] = itemBtn;
 		this._scroller.btnList["partnerIcon"] = iconBtn;
 		itemBtn.children = [iconBtn.div];
@@ -182,16 +195,23 @@ class SECcharaTabTeam extends EventCartridge{
 			this._scroller.btnList["teamName" + i] = new PartsButton(labelDivs.item(1 + i) as HTMLDivElement, true);
 			for(var j = 0; j < 3; j++){
 				var member = this._teamMembers[i][j];
+				var itemDiv = itemDivs.item(1 + i * 3 + j) as HTMLDivElement;
 				if(member != null){
-					var itemBtn = new PartsButton(itemDivs.item(1 + i * 3 + j) as HTMLDivElement, true);
-					var iconBtn = new PartsButton(iconDivs.item(1 + i * 3 + j) as HTMLDivElement, true);
+					var itemBtn = new PartsButton(itemDiv, true);
+					var iconBtn = new PartsButton(itemDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement, true);
 					this._scroller.btnList["memberItem" + i + "_" + j] = itemBtn;
 					this._scroller.btnList["memberIcon" + i + "_" + j] = iconBtn;
 					itemBtn.children = [iconBtn.div];
 				}else{
-					var itemBtn = new PartsButton(itemDivs.item(1 + i * 3 + j) as HTMLDivElement, true);
+					var itemBtn = new PartsButton(itemDiv, true);
 					this._scroller.btnList["memberItem" + i + "_" + j] = itemBtn;
 				}
+			}
+
+			// ボタンロック
+			if(this._teamLock[i]){
+				this._scroller.btnList["teamName" + i].inactive = true;
+				for(var j = 0; j < 3; j++){this._scroller.btnList["memberItem" + i + "_" + j].inactive = true;}
 			}
 		}
 	}

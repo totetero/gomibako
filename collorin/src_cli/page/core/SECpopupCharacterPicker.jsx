@@ -120,6 +120,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 			this._scroller.btnList["charaItem" + i] = itemBtn;
 			this._scroller.btnList["charaIcon" + i] = iconBtn;
 			itemBtn.children = [iconBtn.div];
+			if(this._charaList[i].select){this._scroller.btnList["charaItem" + i].inactive = true;}
 		}
 	}
 

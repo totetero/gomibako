@@ -124,12 +124,14 @@ class MockMain{
 			successFunc({
 				partner: "p00",
 				teams:[
-					{name: "ほげほげチーム", members: ["p01", "p00", "p01"]},
-					{name: "ふがふがチーム", members: ["p00", "p01"]},
+					{name: "ほげほげチーム", lock: true, members: ["p01"]},
+					{name: "ふがふがチーム", lock: false, members: ["p02", "p03"]},
 				],
 				list: [
 					{id: "p00", name: "test00", code: "player1"},
 					{id: "p01", name: "test01", code: "enemy1"},
+					{id: "p02", name: "test02", code: "enemy1"},
+					{id: "p03", name: "test03", code: "enemy1"},
 				],
 				imgs: {
 					"css_icon_player1":"/img/character/player1/icon.png",

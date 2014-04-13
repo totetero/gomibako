@@ -41,8 +41,8 @@ class CharaPage{
 
 			jdat["partner"] = "test00";
 			jdat["teams"] = [
-				{name: "ほげほげチーム", members: ["test01", "test02", "test03"]},
-				{name: "ふがふがチーム", members: ["test04", "test05"]},
+				{name: "ほげほげチーム", lock: true, members: ["test01", "test02", "test03"]},
+				{name: "ふがふがチーム", lock: false, members: ["test04", "test05"]},
 			];
 			jdat["list"] = charaInfoList;
 			jdat["imgs"] = ImageServer.convertAddress(imgs);
