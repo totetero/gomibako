@@ -29,7 +29,7 @@ class CharaPage{
 				var name = "test" + ("0" + i).slice(-2);
 				//var code = codeList[Math.floor(Math.random() * codeList.length)];
 				var code = codeList[i % codeList.length];
-				charaInfoList.push({name: name, code: code});
+				charaInfoList.push({id: name, name: name, code: code});
 			}
 
 			// キャラクター情報の画像読み込み
@@ -39,6 +39,11 @@ class CharaPage{
 				imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
 			}
 
+			jdat["partner"] = "test00";
+			jdat["teams"] = [
+				{name: "ほげほげチーム", members: ["test01", "test02", "test03"]},
+				{name: "ふがふがチーム", members: ["test04", "test05"]},
+			];
 			jdat["list"] = charaInfoList;
 			jdat["imgs"] = ImageServer.convertAddress(imgs);
 			res.setHeader("Content-Type", "application/json");
@@ -67,7 +72,7 @@ class CharaPage{
 				var name = "test" + ("0" + i).slice(-2);
 				//var code = codeList[Math.floor(Math.random() * codeList.length)];
 				var code = codeList[i % codeList.length];
-				charaInfoList.push({name: name, code: code});
+				charaInfoList.push({id: name, name: name, code: code});
 			}
 
 			// キャラクター情報の画像読み込み

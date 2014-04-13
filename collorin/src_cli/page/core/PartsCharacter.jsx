@@ -15,12 +15,14 @@ import "SECpopup.jsx";
 
 // キャラクター情報
 class PartsCharacter{
+	var id : string;
 	var code : string;
 	var name : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(response : variant){
+		this.id = response["id"] as string;
 		this.code = response["code"] as string;
 		this.name = response["name"] as string;
 	}

@@ -122,11 +122,16 @@ class MockMain{
 		}else if(url.indexOf("/chara/team") == 0){
 			//successFunc({"test": "モックキャラクタ 編成"});
 			successFunc({
-				"list":[
-					{"name":"test00","code":"player1"},
-					{"name":"test01","code":"enemy1"},
+				partner: "p00",
+				teams:[
+					{name: "ほげほげチーム", members: ["p01", "p00", "p01"]},
+					{name: "ふがふがチーム", members: ["p00", "p01"]},
 				],
-				"imgs":{
+				list: [
+					{id: "p00", name: "test00", code: "player1"},
+					{id: "p01", name: "test01", code: "enemy1"},
+				],
+				imgs: {
 					"css_icon_player1":"/img/character/player1/icon.png",
 					"css_bust_player1":"/img/character/player1/bust.png",
 					"css_icon_enemy1":"/img/character/enemy1/icon.png",
@@ -136,11 +141,11 @@ class MockMain{
 		}else if(url.indexOf("/chara/supp") == 0){
 			//successFunc({"test": "モックキャラクタ 補給"});
 			successFunc({
-				"list":[
-					{"name":"test00","code":"player1"},
-					{"name":"test01","code":"enemy1"},
+				list: [
+					{id: "p00", name: "test00", code: "player1"},
+					{id: "p01", name: "test01", code: "enemy1"},
 				],
-				"imgs":{
+				imgs: {
 					"css_icon_player1":"/img/character/player1/icon.png",
 					"css_bust_player1":"/img/character/player1/bust.png",
 					"css_icon_enemy1":"/img/character/enemy1/icon.png",

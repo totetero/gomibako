@@ -47,18 +47,17 @@ class SECcharaTabTeam extends EventCartridge{
 	var sortPicker : SECpopupPicker;
 	var prevscrolly = 0;
 
+	// パートナーデータ
+	var _partner : PartsCharaListItem;
+	// チームデータ
+	var _teamName : string[];
+	var _teamMembers : PartsCharaListItem[][];
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : CharaPage, response : variant){
 		this._page = page;
 		this.parse(response);
-
-		// キャラクターリスト作成
-		var list = response["list"] as variant[];
-		this.charaList = new PartsCharaListItem[];
-		for(var i = 0; i < list.length; i++){
-			this.charaList.push(new PartsCharaListItem(list[i]));
-		}
 
 		// 並べ替え要素作成
 		this.sortPicker = new SECpopupPicker("並べ替え", [
@@ -72,7 +71,42 @@ class SECcharaTabTeam extends EventCartridge{
 	// ----------------------------------------------------------------
 	// ロード完了時 データの形成
 	function parse(response : variant) : void{
-		log response;
+		// キャラクターリスト作成
+		var list = response["list"] as variant[];
+		if(list != null){
+			this.charaList = new PartsCharaListItem[];
+			for(var i = 0; i < list.length; i++){
+				this.charaList.push(new PartsCharaListItem(list[i]));
+			}
+		}
+
+		// パートナーデータ読み取り
+		var id = response["partner"] as variant;
+		for(var i = 0; i < this.charaList.length; i++){
+			if(this.charaList[i].id == id){
+				this._partner = this.charaList[i];
+				break;
+			}
+		}
+
+		// チームデータ読み取り
+		this._teamName = new string[];
+		this._teamMembers = new PartsCharaListItem[][];
+		var teams = response["teams"] as variant[];
+		for(var i = 0; i < teams.length; i++){
+			this._teamName.push(teams[i]["name"] as string);
+			this._teamMembers[i] = new PartsCharaListItem[];
+			var members = teams[i]["members"] as string[];
+			for(var j = 0; j < members.length; j++){
+				var id = members[j];
+				for(var k = 0; k < this.charaList.length; k++){
+					if(this.charaList[k].id == id){
+						this._teamMembers[i][j] = this.charaList[k];
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -87,29 +121,28 @@ class SECcharaTabTeam extends EventCartridge{
 		}
 		var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
-		// test
+		// パートナー要素作成
 		scrollDiv.innerHTML = "";
 		var partnerDiv = dom.document.createElement("div") as HTMLDivElement;
 		partnerDiv.className = "team";
 		partnerDiv.innerHTML = """<div class="label">パートナー</div>""";
-		partnerDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
+		partnerDiv.innerHTML += this._partner.bodyDiv.outerHTML;
 		scrollDiv.appendChild(partnerDiv);
-
-		var teamDiv = dom.document.createElement("div") as HTMLDivElement;
-		teamDiv.className = "team";
-		teamDiv.innerHTML = """<div class="label">あんこうチーム</div>""";
-		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
-		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
-		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
-		scrollDiv.appendChild(teamDiv);
-
-		var teamDiv = dom.document.createElement("div") as HTMLDivElement;
-		teamDiv.className = "team";
-		teamDiv.innerHTML = """<div class="label">くらげさんチーム</div>""";
-		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
-		teamDiv.innerHTML += this.charaList[0].bodyDiv.outerHTML;
-		teamDiv.innerHTML += """<div class="core-chara-item"></div>""";
-		scrollDiv.appendChild(teamDiv);
+		// チーム要素作成
+		for(var i = 0; i < this._teamName.length; i++){
+			var teamDiv = dom.document.createElement("div") as HTMLDivElement;
+			teamDiv.className = "team";
+			teamDiv.innerHTML = """<div class="label">""" + this._teamName[i] + "</div>";
+			for(var j = 0; j < 3; j++){
+				var member = this._teamMembers[i][j];
+				if(member != null){
+					teamDiv.innerHTML += member.bodyDiv.outerHTML;
+				}else{
+					teamDiv.innerHTML += """<div class="core-chara-item"></div>""";
+				}
+			}
+			scrollDiv.appendChild(teamDiv);
+		}
 
 		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;
@@ -134,7 +167,32 @@ class SECcharaTabTeam extends EventCartridge{
 		}
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
-		this._scroller.btnList["test"] = new PartsButton(this._page.bodyDiv.getElementsByClassName("core-chara-item").item(0) as HTMLDivElement, true);
+		var labelDivs = scrollDiv.getElementsByClassName("label");
+		var itemDivs = scrollDiv.getElementsByClassName("core-chara-item");
+		var iconDivs = scrollDiv.getElementsByClassName("core-chara-icon");
+		// パートナーボタン
+		var itemBtn = new PartsButton(itemDivs.item(0) as HTMLDivElement, true);
+		var iconBtn = new PartsButton(iconDivs.item(0) as HTMLDivElement, true);
+		this._scroller.btnList["partnerItem"] = itemBtn;
+		this._scroller.btnList["partnerIcon"] = iconBtn;
+		itemBtn.children = [iconBtn.div];
+		// チームボタン
+		for(var i = 0; i < this._teamName.length; i++){
+			this._scroller.btnList["teamName" + i] = new PartsButton(labelDivs.item(1 + i) as HTMLDivElement, true);
+			for(var j = 0; j < 3; j++){
+				var member = this._teamMembers[i][j];
+				if(member != null){
+					var itemBtn = new PartsButton(itemDivs.item(1 + i * 3 + j) as HTMLDivElement, true);
+					var iconBtn = new PartsButton(iconDivs.item(1 + i * 3 + j) as HTMLDivElement, true);
+					this._scroller.btnList["memberItem" + i + "_" + j] = itemBtn;
+					this._scroller.btnList["memberIcon" + i + "_" + j] = iconBtn;
+					itemBtn.children = [iconBtn.div];
+				}else{
+					var itemBtn = new PartsButton(itemDivs.item(1 + i * 3 + j) as HTMLDivElement, true);
+					this._scroller.btnList["memberItem" + i + "_" + j] = itemBtn;
+				}
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -143,12 +201,49 @@ class SECcharaTabTeam extends EventCartridge{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
-		// テストボタン
-		if(this._scroller.btnList["test"].trigger){
+		// パートナー選択ボタン
+		if(this._scroller.btnList["partnerItem"].trigger){
 			Sound.playSE("ok");
-			// TODO 選択できないキャラクターはthis._charaListのselectフラグ？
-			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "テスト", this.prevscrolly));
+			// TODO 遠征で選択できないキャラクターはthis._charaListのselectフラグ？
+			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "パートナー選択", this.prevscrolly));
 			return false;
+		}
+
+		// パートナー情報ボタン
+		if(this._scroller.btnList["partnerIcon"].trigger){
+			Sound.playSE("ok");
+			this._page.serialPush(new SECpopupInfoChara(this._page, this, this._partner));
+			return false;
+		}
+
+		// チームボタン
+		for(var i = 0; i < this._teamName.length; i++){
+			// チーム名称ボタン
+			if(this._scroller.btnList["teamName" + i].trigger){
+				Sound.playSE("ok");
+				this._scroller.btnList["teamName" + i].trigger = false;
+				//return false;
+			}
+
+			for(var j = 0; j < 3; j++){
+				// メンバー選択ボタン
+				if(this._scroller.btnList["memberItem" + i + "_" + j].trigger){
+					Sound.playSE("ok");
+					// TODO 遠征で選択できないキャラクターはthis._charaListのselectフラグ？
+					this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "メンバー選択", this.prevscrolly));
+					return false;
+				}
+
+				var member = this._teamMembers[i][j];
+				if(member != null){
+					// メンバー情報ボタン
+					if(this._scroller.btnList["memberIcon" + i + "_" + j].trigger){
+						Sound.playSE("ok");
+						this._page.serialPush(new SECpopupInfoChara(this._page, this, member));
+						return false;
+					}
+				}
+			}
 		}
 
 		// タブボタン
