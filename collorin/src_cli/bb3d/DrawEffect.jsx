@@ -158,6 +158,8 @@ class DrawEffectHopNumber extends DrawEffect{
 
 // ビーム画像エフェクトクラス
 class DrawEffectBeam extends DrawEffect{
+	static var _canvas : HTMLCanvasElement = null;
+
 	var _x : number;
 	var _y : number;
 	var _z : number;
@@ -168,6 +170,18 @@ class DrawEffectBeam extends DrawEffect{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(x : number, y : number, z : number, scale : number){
+		// パーティクル画像作製
+		if(DrawEffectBeam._canvas == null){
+			DrawEffectBeam._canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+			var context = DrawEffectBeam._canvas.getContext("2d") as CanvasRenderingContext2D;
+			DrawEffectBeam._canvas.width = DrawEffectBeam._canvas.height = 32;
+			var grd = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+			grd.addColorStop(0, "rgba(255, 255, 255, 1)");
+			grd.addColorStop(1, "rgba(0, 0, 0, 0)");
+			context.fillStyle = grd;
+			context.fillRect(0, 0, 32, 32);
+		}
+		// 初期位置
 		this._x = x;
 		this._y = y;
 		this._z = z;
@@ -200,11 +214,7 @@ class DrawEffectBeam extends DrawEffect{
 		var py = (cy - ps * 0.5) as int;
 		ccvs.context.save();
 		ccvs.context.globalCompositeOperation = "lighter";
-		var grd = ccvs.context.createRadialGradient(cx, cy, 0, cx, cy, ps * 0.5);
-		grd.addColorStop(0, "rgba(255, 255, 255, 1)");
-		grd.addColorStop(1, "rgba(0, 0, 0, 0)");
-		ccvs.context.fillStyle = grd;
-		ccvs.context.fillRect(px, py, ps, ps);
+		ccvs.context.drawImage(DrawEffectBeam._canvas, px, py, ps, ps);
 		ccvs.context.restore();
 	}
 }
