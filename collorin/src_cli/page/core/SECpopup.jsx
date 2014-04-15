@@ -28,12 +28,8 @@ abstract class SECpopup extends EventCartridge{
 		this.popupInit();
 		this.popupDiv.style.opacity = SECpopup._keepPopup ? "0.8" : "0";
 		this._openStep = -5;
-		this.checkSkip(dom.window.localStorage.getItem("setting_transition"));
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
 	}
-
-	// ----------------------------------------------------------------
-	// スキップ設定 設定ページの遷移演出ポップアップ用バックドア
-	function checkSkip(tag : Nullable.<string>) : void{this._skip = (tag == "off");}
 
 	// ----------------------------------------------------------------
 	// 計算
@@ -44,6 +40,7 @@ abstract class SECpopup extends EventCartridge{
 		if(!this.popupCalc(active) && active){
 			this._openStep = 1;
 			SECpopup._keepPopup = (Page.current.getSerialNext() instanceof SECpopup);
+			this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
 		}
 		if(this._skip && this._openStep < 0){this._openStep = 0;}
 		if(this._skip && this._openStep > 0){this._openStep = 5;}

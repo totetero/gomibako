@@ -272,7 +272,6 @@ class SECsettingPopupPickerTransition extends SECpopupPicker{
 	// 選択時の動作
 	override function onSelect(tag : string) : void{
 		dom.window.localStorage.setItem("setting_transition", tag);
-		this.checkSkip(tag);
 	}
 }
 
