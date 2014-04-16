@@ -1,7 +1,7 @@
 node_modules
 
 game.js
-toolImgCrypt.js
+tool*.js
 content/main.js
 content/main.css
 content/imgCrypt
