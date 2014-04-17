@@ -47,15 +47,14 @@ class AuthPage{
 							var testFlag = (name == "test01" || name == "test02" || name == "test03");
 							if(testFlag){
 								// テストユーザーのデータベース登録
-								user = new UserModel();
-								user.domain = "local";
-								user.name = name;
-								user.pass = AuthPage.getHash(pass, secretKey);
-								user.nickname = name;
-								user.imgurl = "";
-								user.count = 1;
-								user.save(function(err : variant) : void{
-									done(null, user, null);
+								UserModelUtil.createUser(function(model : UserModel) : void{
+									model.domain = "local";
+									model.name = name;
+									model.pass = AuthPage.getHash(pass, secretKey);
+									model.nickname = name;
+									model.imgurl = "";
+								}, function(err : variant, model : UserModel) : void{
+									done(err, model, null);
 								});
 							}else{
 								done(null, null, {message: "ユーザーが見つかりませんでした。"});
@@ -74,20 +73,24 @@ class AuthPage{
 						if(err){done(err, null, null);}
 						else if(user){
 							// データベース更新
+							user.name = profile.username;
+							user.imgurl = profile._json["profile_image_url"] as string;
 							user.count++;
+							user.save(function(err : variant) : void{
+								done(null, user, null);
+							});
 						}else{
 							// データベース登録
-							user = new UserModel();
-							user.domain = "twitter.com";
-							user.pass = profile.id;
-							user.nickname = profile.displayName;
-							user.count = 1;
+							UserModelUtil.createUser(function(model : UserModel) : void{
+								model.domain = "twitter.com";
+								model.name = profile.username;
+								model.pass = profile.id;
+								model.nickname = profile.displayName;
+								model.imgurl = profile._json["profile_image_url"] as string;
+							}, function(err : variant, model : UserModel) : void{
+								done(err, model, null);
+							});
 						}
-						user.name = profile.username;
-						user.imgurl = profile._json["profile_image_url"] as string;
-						user.save(function(err : variant) : void{
-							done(null, user, null);
-						});
 					});
 				});
 			}));

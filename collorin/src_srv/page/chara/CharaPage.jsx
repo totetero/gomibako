@@ -2,6 +2,8 @@ import "../../require/nodejs.jsx";
 import "../../require/express.jsx";
 
 import "../../util/ImageServer.jsx";
+//import "../../models/User.jsx";
+import "../../models/Character.jsx";
 
 // キャラクターページ
 class CharaPage{
@@ -12,6 +14,12 @@ class CharaPage{
 		app.get("/chara/team", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
 			var imgs = {} : Map.<string>;
+
+			// 作成中。。。
+			var charaInfoList = new variant[];
+			CharaDataModel.find({userId: req.user._id}, function(err : variant, models : CharaDataModel[]) : void{
+				log models;
+			});
 
 			var codeList = [
 				"player0",
