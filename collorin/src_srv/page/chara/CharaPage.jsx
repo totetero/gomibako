@@ -15,12 +15,6 @@ class CharaPage{
 			var jdat = {} : Map.<variant>;
 			var imgs = {} : Map.<string>;
 
-			// 作成中。。。
-			var charaInfoList = new variant[];
-			CharaDataModel.find({userId: req.user._id}, function(err : variant, models : CharaDataModel[]) : void{
-				log models;
-			});
-
 			var codeList = [
 				"player0",
 				"player1",
@@ -64,37 +58,31 @@ class CharaPage{
 			var jdat = {} : Map.<variant>;
 			var imgs = {} : Map.<string>;
 
-			var codeList = [
-				"player0",
-				"player1",
-				"player2",
-				"player3",
-				"enemy1",
-				"enemy2",
-				"enemy3",
-			];
-
-			// キャラクター情報
 			var charaInfoList = new variant[];
-			for(var i = 0; i < 10; i++){
-				var name = "test" + ("0" + i).slice(-2);
-				//var code = codeList[Math.floor(Math.random() * codeList.length)];
-				var code = codeList[i % codeList.length];
-				charaInfoList.push({id: name, name: name, code: code});
-			}
+			CharacterModelUtil.getUserCharaList(req.user, function(charaBase : CharaBaseModel, charaData : CharaDataModel) : void{
+				// キャラクター情報獲得
+				charaInfoList.push({
+					id: charaData._id,
+					name: charaBase.name,
+					code: charaBase.imageCode,
+					date: charaData.createDate,
+					level: charaData.level,
+				});
+			}, function(err : variant) : void{
+				// 画像情報獲得
+				for(var i = 0; i < charaInfoList.length; i++){
+					var code = charaInfoList[i]["code"] as string;
+					imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
+					imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
+				}
 
-			// キャラクター情報の画像読み込み
-			for(var i = 0; i < charaInfoList.length; i++){
-				var code = charaInfoList[i]["code"] as string;
-				imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
-				imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
-			}
-
-			jdat["list"] = charaInfoList;
-			jdat["imgs"] = ImageServer.convertAddress(imgs);
-			res.setHeader("Content-Type", "application/json");
-			res.setHeader("cache-control", "no-cache");
-			res.send(JSON.stringify(jdat));
+				// 情報送信
+				jdat["list"] = charaInfoList;
+				jdat["imgs"] = ImageServer.convertAddress(imgs);
+				res.setHeader("Content-Type", "application/json");
+				res.setHeader("cache-control", "no-cache");
+				res.send(JSON.stringify(jdat));
+			});
 		});
 
 		// 休息
