@@ -21,50 +21,50 @@ class _Main{
 		// キャラクター登録
 		flow.add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "コニワ";
 			temp.charaCode = "player0";
+			temp.name = "コニワ";
 			temp.imageCode = "player0";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "レッドパピヨン";
 			temp.charaCode = "player1";
+			temp.name = "レッドパピヨン";
 			temp.imageCode = "player1";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "パステル";
 			temp.charaCode = "player2";
+			temp.name = "パステル";
 			temp.imageCode = "player2";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "ぽに子";
 			temp.charaCode = "player3";
+			temp.name = "ぽに子";
 			temp.imageCode = "player3";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "赤しゃれこうべ";
 			temp.charaCode = "enemy1";
+			temp.name = "赤しゃれこうべ";
 			temp.imageCode = "enemy1";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "緑しゃれこうべ";
 			temp.charaCode = "enemy2";
+			temp.name = "緑しゃれこうべ";
 			temp.imageCode = "enemy2";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
 			var temp = new CharaBaseModel();
-			temp.name = "青しゃれこうべ";
 			temp.charaCode = "enemy3";
+			temp.name = "青しゃれこうべ";
 			temp.imageCode = "enemy3";
 			temp.drawInfoCode = "human";
 			temp.save(function(err:variant):void{next();});

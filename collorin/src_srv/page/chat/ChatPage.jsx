@@ -115,6 +115,7 @@ class ChatPage{
 				var newImgs = {} : Map.<string>;
 				var allImgs = {} : Map.<string>;
 				var step = {} : Map.<function():void>;
+				step["start"] = function() : void{step["getuinfo"]();};
 				// ユーザー情報の確認
 				step["getuinfo"] = function() : void{
 					ChatPage._rcli.get([ChatPage._rhead + "uid:" + client.handshake.session.passport["user"] as string], function(err : variant, result : Nullable.<string>) : void{
@@ -161,7 +162,7 @@ class ChatPage{
 					client.broadcast.to(uinfo.room).emit("add", newData, ImageServer.convertAddress(newImgs));
 				};
 				// プログラムステップ開始
-				step["getuinfo"]();
+				step["start"]();
 			});
 
 			// 位置受信時
@@ -202,6 +203,7 @@ class ChatPage{
 		// ソケット情報の作成
 		var uid = "";
 		var step = {} : Map.<function():void>;
+		step["start"] = function() : void{step["getuid"]();};
 		// UIDの発行
 		step["getuid"] = function() : void{
 			ChatPage._rcli.incr([ChatPage._rhead + "nextUserId"], function(err : variant, result : Nullable.<string>) : void{
@@ -228,7 +230,7 @@ class ChatPage{
 			});
 		};
 		// プログラムステップ開始
-		step["getuid"]();
+		step["start"]();
 	}
 
 	// ----------------------------------------------------------------

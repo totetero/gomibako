@@ -4,21 +4,18 @@ import "User.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// キャラクター基本情報
+// マスター情報 キャラクター基本情報
 native class CharaBaseModel{
-	var _id: string;
-	var name: string;
-	var charaCode: string;
-	var imageCode: string;
-	var drawInfoCode: string;
+	var charaCode: string; // 固有キャラクターコード
+	var name: string; // キャラクター名
+	var imageCode: string; // 画像コード
+	var drawInfoCode: string; // モーションコード
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
-	static function find(conditions : variant, callback : function(err:variant,models:CharaBaseModel[]):void) : void;
 	static function findOne(conditions : variant, callback : function(err:variant,model:CharaBaseModel):void) : void;
-	static function findById(id : string, callback : function(err:variant,model:CharaBaseModel):void) : void;
 } = """require("mongoose").model("CharaBase", new require("mongoose").Schema({
-	name: {type: String},
 	charaCode: {type: String},
+	name: {type: String},
 	imageCode: {type: String},
 	drawInfoCode: {type: String},
 }))""";
@@ -27,13 +24,13 @@ native class CharaBaseModel{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// キャラクター所有情報
+// ユーザー情報 キャラクター所有情報
 native class CharaDataModel{
 	var _id: string;
-	var userId: string;
-	var charaCode: string;
+	var userId: string; // ひもづくユーザーID
+	var charaCode: string; // ひもづくキャラクターコード
 	var createDate: Date; // 作成日
-	var level: int;
+	var level: int; // キャラクターレベル
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
 	static function find(conditions : variant, callback : function(err:variant,models:CharaDataModel[]):void) : void;
