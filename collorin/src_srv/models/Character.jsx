@@ -10,6 +10,7 @@ native class CharaBaseModel{
 	var name: string; // キャラクター名
 	var imageCode: string; // 画像コード
 	var drawInfoCode: string; // モーションコード
+	var refbookIndex : number; // 図鑑番号
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
 	static function findOne(conditions : variant, callback : function(err:variant,model:CharaBaseModel):void) : void;
@@ -18,6 +19,7 @@ native class CharaBaseModel{
 	name: {type: String},
 	imageCode: {type: String},
 	drawInfoCode: {type: String},
+	refbookIndex: {type: Number},
 }))""";
 
 // ----------------------------------------------------------------
@@ -30,6 +32,7 @@ native class CharaDataModel{
 	var userId: string; // ひもづくユーザーID
 	var charaCode: string; // ひもづくキャラクターコード
 	var createDate: Date; // 作成日
+	var sortTeamIndex: Date; // ソート用チーム内位置
 	var level: int; // キャラクターレベル
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
@@ -39,6 +42,7 @@ native class CharaDataModel{
 	userId: {type: String},
 	charaCode: {type: String},
 	createDate: {type: Date, default: Date.now},
+	sortTeamIndex: {type: Number, default: 65535},
 	level: {type: Number, default: 1},
 }))""";
 
