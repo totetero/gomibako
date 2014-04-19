@@ -14,10 +14,10 @@ class CharaSuppPage{
 			var imgs = {} : Map.<string>;
 
 			var step = {} : Map.<function():void>;
-			step["start"] = function() : void{step["getCharas1"]();};
+			step["start"] = function() : void{step["getCharas"]();};
 			// キャラクター情報獲得
 			var charaInfoList = new variant[];
-			step["getCharas1"] = function() : void{
+			step["getCharas"] = function() : void{
 				CharacterModelUtil.getUserCharaList(req.user, function(charaBase : CharaBaseModel, charaData : CharaDataModel) : void{
 					// キャラクター情報獲得
 					charaInfoList.push({
@@ -30,10 +30,10 @@ class CharaSuppPage{
 						level: charaData.level,
 					});
 				}, function(err : variant) : void{
-					step["getCharas2"]();
+					step["getCharas_jdat"]();
 				});
 			};
-			step["getCharas2"] = function() : void{
+			step["getCharas_jdat"] = function() : void{
 				// キャラクター情報整理
 				jdat["list"] = charaInfoList;
 				for(var i = 0; i < charaInfoList.length; i++){

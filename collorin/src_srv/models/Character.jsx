@@ -34,6 +34,7 @@ native class CharaDataModel{
 	var createDate: Date; // 作成日
 	var sortTeamIndex: int; // ソート用チーム内位置
 	var level: int; // キャラクターレベル
+	var sortieLock : boolean; // 出撃中ロック
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
 	static function find(conditions : variant, callback : function(err:variant,models:CharaDataModel[]):void) : void;
@@ -44,6 +45,7 @@ native class CharaDataModel{
 	createDate: {type: Date, default: Date.now},
 	sortTeamIndex: {type: Number, default: 65535},
 	level: {type: Number, default: 1},
+	sortieLock: {type: Boolean, default: false},
 }))""";
 
 // ----------------------------------------------------------------

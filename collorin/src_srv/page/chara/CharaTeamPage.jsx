@@ -27,14 +27,15 @@ class CharaTeamPage{
 			var step = {} : Map.<function():void>;
 			step["start"] = function() : void{
 				if(type == "get"){
-					step["getCharas1"]();
+					step["getCharas"]();
 				}else{
-					step["getPartner1"]();
+					step["getPartner"]();
 				}
 			};
+
 			// ---------------- キャラクター情報獲得
 			var charaInfoList = new variant[];
-			step["getCharas1"] = function() : void{
+			step["getCharas"] = function() : void{
 				// キャラクター情報獲得
 				CharacterModelUtil.getUserCharaList(req.user, function(charaBase : CharaBaseModel, charaData : CharaDataModel) : void{
 					charaInfoList.push({
@@ -46,10 +47,10 @@ class CharaTeamPage{
 						level: charaData.level,
 					});
 				}, function(err : variant) : void{
-					step["getCharas2"]();
+					step["getCharas_jdat"]();
 				});
 			};
-			step["getCharas2"] = function() : void{
+			step["getCharas_jdat"] = function() : void{
 				// キャラクター情報送信セット
 				jdat["list"] = charaInfoList;
 				for(var i = 0; i < charaInfoList.length; i++){
@@ -57,24 +58,25 @@ class CharaTeamPage{
 					imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
 					imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
 				}
-				step["getPartner1"]();
+				step["getPartner"]();
 			};
+
 			// ---------------- パートナー情報獲得
 			var userStatusModel : UserStatusModel = null;
-			step["getPartner1"] = function() : void{
+			step["getPartner"] = function() : void{
 				// パートナー情報獲得
 				UserStatusModel.findOne({userId: req.user._id}, function(err : variant, model : UserStatusModel) : void{
 					userStatusModel = model;
 					if(type == "partner"){
 						// パートナー変更コマンド
-						step["getPartner2"]();
+						step["getPartner_change"]();
 					}else{
 						// 普通の情報取得
-						step["getPartner3"]();
+						step["getPartner_jdat"]();
 					}
 				});
 			};
-			step["getPartner2"] = function() : void{
+			step["getPartner_change"] = function() : void{
 				// パートナー変更コマンド
 				var charaId = req.query["charaId"] as string;
 				// キャラクターの存在確認
@@ -83,144 +85,133 @@ class CharaTeamPage{
 						// パートナー情報更新
 						userStatusModel.partnerCharaId = charaId;
 						userStatusModel.save(function(err : variant) : void{
-							step["getPartner3"]();
+							step["getPartner_jdat"]();
 						});
 					}else{
 						// そんなキャラクターは存在しなかった TODO エラー?
-						step["getPartner3"]();
+						step["getPartner_jdat"]();
 					}
 				});
 			};
-			step["getPartner3"] = function() : void{
+			step["getPartner_jdat"] = function() : void{
 				// パートナー情報送信セット
 				jdat["partner"] = userStatusModel.partnerCharaId;
-				step["getTeams1"]();
+				step["getTeams"]();
 			};
+
 			// ---------------- 編成情報獲得
 			var teamModelList : TeamModel[] = null;
-			var teamModel : TeamModel= null;
-			step["getTeams1"] = function() : void{
+			var teamModel0 : TeamModel = null;
+			var teamCharaDataModel0 : CharaDataModel = null;
+			var teamCharaDataModel1 : CharaDataModel = null;
+			step["getTeams"] = function() : void{
 				TeamModel.find({userId: req.user._id}, function(err : variant, models : TeamModel[]) : void{
 					teamModelList = models;
 					if(type == "teamName" || type == "teamMember"){
 						// 変更コマンド
-						step["getTeams2"]();
+						step["getTeams_change"]();
 					}else{
 						// 普通の情報取得
-						step["getTeams5"]();
+						step["getTeams_jdat"]();
 					}
 				});
 			};
-			step["getTeams2"] = function() : void{
+			step["getTeams_change"] = function() : void{
 				// 変更コマンド時のチーム存在確認
 				for(var i = 0; i < teamModelList.length; i++){
 					if(teamModelList[i]._id == req.query["teamId"]){
-						teamModel = teamModelList[i];
+						teamModel0 = teamModelList[i];
 					}
 				}
-				if(teamModel != null){
-					if(type == "teamName"){
+				if(teamModel0 != null){
+					if(teamModel0.sortieLock){
+						// 設定チームがロックされていた TODO エラー?
+						step["getTeams_jdat"]();
+					}else if(type == "teamName"){
 						// チーム名変更コマンド
-						step["getTeams3"]();
+						step["getTeams_change_name"]();
 					}else if(type == "teamMember"){
 						// チームメンバー変更コマンド
-						step["getTeams4"]();
+						step["getTeams_change_member"]();
 					}
 				}else{
 					// そんなチームは存在しなかった TODO エラー?
-					step["getTeams5"]();
+					step["getTeams_jdat"]();
 				}
 			};
-			step["getTeams3"] = function() : void{
+			step["getTeams_change_name"] = function() : void{
 				// チーム名変更コマンド
-				teamModel.name = req.query["name"] as string; // TODO タグとか
-				teamModel.save(function(err : variant) : void{
-					step["getTeams5"]();
+				teamModel0.name = req.query["name"] as string; // TODO タグとか
+				teamModel0.save(function(err : variant) : void{
+					step["getTeams_jdat"]();
 				});
 			};
-			step["getTeams4"] = function() : void{
-				// チームメンバー変更コマンド
-				var charaId = req.query["charaId"] as string;
-				if(charaId != ""){
-					// キャラクターの存在確認
-					CharaDataModel.findById(charaId, function(err : variant, model : CharaDataModel) : void{
-						if(model != null){
-							var index = req.query["index"] as int;
-							var changedCharaId = "";
-							var changedTeamModel : TeamModel = null;
-							var changedindex = -1;
-
-							// キャラクターの入れ替え確認
-							switch(index){
-								case 0: changedCharaId = teamModel.memberCharaId1; break;
-								case 1: changedCharaId = teamModel.memberCharaId2; break;
-								case 2: changedCharaId = teamModel.memberCharaId3; break;
-							}
-							for(var i = 0; i < teamModelList.length; i++){
-								var temp = teamModelList[i];
-								if(temp.memberCharaId1 == charaId){temp.memberCharaId1 = changedCharaId; changedTeamModel = temp; changedindex = 0; break;}
-								if(temp.memberCharaId2 == charaId){temp.memberCharaId2 = changedCharaId; changedTeamModel = temp; changedindex = 1; break;}
-								if(temp.memberCharaId3 == charaId){temp.memberCharaId3 = changedCharaId; changedTeamModel = temp; changedindex = 2; break;}
-							}
-
-							// チーム情報更新
-							switch(index){
-								case 0: teamModel.memberCharaId1 = charaId; break;
-								case 1: teamModel.memberCharaId2 = charaId; break;
-								case 2: teamModel.memberCharaId3 = charaId; break;
-							}
-							if(changedTeamModel != null && changedTeamModel != teamModel){
-								var count = 2;
-								changedTeamModel.save(function(err : variant) : void{
-									if(--count == 0){step["getTeams5"]();}
-								});
-								teamModel.save(function(err : variant) : void{
-									if(--count == 0){step["getTeams5"]();}
-								});
-							}else{
-								teamModel.save(function(err : variant) : void{
-									step["getTeams5"]();
-								});
-							}
-
-							// キャラクターのチームソート情報更新 厳密である必要ないので処理待ちしない
-							model.sortTeamIndex = teamModel.index * 3 + index;
-							model.save(function(err : variant) : void{});
-							if(changedCharaId != ""){
-								CharaDataModel.findById(changedCharaId, function(err : variant, model : CharaDataModel) : void{
-									if(model != null){
-										model.sortTeamIndex = changedTeamModel.index * 3 + changedindex;
-										model.save(function(err : variant) : void{});
-									}
-								});
-							}
-						}else{
-							// そんなキャラクターは存在しなかった TODO エラー?
-							step["getTeams5"]();
-						}
-					});
+			step["getTeams_change_member"] = function() : void{
+				// チームメンバー変更コマンド キャラクターの存在確認
+				var teamCharaId0 = req.query["charaId"] as string;
+				var teamCharaId1 = "";
+				switch(req.query["index"] as int){
+					case 0: teamCharaId1 = teamModel0.memberCharaId1; break;
+					case 1: teamCharaId1 = teamModel0.memberCharaId2; break;
+					case 2: teamCharaId1 = teamModel0.memberCharaId3; break;
+				}
+				if(teamCharaId0 == teamCharaId1){
+					// 何も起きない TODO エラー?
+					step["getTeams_jdat"]();
 				}else{
-					// キャラクターはずす
-					var changedCharaId = "";
-					switch(req.query["index"] as int){
-						case 0: changedCharaId = teamModel.memberCharaId1; teamModel.memberCharaId1 = charaId; break;
-						case 1: changedCharaId = teamModel.memberCharaId2; teamModel.memberCharaId2 = charaId; break;
-						case 2: changedCharaId = teamModel.memberCharaId3; teamModel.memberCharaId3 = charaId; break;
-					}
-					teamModel.save(function(err : variant) : void{
-						step["getTeams5"]();
-					});
-
-					// キャラクターのチームソート情報更新 厳密である必要ないので処理待ちしない
-					CharaDataModel.findById(changedCharaId, function(err : variant, model : CharaDataModel) : void{
-						if(model != null){
-							model.sortTeamIndex = 65535;
-							model.save(function(err : variant) : void{});
-						}
-					});
+					var count = 0;
+					if(teamCharaId0 != ""){count++;}
+					if(teamCharaId1 != ""){count++;}
+					if(teamCharaId0 != ""){CharaDataModel.findById(teamCharaId0, function(err : variant, model : CharaDataModel) : void{teamCharaDataModel0 = model; if(--count == 0){step["getTeams_change_member_checked"]();}});}
+					if(teamCharaId1 != ""){CharaDataModel.findById(teamCharaId1, function(err : variant, model : CharaDataModel) : void{teamCharaDataModel1 = model; if(--count == 0){step["getTeams_change_member_checked"]();}});}
 				}
 			};
-			step["getTeams5"] = function() : void{
+			step["getTeams_change_member_checked"] = function() : void{
+				var teamModel1 : TeamModel = null;
+				var teamIndex0 = req.query["index"] as int;
+				var teamIndex1 = -1;
+				// キャラクターの入れ替え確認
+				if(teamCharaDataModel0 != null){
+					for(var i = 0; i < teamModelList.length; i++){
+						var temp = teamModelList[i];
+						if(temp.memberCharaId1 == teamCharaDataModel0._id.toString()){teamModel1 = temp; teamIndex1 = 0; break;}
+						if(temp.memberCharaId2 == teamCharaDataModel0._id.toString()){teamModel1 = temp; teamIndex1 = 1; break;}
+						if(temp.memberCharaId3 == teamCharaDataModel0._id.toString()){teamModel1 = temp; teamIndex1 = 2; break;}
+					}
+				}
+				if(teamModel1 != null && teamModel1.sortieLock){
+					// 入れ替えチームがロックされていた TODO エラー?
+					step["getTeams_jdat"]();
+				}else{
+					// 変更チーム情報更新
+					var count = 1;
+					var id = (teamCharaDataModel0 != null) ? teamCharaDataModel0._id : "";
+					switch(teamIndex0){
+						case 0: teamModel0.memberCharaId1 = id; break;
+						case 1: teamModel0.memberCharaId2 = id; break;
+						case 2: teamModel0.memberCharaId3 = id; break;
+					}
+					// 入れ替えチーム情報更新
+					if(teamModel1 != null){
+						var id = (teamCharaDataModel1 != null) ? teamCharaDataModel1._id : "";
+						switch(teamIndex1){
+							case 0: teamModel1.memberCharaId1 = id; break;
+							case 1: teamModel1.memberCharaId2 = id; break;
+							case 2: teamModel1.memberCharaId3 = id; break;
+						}
+						if(teamModel0 != teamModel1){count++;}
+					}
+					// キャラクターのチームソート情報更新
+					if(teamCharaDataModel0 != null){teamCharaDataModel0.sortTeamIndex = (teamModel0 != null) ? teamModel0.index * 128 + teamIndex0 : 65535; count++;}
+					if(teamCharaDataModel1 != null){teamCharaDataModel1.sortTeamIndex = (teamModel1 != null) ? teamModel1.index * 128 + teamIndex1 : 65535; count++;}
+					// データベースアクセス
+					teamModel0.save(function(err : variant) : void{if(--count == 0){step["getTeams_jdat"]();}});
+					if(teamModel1 != null && teamModel0 != teamModel1){teamModel1.save(function(err : variant) : void{if(--count == 0){step["getTeams_jdat"]();}});}
+					if(teamCharaDataModel0 != null){teamCharaDataModel0.save(function(err : variant) : void{if(--count == 0){step["getTeams_jdat"]();}});}
+					if(teamCharaDataModel1 != null){teamCharaDataModel1.save(function(err : variant) : void{if(--count == 0){step["getTeams_jdat"]();}});}
+				}
+			};
+			step["getTeams_jdat"] = function() : void{
 				// 表示順ソート
 				teamModelList.sort(function(t0 : Nullable.<TeamModel>, t1 : Nullable.<TeamModel>):number{return t0.index - t1.index;});
 				// 編成情報送信セット
@@ -233,13 +224,14 @@ class CharaTeamPage{
 					teamInfoList.push({
 						id: teamModelList[i]._id,
 						name: teamModelList[i].name,
-						lock: teamModelList[i].lock,
+						lock: teamModelList[i].sortieLock,
 						members: members,
 					});
 				}
 				jdat["teams"] = teamInfoList;
 				step["send"]();
 			};
+
 			// ---------------- 送信
 			step["send"] = function() : void{
 				jdat["imgs"] = ImageServer.convertAddress(imgs);
@@ -247,6 +239,7 @@ class CharaTeamPage{
 				res.setHeader("cache-control", "no-cache");
 				res.send(JSON.stringify(jdat));
 			};
+
 			// プログラムステップ開始
 			step["start"]();
 		});

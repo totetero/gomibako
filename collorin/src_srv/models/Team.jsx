@@ -13,7 +13,7 @@ native class TeamModel{
 	var memberCharaId2: string; // チームメンバー2キャラクータID
 	var memberCharaId3: string; // チームメンバー3キャラクータID
 	var index : int; // 表示順
-	var lock : boolean; // 出撃中ロック
+	var sortieLock : boolean; // 出撃中ロック
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
 	static function find(conditions : variant, callback : function(err:variant,models:TeamModel[]):void) : void;
@@ -25,7 +25,7 @@ native class TeamModel{
 	memberCharaId2: {type: String, default: ""},
 	memberCharaId3: {type: String, default: ""},
 	index: {type: Number},
-	lock: {type: Boolean, default: false},
+	sortieLock: {type: Boolean, default: false},
 }))""";
 
 // ----------------------------------------------------------------
