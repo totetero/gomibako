@@ -164,7 +164,7 @@ class SECcharaTabTeam extends EventCartridge{
 				if(member != null){
 					teamDiv.innerHTML += member.bodyDiv.outerHTML; // キャラクター要素複製
 					var teamIconDiv = teamDiv.getElementsByClassName("core-chara-item").item(j).getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement;
-					if(teamIconDiv != null){teamIconDiv.className = "core-chara-teamIcon";} // チームアイコンリセット
+					teamIconDiv.className = "core-chara-teamIcon"; // チームアイコンリセット
 				}else{
 					teamDiv.innerHTML += """<div class="core-chara-item"></div>""";
 				}
