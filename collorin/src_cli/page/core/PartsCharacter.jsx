@@ -71,6 +71,9 @@ class PartsCharaListItem extends PartsCharacter{
 	var sortKind : int;
 	var sortDate : Date;
 
+	var partner : boolean;
+	var favorite : boolean;
+
 	var select = false;
 
 	// ----------------------------------------------------------------
@@ -80,6 +83,8 @@ class PartsCharaListItem extends PartsCharacter{
 		this.sortTeam = response["team"] as int;
 		this.sortKind = response["refbook"] as int;
 		this.sortDate = new Date(response["date"] as string);
+		this.partner = response["partner"] as boolean;
+		this.favorite = response["favorite"] as boolean;
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
 		this.bodyDiv.className = "core-chara-item";
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
@@ -96,7 +101,8 @@ class PartsCharaListItem extends PartsCharacter{
 			(this.bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon cssimg_core_chara_team" + team;
 		}
 		// ロックアイコン設定
-		//(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";
+		if(this.partner){(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";}
+		else if(this.favorite){(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_favorite";}
 	}
 }
 

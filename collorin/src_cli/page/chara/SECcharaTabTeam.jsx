@@ -118,7 +118,7 @@ class SECcharaTabTeam extends EventCartridge{
 		// チームアイコンとロックアイコンリセット
 		for(var i = 0; i < this.charaList.length; i++){
 			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon";
-			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon";
+			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon" + ((this.charaList[i].favorite) ? " cssimg_core_chara_favorite" : "");
 		}
 		// ロックアイコン設定
 		(this._partner.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";
@@ -149,7 +149,8 @@ class SECcharaTabTeam extends EventCartridge{
 		var partnerDiv = dom.document.createElement("div") as HTMLDivElement;
 		partnerDiv.className = "team";
 		partnerDiv.innerHTML = """<div class="teamIcon cssimg_core_chara_partner"></div><div class="label">パートナー</div>""";
-		partnerDiv.innerHTML += this._partner.bodyDiv.outerHTML;
+		partnerDiv.innerHTML += this._partner.bodyDiv.outerHTML; // キャラクター要素複製 複製でないと複数表示できず、キャラクターピッカーを開いたときなどに消える
+		(partnerDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon" + ((this._partner.favorite) ? " cssimg_core_chara_favorite" : ""); // ロックアイコンリセット
 		scrollDiv.appendChild(partnerDiv);
 		// チーム要素作成
 		for(var i = 0; i < this._teamId.length; i++){
@@ -161,7 +162,8 @@ class SECcharaTabTeam extends EventCartridge{
 			for(var j = 0; j < 3; j++){
 				var member = this._teamMembers[i][j];
 				if(member != null){
-					teamDiv.innerHTML += member.bodyDiv.outerHTML;
+					teamDiv.innerHTML += member.bodyDiv.outerHTML; // キャラクター要素複製
+					(teamDiv.getElementsByClassName("core-chara-teamIcon").item(j) as HTMLDivElement).className = "core-chara-teamIcon"; // チームアイコンリセット
 				}else{
 					teamDiv.innerHTML += """<div class="core-chara-item"></div>""";
 				}

@@ -28,6 +28,8 @@ class CharaSuppPage{
 						refbook: charaBase.refbookIndex,
 						team: charaData.sortTeamIndex,
 						level: charaData.level,
+						partner: charaData.partnerLock,
+						favorite: charaData.favoriteLock,
 					});
 				}, function(err : variant) : void{
 					step["getCharas_jdat"]();

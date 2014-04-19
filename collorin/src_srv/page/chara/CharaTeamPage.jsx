@@ -45,6 +45,7 @@ class CharaTeamPage{
 						date: charaData.createDate,
 						refbook: charaBase.refbookIndex,
 						level: charaData.level,
+						favorite: charaData.favoriteLock,
 					});
 				}, function(err : variant) : void{
 					step["getCharas_jdat"]();
@@ -78,14 +79,25 @@ class CharaTeamPage{
 			};
 			step["getPartner_change"] = function() : void{
 				// パートナー変更コマンド
-				var charaId = req.query["charaId"] as string;
+				var charaId0 = req.query["charaId"] as string;
 				// キャラクターの存在確認
-				CharaDataModel.findById(charaId, function(err : variant, model : CharaDataModel) : void{
+				CharaDataModel.findById(charaId0, function(err : variant, model : CharaDataModel) : void{
 					if(model != null){
 						// パートナー情報更新
-						userStatusModel.partnerCharaId = charaId;
-						userStatusModel.save(function(err : variant) : void{
-							step["getPartner_jdat"]();
+						var charaId1 = userStatusModel.partnerCharaId;
+						userStatusModel.partnerCharaId = charaId0;
+						var count = 3;
+						userStatusModel.save(function(err : variant) : void{if(--count == 0){step["getPartner_jdat"]();}});
+						model.partnerLock = true;
+						model.save(function(err : variant) : void{if(--count == 0){step["getPartner_jdat"]();}});
+						CharaDataModel.findById(charaId1, function(err : variant, model : CharaDataModel) : void{
+							if(model != null){
+								model.partnerLock = false;
+								model.save(function(err : variant) : void{if(--count == 0){step["getPartner_jdat"]();}});
+							}else{
+								// そんなキャラクターは存在しなかった TODO エラー?
+								if(--count == 0){step["getPartner_jdat"]();}
+							}
 						});
 					}else{
 						// そんなキャラクターは存在しなかった TODO エラー?
