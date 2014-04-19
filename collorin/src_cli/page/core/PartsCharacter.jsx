@@ -52,14 +52,18 @@ class PartsCharaListItem extends PartsCharacter{
 
 	// 並べ替え
 	static function sort(list : PartsCharaListItem[], type : string) : void{
-		switch(type){
-			case "hp": break;
-			case "sp": break;
-			case "team": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i0.sortTeam - i1.sortTeam;}); break;
-			case "level": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i1.level - i0.level;}); break;
-			case "type": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i0.sortKind - i1.sortKind;}); break;
-			case "new": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i1.sortDate.getTime() - i0.sortDate.getTime();}); break;
+		for(var i = 0; i < list.length; i++){
+			list[i].sortIndex = i;
+			switch(type){
+				case "hp": break;
+				case "sp": break;
+				case "team": list[i].sortIndex += list[i].sortTeam * list.length; break;
+				case "level": list[i].sortIndex += -list[i].level * list.length; break;
+				case "type": list[i].sortIndex += list[i].sortKind * list.length; break;
+				case "new": list[i].sortIndex = -list[i].sortDate.getTime(); break;
+			}
 		}
+		list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i0.sortIndex - i1.sortIndex;});
 	}
 
 	// ----------------------------------------------------------------
@@ -67,6 +71,7 @@ class PartsCharaListItem extends PartsCharacter{
 	var bodyDiv : HTMLDivElement;
 	var iconDiv : HTMLDivElement;
 
+	var sortIndex : int;
 	var sortTeam : int;
 	var sortKind : int;
 	var sortDate : Date;
