@@ -45,6 +45,11 @@ class CharaSuppPage{
 			};
 			// 送信
 			step["send"] = function() : void{
+				imgs["css_core_chara_partner"] = "/img/system/character/partner.png";
+				imgs["css_core_chara_favorite"] = "/img/system/character/favorite.png";
+				imgs["css_core_chara_team1"] = "/img/system/character/team1.png";
+				imgs["css_core_chara_team2"] = "/img/system/character/team2.png";
+				imgs["css_core_chara_team3"] = "/img/system/character/team3.png";
 				jdat["imgs"] = ImageServer.convertAddress(imgs);
 				res.setHeader("Content-Type", "application/json");
 				res.setHeader("cache-control", "no-cache");

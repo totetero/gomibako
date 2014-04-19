@@ -39,11 +39,13 @@ class PartsCharaListItem extends PartsCharacter{
 	// HTMLタグ
 	static const _htmlTag = """
 		<div class="core-chara-icon"></div>
+		<div class="core-chara-teamIcon"></div>
+		<div class="core-chara-lockIcon"></div>
 		<div class="core-chara-name"></div>
 		<div class="core-chara-level">Lv.999</div>
-		<div class="core-chara-sphere"></div>
-		<div class="core-chara-sphere"></div>
-		<div class="core-chara-sphere"></div>
+		<div class="core-chara-equip"></div>
+		<div class="core-chara-equip"></div>
+		<div class="core-chara-equip"></div>
 		<div class="core-chara-gauge hp"><div class="param"></div><div class="wrap"></div></div>
 		<div class="core-chara-gauge sp"><div class="param"></div><div class="wrap"></div></div>
 	""";
@@ -88,6 +90,13 @@ class PartsCharaListItem extends PartsCharacter{
 		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
 		// レベル設定
 		(this.bodyDiv.getElementsByClassName("core-chara-level").item(0) as HTMLDivElement).innerHTML = "Lv." + this.level;
+		// チームアイコン設定
+		if(this.sortTeam > 0 && this.sortTeam != 65535){
+			var team = Math.floor(this.sortTeam / 128);
+			(this.bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon cssimg_core_chara_team" + team;
+		}
+		// ロックアイコン設定
+		//(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";
 	}
 }
 

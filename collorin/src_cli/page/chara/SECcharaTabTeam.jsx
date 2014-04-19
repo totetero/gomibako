@@ -114,6 +114,22 @@ class SECcharaTabTeam extends EventCartridge{
 				}
 			}
 		}
+
+		// チームアイコンとロックアイコンリセット
+		for(var i = 0; i < this.charaList.length; i++){
+			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon";
+			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon";
+		}
+		// ロックアイコン設定
+		(this._partner.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";
+		// チームアイコン設定
+		for(var i = 0; i < this._teamMembers.length; i++){
+			for(var j = 0; j < this._teamMembers[i].length; j++){
+				if(this._teamMembers[i][j] != null){
+					(this._teamMembers[i][j].bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon cssimg_core_chara_team" + (i + 1);
+				}
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -132,14 +148,16 @@ class SECcharaTabTeam extends EventCartridge{
 		scrollDiv.innerHTML = "";
 		var partnerDiv = dom.document.createElement("div") as HTMLDivElement;
 		partnerDiv.className = "team";
-		partnerDiv.innerHTML = """<div class="label">パートナー</div>""";
+		partnerDiv.innerHTML = """<div class="teamIcon cssimg_core_chara_partner"></div><div class="label">パートナー</div>""";
 		partnerDiv.innerHTML += this._partner.bodyDiv.outerHTML;
 		scrollDiv.appendChild(partnerDiv);
 		// チーム要素作成
 		for(var i = 0; i < this._teamId.length; i++){
 			var teamDiv = dom.document.createElement("div") as HTMLDivElement;
 			teamDiv.className = "team" + (this._teamLock[i] ? " inactive" : "");
-			teamDiv.innerHTML = """<div class="label">""" + this._teamName[i] + "</div>";
+			teamDiv.innerHTML = """<div class="teamIcon"></div><div class="label"></div>""";
+			(teamDiv.getElementsByClassName("teamIcon").item(0) as HTMLDivElement).className = "teamIcon cssimg_core_chara_team" + (i + 1);
+			(teamDiv.getElementsByClassName("label").item(0) as HTMLDivElement).innerHTML = this._teamName[i];
 			for(var j = 0; j < 3; j++){
 				var member = this._teamMembers[i][j];
 				if(member != null){
