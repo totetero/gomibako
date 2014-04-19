@@ -18,6 +18,7 @@ class PartsCharacter{
 	var id : string;
 	var code : string;
 	var name : string;
+	var level : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -25,6 +26,7 @@ class PartsCharacter{
 		this.id = response["id"] as string;
 		this.code = response["code"] as string;
 		this.name = response["name"] as string;
+		this.level = response["level"] as int;
 	}
 }
 
@@ -48,7 +50,14 @@ class PartsCharaListItem extends PartsCharacter{
 
 	// 並べ替え
 	static function sort(list : PartsCharaListItem[], type : string) : void{
-		// TODO
+		switch(type){
+			case "hp": break;
+			case "sp": break;
+			case "team": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i0.sortTeam - i1.sortTeam;}); break;
+			case "level": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i1.level - i0.level;}); break;
+			case "type": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i0.sortKind - i1.sortKind;}); break;
+			case "new": list.sort(function(i0 : Nullable.<PartsCharaListItem>, i1 : Nullable.<PartsCharaListItem>):number{return i1.sortDate.getTime() - i0.sortDate.getTime();}); break;
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -56,12 +65,19 @@ class PartsCharaListItem extends PartsCharacter{
 	var bodyDiv : HTMLDivElement;
 	var iconDiv : HTMLDivElement;
 
+	var sortTeam : int;
+	var sortKind : int;
+	var sortDate : Date;
+
 	var select = false;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(response : variant){
 		super(response);
+		this.sortTeam = response["team"] as int;
+		this.sortKind = response["refbook"] as int;
+		this.sortDate = new Date(response["date"] as string);
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
 		this.bodyDiv.className = "core-chara-item";
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
@@ -70,6 +86,8 @@ class PartsCharaListItem extends PartsCharacter{
 		this.iconDiv.className = "core-chara-icon cssimg_icon_" + this.code;
 		// 名前設定
 		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
+		// レベル設定
+		(this.bodyDiv.getElementsByClassName("core-chara-level").item(0) as HTMLDivElement).innerHTML = "Lv." + this.level;
 	}
 }
 
