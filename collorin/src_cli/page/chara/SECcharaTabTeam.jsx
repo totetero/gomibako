@@ -51,6 +51,7 @@ class SECcharaTabTeam extends EventCartridge{
 	// パートナーデータ
 	var _partner : PartsCharaListItem;
 	// チームデータ
+	var _teamId : string[];
 	var _teamName : string[];
 	var _teamLock : boolean[];
 	var _teamMembers : PartsCharaListItem[][];
@@ -92,11 +93,13 @@ class SECcharaTabTeam extends EventCartridge{
 		}
 
 		// チームデータ読み取り
+		this._teamId = new string[];
 		this._teamName = new string[];
 		this._teamLock = new boolean[];
 		this._teamMembers = new PartsCharaListItem[][];
 		var teams = response["teams"] as variant[];
 		for(var i = 0; i < teams.length; i++){
+			this._teamId[i] = teams[i]["id"] as string;
 			this._teamName[i] = teams[i]["name"] as string;
 			this._teamLock[i] = teams[i]["lock"] as boolean;
 			this._teamMembers[i] = new PartsCharaListItem[];
@@ -114,7 +117,7 @@ class SECcharaTabTeam extends EventCartridge{
 
 		// ロック解析
 		for(var i = 0; i < this.charaList.length; i++){this.charaList[i].select = false;}
-		for(var i = 0; i < this._teamLock.length; i++){
+		for(var i = 0; i < this._teamId.length; i++){
 			if(this._teamLock[i]){
 				for(var j = 0; j < this._teamMembers[i].length; j++){
 					this._teamMembers[i][j].select = true;
@@ -143,7 +146,7 @@ class SECcharaTabTeam extends EventCartridge{
 		partnerDiv.innerHTML += this._partner.bodyDiv.outerHTML;
 		scrollDiv.appendChild(partnerDiv);
 		// チーム要素作成
-		for(var i = 0; i < this._teamName.length; i++){
+		for(var i = 0; i < this._teamId.length; i++){
 			var teamDiv = dom.document.createElement("div") as HTMLDivElement;
 			teamDiv.className = "team" + (this._teamLock[i] ? " inactive" : "");
 			teamDiv.innerHTML = """<div class="label">""" + this._teamName[i] + "</div>";
@@ -191,7 +194,7 @@ class SECcharaTabTeam extends EventCartridge{
 		this._scroller.btnList["partnerIcon"] = iconBtn;
 		itemBtn.children = [iconBtn.div];
 		// チームボタン
-		for(var i = 0; i < this._teamName.length; i++){
+		for(var i = 0; i < this._teamId.length; i++){
 			this._scroller.btnList["teamName" + i] = new PartsButton(labelDivs.item(1 + i) as HTMLDivElement, true);
 			for(var j = 0; j < 3; j++){
 				var member = this._teamMembers[i][j];
@@ -225,8 +228,8 @@ class SECcharaTabTeam extends EventCartridge{
 		// パートナー選択ボタン
 		if(this._scroller.btnList["partnerItem"].trigger){
 			Sound.playSE("ok");
-			// TODO 遠征で選択できないキャラクターはthis._charaListのselectフラグ？
-			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "パートナー選択", "partner", this._partner.id, this.prevscrolly));
+			var command = "type=partner";
+			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "パートナー選択", command, this._partner.id, this.prevscrolly));
 			return false;
 		}
 
@@ -238,11 +241,12 @@ class SECcharaTabTeam extends EventCartridge{
 		}
 
 		// チームボタン
-		for(var i = 0; i < this._teamName.length; i++){
+		for(var i = 0; i < this._teamId.length; i++){
 			// チーム名称ボタン
 			if(this._scroller.btnList["teamName" + i].trigger){
 				Sound.playSE("ok");
-				this._page.serialPush(new SECcharaTabTeamPopupTextarea(this._page, this, "name" + i, this._teamName[i]));
+				var command = "type=teamName&teamId=" + this._teamId[i];
+				this._page.serialPush(new SECcharaTabTeamPopupTextarea(this._page, this, command, this._teamName[i]));
 				return false;
 			}
 
@@ -253,8 +257,8 @@ class SECcharaTabTeam extends EventCartridge{
 				// メンバー選択ボタン
 				if(this._scroller.btnList["memberItem" + i + "_" + j].trigger){
 					Sound.playSE("ok");
-					// TODO 遠征で選択できないキャラクターはthis._charaListのselectフラグ？
-					this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "メンバー選択", "member" + i + "_" + j, id, this.prevscrolly));
+					var command = "type=teamMember&teamId=" + this._teamId[i] + "&index=" + j;
+					this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "メンバー選択", command, id, this.prevscrolly));
 					return false;
 				}
 
@@ -296,16 +300,16 @@ class SECcharaTabTeam extends EventCartridge{
 class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 	var _cPage : CharaPage;
 	var _parent : SECcharaTabTeam;
-	var _code : string;
+	var _command : string;
 	var _id : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, title : string, code : string, id : string, scrolly : int){
-		super(page, cartridge, title, (code != "partner" && id != ""), cartridge.charaList, cartridge.sortPicker, scrolly);
+	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, title : string, command : string, id : string, scrolly : int){
+		super(page, cartridge, title, (command.indexOf("partner") < 0 && id != ""), cartridge.charaList, cartridge.sortPicker, scrolly);
 		this._cPage = page;
 		this._parent = cartridge;
-		this._code = code;
+		this._command = command;
 		this._id = id;
 	}
 
@@ -315,7 +319,7 @@ class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 		var id = (chara != null) ? chara.id : "";
 		if(this._id != id){
 			// 通信
-			var url = "/chara/team?code=" + this._code + "&id=" + id;
+			var url = "/chara/team?" + this._command + "&charaId=" + id;
 			this._cPage.serialPush(new SECload(url, null, function(response : variant) : void{this._parent.parse(response);}));
 		}
 	}
@@ -331,16 +335,16 @@ class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
 class SECcharaTabTeamPopupTextarea extends SECpopupTextarea{
 	var _cPage : CharaPage;
 	var _parent : SECcharaTabTeam;
-	var _code : string;
+	var _command : string;
 	var _name : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, code : string, name : string){
+	function constructor(page : CharaPage, cartridge : SECcharaTabTeam, command : string, name : string){
 		super(page, cartridge, name, 8);
 		this._cPage = page;
 		this._parent = cartridge;
-		this._code = code;
+		this._command = command;
 		this._name = name;
 	}
 
@@ -349,7 +353,7 @@ class SECcharaTabTeamPopupTextarea extends SECpopupTextarea{
 	override function onEnter(value : string) : void{
 		if(this._name != value){
 			// 通信
-			var url = "/chara/team?code=" + this._code + "&name=" + value;
+			var url = "/chara/team?" + this._command + "&name=" + value;
 			this._cPage.serialPush(new SECload(url, null, function(response : variant) : void{this._parent.parse(response);}));
 		}
 	}

@@ -32,7 +32,7 @@ native class CharaDataModel{
 	var userId: string; // ひもづくユーザーID
 	var charaCode: string; // ひもづくキャラクターコード
 	var createDate: Date; // 作成日
-	var sortTeamIndex: Date; // ソート用チーム内位置
+	var sortTeamIndex: int; // ソート用チーム内位置
 	var level: int; // キャラクターレベル
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
