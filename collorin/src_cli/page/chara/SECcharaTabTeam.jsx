@@ -114,16 +114,6 @@ class SECcharaTabTeam extends EventCartridge{
 				}
 			}
 		}
-
-		// ロック解析
-		for(var i = 0; i < this.charaList.length; i++){this.charaList[i].select = false;}
-		for(var i = 0; i < this._teamId.length; i++){
-			if(this._teamLock[i]){
-				for(var j = 0; j < this._teamMembers[i].length; j++){
-					this._teamMembers[i][j].select = true;
-				}
-			}
-		}
 	}
 
 	// ----------------------------------------------------------------
@@ -228,6 +218,9 @@ class SECcharaTabTeam extends EventCartridge{
 		// パートナー選択ボタン
 		if(this._scroller.btnList["partnerItem"].trigger){
 			Sound.playSE("ok");
+			// キャラクターロックしない パートナーはいつでもかえられる
+			for(var i = 0; i < this.charaList.length; i++){this.charaList[i].select = false;}
+			// パートナー選択ポップアップ
 			var command = "type=partner";
 			this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "パートナー選択", command, this._partner.id, this.prevscrolly));
 			return false;
@@ -257,6 +250,16 @@ class SECcharaTabTeam extends EventCartridge{
 				// メンバー選択ボタン
 				if(this._scroller.btnList["memberItem" + i + "_" + j].trigger){
 					Sound.playSE("ok");
+					// キャラクターロック設定
+					for(var k = 0; k < this.charaList.length; k++){this.charaList[k].select = false;}
+					for(var k = 0; k < this._teamId.length; k++){
+						if(this._teamLock[k]){
+							for(var l = 0; l < this._teamMembers[k].length; l++){
+								if(this._teamMembers[k][l] != null){this._teamMembers[k][l].select = true;}
+							}
+						}
+					}
+					// メンバー選択ポップアップ
 					var command = "type=teamMember&teamId=" + this._teamId[i] + "&index=" + j;
 					this._page.serialPush(new SECcharaTabTeamPopupCharacterPicker(this._page, this, "メンバー選択", command, id, this.prevscrolly));
 					return false;
