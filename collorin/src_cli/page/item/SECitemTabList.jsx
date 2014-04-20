@@ -1,10 +1,14 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
+import "../core/PartsScroll.jsx";
+import "../core/PartsItem.jsx";
 import "../core/SECpopupMenu.jsx";
+import "../core/SECpopupPicker.jsx";
 
 import "ItemPage.jsx";
 
@@ -15,28 +19,57 @@ import "ItemPage.jsx";
 class SECitemTabList extends EventCartridge{
 	// HTMLタグ
 	static const _htmlTag = """
-		<div style="width:280px;margin:20px;font-size:12px;background-color:rgba(255,255,255,0.5);">
-			•アイテムについて<br>
-			以下の種類のアイテムが存在する。<br>
-			○補給アイテム HPやSPの回復素材<br>
-			○装備アイテム ステージで使用する<br>
-			○アイテム合成素材<br>
-			○キャラクター進化素材<br>
-			○福袋 ガチャ的アイテム<br>
-			○さいころ装飾アイテム<br>
-			○イベントキーアイテム 含フレーバー<br>
+		<div class="scrollContainer">
+			<div class="scroll">
+				<div style="width:280px;margin:20px;font-size:12px;background-color:rgba(255,255,255,0.5);">
+					•アイテムについて<br>
+					以下の種類のアイテムが存在する。<br>
+					○補給アイテム HPやSPの回復素材<br>
+					○装備アイテム ステージで使用する<br>
+					○アイテム合成素材<br>
+					○キャラクター進化素材<br>
+					○福袋 ガチャ的アイテム<br>
+					○さいころ装飾アイテム<br>
+					○イベントキーアイテム 含フレーバー<br>
+				</div>
+			</div>
+			<div class="core-xbar"></div>
 		</div>
 	""";
 
 	var _page : ItemPage;
 	var _btnList : Map.<PartsButton>;
-	var _data : variant;
+	var _scroller : PartsScroll;
+	var _sortPicker : SECpopupPicker;
+	var _itemList : PartsItemListItem[];
+	var _prevtag = "";
+	var _prevRowNum = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : ItemPage, response : variant){
 		this._page = page;
-		this._data = response;
+		this._parse(response);
+
+		// 並べ替え要素作成
+		this._sortPicker = new SECpopupPicker("並べ替え", [
+			new SECpopupPickerItem("sp", "SP消費順"),
+			new SECpopupPickerItem("team", "チーム順"),
+			new SECpopupPickerItem("level", "レベル順"),
+			new SECpopupPickerItem("type", "種類順"),
+			new SECpopupPickerItem("new", "新着順"),
+		]);
+		this._sortPicker.getItem("sp").selected = true;	}
+
+	// ----------------------------------------------------------------
+	// ロード完了時 データの形成
+	function _parse(response : variant) : void{
+		// test
+		this._itemList = new PartsItemListItem[];
+		this._itemList.push(new PartsItemListItem({name: "文字数８文字まで", num: 30}));
+		this._itemList.push(new PartsItemListItem({name: "文字数オーバーテス", num: 999999}));
+		for(var i = 0; i < 9; i++){this._itemList.push(new PartsItemListItem({name: "テスト", num: 1}));}
+
 	}
 
 	// ----------------------------------------------------------------
@@ -46,7 +79,20 @@ class SECitemTabList extends EventCartridge{
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.className = "body list";
 			this._page.bodyDiv.innerHTML = SECitemTabList._htmlTag;
-			this._page.pickLabelDiv.innerHTML = "ほげ";
+
+			this._scroller = null;
+		}
+
+		// ピッカー設定
+		var selectedItem = this._sortPicker.getSelectedItem();
+		(this._page.pickDiv.getElementsByClassName("core-picker-label").item(0) as HTMLDivElement).innerHTML = selectedItem.name;
+		if(this._prevtag != selectedItem.tag){
+			this._prevtag = selectedItem.tag;
+			PartsItemListItem.sort(this._itemList, selectedItem.tag);
+			// ソート時スクロールリセット
+			if(this._scroller != null){this._scroller.scrollx = 0;}
+			// アイテムリスト再描画
+			this._prevRowNum = 0;
 		}
 
 		// ボタン作成
@@ -58,13 +104,51 @@ class SECitemTabList extends EventCartridge{
 		this._btnList["list"] = new PartsButton(this._page.tabListDiv, true);
 		this._btnList["make"] = new PartsButton(this._page.tabMakeDiv, true);
 		this._btnList["shop"] = new PartsButton(this._page.tabShopDiv, true);
+		// 本体ボタン
 		this._btnList["pick"] = new PartsButton(this._page.pickDiv, true);
+
+		// スクロール作成
+		if(this._scroller == null){
+			this._scroller = new PartsScroll(
+				this._page.bodyDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
+				this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement,
+				this._page.bodyDiv.getElementsByClassName("core-xbar").item(0) as HTMLDivElement,
+				null
+			);
+		}
+		// スクロールボタン作成
+		this._scroller.btnList = {} : Map.<PartsButton>;
+		for(var i = 0; i < this._itemList.length; i++){
+			this._scroller.btnList["itemItem" + i] = new PartsButton(this._itemList[i].bodyDiv, true);
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
+		this._scroller.calc(true);
+		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
+
+		// アイテムリストサイズ変更確認と変更時アイテムリスト作成
+		var maxHeight = Ctrl.sh - 106 - 6;
+		var rowNum = Math.floor((maxHeight - 15) / 50);
+		if(this._prevRowNum != rowNum){
+			var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
+			this._prevRowNum = rowNum = Math.min(this._itemList.length, rowNum);
+			var colNum = Math.ceil(this._itemList.length / rowNum);
+			this._page.bodyDiv.style.height = (rowNum * 50 + 15) + "px";
+			scrollDiv.style.width = (colNum * 185 + 15) + "px";
+			// アイテムリスト作成
+			scrollDiv.innerHTML = "";
+			for(var i = 0; i < this._itemList.length; i++){
+				// 市松模様
+				if(i != 0 && (i % rowNum == 0) && (rowNum % 2 == 0)){scrollDiv.appendChild(dom.document.createElement("div"));}
+				// アイテム追加
+				this._itemList[i].bodyDiv.style.left = (10 + 185 * Math.floor(i / rowNum)) + "px";
+				this._itemList[i].bodyDiv.style.top = (10 + 50 * (i % rowNum)) + "px";
+				scrollDiv.appendChild(this._itemList[i].bodyDiv);
+			}
+		}
 
 		// タブボタン
 		if(this._btnList["make"].trigger){Sound.playSE("ok"); this._page.toggleTab("make"); return false;}
