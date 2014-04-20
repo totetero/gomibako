@@ -50,6 +50,7 @@ class SECpopupPicker extends SECpopup{
 	var _itemList : SECpopupPickerItem[];
 	var _btnList : Map.<PartsButton>;
 	var _scroller : PartsScroll;
+	var _prevsh = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -90,6 +91,21 @@ class SECpopupPicker extends SECpopup{
 	}
 
 	// ----------------------------------------------------------------
+	// ウインドウサイズ確認と調整
+	function _checkWindowSize(force : boolean) : void{
+		if(force || this._prevsh != Ctrl.sh){
+			this._prevsh = Ctrl.sh;
+			var itemSize = 32 + 44;
+			var maxPickerSize = Ctrl.sh - itemSize - 20;
+			var pickerSize = Math.min(maxPickerSize, 38 * this._itemList.length - 2);
+			var windowSize = itemSize + pickerSize;
+			this.windowDiv.style.height = windowSize + "px";
+			this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";
+			(this.windowDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement).style.height = pickerSize + "px";
+		}
+	}
+
+	// ----------------------------------------------------------------
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core picker";
@@ -100,13 +116,7 @@ class SECpopupPicker extends SECpopup{
 		var scrollDiv = this.windowDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
 		// ウインドウサイズ調整
-		var itemSize = 32 + 44;
-		var maxPickerSize = Ctrl.sh - itemSize - 20;
-		var pickerSize = Math.min(maxPickerSize, 38 * this._itemList.length - 2);
-		var windowSize = itemSize + pickerSize;
-		this.windowDiv.style.height = windowSize + "px";
-		this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";
-		scrollContainerDiv.style.height = pickerSize + "px";
+		this._checkWindowSize(true);
 
 		// 要素作成
 		var scrollTag = "";
@@ -134,6 +144,7 @@ class SECpopupPicker extends SECpopup{
 			this.windowDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 		);
 		// 選択されている要素をできるだけ中心に持ってくる
+		var pickerSize = Number.parseInt(scrollContainerDiv.style.height, 10);
 		this._scroller.scrolly = pickerSize * 0.5 - 18 - selectedIndex * 38;
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
@@ -149,6 +160,9 @@ class SECpopupPicker extends SECpopup{
 	override function popupCalc(active : boolean) : boolean{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
+
+		// ウインドウサイズ確認
+		this._checkWindowSize(false);
 
 		// 要素選択
 		for(var i = 0; i < this._itemList.length; i++){

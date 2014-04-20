@@ -73,6 +73,31 @@ class SECitemTabList extends EventCartridge{
 	}
 
 	// ----------------------------------------------------------------
+	// 要素サイズ確認と調整
+	function _checkBodySize(force : boolean) : void{
+		// アイテムリストサイズ変更確認と変更時アイテムリスト作成
+		var maxHeight = Ctrl.sh - 106 - 6;
+		var rowNum = Math.floor((maxHeight - 15) / 50);
+		if(force || this._prevRowNum != rowNum){
+			var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
+			this._prevRowNum = rowNum = Math.min(this._itemList.length, rowNum);
+			var colNum = Math.ceil(this._itemList.length / rowNum);
+			this._page.bodyDiv.style.height = (rowNum * 50 + 15) + "px";
+			scrollDiv.style.width = (colNum * 185 + 15) + "px";
+			// アイテムリスト作成
+			scrollDiv.innerHTML = "";
+			for(var i = 0; i < this._itemList.length; i++){
+				// 市松模様調整
+				if(i != 0 && (i % rowNum == 0) && (rowNum % 2 == 0)){scrollDiv.appendChild(dom.document.createElement("div"));}
+				// アイテム追加
+				this._itemList[i].bodyDiv.style.left = (10 + 185 * Math.floor(i / rowNum)) + "px";
+				this._itemList[i].bodyDiv.style.top = (10 + 50 * (i % rowNum)) + "px";
+				scrollDiv.appendChild(this._itemList[i].bodyDiv);
+			}
+		}
+	}
+
+	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		if(this._page.bodyDiv.innerHTML == ""){
@@ -92,7 +117,7 @@ class SECitemTabList extends EventCartridge{
 			// ソート時スクロールリセット
 			if(this._scroller != null){this._scroller.scrollx = 0;}
 			// アイテムリスト再描画
-			this._prevRowNum = 0;
+			this._checkBodySize(true);
 		}
 
 		// ボタン作成
@@ -129,26 +154,8 @@ class SECitemTabList extends EventCartridge{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
 
-		// アイテムリストサイズ変更確認と変更時アイテムリスト作成
-		var maxHeight = Ctrl.sh - 106 - 6;
-		var rowNum = Math.floor((maxHeight - 15) / 50);
-		if(this._prevRowNum != rowNum){
-			var scrollDiv = this._page.bodyDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
-			this._prevRowNum = rowNum = Math.min(this._itemList.length, rowNum);
-			var colNum = Math.ceil(this._itemList.length / rowNum);
-			this._page.bodyDiv.style.height = (rowNum * 50 + 15) + "px";
-			scrollDiv.style.width = (colNum * 185 + 15) + "px";
-			// アイテムリスト作成
-			scrollDiv.innerHTML = "";
-			for(var i = 0; i < this._itemList.length; i++){
-				// 市松模様
-				if(i != 0 && (i % rowNum == 0) && (rowNum % 2 == 0)){scrollDiv.appendChild(dom.document.createElement("div"));}
-				// アイテム追加
-				this._itemList[i].bodyDiv.style.left = (10 + 185 * Math.floor(i / rowNum)) + "px";
-				this._itemList[i].bodyDiv.style.top = (10 + 50 * (i % rowNum)) + "px";
-				scrollDiv.appendChild(this._itemList[i].bodyDiv);
-			}
-		}
+		// 要素サイズ確認
+		this._checkBodySize(false);
 
 		// タブボタン
 		if(this._btnList["make"].trigger){Sound.playSE("ok"); this._page.toggleTab("make"); return false;}

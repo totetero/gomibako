@@ -44,6 +44,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	var _scroller : PartsScroll;
 	var _prevscrolly : int;
 	var _prevtag = "";
+	var _prevsh = 0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -58,6 +59,21 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	}
 
 	// ----------------------------------------------------------------
+	// ウインドウサイズ確認と調整
+	function _checkWindowSize(force : boolean) : void{
+		if(force || this._prevsh != Ctrl.sh){
+			this._prevsh = Ctrl.sh;
+			var itemSize = 32 + 44 + ((this._sortPicker != null) ? 50 : 0);
+			var maxPickerSize = Ctrl.sh - itemSize - 20;
+			var pickerSize = Math.min(maxPickerSize, 60 * this._charaList.length);
+			var windowSize = itemSize + pickerSize;
+			this.windowDiv.style.height = windowSize + "px";
+			this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";
+			(this.windowDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement).style.height = pickerSize + "px";
+		}
+	}
+
+	// ----------------------------------------------------------------
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core characterPicker";
@@ -65,17 +81,10 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 		(this.windowDiv.getElementsByClassName("title").item(0) as HTMLDivElement).innerHTML = this._title;
 		var pickDiv = this.windowDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
-		var scrollContainerDiv = this.windowDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement;
 		var scrollDiv = this.windowDiv.getElementsByClassName("scroll").item(0) as HTMLDivElement;
 
 		// ウインドウサイズ調整
-		var itemSize = 32 + 44 + ((this._sortPicker != null) ? 50 : 0);
-		var maxPickerSize = Ctrl.sh - itemSize - 20;
-		var pickerSize = Math.min(maxPickerSize, 60 * this._charaList.length);
-		var windowSize = itemSize + pickerSize;
-		this.windowDiv.style.height = windowSize + "px";
-		this.windowDiv.style.marginTop = ((windowSize + 6) * -0.5) + "px";
-		scrollContainerDiv.style.height = pickerSize + "px";
+		this._checkWindowSize(true);
 
 		if(this._sortPicker != null){
 			// ピッカー設定
@@ -108,7 +117,9 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 
 		// スクロール作成
 		this._scroller = new PartsScroll(
-			scrollContainerDiv, scrollDiv, null,
+			this.windowDiv.getElementsByClassName("scrollContainer").item(0) as HTMLDivElement,
+			scrollDiv,
+			null,
 			this.windowDiv.getElementsByClassName("core-ybar").item(0) as HTMLDivElement
 		);
 		this._scroller.scrolly = this._prevscrolly;
@@ -129,6 +140,9 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	override function popupCalc(active : boolean) : boolean{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(!this._scroller.active);}
+
+		// ウインドウサイズ確認
+		this._checkWindowSize(false);
 
 		// キャラクターリストボタン
 		for(var i = 0; i < this._charaList.length; i++){
