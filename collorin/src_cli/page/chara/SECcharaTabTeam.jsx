@@ -163,10 +163,10 @@ class SECcharaTabTeam extends EventCartridge{
 				var member = this._teamMembers[i][j];
 				if(member != null){
 					teamDiv.innerHTML += member.bodyDiv.outerHTML; // キャラクター要素複製
-					var teamIconDiv = teamDiv.getElementsByClassName("core-chara-item").item(j).getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement;
+					var teamIconDiv = teamDiv.getElementsByClassName("core-chara-listItem").item(j).getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement;
 					teamIconDiv.className = "core-chara-teamIcon"; // チームアイコンリセット
 				}else{
-					teamDiv.innerHTML += """<div class="core-chara-item"></div>""";
+					teamDiv.innerHTML += """<div class="core-chara-listItem"></div>""";
 				}
 			}
 			scrollDiv.appendChild(teamDiv);
@@ -196,7 +196,7 @@ class SECcharaTabTeam extends EventCartridge{
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		var labelDivs = scrollDiv.getElementsByClassName("label");
-		var itemDivs = scrollDiv.getElementsByClassName("core-chara-item");
+		var itemDivs = scrollDiv.getElementsByClassName("core-chara-listItem");
 		// パートナーボタン
 		var itemDiv = itemDivs.item(0) as HTMLDivElement;
 		var itemBtn = new PartsButton(itemDiv, true);

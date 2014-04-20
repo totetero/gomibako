@@ -71,14 +71,17 @@ class PartsCharaListItem extends PartsCharacter{
 	var bodyDiv : HTMLDivElement;
 	var iconDiv : HTMLDivElement;
 
+	// 並べ替え情報
 	var sortIndex : int;
 	var sortTeam : int;
 	var sortKind : int;
 	var sortDate : Date;
 
+	// ロックアイコン情報
 	var partner : boolean;
 	var favorite : boolean;
 
+	// 選択状況
 	var select = false;
 
 	// ----------------------------------------------------------------
@@ -91,7 +94,7 @@ class PartsCharaListItem extends PartsCharacter{
 		this.partner = response["partner"] as boolean;
 		this.favorite = response["favorite"] as boolean;
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
-		this.bodyDiv.className = "core-chara-item";
+		this.bodyDiv.className = "core-chara-listItem";
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
 		// アイコン設定
 		this.iconDiv = this.bodyDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement;
