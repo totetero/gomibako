@@ -59,6 +59,10 @@ class ItemPage extends Page{
 		this.tabListDiv = this.div.getElementsByClassName("tab list").item(0) as HTMLDivElement;
 		this.tabMakeDiv = this.div.getElementsByClassName("tab make").item(0) as HTMLDivElement;
 		this.tabShopDiv = this.div.getElementsByClassName("tab shop").item(0) as HTMLDivElement;
+		// 要素サイズ初期設定
+		var maxHeight = Ctrl.sh - 106 - 6;
+		var rowNum = Math.floor((maxHeight - 15) / 50);
+		this.bodyDiv.style.height = (rowNum * 50 + 15) + "px";
 
 		// イベント設定
 		this.serialPush(new ECone(function() : void{
