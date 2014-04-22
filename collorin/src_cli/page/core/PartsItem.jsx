@@ -52,6 +52,7 @@ class PartsItemListItem extends PartsItem{
 	// ----------------------------------------------------------------
 
 	var bodyDiv : HTMLDivElement;
+	var iconDiv : HTMLDivElement;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -61,7 +62,8 @@ class PartsItemListItem extends PartsItem{
 		this.bodyDiv.className = "core-item-listItem";
 		this.bodyDiv.innerHTML = PartsItemListItem._htmlTag;
 		// アイコン設定
-		(this.bodyDiv.getElementsByClassName("core-item-icon").item(0) as HTMLDivElement).className = "core-item-icon cssimg_icon_" + this.code;
+		this.iconDiv = this.bodyDiv.getElementsByClassName("core-item-icon").item(0) as HTMLDivElement;
+		this.iconDiv.className = "core-item-icon cssimg_icon_" + this.code;
 		// 名前設定
 		(this.bodyDiv.getElementsByClassName("core-item-name").item(0) as HTMLDivElement).innerHTML = this.name;
 		// タイプ設定

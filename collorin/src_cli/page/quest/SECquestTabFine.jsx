@@ -37,7 +37,7 @@ class SECquestTabFine extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		if(this._page.bodyDiv.innerHTML == ""){
+		if(this._page.bodyDiv.className.indexOf("fine") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.className = "body fine";
 			this._page.bodyDiv.innerHTML = SECquestTabFine._htmlTag;

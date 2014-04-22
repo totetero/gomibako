@@ -42,7 +42,7 @@ class SECitemTabShop extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		if(this._page.bodyDiv.innerHTML == ""){
+		if(this._page.bodyDiv.className.indexOf("shop") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.className = "body shop";
 			this._page.bodyDiv.innerHTML = SECitemTabShop._htmlTag;

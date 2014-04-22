@@ -45,7 +45,7 @@ class SECquestTabCurr extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		if(this._page.bodyDiv.innerHTML == ""){
+		if(this._page.bodyDiv.className.indexOf("curr") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.className = "body curr";
 			this._page.bodyDiv.innerHTML = SECquestTabCurr._htmlTag;

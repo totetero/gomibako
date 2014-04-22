@@ -37,7 +37,7 @@ class SECitemTabMake extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		if(this._page.bodyDiv.innerHTML == ""){
+		if(this._page.bodyDiv.className.indexOf("make") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.className = "body make";
 			this._page.bodyDiv.innerHTML = SECitemTabMake._htmlTag;

@@ -53,13 +53,14 @@ class SECitemTabList extends EventCartridge{
 
 		// 並べ替え要素作成
 		this._sortPicker = new SECpopupPicker("並べ替え", [
-			new SECpopupPickerItem("sp", "SP消費順"),
-			new SECpopupPickerItem("team", "チーム順"),
-			new SECpopupPickerItem("level", "レベル順"),
-			new SECpopupPickerItem("type", "種類順"),
 			new SECpopupPickerItem("new", "新着順"),
+			new SECpopupPickerItem("hoge", "ほげ"),
+			new SECpopupPickerItem("fuga", "ふが"),
+			new SECpopupPickerItem("myon", "みょん"),
+			
 		]);
-		this._sortPicker.getItem("sp").selected = true;	}
+		this._sortPicker.getItem("new").selected = true;
+	}
 
 	// ----------------------------------------------------------------
 	// ロード完了時 データの形成
@@ -100,7 +101,7 @@ class SECitemTabList extends EventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		if(this._page.bodyDiv.innerHTML == ""){
+		if(this._page.bodyDiv.className.indexOf("list") < 0){
 			// タブ変更時にDOM生成
 			this._page.bodyDiv.className = "body list";
 			this._page.bodyDiv.innerHTML = SECitemTabList._htmlTag;
@@ -144,7 +145,12 @@ class SECitemTabList extends EventCartridge{
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		for(var i = 0; i < this._itemList.length; i++){
-			this._scroller.btnList["itemItem" + i] = new PartsButton(this._itemList[i].bodyDiv, true);
+			var itemBtn = new PartsButton(this._itemList[i].bodyDiv, true);
+			var iconBtn = new PartsButton(this._itemList[i].iconDiv, true);
+			this._scroller.btnList["itemItem" + i] = itemBtn;
+			this._scroller.btnList["itemIcon" + i] = iconBtn;
+			itemBtn.children = [iconBtn.div];
+			itemBtn.inactive = true;
 		}
 	}
 
@@ -156,6 +162,22 @@ class SECitemTabList extends EventCartridge{
 
 		// 要素サイズ確認
 		this._checkBodySize(false);
+
+		// アイテムリストボタン
+		for(var i = 0; i < this._itemList.length; i++){
+			var item = this._itemList[i];
+
+			// アイコンボタン
+			var btn = this._scroller.btnList["itemIcon" + i];
+			if(btn.trigger){
+				Sound.playSE("ok");
+				this._page.serialPush(new SECpopupInfoItem(this._page, this, item));
+				return false;
+			}
+		}
+
+		// 並べ替えピッカーボタン
+		if(this._btnList["pick"].trigger){Sound.playSE("ok"); this._page.serialPush(this._sortPicker.beforeOpen(this._page, this)); return false;}
 
 		// タブボタン
 		if(this._btnList["make"].trigger){Sound.playSE("ok"); this._page.toggleTab("make"); return false;}
