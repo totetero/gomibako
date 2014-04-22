@@ -9,7 +9,7 @@ import "../core/PartsCharacter.jsx";
 import "../core/SECload.jsx";
 import "../core/SECpopupMenu.jsx";
 import "../core/SECpopupPicker.jsx";
-import "../core/SECpopupCharacterPicker.jsx";
+import "../core/SECpopupPickerCharacter.jsx";
 import "../core/SECpopupTextarea.jsx";
 
 import "CharaPage.jsx";
@@ -321,7 +321,7 @@ class SECcharaTabTeam extends EventCartridge{
 // ----------------------------------------------------------------
 
 // キャラクターピッカー
-class SECcharaTabTeamPopupCharacterPicker extends SECpopupCharacterPicker{
+class SECcharaTabTeamPopupCharacterPicker extends SECpopupPickerCharacter{
 	var _cPage : CharaPage;
 	var _parent : SECcharaTabTeam;
 	var _command : string;

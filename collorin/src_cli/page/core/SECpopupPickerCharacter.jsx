@@ -16,7 +16,7 @@ import "SECpopupPicker.jsx";
 // ----------------------------------------------------------------
 
 // ピッカーポップアップ
-abstract class SECpopupCharacterPicker extends SECpopup{
+abstract class SECpopupPickerCharacter extends SECpopup{
 	// HTMLタグ
 	static const _htmlTag = """
 		<div class="core-background"></div>
@@ -77,7 +77,7 @@ abstract class SECpopupCharacterPicker extends SECpopup{
 	// 初期化
 	override function popupInit() : void{
 		this.popupDiv.className = "core-popup core characterPicker";
-		this.popupDiv.innerHTML = SECpopupCharacterPicker._htmlTag;
+		this.popupDiv.innerHTML = SECpopupPickerCharacter._htmlTag;
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 		(this.windowDiv.getElementsByClassName("title").item(0) as HTMLDivElement).innerHTML = this._title;
 		var pickDiv = this.windowDiv.getElementsByClassName("core-picker-btn").item(0) as HTMLDivElement;
