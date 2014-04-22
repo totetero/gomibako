@@ -174,6 +174,14 @@ class SECitemTabList extends EventCartridge{
 				this._page.serialPush(new SECpopupInfoItem(this._page, this, item));
 				return false;
 			}
+
+			// 軽量化のために見えない要素は非表示
+			var position = Math.floor(i / this._prevRowNum) * 185 + 10 + this._scroller.scrollx;
+			var pickerSize = 320;
+			var display = (-185 < position && position < pickerSize) ? "block" : "none";
+			if(item.bodyDiv.style.display != display){
+				item.bodyDiv.style.display = display;
+			}
 		}
 
 		// 並べ替えピッカーボタン
