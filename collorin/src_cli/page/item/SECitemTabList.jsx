@@ -178,7 +178,7 @@ class SECitemTabList extends EventCartridge{
 			// 軽量化のために見えない要素は非表示
 			var position = Math.floor(i / this._prevRowNum) * 185 + 10 + this._scroller.scrollx;
 			var pickerSize = 320;
-			var display = (-185 < position && position < pickerSize) ? "block" : "none";
+			var display = (-180 < position && position < pickerSize) ? "block" : "none";
 			if(item.bodyDiv.style.display != display){
 				item.bodyDiv.style.display = display;
 			}
