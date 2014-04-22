@@ -57,8 +57,9 @@ class PartsCharaListItem extends PartsCharacter{
 			switch(type){
 				case "hp": break;
 				case "sp": break;
-				case "team": list[i].sortIndex += list[i].sortTeam * list.length; break;
 				case "level": list[i].sortIndex += -list[i].level * list.length; break;
+				case "team": list[i].sortIndex += list[i].sortTeam * list.length; break;
+				case "favorite": list[i].sortIndex += -(list[i].partner ? 5 : list[i].favorite) * list.length; break;
 				case "type": list[i].sortIndex += list[i].sortKind * list.length; break;
 				case "new": list[i].sortIndex = -list[i].sortDate.getTime(); break;
 			}
@@ -78,8 +79,8 @@ class PartsCharaListItem extends PartsCharacter{
 	var sortDate : Date;
 
 	// ロックアイコン情報
+	var favorite : int;
 	var partner : boolean;
-	var favorite : boolean;
 
 	// 選択状況
 	var select = false;
@@ -92,7 +93,7 @@ class PartsCharaListItem extends PartsCharacter{
 		this.sortKind = response["refbook"] as int;
 		this.sortDate = new Date(response["date"] as string);
 		this.partner = response["partner"] as boolean;
-		this.favorite = response["favorite"] as boolean;
+		this.favorite = response["favorite"] as int;
 		this.bodyDiv = dom.document.createElement("div") as HTMLDivElement;
 		this.bodyDiv.className = "core-chara-listItem";
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
@@ -110,7 +111,7 @@ class PartsCharaListItem extends PartsCharacter{
 		}
 		// ロックアイコン設定
 		if(this.partner){(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";}
-		else if(this.favorite){(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_favorite";}
+		else if(this.favorite > 0){(this.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_favorite" + this.favorite;}
 	}
 }
 

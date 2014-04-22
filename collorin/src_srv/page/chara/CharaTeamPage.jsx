@@ -45,7 +45,7 @@ class CharaTeamPage{
 						date: charaData.createDate,
 						refbook: charaBase.refbookIndex,
 						level: charaData.level,
-						favorite: charaData.favoriteLock,
+						favorite: charaData.favorite,
 					});
 				}, function(err : variant) : void{
 					step["getCharas_jdat"]();
@@ -247,7 +247,9 @@ class CharaTeamPage{
 			// ---------------- 送信
 			step["send"] = function() : void{
 				imgs["css_core_chara_partner"] = "/img/system/character/partner.png";
-				imgs["css_core_chara_favorite"] = "/img/system/character/favorite.png";
+				imgs["css_core_chara_favorite1"] = "/img/system/character/favorite1.png";
+				imgs["css_core_chara_favorite2"] = "/img/system/character/favorite2.png";
+				imgs["css_core_chara_favorite3"] = "/img/system/character/favorite3.png";
 				imgs["css_core_chara_team1"] = "/img/system/character/team1.png";
 				imgs["css_core_chara_team2"] = "/img/system/character/team2.png";
 				imgs["css_core_chara_team3"] = "/img/system/character/team3.png";

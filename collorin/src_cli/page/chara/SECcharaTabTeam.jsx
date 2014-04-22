@@ -65,6 +65,8 @@ class SECcharaTabTeam extends EventCartridge{
 		// 並べ替え要素作成
 		this.sortPicker = new SECpopupPicker("並べ替え", [
 			new SECpopupPickerItem("level", "レベル順"),
+			new SECpopupPickerItem("team", "チーム順"),
+			new SECpopupPickerItem("favorite", "ファボ順"),
 			new SECpopupPickerItem("type", "種類順"),
 			new SECpopupPickerItem("new", "新着順"),
 		]);
@@ -117,15 +119,20 @@ class SECcharaTabTeam extends EventCartridge{
 
 		// チームアイコンとロックアイコンリセット
 		for(var i = 0; i < this.charaList.length; i++){
+			this.charaList[i].partner = false;
+			this.charaList[i].sortTeam = 65535;
 			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon";
-			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon" + ((this.charaList[i].favorite) ? " cssimg_core_chara_favorite" : "");
+			var favClass = "core-chara-lockIcon" + ((this.charaList[i].favorite > 0) ? (" cssimg_core_chara_favorite" + this.charaList[i].favorite) : "");
+			(this.charaList[i].bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = favClass;
 		}
 		// ロックアイコン設定
+		this._partner.partner = true;
 		(this._partner.bodyDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon cssimg_core_chara_partner";
 		// チームアイコン設定
 		for(var i = 0; i < this._teamMembers.length; i++){
 			for(var j = 0; j < this._teamMembers[i].length; j++){
 				if(this._teamMembers[i][j] != null){
+					this._teamMembers[i][j].sortTeam = i * 128 + j;
 					(this._teamMembers[i][j].bodyDiv.getElementsByClassName("core-chara-teamIcon").item(0) as HTMLDivElement).className = "core-chara-teamIcon cssimg_core_chara_team" + (i + 1);
 				}
 			}
@@ -150,7 +157,8 @@ class SECcharaTabTeam extends EventCartridge{
 		partnerDiv.className = "team";
 		partnerDiv.innerHTML = """<div class="teamIcon cssimg_core_chara_partner"></div><div class="label">パートナー</div>""";
 		partnerDiv.innerHTML += this._partner.bodyDiv.outerHTML; // キャラクター要素複製 複製でないと複数表示できず、キャラクターピッカーを開いたときなどに消える
-		(partnerDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = "core-chara-lockIcon" + ((this._partner.favorite) ? " cssimg_core_chara_favorite" : ""); // ロックアイコンリセット
+		var favClass = "core-chara-lockIcon" + ((this._partner.favorite > 0) ? (" cssimg_core_chara_favorite" + this._partner.favorite) : "");
+		(partnerDiv.getElementsByClassName("core-chara-lockIcon").item(0) as HTMLDivElement).className = favClass; // ロックアイコンリセット
 		scrollDiv.appendChild(partnerDiv);
 		// チーム要素作成
 		for(var i = 0; i < this._teamId.length; i++){

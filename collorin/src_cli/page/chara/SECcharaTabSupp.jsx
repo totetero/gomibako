@@ -48,8 +48,9 @@ class SECcharaTabSupp extends EventCartridge{
 		// 並べ替え要素作成
 		this._sortPicker = new SECpopupPicker("並べ替え", [
 			new SECpopupPickerItem("sp", "SP消費順"),
-			new SECpopupPickerItem("team", "チーム順"),
 			new SECpopupPickerItem("level", "レベル順"),
+			new SECpopupPickerItem("team", "チーム順"),
+			new SECpopupPickerItem("favorite", "ファボ順"),
 			new SECpopupPickerItem("type", "種類順"),
 			new SECpopupPickerItem("new", "新着順"),
 		]);
