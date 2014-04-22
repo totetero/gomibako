@@ -42,7 +42,7 @@ class DiceCharacter extends PartsCharacter{
 		this.y = ccvs.field.calcHexCoordy(hexx, hexy);
 		this.r = response["r"] as number;
 
-		var img = Loader.imgs["img_dot_" + this.code];
+		var img = Loader.imgs["img_chara_dot_" + this.code];
 		var drawInfo = new DrawCharacterInfo(response["drawInfo"]);
 		var size = response["size"] as number;
 		this._character = new DrawCharacter(img, drawInfo, size);

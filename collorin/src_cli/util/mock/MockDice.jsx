@@ -116,10 +116,10 @@ class MockDice{
 				size: cinfo.s,
 			};
 			// 画像情報作成
-			imgs["img_dot_" + cinfo.code] = "/img/character/" + cinfo.code + "/dot.png";
-			imgs["css_icon_" + cinfo.code] = "/img/character/" + cinfo.code + "/icon.png";
-			imgs["css_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
-			imgs["css_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
+			imgs["img_chara_dot_" + cinfo.code] = "/img/character/" + cinfo.code + "/dot.png";
+			imgs["css_chara_icon_" + cinfo.code] = "/img/character/" + cinfo.code + "/icon.png";
+			imgs["css_chara_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
+			imgs["css_chara_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
 		}
 		jdat["charaInfo"] = jdatCharaInfo;
 

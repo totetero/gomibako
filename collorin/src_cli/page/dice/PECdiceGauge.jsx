@@ -55,7 +55,7 @@ abstract class PECdiceGauge extends EventCartridge{
 				if(this._action == 0){
 					// 要素設定
 					this._statusDiv.style.opacity = "1";
-					this._iconDiv.className = "icon cssimg_icon_" + this.chara.code;
+					this._iconDiv.className = "icon cssimg_chara_icon_" + this.chara.code;
 					// 変化後ゲージ描画
 					if(this.hprate1 > this.hprate0){setWidth(this._underHpDiv, this.hprate1);}else{setWidth(this._overHpDiv, this.hprate1);}
 					if(this.sprate1 > this.sprate0){setWidth(this._underSpDiv, this.sprate1);}else{setWidth(this._overSpDiv, this.sprate1);}

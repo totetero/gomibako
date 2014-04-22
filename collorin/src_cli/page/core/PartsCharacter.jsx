@@ -99,7 +99,7 @@ class PartsCharaListItem extends PartsCharacter{
 		this.bodyDiv.innerHTML = PartsCharaListItem._htmlTag;
 		// アイコン設定
 		this.iconDiv = this.bodyDiv.getElementsByClassName("core-chara-icon").item(0) as HTMLDivElement;
-		this.iconDiv.className = "core-chara-icon cssimg_icon_" + this.code;
+		this.iconDiv.className = "core-chara-icon cssimg_chara_icon_" + this.code;
 		// 名前設定
 		(this.bodyDiv.getElementsByClassName("core-chara-name").item(0) as HTMLDivElement).innerHTML = this.name;
 		// レベル設定
@@ -153,7 +153,7 @@ class SECpopupInfoChara extends SECpopup{
 		this.windowDiv = this.popupDiv.getElementsByClassName("core-window").item(0) as HTMLDivElement;
 
 		(this.windowDiv.getElementsByClassName("name").item(0) as HTMLDivElement).innerHTML = this._data.name;
-		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).className = "chara cssimg_bust_" + this._data.code;
+		(this.windowDiv.getElementsByClassName("chara").item(0) as HTMLDivElement).className = "chara cssimg_chara_bust_" + this._data.code;
 
 		this._btnList = {} : Map.<PartsButton>;
 		this._btnList["close"] = new PartsButton(this.windowDiv.getElementsByClassName("core-btn close").item(0) as HTMLDivElement, true);

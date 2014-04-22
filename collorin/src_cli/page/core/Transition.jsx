@@ -350,8 +350,8 @@ class PECopenCharacter extends EventCartridge{
 			if(this._start != this._goal){Util.cssTranslate(PECopenCharacter._div, PECopenCharacter._position, 0);}
 			if(this._action == 8){
 				PECopenCharacter._code = this._code;
-				if(this._type == "damage"){PECopenCharacter._div.className = "character cssimg_damage_" + this._code;}
-				else{PECopenCharacter._div.className = "character cssimg_bust_" + this._code;}
+				if(this._type == "damage"){PECopenCharacter._div.className = "character cssimg_chara_damage_" + this._code;}
+				else{PECopenCharacter._div.className = "character cssimg_chara_bust_" + this._code;}
 			}
 			return (this._action < 16);
 		}else{return false;}

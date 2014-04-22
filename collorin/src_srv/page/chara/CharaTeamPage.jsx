@@ -56,8 +56,8 @@ class CharaTeamPage{
 				jdat["list"] = charaInfoList;
 				for(var i = 0; i < charaInfoList.length; i++){
 					var code = charaInfoList[i]["code"] as string;
-					imgs["css_icon_" + code] = "/img/character/" + code + "/icon.png";
-					imgs["css_bust_" + code] = "/img/character/" + code + "/bust.png";
+					imgs["css_chara_icon_" + code] = "/img/character/" + code + "/icon.png";
+					imgs["css_chara_bust_" + code] = "/img/character/" + code + "/bust.png";
 				}
 				step["getPartner"]();
 			};
