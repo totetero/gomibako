@@ -174,7 +174,8 @@ class SECcharaTabSupp extends EventCartridge{
 
 			// 軽量化のために見えない要素は非表示
 			var position = i * 60 + this._scroller.scrolly;
-			var display = (-60 < position && position < Ctrl.sh - 120) ? "block" : "none";
+			var pickerSize = Ctrl.sh - 120;
+			var display = (-60 < position && position < pickerSize) ? "block" : "none";
 			if(item.bodyDiv.style.display != display){
 				item.bodyDiv.style.display = display;
 			}

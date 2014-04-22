@@ -100,8 +100,10 @@ abstract class SECpopupPickerCharacter extends SECpopup{
 			(this.windowDiv.getElementsByClassName("pickerContainer").item(0) as HTMLDivElement).style.display = "none";
 		}
 		// キャラクターリスト作成
+		scrollDiv.style.height = (this._charaList.length * 60) + "px";
 		scrollDiv.innerHTML = "";
 		for(var i = 0; i < this._charaList.length; i++){
+			this._charaList[i].bodyDiv.style.top = (60 * i) + "px";
 			scrollDiv.appendChild(this._charaList[i].bodyDiv);
 		}
 
@@ -143,9 +145,12 @@ abstract class SECpopupPickerCharacter extends SECpopup{
 
 		// ウインドウサイズ確認
 		this._checkWindowSize(false);
+		var pickerSize = Number.parseInt(this._scroller.containerDiv.style.height, 10);
 
 		// キャラクターリストボタン
 		for(var i = 0; i < this._charaList.length; i++){
+			var item = this._charaList[i];
+
 			// 要素ボタン
 			var btn = this._scroller.btnList["charaItem" + i];
 			if(btn.trigger){
@@ -153,7 +158,7 @@ abstract class SECpopupPickerCharacter extends SECpopup{
 				if(active){
 					Sound.playSE("ok");
 					// 選択完了
-					this.onSelect(this._charaList[i]);
+					this.onSelect(item);
 					this.onClose(this._scroller.scrolly);
 					this._page.serialPush(this._cartridge);
 					return false;
@@ -166,10 +171,17 @@ abstract class SECpopupPickerCharacter extends SECpopup{
 				btn.trigger = false;
 				if(active){
 					Sound.playSE("ok");
-					this._page.serialPush(new SECpopupInfoChara(this._page, this, this._charaList[i]));
+					this._page.serialPush(new SECpopupInfoChara(this._page, this, item));
 					this._prevscrolly = this._scroller.scrolly;
 					return false;
 				}
+			}
+
+			// 軽量化のために見えない要素は非表示
+			var position = i * 60 + this._scroller.scrolly;
+			var display = (-60 < position && position < pickerSize) ? "block" : "none";
+			if(item.bodyDiv.style.display != display){
+				item.bodyDiv.style.display = display;
 			}
 		}
 

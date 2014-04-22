@@ -171,6 +171,13 @@ class SECcharaTabTeam extends EventCartridge{
 			}
 			scrollDiv.appendChild(teamDiv);
 		}
+		// キャラクターピッカーで指定したスタイルをリセット
+		var items = scrollDiv.getElementsByClassName("core-chara-listItem");
+		for(var i = 0; i < items.length; i++){
+			var itemDiv = items.item(i) as HTMLDivElement;
+			itemDiv.style.display = "block";
+			itemDiv.style.top = "auto";
+		}
 
 		// ボタン作成
 		this._btnList = {} : Map.<PartsButton>;
