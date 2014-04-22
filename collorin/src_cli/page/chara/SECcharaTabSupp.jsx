@@ -1,6 +1,7 @@
 import "js/web.jsx";
 
 import "../../util/EventCartridge.jsx";
+import "../../util/Ctrl.jsx";
 import "../../util/Sound.jsx";
 import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
@@ -89,8 +90,10 @@ class SECcharaTabSupp extends EventCartridge{
 			if(this._scroller != null){this._scroller.scrolly = 0;}
 		}
 		// キャラクターリスト作成
+		scrollDiv.style.height = (this._charaList.length * 60) + "px";
 		scrollDiv.innerHTML = "";
 		for(var i = 0; i < this._charaList.length; i++){
+			this._charaList[i].bodyDiv.style.top = (60 * i) + "px";
 			scrollDiv.appendChild(this._charaList[i].bodyDiv);
 		}
 
@@ -168,6 +171,13 @@ class SECcharaTabSupp extends EventCartridge{
 			var isSelect = div.className.indexOf(" select") >= 0;
 			if(item.select && !isSelect){div.className += " select";}
 			else if(!item.select && isSelect){div.className = div.className.replace(/ select/g , "");}
+
+			// 軽量化のために見えない要素は非表示
+			var position = i * 60 + this._scroller.scrolly;
+			var display = (-60 < position && position < Ctrl.sh - 120) ? "block" : "none";
+			if(item.bodyDiv.style.display != display){
+				item.bodyDiv.style.display = display;
+			}
 		}
 
 		// 補給ボタン
