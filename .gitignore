@@ -1,15 +1,20 @@
-node_modules
+/node_modules
 
-game.js
-tool*.js
-content/main.js
-content/main.css
-content/imgCrypt
+/game.js
+/tool*.js
 
-*.min.js
-*.min.css
+/content/main.js
 
-dump.rdb
+/dump.rdb
+
+/content/imgCrypt
+
 .DS_Store
 *.swp
+*.min.js
+
+/old/node_modules
+/old/game.js
+*.min.css
+/content/main.css
 

@@ -18,7 +18,7 @@ start: build
 put: build
 	rsync -av * uni:/home/tote/project/git/collorin/
 
-build: game.js content/main.js content/main.css
+build: game.js ../content/main.js ../content/main.css
 
 tool: toolImgCrypt.js toolMakeData.js
 
@@ -27,16 +27,16 @@ db:
 	redis-server &
 
 clean:
-	rm game.js content/main.js content/main.css
+	rm game.js ../content/main.js ../content/main.css
 
 game.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
 	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/Main.jsx
 
-content/main.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
+../content/main.js: $(shell find $(SRC_CLI_DIR) -name "*.jsx")
 	$(JSX) --executable web --output $@ $(SRC_CLI_DIR)/Main.jsx
 	#$(MIN) -c -o $(@:%.js=%.min.js) $@
 
-content/main.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
+../content/main.css: $(shell find $(SRC_CLI_DIR) -name "*.less")
 	$(LESS) --compress $(SRC_CLI_DIR)/less/main.less $@
 
 toolImgCrypt.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")

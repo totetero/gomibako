@@ -67,7 +67,7 @@ class _Main{
 			app.use(passport.session());
 			app.use(express.compress());
 			app.use(app.router);
-			app.use(express.static_(node.__dirname + "/content"));
+			app.use(express.static_(node.__dirname + "/../content"));
 			app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
 			app.use(function(req : ExRequest, res : ExResponse, next : function():void){
 				res.status(404).render("404.ejs", null);
@@ -132,8 +132,8 @@ class _Main{
 		ChatPage.setPage(app, rcli, io);
 
 		// コンテンツサーバ
-		ImageServer.setPage(app, "/img", node.__dirname + "/content", "testImageSecretKey");
-		SoundServer.setPage(app, "/snd", node.__dirname + "/content");
+		ImageServer.setPage(app, "/img", node.__dirname + "/../content", "testImageSecretKey");
+		SoundServer.setPage(app, "/snd", node.__dirname + "/../content");
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";
