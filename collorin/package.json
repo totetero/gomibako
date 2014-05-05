@@ -1,0 +1,10 @@
+{
+  "name": "interfacetest",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "~4.0.0",
+	"body-parser": "~1.0.2",
+    "ejs": "~1.0.0",
+    "jsx": "~0.9.87"
+  }
+}
