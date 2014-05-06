@@ -8,44 +8,39 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECtransition.jsx";
-
-import "SECsettingMain.jsx";
+import "../core/SECpopupPicker.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// 設定ページ
-class PageSetting extends Page{
+// 効果音のピッカー
+class SECsettingPopupPickerSef extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
-		// プロパティ設定
-		this.type = "setting";
-		this.depth = 11;
-		this.bgm = "test01";
+	function constructor(page : Page, cartridge : SerialEventCartridge){
+		super(page, cartridge, "効果音", [
+			new SECpopupPickerItem("high", "音量大"),
+			new SECpopupPickerItem("middle", "音量中"),
+			new SECpopupPickerItem("low", "音量小"),
+			new SECpopupPickerItem("off", "OFF")
+		]);
+
+		if(Sound.isSupported){
+			var volume = dom.window.localStorage.getItem("setting_sefVolume");
+			this.setSelectedItem(volume);
+		}else{
+			this.getItem("high").inactive = true;
+			this.getItem("middle").inactive = true;
+			this.getItem("low").inactive = true;
+			this.setSelectedItem("off");
+		}
 	}
 
 	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : void{
-		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/setting", null, function(response : variant) : SerialEventCartridge{
-			// クロス要素の展開処理
-			this.ctrler.setLctrl(false);
-			this.ctrler.setRctrl("", "", "", "");
-			this.header.setType("設定", "mypage");
-			// 応答処理
-			log response;
-			return new SECsettingMain(this);
-		}));
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-		super.dispose();
+	// 選択時の動作
+	override function onSelect(tag : string) : void{
+		Sound.setSefVolume(tag);
 	}
 }
 

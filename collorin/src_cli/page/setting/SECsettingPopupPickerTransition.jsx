@@ -8,44 +8,31 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECtransition.jsx";
-
-import "SECsettingMain.jsx";
+import "../core/SECpopupPicker.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// 設定ページ
-class PageSetting extends Page{
+// ページ遷移演出のピッカー
+class SECsettingPopupPickerTransition extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
-		// プロパティ設定
-		this.type = "setting";
-		this.depth = 11;
-		this.bgm = "test01";
+	function constructor(page : Page, cartridge : SerialEventCartridge){
+		super(page, cartridge, "ページ遷移演出", [
+			new SECpopupPickerItem("on", "ON"),
+			new SECpopupPickerItem("off", "OFF")
+		]);
+
+		var transition = dom.window.localStorage.getItem("setting_transition");
+		if(transition != "off"){transition = "on";}
+		this.setSelectedItem(transition);
 	}
 
 	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : void{
-		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/setting", null, function(response : variant) : SerialEventCartridge{
-			// クロス要素の展開処理
-			this.ctrler.setLctrl(false);
-			this.ctrler.setRctrl("", "", "", "");
-			this.header.setType("設定", "mypage");
-			// 応答処理
-			log response;
-			return new SECsettingMain(this);
-		}));
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-		super.dispose();
+	// 選択時の動作
+	override function onSelect(tag : string) : void{
+		dom.window.localStorage.setItem("setting_transition", tag);
 	}
 }
 

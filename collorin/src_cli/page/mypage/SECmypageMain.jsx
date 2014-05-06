@@ -28,10 +28,10 @@ class SECmypageMain implements SerialEventCartridge{
 		this._page = page;
 
 		// ボタン作成
-		this._btnList["test1"] = new PartsButtonBasic("ボタン1",  10, 400, 100, 30);
-		this._btnList["test2"] = new PartsButtonBasic("ボタン2",  10, 440, 100, 30);
-		this._btnList["test3"] = new PartsButtonBasic("ボタン3", 210, 400, 100, 30);
-		this._btnList["test4"] = new PartsButtonBasic("ボタン4", 210, 440, 100, 30);
+		this._btnList["world"] = new PartsButtonBasic("ワールド",  10, 400, 100, 30);
+		this._btnList["quest"] = new PartsButtonBasic("クエスト",  10, 440, 100, 30);
+		this._btnList["chara"] = new PartsButtonBasic("キャラクタ", 210, 400, 100, 30);
+		this._btnList["item"] = new PartsButtonBasic("アイテム", 210, 440, 100, 30);
 	}
 
 	// ----------------------------------------------------------------
@@ -46,13 +46,16 @@ class SECmypageMain implements SerialEventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		// テストボタン押下処理
-		var btn = this._btnList["test1"];
-		if(btn.trigger){
-			btn.trigger = false;
-			Sound.playSE("ok");
-			Page.transitionsPage("test");
-			return true;
+		// ボタン押下処理
+		var list = ["world", "quest", "chara", "item"];
+		for(var i = 0; i < list.length; i++){
+			var btn = this._btnList[list[i]];
+			if(btn.trigger){
+				btn.trigger = false;
+				Sound.playSE("ok");
+				Page.transitionsPage(list[i]);
+				return true;
+			}
 		}
 
 		// 左ヘッダ戻るボタン押下処理
@@ -80,12 +83,16 @@ class SECmypageMain implements SerialEventCartridge{
 		for(var name in this._btnList){
 			var btn = this._btnList[name];
 			btn.x = btn.basex + (Ctrl.sw - 320);
-			btn.y = btn.basey + (Ctrl.sh - 480);
+			btn.y = btn.basey + (Ctrl.sh - 480) - 50;
 		}
 
 		// 画面クリア
 		Ctrl.sctx.fillStyle = "#cccccc";
 		Ctrl.sctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+
+		// 仮バナースペース
+		Ctrl.sctx.fillStyle = "#ffffff";
+		Ctrl.sctx.fillRect(0, Ctrl.sh - 50, Ctrl.sw, 50);
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}

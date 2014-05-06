@@ -1,3 +1,4 @@
+
 import "js/web.jsx";
 
 import "../../util/Ctrl.jsx";
@@ -8,44 +9,35 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECtransition.jsx";
-
-import "SECsettingMain.jsx";
+import "../core/SECpopupPicker.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// 設定ページ
-class PageSetting extends Page{
+// 画質のピッカー
+class SECsettingPopupPickerQuality extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
-		// プロパティ設定
-		this.type = "setting";
-		this.depth = 11;
-		this.bgm = "test01";
+	function constructor(page : Page, cartridge : SerialEventCartridge){
+		super(page, cartridge, "ゲーム画質", [
+			new SECpopupPickerItem("high", "高画質"),
+			new SECpopupPickerItem("middle", "普通画質"),
+			new SECpopupPickerItem("low", "低画質")
+		]);
+
+		if(dom.window.devicePixelRatio <= 1){this.getItem("high").inactive = true;}
+
+		var quality = dom.window.localStorage.getItem("setting_quality");
+		if(quality != "high" && quality != "low"){quality = "middle";}
+		this.setSelectedItem(quality);
 	}
 
 	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : void{
-		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/setting", null, function(response : variant) : SerialEventCartridge{
-			// クロス要素の展開処理
-			this.ctrler.setLctrl(false);
-			this.ctrler.setRctrl("", "", "", "");
-			this.header.setType("設定", "mypage");
-			// 応答処理
-			log response;
-			return new SECsettingMain(this);
-		}));
-	}
-
-	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-		super.dispose();
+	// 選択時の動作
+	override function onSelect(tag : string) : void{
+		dom.window.localStorage.setItem("setting_quality", tag);
+		Ctrl.setCanvas();
 	}
 }
 
