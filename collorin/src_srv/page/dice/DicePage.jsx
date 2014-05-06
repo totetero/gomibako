@@ -7,7 +7,7 @@ import "../../models/User.jsx";
 import "../../data/CharacterDrawInfo.jsx";
 
 // test
-import "../../../src_cli/util/mock/MockDice.jsx";
+import "MockDice.jsx";
 
 // マイページ
 class DicePage{

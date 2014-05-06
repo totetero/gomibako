@@ -31,7 +31,7 @@ class PageMypage extends Page{
 	// 初期化
 	override function init() : void{
 		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/test", null, function(response : variant) : SerialEventCartridge{
+		this.serialPush(new SECtransition(this, "/mypage", null, function(response : variant) : SerialEventCartridge{
 			// クロス要素の展開処理
 			this.ctrler.setLctrl(false);
 			this.ctrler.setRctrl("", "", "", "");

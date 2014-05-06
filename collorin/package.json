@@ -1,10 +1,19 @@
 {
-  "name": "interfacetest",
+  "name": "collorin",
   "version": "0.0.1",
   "dependencies": {
-    "express": "~4.0.0",
-	"body-parser": "~1.0.2",
+    "express": "~3.4.2",
     "ejs": "~1.0.0",
-    "jsx": "~0.9.87"
+    "mongoose": "~3.6.20",
+    "redis": "~0.10.0",
+    "connect-redis": "~1.4.6",
+    "passport": "~0.1.17",
+    "passport-local": "~0.1.6",
+    "passport-twitter": "~1.0.2",
+    "socket.io": "~0.9.16",
+    "socket.io-client": "~0.9.16",
+    "jsx": "~0.9.87",
+    "uglify-js": "~2.4.0",
+    "less": "~1.6.1"
   }
 }

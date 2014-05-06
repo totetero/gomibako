@@ -143,6 +143,7 @@ class ContentsServer{
 			var tags = new string[];
 			for(var tag in addrs){
 				if(tag.indexOf("img_") == 0){tags.push(tag);}
+				if(tag.indexOf("css_") == 0){tags.push(tag);}
 			}
 			// 画像を読み込む
 			var count = tags.length;
@@ -194,6 +195,7 @@ class ContentsServer{
 			var tags = new string[];
 			for(var tag in addrs){
 				if(tag.indexOf("img_") == 0){tags.push(tag);}
+				if(tag.indexOf("css_") == 0){tags.push(tag);}
 				if(tag.indexOf("bgm_") == 0){tags.push(tag);}
 				if(tag.indexOf("sef_") == 0){tags.push(tag);}
 			}

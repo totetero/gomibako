@@ -10,6 +10,12 @@ native class node{
 
 // ----------------------------------------------------------------
 
+native class process{
+	static function nextTick(callback : function():void) : void;
+}
+
+// ----------------------------------------------------------------
+
 native class Buffer{
 	var length : int;
 	function constructor(size : int);
@@ -30,6 +36,7 @@ native class http{
 native class HttpServer{
 	function listen(port : int) : void;
 }
+
 // ----------------------------------------------------------------
 
 native class fs{
