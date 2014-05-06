@@ -40,7 +40,8 @@ class SECpopupMenu extends SECpopup{
 		this._btnList["close"] = new PartsButtonBasic("閉じる", this._pw - 100 - 10, this._ph - 30 - 10, 100, 30);
 		this._btnList["close"].sKey = true;
 		this._btnList["mypage"] = new PartsButtonBasic("マイページ", 10, 40, 100, 30);
-		this._btnList["test"] = new PartsButtonBasic("テスト", 10, 80, 100, 30);
+		this._btnList["test"] = new PartsButtonBasic("テスト", 120, 40, 100, 30);
+		this._btnList["world"] = new PartsButtonBasic("ワールド", 10, 80, 100, 30);
 		this._btnList["setting"] = new PartsButtonBasic("設定", 10, 120, 100, 30);
 
 		var current = this._btnList[Page.current.type];
@@ -60,7 +61,7 @@ class SECpopupMenu extends SECpopup{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// ボタン押下処理
-		var list = ["mypage", "test", "setting"];
+		var list = ["mypage", "test", "world", "setting"];
 		for(var i = 0; i < list.length; i++){
 			var btn = this._btnList[list[i]];
 			if(btn.trigger){

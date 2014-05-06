@@ -11,6 +11,7 @@ import "CrossCtrler.jsx";
 import "CrossHeader.jsx";
 import "../mypage/PageMypage.jsx";
 import "../test/PageTest.jsx";
+import "../world/PageWorld.jsx";
 import "../setting/PageSetting.jsx";
 
 // ----------------------------------------------------------------
@@ -58,6 +59,7 @@ abstract class Page extends EventPlayer{
 			Page._lastHash = currentHash;
 			var nextPage : Page = null;
 			if(currentHash.indexOf("test") == 1){nextPage = new PageTest();}
+			else if(currentHash.indexOf("world") == 1){nextPage = new PageWorld();}
 			else if(currentHash.indexOf("setting") == 1){nextPage = new PageSetting();}
 			else{nextPage = new PageMypage();}
 			if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
