@@ -93,7 +93,7 @@ class Loader{
 				if(hasImg || hasCss || hasBgm || hasSef || hasMot){delete request[tag];}
 				else{isLoad = true;}
 			}
-		}else{
+		}else if(type != ""){
 			// GETリクエスト キャッシュに期待して必ず通信
 			isLoad = true;
 		}

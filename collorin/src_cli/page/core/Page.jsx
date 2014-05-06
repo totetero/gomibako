@@ -13,6 +13,7 @@ import "../mypage/PageMypage.jsx";
 import "../test/PageTest.jsx";
 import "../world/PageWorld.jsx";
 import "../setting/PageSetting.jsx";
+import "../dice/PageDice.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -61,6 +62,7 @@ abstract class Page extends EventPlayer{
 			if(currentHash.indexOf("test") == 1){nextPage = new PageTest();}
 			else if(currentHash.indexOf("world") == 1){nextPage = new PageWorld();}
 			else if(currentHash.indexOf("setting") == 1){nextPage = new PageSetting();}
+			else if(currentHash.indexOf("dice") == 1){nextPage = new PageDice();}
 			else{nextPage = new PageMypage();}
 			if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
 				// ページをまたぐ機能を継承
