@@ -222,7 +222,7 @@ class SECdiceDiceThrow extends EventCartridge{
 		this._page.parallelPush(new PECopenCharacter("", ""));
 		// さいころ通信
 		Loader.loadxhr("/dice", this._request, function(response : variant) : void{
-			Loader.loadImg(response["imgs"] as Map.<string>, function() : void{
+			Loader.loadContents(response["imgs"] as Map.<string>, function() : void{
 				// 通信成功
 				this._request = null;
 				var diceResponse = this._page.parse(response["list"] as variant[]);
@@ -237,11 +237,7 @@ class SECdiceDiceThrow extends EventCartridge{
 				Ctrl.trigger_sb = false;
 				// コントローラーを表示
 				if(this._action < 35){this._page.parallelPush(new PECopenRctrl("", "", "", "スキップ"));}
-			}, function():void{
-				// 画像ロード失敗
 			});
-		}, function() : void{
-			// 情報ロード失敗
 		});
 	}
 

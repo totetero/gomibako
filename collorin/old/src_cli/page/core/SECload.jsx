@@ -104,8 +104,6 @@ class ECloadInfo extends EventCartridge{
 				// 情報ロード成功
 				this._callback(response);
 				this._exist = false;
-			}, function() : void{
-				// 情報ロード失敗
 			});
 		}
 	}
@@ -139,11 +137,9 @@ class ECloadImgs extends EventCartridge{
 		if(!this._exist){
 			this._exist = true;
 			// 画像ロード開始
-			Loader.loadImg(this._request, function() : void{
+			Loader.loadContents(this._request, function() : void{
 				// 画像ロード成功
 				this._exist = false;
-			}, function():void{
-				// 画像ロード失敗
 			});
 		}
 	}

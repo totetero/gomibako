@@ -25,24 +25,20 @@ class ChatSocket{
 
 			// ゲーム情報獲得
 			this._socketof.on("entry", function(uid : variant, uinfoListData : variant, imgs : variant):void{
-				Loader.loadImg(imgs as Map.<string>, function() : void{
+				Loader.loadContents(imgs as Map.<string>, function() : void{
 					// 画像ロード完了
 					var uinfoList = uinfoListData as variant[];
 					for(var i = 0; i < uinfoList.length; i++){
 						this._create(ccvs, uid, uinfoList[i]);
 					}
-				}, function():void{
-					// 画像ロード失敗
 				});
 			});
 
 			// ユーザー新規接続
 			this._socketof.on("add", function(uinfo : variant, imgs : variant):void{
-				Loader.loadImg(imgs as Map.<string>, function() : void{
+				Loader.loadContents(imgs as Map.<string>, function() : void{
 					// 画像ロード完了
 					this._create(ccvs, null, uinfo);
-				}, function():void{
-					// 画像ロード失敗
 				});
 			});
 

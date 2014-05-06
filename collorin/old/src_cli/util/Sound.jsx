@@ -15,8 +15,7 @@ class Sound{
 	static var _playing = "";
 
 	// WebAudioAPI用
-	static var _context : AudioContext;
-	static var _buffer : Map.<AudioBuffer>;
+	static var context : AudioContext;
 	static var _bgmSource : AudioBufferSourceNode;
 	static var _bgmFadeInGain : GainNode;
 	static var _bgmFadeOutGain : GainNode;
@@ -27,18 +26,18 @@ class Sound{
 	// 初期化
 	static function init() : void{
 		// WebAudioAPIのAudioContextを作成
-		if(Sound._context == null){try{Sound._context = new AudioContext();}catch(e : Error){}}
-		if(Sound._context == null){try{Sound._context = new webkitAudioContext();}catch(e : Error){}}
-		if(Sound._context != null){
+		if(Sound.context == null){try{Sound.context = new AudioContext();}catch(e : Error){}}
+		if(Sound.context == null){try{Sound.context = new webkitAudioContext();}catch(e : Error){}}
+		if(Sound.context != null){
 			// WebAudioAPIのAudioContext作成成功
 			Sound.isSupported = true;
 
 			Sound._bgmVolumeGain = Sound._contextCreateGain();
-			Sound._bgmVolumeGain.connect(Sound._context.destination);
+			Sound._bgmVolumeGain.connect(Sound.context.destination);
 			Sound.setBgmVolume(dom.window.localStorage.getItem("setting_bgmVolume"));
 
 			Sound._sefVolumeGain = Sound._contextCreateGain();
-			Sound._sefVolumeGain.connect(Sound._context.destination);
+			Sound._sefVolumeGain.connect(Sound.context.destination);
 			Sound.setSefVolume(dom.window.localStorage.getItem("setting_sefVolume"));
 
 			Sound._bgmFadeInGain = Sound._contextCreateGain();
@@ -47,34 +46,22 @@ class Sound{
 			Sound._bgmFadeOutGain = Sound._contextCreateGain();
 			Sound._bgmFadeOutGain.connect(Sound._bgmVolumeGain);
 
-			Sound._buffer = {} : Map.<AudioBuffer>;
-			Loader.loadSnd(null, function(buffers : Map.<ArrayBuffer>) : void{
-				var count = 0;
-				for(var tag in buffers){count++;}
-				for(var tag in buffers){
-					(function(tag : string){
-						Sound._context.decodeAudioData(buffers[tag], function(buffer : AudioBuffer){
-							Sound._buffer[tag] = buffer;
-							if(--count == 0){
-								// すべての登録が終わった
-								Sound._loaded = true;
-								if(Sound._playable && Sound._playing != ""){
-									var bgmid = Sound._playing;
-									Sound._playing = "";
-									Sound.playBGM(bgmid);
-								}
-							}
-						});
-					})(tag);
+			Loader.soundContext = Sound.context;
+			Loader.loadContents("sound", function() : void{
+				Sound._loaded = true;
+				if(Sound._playable && Sound._playing != ""){
+					var bgmid = Sound._playing;
+					Sound._playing = "";
+					Sound.playBGM(bgmid);
 				}
-			}, function() : void{});
+			});
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// タップによるサウンド再生許可
 	static function setPlayable() : void{
-		if(!Sound._playable && !!Sound._context){
+		if(!Sound._playable && !!Sound.context){
 			Sound._playable = true;
 			if(Sound._loaded && Sound._playing != ""){
 				var bgmid = Sound._playing;
@@ -82,9 +69,9 @@ class Sound{
 				Sound.playBGM(bgmid);
 			}else{
 				// 無音再生
-				var source = Sound._context.createBufferSource();
-				source.connect(Sound._context.destination);
-				Sound._sourceStart(source, Sound._context.currentTime);
+				var source = Sound.context.createBufferSource();
+				source.connect(Sound.context.destination);
+				Sound._sourceStart(source, Sound.context.currentTime);
 			}
 		}
 	}
@@ -104,20 +91,20 @@ class Sound{
 				var temp = Sound._bgmFadeInGain;
 				Sound._bgmFadeInGain = Sound._bgmFadeOutGain;
 				Sound._bgmFadeOutGain = temp;
-				Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound._context.currentTime);
-				Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound._context.currentTime + fadeTime);
-				Sound._sourceStop(Sound._bgmSource, Sound._context.currentTime + fadeTime);
+				Sound._bgmFadeOutGain.gain.setValueAtTime(1, Sound.context.currentTime);
+				Sound._bgmFadeOutGain.gain.linearRampToValueAtTime(0, Sound.context.currentTime + fadeTime);
+				Sound._sourceStop(Sound._bgmSource, Sound.context.currentTime + fadeTime);
 				Sound._bgmSource = null;
 			}
-			if(Sound._buffer[tag] != null && bgmid != "none"){
+			if(Loader.snds[tag] != null && bgmid != "none"){
 				// 新しいBGM再生
-				Sound._bgmFadeInGain.gain.setValueAtTime(0, Sound._context.currentTime);
-				Sound._bgmFadeInGain.gain.linearRampToValueAtTime(1, Sound._context.currentTime + fadeTime);
-				Sound._bgmSource = Sound._context.createBufferSource();
+				Sound._bgmFadeInGain.gain.setValueAtTime(0, Sound.context.currentTime);
+				Sound._bgmFadeInGain.gain.linearRampToValueAtTime(1, Sound.context.currentTime + fadeTime);
+				Sound._bgmSource = Sound.context.createBufferSource();
 				Sound._bgmSource.loop = true;
-				Sound._bgmSource.buffer = Sound._buffer[tag];
+				Sound._bgmSource.buffer = Loader.snds[tag];
 				Sound._bgmSource.connect(Sound._bgmFadeInGain);
-				Sound._sourceStart(Sound._bgmSource, Sound._context.currentTime);
+				Sound._sourceStart(Sound._bgmSource, Sound.context.currentTime);
 			}
 		}
 	}
@@ -132,12 +119,12 @@ class Sound{
 	// 効果音再生
 	static function playSE(seid : string) : void{
 		var tag = "sef_" + seid;
-		if(Sound._playable && Sound._buffer[tag] != null){
+		if(Sound._playable && Loader.snds[tag] != null){
 			// SE再生
-			var source = Sound._context.createBufferSource();
-			source.buffer = Sound._buffer[tag];
+			var source = Sound.context.createBufferSource();
+			source.buffer = Loader.snds[tag];
 			source.connect(Sound._sefVolumeGain);
-			Sound._sourceStart(source, Sound._context.currentTime);
+			Sound._sourceStart(source, Sound.context.currentTime);
 		}
 	}
 
@@ -169,7 +156,7 @@ class Sound{
 
 	// ----------------------------------------------------------------
 	// webAudioAPIの後方互換性
-	static function _contextCreateGain() : GainNode{return ((js.eval("!!Sound._context.createGain") as boolean) ? Sound._context.createGain() : Sound._context.createGainNode());}
+	static function _contextCreateGain() : GainNode{return ((js.eval("!!Sound.context.createGain") as boolean) ? Sound.context.createGain() : Sound.context.createGainNode());}
 	static function _sourceStart(source : AudioBufferSourceNode, when : number) : void{if(js.eval("!!source.start") as boolean){source.start(when);}else{source.noteOn(when);}}
 	static function _sourceStop(source : AudioBufferSourceNode, when : number) : void{if(js.eval("!!source.stop") as boolean){source.stop(when);}else{source.noteOff(when);}}
 }

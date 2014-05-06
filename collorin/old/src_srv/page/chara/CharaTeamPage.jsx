@@ -1,6 +1,6 @@
 import "../../require/express.jsx";
 
-import "../../util/ImageServer.jsx";
+import "../../util/ContentsServer.jsx";
 import "../../models/User.jsx";
 import "../../models/Character.jsx";
 import "../../models/Team.jsx";
@@ -253,7 +253,7 @@ class CharaTeamPage{
 				imgs["css_core_chara_team1"] = "/img/system/character/team1.png";
 				imgs["css_core_chara_team2"] = "/img/system/character/team2.png";
 				imgs["css_core_chara_team3"] = "/img/system/character/team3.png";
-				jdat["imgs"] = ImageServer.convertAddress(imgs);
+				jdat["imgs"] = ContentsServer.convertAddress(imgs);
 				res.setHeader("Content-Type", "application/json");
 				res.setHeader("cache-control", "no-cache");
 				res.send(JSON.stringify(jdat));

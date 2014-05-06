@@ -16,7 +16,11 @@ class CssImgs{
 
 		// ピッカーボタン画像
 		var tag = "css_core_picker_arrow";
-		if(Loader.csss[tag] == null){
+		var hasCss = false;
+		for(var i = 0; i < Loader.csss.length; i++){
+			if(Loader.csss[i] == tag){hasCss = true; break;}
+		}
+		if(!hasCss){
 			var canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 			var context = canvas.getContext("2d") as CanvasRenderingContext2D;
 			canvas.width = 64;
@@ -32,8 +36,8 @@ class CssImgs{
 			context.closePath();
 			context.fill();
 			context.stroke();
-			Loader.csss[tag] = tag.replace(/^css_/, "cssimg_");
-			sheet.insertRule("." + Loader.csss[tag] + "{background-image: url(" + Util.cvsToBase64(canvas) + ")}", sheet.cssRules.length);
+			Loader.csss.push(tag);
+			sheet.insertRule("." + tag.replace(/^css_/, "cssimg_") + "{background-image: url(" + Util.cvsToBase64(canvas) + ")}", sheet.cssRules.length);
 		}
 	}
 }

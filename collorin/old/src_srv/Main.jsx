@@ -5,8 +5,7 @@ import "require/redis.jsx";
 import "require/passport.jsx";
 import "require/socket.io.jsx";
 
-import "util/ImageServer.jsx";
-import "util/SoundServer.jsx";
+import "util/ContentsServer.jsx";
 import "page/AuthPage.jsx";
 import "page/top/TopPage.jsx";
 import "page/mypage/MyPage.jsx";
@@ -132,8 +131,7 @@ class _Main{
 		ChatPage.setPage(app, rcli, io);
 
 		// コンテンツサーバ
-		ImageServer.setPage(app, "/img", node.__dirname + "/../content", "testImageSecretKey");
-		SoundServer.setPage(app, "/snd", node.__dirname + "/../content");
+		ContentsServer.setPage(app, "/contents", node.__dirname + "/../content", "testContentsSecretKey");
 
 		srv.listen(10080);
 		log "Server running at http://127.0.0.1:10080/";
