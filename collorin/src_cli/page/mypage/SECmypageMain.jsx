@@ -90,6 +90,11 @@ class SECmypageMain implements SerialEventCartridge{
 		Ctrl.sctx.fillStyle = "#cccccc";
 		Ctrl.sctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
 
+		// 仮マイページキャラ顔の位置
+		Ctrl.sctx.fillStyle = "black";
+		Ctrl.sctx.fillRect(0, 120 + 40 * ((Ctrl.sh / 240) - 1), 320, 2);
+		Ctrl.sctx.fillRect(160, 0, 2, Ctrl.sh);
+
 		// 仮バナースペース
 		Ctrl.sctx.fillStyle = "#ffffff";
 		Ctrl.sctx.fillRect(0, Ctrl.sh - 50, Ctrl.sw, 50);
