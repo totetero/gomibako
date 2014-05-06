@@ -26,14 +26,14 @@ class ContentsServer{
 					if(tag.indexOf("sef_") == 0){addrs[tag] += sndExtension;}
 				}
 
-				// binary画像のリクエスト
+				// binaryコンテンツのリクエスト
 				new ContentsServer.BinLoader(path, addrs, function(data : Buffer) : void{
 					res.setHeader("Content-Type", "application/octet-stream");
 					//res.setHeader("cache-control", "no-cache");
 					res.send(data);
 				});
 			}else{
-				// base64画像のリクエスト
+				// base64コンテンツのリクエスト
 				new ContentsServer.B64ImageLoader(path, addrs, function(data : string) : void{
 					res.setHeader("Content-Type", "application/json");
 					//res.setHeader("cache-control", "no-cache");
@@ -42,22 +42,55 @@ class ContentsServer{
 			}
 		};
 
-		// GET音楽リクエストの処理
+		// GETコンテンツリクエストの処理
 		app.get(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			var urls : Map.<string> = null;
+			var list : string[] = null;
+			var addrs : Map.<string> = null;
 
-			// 基本セット
-			urls = {
-				//"bgm_test01": "/snd/bgm/bgm_stagebgm_09_hq",
-				//"bgm_test02": "/snd/bgm/bgm_stagebgm_07_hq",
-				//"sef_ok": "/snd/se/se_maoudamashii_system28",
-				//"sef_ng": "/snd/se/se_maoudamashii_system25"
-			};
+			switch(req.query["type"] as string){
+				case "core":
+					list = [
+						"/img/system/box/basic.png",
+						"/img/system/button/basic/normal.png",
+						"/img/system/button/basic/active.png",
+						"/img/system/button/basic/select.png",
+						"/img/system/button/basic/inactive.png",
+						"/img/system/button/ctrlArrow/normal.png",
+						"/img/system/button/ctrlArrow/active.png",
+						"/img/system/button/ctrlButton/normal.png",
+						"/img/system/button/ctrlButton/active.png",
+						"/img/system/button/headerTop/normal.png",
+						"/img/system/button/headerTop/active.png",
+						"/img/system/button/headerMenu/normal.png",
+						"/img/system/button/headerMenu/active.png",
+						"/img/system/button/headerMypage/normal.png",
+						"/img/system/button/headerMypage/active.png",
+						"/img/system/button/picker/normal.png",
+						"/img/system/button/picker/active.png",
+						"/img/system/button/picker/inactive.png",
+					];
+					break;
+				case "sound":
+					addrs = {
+						"bgm_test01": "/snd/bgm/bgm_stagebgm_09_hq",
+						"bgm_test02": "/snd/bgm/bgm_stagebgm_07_hq",
+						"sef_ok": "/snd/se/se_maoudamashii_system28",
+						"sef_ng": "/snd/se/se_maoudamashii_system25"
+					};
+					break;
+			}
 
-			addrResp(req, res, urls, true);
+			if(list != null){
+				if(addrs == null){addrs = {} : Map.<string>;}
+				for(var i = 0; i < list.length; i++){
+					addrs[list[i].slice(1, -4).replace(/\//g, "_")] = list[i];
+				}
+			}
+
+			addrResp(req, res, addrs, req.query["isBin"] as boolean);
 		});
 
-		// POST画像リクエストの処理
+		// POSTコンテンツリクエストの処理
 		app.post(url, function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			if(typeof req.body == "object" && typeof req.body["addrs"] == "object"){
 				var addrs = req.body["addrs"] as Map.<string>;

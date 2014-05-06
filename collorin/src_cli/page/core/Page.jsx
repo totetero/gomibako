@@ -21,16 +21,38 @@ import "../setting/PageSetting.jsx";
 abstract class Page extends EventPlayer{
 	static var current : Page;
 	static var _lastHash : string = "none";
+	static var _coreLoaded = false;
 
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
+		Loading.show();
+		Loader.loadContents("core", function() : void{
+			Loading.hide();
+			Page._coreLoaded = true;
+			Page.checkHash();
+		});
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	static function calc() : void{
 		// ページ遷移の監視
+		if(Page._coreLoaded){Page.checkHash();}
+
+		if(Page.current != null){
+			// ページの計算
+			Page.current.calc();
+			Page.current.ctrler.calc();
+			Page.current.header.calc();
+			// ページの描画
+			Page.current.draw();
+			Page.current.ctrler.draw();
+		}
+	}
+
+	// ページ遷移確認
+	static function checkHash() : void{
 		var currentHash = dom.window.location.hash;
 		if(Page._lastHash != currentHash){
 			Page._lastHash = currentHash;
@@ -47,19 +69,9 @@ abstract class Page extends EventPlayer{
 				Page.current = nextPage;
 			}
 		}
-
-		if(Page.current != null){
-			// ページの計算
-			Page.current.calc();
-			Page.current.ctrler.calc();
-			Page.current.header.calc();
-			// ページの描画
-			Page.current.draw();
-			Page.current.ctrler.draw();
-		}
 	}
 
-	// ページ遷移
+	// ページ遷移設定
 	static function transitionsPage(name : string) : void{
 		dom.window.location.hash = name;
 	}

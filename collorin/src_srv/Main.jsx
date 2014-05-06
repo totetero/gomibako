@@ -37,23 +37,6 @@ class _Main{
 			jdat["test"] = "にょろん";
 
 			contents["img_system_box_basic"] = "/img/system/box/basic.png";
-			contents["img_system_button_basic_normal"] = "/img/system/button/basic/normal.png";
-			contents["img_system_button_basic_active"] = "/img/system/button/basic/active.png";
-			contents["img_system_button_basic_select"] = "/img/system/button/basic/select.png";
-			contents["img_system_button_basic_inactive"] = "/img/system/button/basic/inactive.png";
-			contents["img_system_button_ctrlArrow_normal"] = "/img/system/button/ctrlArrow/normal.png";
-			contents["img_system_button_ctrlArrow_active"] = "/img/system/button/ctrlArrow/active.png";
-			contents["img_system_button_ctrlButton_normal"] = "/img/system/button/ctrlButton/normal.png";
-			contents["img_system_button_ctrlButton_active"] = "/img/system/button/ctrlButton/active.png";
-			contents["img_system_button_headerTop_normal"] = "/img/system/button/headerTop/normal.png";
-			contents["img_system_button_headerTop_active"] = "/img/system/button/headerTop/active.png";
-			contents["img_system_button_headerMenu_normal"] = "/img/system/button/headerMenu/normal.png";
-			contents["img_system_button_headerMenu_active"] = "/img/system/button/headerMenu/active.png";
-			contents["img_system_button_headerMypage_normal"] = "/img/system/button/headerMypage/normal.png";
-			contents["img_system_button_headerMypage_active"] = "/img/system/button/headerMypage/active.png";
-			contents["img_system_button_picker_normal"] = "/img/system/button/picker/normal.png";
-			contents["img_system_button_picker_active"] = "/img/system/button/picker/active.png";
-			contents["img_system_button_picker_inactive"] = "/img/system/button/picker/inactive.png";
 			jdat["contents"] = ContentsServer.convertAddress(contents);
 
 			res.setHeader("Content-Type", "application/json");
