@@ -7,8 +7,9 @@ JSX = $(DIR)/node_modules/jsx/bin/jsx
 LESS = $(DIR)/node_modules/less/bin/lessc
 MIN = $(DIR)/node_modules/uglify-js/bin/uglifyjs
 SRC_SRV_DIR = src_srv
-#SRC_CLI_DIR = src_cli_old
 SRC_CLI_DIR = src_cli
+#SRC_SRV_DIR = old/src_srv
+#SRC_CLI_DIR = old/src_cli
 
 # ---- test ----
 test: build
