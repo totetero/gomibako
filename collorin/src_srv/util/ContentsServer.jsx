@@ -83,7 +83,10 @@ class ContentsServer{
 			if(list != null){
 				if(addrs == null){addrs = {} : Map.<string>;}
 				for(var i = 0; i < list.length; i++){
-					addrs[list[i].slice(1, -4).replace(/\//g, "_")] = list[i];
+					var code = list[i].replace(/\//g, "_");
+					code = code.replace(/^_img/, "img");
+					code = code.replace(/\.png$/, "");
+					addrs[code] = list[i];
 				}
 			}
 
