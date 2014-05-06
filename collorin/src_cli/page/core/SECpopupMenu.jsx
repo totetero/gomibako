@@ -68,9 +68,7 @@ class SECpopupMenu extends SECpopup{
 				btn.trigger = false;
 				Sound.playSE("ok");
 				Page.transitionsPage(list[i]);
-				this._page.serialPush(this.parentCartridge);
-				this.close = true;
-				return false;
+				return true;
 			}
 		}
 
