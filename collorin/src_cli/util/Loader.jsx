@@ -122,8 +122,7 @@ class Loader{
 							var cssImgs = {} : Map.<string>;
 							var sndBufs = {} : Map.<ArrayBuffer>;
 							var count = 0;
-							if(xhr.response == null){
-							}else if(isBin){
+							if(isBin && xhr.response != null){
 								var buffers = Loader._buffer2map(xhr.response as ArrayBuffer);
 								for(var tag in buffers){
 									if(tag.indexOf("img_") == 0){
@@ -149,7 +148,7 @@ class Loader{
 										Loader.mots[tag] = new DrawCharacterMotion(JSON.parse(data));
 									}
 								}
-							}else{
+							}else if(!isBin){
 								// ArrayBuffer非対応！！
 								var strs = JSON.parse(xhr.responseText) as Map.<string>;
 								for(var tag in strs){

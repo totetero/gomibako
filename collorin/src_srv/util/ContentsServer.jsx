@@ -90,7 +90,7 @@ class ContentsServer{
 				}
 			}
 
-			addrResp(req, res, addrs, req.query["isBin"] as boolean);
+			addrResp(req, res, addrs, (req.query["isBin"] as string).toLowerCase() == "true");
 		});
 
 		// POSTコンテンツリクエストの処理
