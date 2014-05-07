@@ -12,6 +12,7 @@ import "../core/PartsButton.jsx";
 import "../core/SECpopupMenu.jsx";
 
 import "PageDice.jsx";
+import "Bb3dDiceCvs.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -62,8 +63,7 @@ class SECdiceMain implements SerialEventCartridge{
 	// 描画
 	override function draw() : void{
 		// 画面クリア
-		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+		Ctrl.sctx.clearRect(0, 0, Ctrl.sw, Ctrl.sh);
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}

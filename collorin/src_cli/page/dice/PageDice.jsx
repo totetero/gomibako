@@ -10,6 +10,7 @@ import "../../util/EventCartridge.jsx";
 import "../core/Page.jsx";
 import "../core/SECtransition.jsx";
 
+import "Bb3dDiceCvs.jsx";
 import "SECdiceMain.jsx";
 
 // ----------------------------------------------------------------
@@ -18,6 +19,8 @@ import "SECdiceMain.jsx";
 
 // テストページ
 class PageDice extends Page{
+	var bcvs : Bb3dDiceCanvas;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
@@ -36,10 +39,26 @@ class PageDice extends Page{
 			this.ctrler.setLctrl(false);
 			this.ctrler.setRctrl("", "", "", "");
 			this.header.setType("", "");
+			// キャンバス作成
+			this.bcvs = new Bb3dDiceCanvas(0, 0, Ctrl.sw, Ctrl.sh, 0, 0, 1);
 			// 応答処理
 			log response;
 			return new SECdiceMain(this);
 		}));
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		if(this.bcvs != null){this.bcvs.calc();}
+		return super.calc();
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		if(this.bcvs != null){this.bcvs.draw();}
+		super.draw();
 	}
 
 	// ----------------------------------------------------------------
