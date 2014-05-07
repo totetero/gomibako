@@ -10,7 +10,7 @@ import "../../util/EventCartridge.jsx";
 import "../core/Page.jsx";
 import "../core/SECtransition.jsx";
 
-import "Bb3dDiceCvs.jsx";
+import "Bb3dDiceCanvas.jsx";
 import "SECdiceMain.jsx";
 
 // ----------------------------------------------------------------

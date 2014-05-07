@@ -12,7 +12,7 @@ import "../core/PartsButton.jsx";
 import "../core/SECpopupMenu.jsx";
 
 import "PageDice.jsx";
-import "Bb3dDiceCvs.jsx";
+import "Bb3dDiceCanvas.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
