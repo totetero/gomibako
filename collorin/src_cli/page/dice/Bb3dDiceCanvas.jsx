@@ -14,10 +14,10 @@ import "../../bb3d/Bb3dCanvas.jsx";
 // ----------------------------------------------------------------
 
 // キャンバス情報管理
-class Bb3dDiceCanvas extends Bb3dCanvas{
+class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	// コンストラクタ
-	function constructor(x : int, y : int, w : int, h : int, rotv : number, roth : number, scale : number){
-		super(x, y, w, h, rotv, roth, scale);
+	function constructor(rotv : number, roth : number, scale : number){
+		super(rotv, roth, scale);
 	}
 
 	// 計算
