@@ -1,7 +1,7 @@
 import "js.jsx";
 import "js/web.jsx";
 
-// キャラクター描画情報クラス TODO 一旦ここにおいておく
+// キャラクター描画情報クラス
 class Bb3dDrawCharacterMotion{
 	var parts : Map.<number[][]>;
 	var pose : Map.<Map.<number[]>[]>;
