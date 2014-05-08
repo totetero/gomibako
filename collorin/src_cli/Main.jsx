@@ -83,10 +83,13 @@ class _Main{
 				display: block;
 				left: 50%;
 				margin-left: -140px;
-				width: 274px;
-				height: 24px;
+				width: 280px;
+				height: 30px;
 				font-size: 16px;
 				text-align: center;
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
 			}
 		""";
 		dom.document.head.appendChild(style);
