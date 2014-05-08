@@ -153,6 +153,7 @@ class SECpopupTextarea extends SECpopup{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		this._input.blur();
 		this._input.className = "";
 	}
 }
