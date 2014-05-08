@@ -5,7 +5,7 @@ import "../../require/socket.io.jsx";
 
 import "../../util/ContentsServer.jsx";
 import "../../models/User.jsx";
-import "../../data/CharacterDrawInfo.jsx";
+//import "../../data/CharacterDrawInfo.jsx";
 
 class ChatUserInfo{
 	var uid : string;
@@ -135,7 +135,7 @@ class ChatPage{
 							ChatPage._rcli.get([ChatPage._rhead + "uinfo:" + results[i]], function(err : variant, result : Nullable.<string>) : void{
 								// メンバー情報の形成
 								var tmpdata = JSON.parse(result);
-								tmpdata["drawInfo"] = CharacterDrawInfo.data["human"];
+//								tmpdata["drawInfo"] = CharacterDrawInfo.data["human"];
 								tmpdata["size"] = 1.2;
 								delete tmpdata["room"];
 								// 画像情報の確認

@@ -22,16 +22,11 @@ import "page/chat/ChatPage.jsx";
 
 import "models/User.jsx";
 
-import "data/CharacterDrawInfo.jsx";
-
 // メインクラス
 class _Main{
 	// ----------------------------------------------------------------
 	// main関数
 	static function main(args : string[]) : void{
-		// データ初期化
-		CharacterDrawInfo.init();
-
 		// データベース接続 mongo
 		mongoose.connect("mongodb://localhost/totetest");
 		// データベース接続 redis

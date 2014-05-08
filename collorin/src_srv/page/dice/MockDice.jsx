@@ -1,6 +1,6 @@
 import "js/web.jsx";
 
-import "../../../src_srv/data/CharacterDrawInfo.jsx";
+//import "../../../src_srv/data/CharacterDrawInfo.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -22,7 +22,7 @@ class MockDice{
 		if(!MockDice.isInit){
 			// すごろくモック初期化
 			MockDice.isInit = true;
-			CharacterDrawInfo.init();
+//			CharacterDrawInfo.init();
 		}
 
 		var imgs = {} : Map.<string>;
@@ -109,7 +109,7 @@ class MockDice{
 			jdatCharaInfo[cinfo.id] = {
 				side: cinfo.side,
 				code: cinfo.code,
-				drawInfo: CharacterDrawInfo.data[cinfo.drawInfo],
+//				drawInfo: CharacterDrawInfo.data[cinfo.drawInfo],
 				x: cinfo.x,
 				y: cinfo.y,
 				r: cinfo.r,

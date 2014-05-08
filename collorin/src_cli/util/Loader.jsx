@@ -2,7 +2,7 @@ import "js.jsx";
 import "js/web.jsx";
 
 // キャラクター描画情報クラス TODO 一旦ここにおいておく
-class DrawCharacterMotion{
+class Bb3dDrawCharacterMotion{
 	var parts : Map.<number[][]>;
 	var pose : Map.<Map.<number[]>[]>;
 	// コンストラクタ
@@ -26,7 +26,7 @@ class Loader{
 	// サウンドリスト
 	static var snds = {} : Map.<AudioBuffer>;
 	// モーションリスト
-	static var mots = {} : Map.<DrawCharacterMotion>;
+	static var mots = {} : Map.<Bb3dDrawCharacterMotion>;
 
 	// サウンドバッファ作成用コンテキスト 外部で登録する
 	static var soundContext : AudioContext;
@@ -145,7 +145,7 @@ class Loader{
 										var uint8Array = new Uint8Array(buffers[tag]);
 										var data = "";
 										for(var i = 0; i < uint8Array.length; i++){data += String.fromCharCode(uint8Array[i]);}
-										Loader.mots[tag] = new DrawCharacterMotion(JSON.parse(data));
+										Loader.mots[tag] = new Bb3dDrawCharacterMotion(JSON.parse(data));
 									}
 								}
 							}else if(!isBin){
@@ -158,7 +158,7 @@ class Loader{
 									}else if(tag.indexOf("css_") == 0){
 										cssImgs[tag] = strs[tag];
 									}else if(tag.indexOf("mot_") == 0){
-										Loader.mots[tag] = new DrawCharacterMotion(JSON.parse(strs[tag]));
+										Loader.mots[tag] = new Bb3dDrawCharacterMotion(JSON.parse(strs[tag]));
 									}
 								}
 							}

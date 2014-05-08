@@ -4,7 +4,6 @@ import "../../require/redis.jsx";
 
 import "../../util/ContentsServer.jsx";
 import "../../models/User.jsx";
-import "../../data/CharacterDrawInfo.jsx";
 
 // test
 import "MockDice.jsx";

@@ -22,7 +22,7 @@ put: build
 
 build: game.js content/main.js content/main.css
 
-tool: toolImgCrypt.js toolMakeData.js
+tool: toolImgCrypt.js toolMakeData.js toolMakeMotion.js
 
 db:
 	mongod &
@@ -46,6 +46,9 @@ toolImgCrypt.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
 
 toolMakeData.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
 	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/ToolMakeData.jsx
+
+toolMakeMotion.js: $(shell find $(SRC_SRV_DIR) -name "*.jsx")
+	$(JSX) --executable node --output $@ $(SRC_SRV_DIR)/ToolMakeMotion.jsx
 
 %.min.js: %.js
 	$(MIN) -c -o $@ $<

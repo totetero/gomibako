@@ -1,20 +1,43 @@
-class CharacterDrawInfo{
-	var weapon : string;
+native class fs{
+	static function mkdirSync(path : string) : void;
+	static function writeFileSync(filename : string, data : string) : void;
+} = """require("fs")""";
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// 画像ファイル名をハッシュ化
+
+// メインクラス
+class _Main{
+	// ----------------------------------------------------------------
+	// main関数
+	static function main(args : string[]) : void{
+		Bb3dDrawCharacterMotion.init();
+		fs.mkdirSync("./content/mot");
+		fs.writeFileSync("./content/mot/human.json", JSON.stringify(Bb3dDrawCharacterMotion.data["human"]));
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+class Bb3dDrawCharacterMotion{
 	var parts : Map.<number[][]>;
 	var pose : Map.<Map.<number[]>[]>;
 	// コンストラクタ
 	function constructor(dat : variant) {
-		this.weapon = dat["weapon"] as string;
 		this.parts = dat["parts"] as Map.<number[][]>;
 		this.pose = dat["pose"] as Map.<Map.<number[]>[]>;
 	}
 
-	static var data : Map.<CharacterDrawInfo> = {} : Map.<CharacterDrawInfo>;
+	static var data : Map.<Bb3dDrawCharacterMotion>;
 	static function init() : void{
 		// ----------------------------------------------------------------
 		// 人間型キャラクター情報
-		CharacterDrawInfo.data["human"] = new CharacterDrawInfo({
-			"weapon": "whiteSword",
+		var data = {} : Map.<Bb3dDrawCharacterMotion>;
+		data["human"] = new Bb3dDrawCharacterMotion({
 			"parts": {
 				"head": [
 					[  0.00,  0.00,  0.00,  0,   0, 32, 0],
@@ -265,6 +288,11 @@ class CharacterDrawInfo{
 			}
 		});
 		// ----------------------------------------------------------------
+		Bb3dDrawCharacterMotion.data = data;
 	}
 }
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
 

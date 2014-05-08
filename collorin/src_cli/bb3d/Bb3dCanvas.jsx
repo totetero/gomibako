@@ -14,6 +14,10 @@ import "../util/EventCartridge.jsx";
 
 // キャンバス情報管理
 class Bb3dCanvas{
+	var x : int;
+	var y : int;
+	var w : int;
+	var h : int;
 	// 画面回転拡大
 	var rotv : number;
 	var roth : number;
@@ -61,11 +65,15 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 	// コンストラクタ
 	function constructor(rotv : number, roth : number, scale : number){
 		super(rotv, roth, scale);
+		this.x = 0;
+		this.y = 0;
 		this.calcrotv = this.rotv;
 	}
 
 	// マウス状態とタッチ状態の計算
 	function calcTouchCoordinate() : void{
+		this.w = Ctrl.sw;
+		this.h = Ctrl.sh;
 		// キャンバスからみたマウス位置を確認
 		this.prevctx = this.ctx;
 		this.prevcty = this.cty;
