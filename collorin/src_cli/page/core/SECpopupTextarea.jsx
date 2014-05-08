@@ -27,7 +27,7 @@ class SECpopupTextarea extends SECpopup{
 
 	var _openButton : PartsButtonTextareaOpener;
 
-	var _sy : int;
+	var _wh : int;
 	var _textCvs : HTMLCanvasElement;
 	var _textLength : int;
 
@@ -117,7 +117,7 @@ class SECpopupTextarea extends SECpopup{
 		// 親カートリッジ描画後に上書き
 
 		// ウインドウサイズに対する位置調整
-		if(this._sy != Ctrl.sy){this._sy = Ctrl.sy; this._input.style.top = (Ctrl.sy + 40) + "px";}
+		if(this._wh != Ctrl.wh){this._wh = Ctrl.wh; this._input.style.top = (Ctrl.sy + 40) + "px";}
 
 		// 枠描画
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 10, 10, 300, 110);
@@ -153,6 +153,7 @@ class SECpopupTextarea extends SECpopup{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		this._input.className = "";
 	}
 }
 

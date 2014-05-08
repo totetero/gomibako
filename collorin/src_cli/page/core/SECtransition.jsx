@@ -127,6 +127,7 @@ class SECtransition implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		if(this._prevPage != null){this._prevPage.dispose();}
 	}
 }
 
