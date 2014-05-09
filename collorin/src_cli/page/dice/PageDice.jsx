@@ -40,9 +40,8 @@ class PageDice extends Page{
 			this.ctrler.setRctrl("", "", "", "");
 			this.header.setType("", "");
 			// キャンバス作成
-			this.bcvs = new Bb3dDiceCanvas(response);
+			this.bcvs = new Bb3dDiceCanvas(response["list"][0]);
 			// 応答処理
-			log response;
 			return new SECdiceMain(this);
 		}));
 	}

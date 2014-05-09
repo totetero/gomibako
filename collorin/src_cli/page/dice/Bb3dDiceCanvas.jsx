@@ -10,12 +10,15 @@ import "../../util/EventCartridge.jsx";
 import "../../bb3d/Bb3dCanvas.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 
+import "Bb3dDiceField.jsx";
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
 // キャンバス情報管理
 class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
+	var field : Bb3dDiceField;
 	var _character : Bb3dDrawCharacter;
 
 	// 背景
@@ -25,14 +28,24 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(response : variant){
-		super(0, 0, 1);
+		super(Math.PI / 180 * 30, Math.PI / 180 * 45, 1);
 
+		// フィールド
+		this.field = new Bb3dDiceField(this, response["hex"] as Bb3dDiceFieldCell[]);
+
+		// test
 		var img = Loader.imgs["img_character_player0_dot"];
 		var mot = Loader.mots["mot_human"];
 		this._character = new Bb3dDrawCharacter(img, mot, 1.0);
 
+ 		// 初期カメラ位置
+		var hexx = response["camera"][0] as int;
+		var hexy = response["camera"][1] as int;
+		this.cx = this.calcx = this.field.calcHexCoordx(hexx, hexy);
+		this.cy = this.calcy = this.field.calcHexCoordy(hexx, hexy);
+
 		// 背景
-		this._bgimg = Loader.imgs["img_background_test"];
+		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
 	}
 
 	// ----------------------------------------------------------------
@@ -53,6 +66,8 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	function draw() : void{
 		// 背景描画
 		this._drawBackground();
+		// 地面描画
+		this.field.draw(this, this.cx, this.cy, false);
 
 		this._character.preDraw(this, 0, 0, 0, Math.PI * 0.5, "stand", 0);
 		this._character.draw(this);
