@@ -140,32 +140,41 @@ class ContentsServer{
 	// ----------------------------------------------------------------
 	// base64形式での画像読み込みクラス
 	class B64ImageLoader{
-		var _imgs = {} : Map.<string>;
+		var _strs = {} : Map.<string>;
 
 		// コンストラクタ
 		function constructor(path : string, addrs : Map.<string>, callback : function(data:string):void){
-			var tags = new string[];
+			var imgTags = new string[];
+			var strTags = new string[];
 			for(var tag in addrs){
-				if(tag.indexOf("img_") == 0){tags.push(tag);}
-				if(tag.indexOf("css_") == 0){tags.push(tag);}
-				if(tag.indexOf("mot_") == 0){tags.push(tag);}
+				if(tag.indexOf("img_") == 0){imgTags.push(tag);}
+				if(tag.indexOf("css_") == 0){imgTags.push(tag);}
+				if(tag.indexOf("mot_") == 0){strTags.push(tag);}
 			}
-			// 画像を読み込む
-			var count = tags.length;
+			// データを読み込む
+			var count = imgTags.length + strTags.length;
 			if(count > 0){
-				for(var i = 0; i < tags.length; i++){
-					this.load(path + addrs[tags[i]], tags[i], function() : void{
+				for(var i = 0; i < imgTags.length; i++){
+					this.loadImg(path + addrs[imgTags[i]], imgTags[i], function() : void{
 						if(--count == 0){
 							// すべての読み込みが完了したら送信
-							callback(JSON.stringify(this._imgs));
+							callback(JSON.stringify(this._strs));
+						}
+					});
+				}
+				for(var i = 0; i < strTags.length; i++){
+					this.loadStr(path + addrs[strTags[i]], strTags[i], function() : void{
+						if(--count == 0){
+							// すべての読み込みが完了したら送信
+							callback(JSON.stringify(this._strs));
 						}
 					});
 				}
 			}else{callback("");}
 		}
 
-		// データのロード
-		function load(addr : string, tag : string, callback : function():void) : void{
+		// 画像データのロード
+		function loadImg(addr : string, tag : string, callback : function():void) : void{
 			fs.readFile(addr, function (err : variant, data : Buffer){
 				if(!err){
 					// 読み込み成功 ファイル形式の確認
@@ -179,7 +188,20 @@ class ContentsServer{
 					if(cp0 == 0x89 && cp1 == 0x50 && cp2 == 0x4e && cp3 == 0x47){type = "data:image/png;base64,";}
 					else if(cp0 == 0x47 && cp1 == 0x49 && cp2 == 0x46 && cp3 == 0x38){type = "data:image/gif;base64,";}
 					else if(cp0 == 0xff && cp1 == 0xd8 && cm2 == 0xff && cm1 == 0xd9){type = "data:image/jpeg;base64,";}
-					if(type != ""){this._imgs[tag] = type + data.toString("base64");}
+					if(type != ""){this._strs[tag] = type + data.toString("base64");}
+				}else{
+					// 読み込み失敗 TODO なんかデフォルト用意しとく？
+				}
+				callback();
+			});
+		}
+
+		// 文字列データのロード
+		function loadStr(addr : string, tag : string, callback : function():void) : void{
+			fs.readFile(addr, "utf8", function (err : variant, data : string){
+				if(!err){
+					// 読み込み成功
+					this._strs[tag] = data;
 				}else{
 					// 読み込み失敗 TODO なんかデフォルト用意しとく？
 				}
