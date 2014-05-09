@@ -150,8 +150,8 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 		this.maxx = bcvs.x;
 		this.maxy = bcvs.y;
 		Bb3dDrawUnit.drawList(bcvs, this._duList);
-		Ctrl.gctx.strokeRect(this.minx, this.miny, this.maxx - this.minx, this.maxy - this.miny);
-		Ctrl.gctx.beginPath(); for(var i = 0; i <= 20; i++){Ctrl.gctx.lineTo(((this.maxx + this.minx) + (this.maxx - this.minx) * Math.cos(Math.PI * (i / 10))) * 0.5, ((this.maxy + this.miny) + (this.maxy - this.miny) * Math.sin(Math.PI * (i / 10))) * 0.5);} Ctrl.gctx.stroke();
+		//Ctrl.gctx.strokeRect(this.minx, this.miny, this.maxx - this.minx, this.maxy - this.miny);
+		//Ctrl.gctx.beginPath(); for(var i = 0; i <= 20; i++){Ctrl.gctx.lineTo(((this.maxx + this.minx) + (this.maxx - this.minx) * Math.cos(Math.PI * (i / 10))) * 0.5, ((this.maxy + this.miny) + (this.maxy - this.miny) * Math.sin(Math.PI * (i / 10))) * 0.5);} Ctrl.gctx.stroke();
 	}
 }
 
