@@ -55,13 +55,6 @@ class PageDice extends Page{
 	}
 
 	// ----------------------------------------------------------------
-	// 描画
-	override function draw() : void{
-		if(this.bcvs != null){this.bcvs.draw();}
-		super.draw();
-	}
-
-	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();

@@ -70,6 +70,8 @@ class SECdiceMain implements SerialEventCartridge{
 
 		// ヘッダ描画
 		this._page.header.draw();
+		// キャンバス描画
+		this._page.bcvs.draw();
 	}
 
 	// ----------------------------------------------------------------

@@ -94,23 +94,31 @@ class SECtransition implements SerialEventCartridge{
 				if(this._same){x0 = 320 * (0 - num * num);}
 
 				Ctrl.sctx.save(); Ctrl.sctx.translate(x0, 0);
+				Ctrl.gctx.save(); Ctrl.gctx.translate(x0, 0);
 				this._prevPage.draw();
 				Ctrl.sctx.restore();
+				Ctrl.gctx.restore();
 
 				Ctrl.sctx.save(); Ctrl.sctx.translate(x1, 0);
+				Ctrl.gctx.save(); Ctrl.gctx.translate(x1, 0);
 				this._nextCartridge.draw();
 				Ctrl.sctx.restore();
+				Ctrl.gctx.restore();
 			}else{
 				x0 = 320 * (num * num);
 				if(this._same){x1 = 320 * (num * num - 1);}
 
 				Ctrl.sctx.save(); Ctrl.sctx.translate(x1, 0);
+				Ctrl.gctx.save(); Ctrl.gctx.translate(x1, 0);
 				this._nextCartridge.draw();
 				Ctrl.sctx.restore();
+				Ctrl.gctx.restore();
 
 				Ctrl.sctx.save(); Ctrl.sctx.translate(x0, 0);
+				Ctrl.gctx.save(); Ctrl.gctx.translate(x0, 0);
 				this._prevPage.draw();
 				Ctrl.sctx.restore();
+				Ctrl.gctx.restore();
 			}
 
 			// ポップアップ隠蔽フラグとりのぞき
