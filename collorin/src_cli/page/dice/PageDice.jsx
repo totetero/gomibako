@@ -34,15 +34,15 @@ class PageDice extends Page{
 	// 初期化
 	override function init() : void{
 		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/dice", {"type": "entry"}, function(response : variant) : SerialEventCartridge{
+		this.serialPush(new SECtransition(this, "/dice", {"type": "entry"}, function(response : variant) : void{
 			// クロス要素の展開処理
 			this.ctrler.setLctrl(false);
 			this.ctrler.setRctrl("", "", "", "");
 			this.header.setType("", "");
-			// キャンバス作成
-			this.bcvs = new Bb3dDiceCanvas(response["list"][0]);
-			// 応答処理
-			return new SECdiceMain(this);
+			// ロードしたデータの解析
+			this.parse(response["list"] as variant[]);
+			// テスト
+			this.serialPush(new SECdiceMain(this));
 		}));
 	}
 
@@ -51,6 +51,24 @@ class PageDice extends Page{
 	override function calc() : boolean{
 		if(this.bcvs != null){this.bcvs.calc();}
 		return super.calc();
+	}
+
+	// ----------------------------------------------------------------
+	// ロードしたデータの解析
+	function parse(list : variant[]) : variant{
+		var response : variant = null;
+		for(var i = 0; i < list.length; i++){
+			switch(list[i]["type"] as string){
+				case "entry": this.bcvs = new Bb3dDiceCanvas(list[i]); break;
+//				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
+//				case "dice": response = list[i]; break;
+//				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
+//				case "beam": this.serialPush(new SECdiceFaceBeam(this, list[i])); break;
+//				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
+//				case "moveManual": this.serialPush(new SECdiceMoveManual(this, list[i])); break;
+			}
+		}
+		return response;
 	}
 
 	// ----------------------------------------------------------------

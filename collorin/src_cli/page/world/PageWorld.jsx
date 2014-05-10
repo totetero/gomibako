@@ -31,14 +31,14 @@ class PageWorld extends Page{
 	// 初期化
 	override function init() : void{
 		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/world", null, function(response : variant) : SerialEventCartridge{
+		this.serialPush(new SECtransition(this, "/world", null, function(response : variant) : void{
 			// クロス要素の展開処理
 			this.ctrler.setLctrl(false);
 			this.ctrler.setRctrl("", "", "", "");
 			this.header.setType("ワールド", "mypage");
-			// 応答処理
+			// カートリッジ装填
 			log response;
-			return new SECworldMain(this);
+			this.serialPush(new SECworldMain(this));
 		}));
 	}
 

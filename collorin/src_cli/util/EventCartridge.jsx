@@ -49,19 +49,19 @@ class EventPlayer{
 		this._parallelList.push(pec);
 	}
 
-//	// --------------------------------
-//	// イベントの確認
-//
+	// --------------------------------
+	// イベントの確認
+
 //	// 現在の直列イベント確認
 //	function getSerialCurrent() : SerialEventCartridge{
 //		return this._serialCurrent;
 //	}
 //
-//	// 次の直列イベント確認
-//	function getSerialNext() : SerialEventCartridge{
-//		return this._serialList.length > 0 ? this._serialList[0] : null;
-//	}
-//
+	// 次の直列イベント確認
+	function getSerialNext() : SerialEventCartridge{
+		return this._serialList.length > 0 ? this._serialList[0] : null;
+	}
+
 	// --------------------------------
 	// イベントの計算
 	function calc() : boolean{

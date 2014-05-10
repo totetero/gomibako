@@ -30,7 +30,7 @@ class SECtransition implements SerialEventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(nextPage : Page, url : string, request : variant, callback : function(response:variant):SerialEventCartridge){
+	function constructor(nextPage : Page, url : string, request : variant, callback : function(response:variant):void){
 		// 前のページを記憶 Page継承クラスのinit関数でフレーム内にコンストラクタを呼び出す想定
 		this._prevPage = Page.current;
 		this._nextPage = nextPage;
@@ -53,8 +53,8 @@ class SECtransition implements SerialEventCartridge{
 			Loader.loadContents(response["contents"] as Map.<string>, function() : void{
 				Loading.hide();
 				this._loading = false;
-				this._nextCartridge = callback(response);
-				this._nextPage.serialPush(this._nextCartridge);
+				callback(response);
+				this._nextCartridge = this._nextPage.getSerialNext();
 			});
 		});
 	}

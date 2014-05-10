@@ -31,14 +31,14 @@ class PageTest extends Page{
 	// 初期化
 	override function init() : void{
 		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/test", null, function(response : variant) : SerialEventCartridge{
+		this.serialPush(new SECtransition(this, "/test", null, function(response : variant) : void{
 			// クロス要素の展開処理
 			this.ctrler.setLctrl(true);
 			this.ctrler.setRctrl("テスト01", "テスト02", "テスト03", "テスト04");
 			this.header.setType("テスト", "mypage");
-			// 応答処理
+			// カートリッジ装填
 			log response;
-			return new SECtestMain(this);
+			this.serialPush(new SECtestMain(this));
 		}));
 	}
 
