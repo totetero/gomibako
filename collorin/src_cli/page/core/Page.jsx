@@ -10,7 +10,6 @@ import "../../util/EventCartridge.jsx";
 import "CrossCtrler.jsx";
 import "CrossHeader.jsx";
 import "../mypage/PageMypage.jsx";
-import "../test/PageTest.jsx";
 import "../world/PageWorld.jsx";
 import "../setting/PageSetting.jsx";
 import "../dice/PageDice.jsx";
@@ -59,8 +58,7 @@ abstract class Page extends EventPlayer{
 		if(Page._lastHash != currentHash){
 			Page._lastHash = currentHash;
 			var nextPage : Page = null;
-			if(currentHash.indexOf("test") == 1){nextPage = new PageTest();}
-			else if(currentHash.indexOf("world") == 1){nextPage = new PageWorld();}
+			if(currentHash.indexOf("world") == 1){nextPage = new PageWorld();}
 			else if(currentHash.indexOf("setting") == 1){nextPage = new PageSetting();}
 			else if(currentHash.indexOf("dice") == 1){nextPage = new PageDice();}
 			else{nextPage = new PageMypage();}

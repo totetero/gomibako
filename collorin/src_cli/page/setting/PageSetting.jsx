@@ -32,9 +32,7 @@ class PageSetting extends Page{
 	override function init() : void{
 		// ロードと画面遷移
 		this.serialPush(new SECtransition(this, "/setting", null, function(response : variant) : void{
-			// クロス要素の展開処理
-			this.ctrler.setLctrl(false);
-			this.ctrler.setRctrl("", "", "", "");
+			// ヘッダ設定
 			this.header.setType("設定", "mypage");
 			// カートリッジ装填
 			log response;

@@ -55,6 +55,9 @@ class SECtransition implements SerialEventCartridge{
 				this._loading = false;
 				callback(response);
 				this._nextCartridge = this._nextPage.getSerialNext();
+				this._nextCartridge.init();
+				// ヘッダ無効化
+				this._nextPage.header.setActive(false);
 			});
 		});
 	}
