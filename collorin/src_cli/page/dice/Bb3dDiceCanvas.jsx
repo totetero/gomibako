@@ -8,9 +8,11 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../../bb3d/Bb3dCanvas.jsx";
+import "../../bb3d/Bb3dDrawUnit.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 
 import "Bb3dDiceField.jsx";
+import "Bb3dDiceCharacter.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -19,7 +21,10 @@ import "Bb3dDiceField.jsx";
 // キャンバス情報管理
 class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	var field : Bb3dDiceField;
-	var _character : Bb3dDrawCharacter;
+	var member = {} : Map.<Bb3dDiceCharacter>;
+
+	var clist = new Bb3dDrawUnit[];
+	var slist = new Bb3dDrawUnit[];
 
 	// 背景
 	var _bgimg : HTMLImageElement;
@@ -33,10 +38,11 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		// フィールド
 		this.field = new Bb3dDiceField(this, response["hex"] as Bb3dDiceFieldCell[]);
 
-		// test
-		var img = Loader.imgs["img_character_player0_dot"];
-		var mot = Loader.mots["mot_human"];
-		this._character = new Bb3dDrawCharacter(img, mot, 1.0);
+		// キャラクター
+		var charaInfoList = response["charaInfo"] as Map.<variant>;
+		for(var id in charaInfoList){
+			this.member[id] = new Bb3dDiceCharacter(this, charaInfoList[id]);
+		}
 
  		// 初期カメラ位置
 		var hexx = response["camera"][0] as int;
@@ -59,18 +65,27 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		this.scale -= (this.scale - 1.0) * 0.1;
 		this.cx -= (this.cx - this.calcx) * 0.2;
 		this.cy -= (this.cy - this.calcy) * 0.2;
+
+		// キャラクター計算
+		for(var id in this.member){
+			this.member[id].calc(this);
+			if(!this.member[id].exist){delete this.member[id];}
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
+		for(var id in this.member){this.member[id].preDraw(this);}
+
 		// 背景描画
 		this._drawBackground();
 		// 地面描画
 		this.field.draw(this, this.cx, this.cy, false);
-
-		this._character.preDraw(this, 0, 0, 0, Math.PI * 0.5, "stand", 0);
-		this._character.draw(this);
+		// 影描画
+		Bb3dDrawUnit.drawList(this, this.slist);
+		// キャラクター描画
+		Bb3dDrawUnit.drawList(this, this.clist);
 	}
 
 	// ----------------------------------------------------------------
