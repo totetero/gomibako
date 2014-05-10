@@ -8,6 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../../bb3d/Bb3dDrawCharacter.jsx";
+import "../../bb3d/Bb3dDrawShadow.jsx";
 
 import "Bb3dDiceCanvas.jsx";
 
