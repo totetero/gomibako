@@ -8,7 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECtransition.jsx";
+import "../core/SECloadTransition.jsx";
 
 import "SECsettingMain.jsx";
 
@@ -31,12 +31,11 @@ class PageSetting extends Page{
 	// 初期化
 	override function init() : void{
 		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/setting", null, function(response : variant) : void{
+		this.serialPush(new SECloadTransition(this, "/setting", null, function(response : variant) : void{
 			// ヘッダ設定
 			this.header.setType("設定", "mypage");
 			// カートリッジ装填
-			log response;
-			this.serialPush(new SECsettingMain(this));
+			this.serialPush(new SECsettingMain(this, response));
 		}));
 	}
 

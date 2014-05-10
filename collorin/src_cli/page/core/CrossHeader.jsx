@@ -8,7 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "PartsButton.jsx";
-import "SECtransition.jsx";
+import "SECloadTransition.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -58,7 +58,7 @@ class CrossHeader{
 	// 描画
 	function draw() : void{
 		// ページ遷移中の場合通常のヘッダ描画はキャンセルされる
-		if(SECtransition.invisibleHeaderCount > 0){return;}
+		if(SECloadTransition.invisibleHeaderCount > 0){return;}
 
 		var hy = 50 * Math.abs(this._hAction / CrossHeader._actionMax);
 		var ly = 50 * Math.abs(this._lAction / CrossHeader._actionMax);

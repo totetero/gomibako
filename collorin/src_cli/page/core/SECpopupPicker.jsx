@@ -44,7 +44,7 @@ class SECpopupPicker extends SECpopup{
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
 	var _scroller : PartsScroll;
-
+	// ポップアップ展開用のボタン
 	var _openButton : PartsButtonPickerOpener;
 
 	var _center : int;

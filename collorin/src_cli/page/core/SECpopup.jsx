@@ -8,7 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "Page.jsx";
-import "SECtransition.jsx";
+import "SECloadTransition.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -57,7 +57,7 @@ abstract class SECpopup implements SerialEventCartridge{
 		// 親カートリッジを最初に描画
 		this.parentCartridge.draw();
 		// ページ遷移中の場合ポップアップ描画キャンセル
-		if(SECtransition.invisiblePopup){return;}
+		if(SECloadTransition.invisiblePopup){return;}
 
 		// 暗幕
 		Ctrl.sctx.fillStyle = "rgba(0, 0, 0, " + (0.5 * (1 - Math.abs(num))) + ")";

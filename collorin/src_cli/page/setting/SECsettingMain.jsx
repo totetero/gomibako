@@ -37,10 +37,10 @@ class SECsettingMain implements SerialEventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageSetting){
+	function constructor(page : PageSetting, response : variant){
 		this._page = page;
-		this._nicknameTextarea = new SECsettingPopupTextareaNickname(this._page, this);
-		this._commentTextarea = new SECsettingPopupTextareaComment(this._page, this);
+		this._nicknameTextarea = new SECsettingPopupTextareaNickname(this._page, this, response);
+		this._commentTextarea = new SECsettingPopupTextareaComment(this._page, this, response);
 		this._qualityPicker = new SECsettingPopupPickerQuality(this._page, this);
 		this._transitionPicker = new SECsettingPopupPickerTransition(this._page, this);
 		this._bgmPicker = new SECsettingPopupPickerBgm(this._page, this);

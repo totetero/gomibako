@@ -8,7 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECtransition.jsx";
+import "../core/SECloadTransition.jsx";
 
 import "SECmypageMain.jsx";
 
@@ -31,7 +31,7 @@ class PageMypage extends Page{
 	// 初期化
 	override function init() : void{
 		// ロードと画面遷移
-		this.serialPush(new SECtransition(this, "/mypage", null, function(response : variant) : void{
+		this.serialPush(new SECloadTransition(this, "/mypage", null, function(response : variant) : void{
 			// ヘッダ設定
 			this.header.setType("マイページ", "top");
 			// カートリッジ装填

@@ -24,8 +24,11 @@ class SECpopupTextarea extends SECpopup{
 	var _input : HTMLInputElement;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
-
+	// ポップアップ展開用のボタン
 	var _openButton : PartsButtonTextareaOpener;
+
+	// 文字数0での決定を許可する
+	var isPermitZero = true;
 
 	var _wh : int;
 	var _textCvs : HTMLCanvasElement;
@@ -94,6 +97,9 @@ class SECpopupTextarea extends SECpopup{
 		if(this._input.className != "textarea"){
 			this._input.className = "textarea";
 		}
+
+		// 文字数0確認
+		this._btnList["ok"].inactive = (!this.isPermitZero && this._input.value.length <= 0);
 
 		// ボタン押下時
 		if(this._btnList["ok"].trigger || this._btnList["outer"].trigger || this._btnList["close"].trigger){

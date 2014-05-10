@@ -8,9 +8,8 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
+import "../core/SECload.jsx";
 import "../core/SECpopupTextarea.jsx";
-
-import "PageSetting.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -18,22 +17,33 @@ import "PageSetting.jsx";
 
 // コメントのテキストエリア
 class SECsettingPopupTextareaComment extends SECpopupTextarea{
-	var _sPage : PageSetting;
+	var _page_ : Page;
+	var _prevValue : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageSetting, cartridge : SerialEventCartridge){
+	function constructor(page : Page, cartridge : SerialEventCartridge, response : variant){
 		super(page, cartridge, "コメント設定", 16);
-		this.setValue("げんきかえ？"); // TODO
-		this._sPage = page;
+		this._parse(response);
+		this._page_ = page;
 	}
 
 	// ----------------------------------------------------------------
 	// 入力確定時の動作
 	override function onEnter(value : string) : void{
-		//if(value != this._sPage.comment){
-		//	this._sPage.serialPush(new SECload("/setting?comment=" + value, null, function(response : variant) : void{this._sPage.parse(response);}));
-		//}
+		if(value != this._prevValue){
+			this._page_.serialPush(new SECload(this, "/setting?comment=" + value, null, function(response : variant) : void{
+				this._parse(response);
+			}));
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// ロード完了時 データの形成
+	function _parse(response : variant) : void{
+		var value = response["comment"] as string;
+		this.setValue(value);
+		this._prevValue = value;
 	}
 }
 

@@ -14,7 +14,7 @@ import "Page.jsx";
 // ----------------------------------------------------------------
 
 // ページ遷移演出
-class SECtransition implements SerialEventCartridge{
+class SECloadTransition implements SerialEventCartridge{
 	static const _actionMax = 10;
 	static var invisiblePopup = false;
 	static var invisibleHeaderCount = 0;
@@ -71,7 +71,7 @@ class SECtransition implements SerialEventCartridge{
 	// 計算
 	override function calc() : boolean{
 		if(!this._loading){
-			if(this._prevPage == null || ++this._action >= SECtransition._actionMax){
+			if(this._prevPage == null || ++this._action >= SECloadTransition._actionMax){
 				Sound.playBGM(this._nextPage.bgm);
 				return false;
 			}
@@ -84,12 +84,12 @@ class SECtransition implements SerialEventCartridge{
 	override function draw() : void{
 		if(this._action > 0){
 			// ポップアップは遷移中描画しないので隠す
-			SECtransition.invisiblePopup = true;
+			SECloadTransition.invisiblePopup = true;
 			// ヘッダはページと同時には遷移しないので一時的に隠す
-			SECtransition.invisibleHeaderCount++;
+			SECloadTransition.invisibleHeaderCount++;
 
 			// 遷移演出
-			var num = this._action / SECtransition._actionMax;
+			var num = this._action / SECloadTransition._actionMax;
 			var x0 = 0;
 			var x1 = 0;
 			if(this._next){
@@ -125,9 +125,9 @@ class SECtransition implements SerialEventCartridge{
 			}
 
 			// ポップアップ隠蔽フラグとりのぞき
-			SECtransition.invisiblePopup = false;
+			SECloadTransition.invisiblePopup = false;
 			// ヘッダ描画
-			SECtransition.invisibleHeaderCount--;
+			SECloadTransition.invisibleHeaderCount--;
 			this._nextPage.header.draw();
 		}else{
 			// ロード中

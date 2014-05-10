@@ -7,43 +7,51 @@ import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
-import "../core/Page.jsx";
-import "../core/SECloadTransition.jsx";
-
-import "SECworldMain.jsx";
-
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// テストページ
-class PageWorld extends Page{
+// ローディングカートリッジ
+class SECload implements SerialEventCartridge{
+	var _prevCartridge : SerialEventCartridge;
+	var _loading = true;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
-		// プロパティ設定
-		this.type = "world";
-		this.depth = 11;
-		this.bgm = "test01";
+	function constructor(prevCartridge : SerialEventCartridge, url : string, request : variant, callback : function(response:variant):void){
+		this._prevCartridge = prevCartridge;
+
+		// ロード開始
+		Loading.show();
+		Loader.loadxhr(url, request, function(response : variant) : void{
+			Loader.loadContents(response["contents"] as Map.<string>, function() : void{
+				Loading.hide();
+				this._loading = false;
+				callback(response);
+			});
+		});
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// ロードと画面遷移
-		this.serialPush(new SECloadTransition(this, "/world", null, function(response : variant) : void{
-			// ヘッダ設定
-			this.header.setType("ワールド", "mypage");
-			// カートリッジ装填
-			log response;
-			this.serialPush(new SECworldMain(this));
-		}));
+	}
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		return this._loading;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw() : void{
+		this._prevCartridge.draw();
 	}
 
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		super.dispose();
 	}
 }
 
