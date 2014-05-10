@@ -20,7 +20,7 @@ abstract class SECpopup implements SerialEventCartridge{
 
 	// ポップアップの親カートリッジ
 	var parentCartridge : SerialEventCartridge;
-	var close = true; // 親カートリッジに戻るときはこの値をtrue
+	var close = true; // 閉じる演出の有無 さらにポップアップを展開する場合はfalse
 
 	var _openStep = SECpopup._openStepMax;
 
@@ -42,7 +42,7 @@ abstract class SECpopup implements SerialEventCartridge{
 		// 前後遷移中処理
 		if(this._openStep != 0){this._openStep++;}
 		// 前遷移完了後の通常処理
-		if(this._openStep == 0 && !this.popupCalc()){if(this.close){this._openStep = 1;}else{return false;}}
+		if(this._openStep == 0 && !this.popupCalc()){if(this.close){this._openStep = 1;}else{this.close = true; return false;}}
 		// 後遷移スキップ確認
 		if(this._openStep == 1 && this._checkSkip()){this._openStep = SECpopup._openStepMax;}
 		// 後遷移完了確認

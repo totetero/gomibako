@@ -83,7 +83,6 @@ class SECpopupMenu extends SECpopup{
 			btn1.trigger = false;
 			Sound.playSE("ng");
 			this._page.serialPush(this.parentCartridge);
-			this.close = true;
 			return false;
 		}
 

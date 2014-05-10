@@ -159,7 +159,6 @@ class SECpopupPicker extends SECpopup{
 				this.setSelectedItem(item.tag);
 				this.onSelect(item.tag);
 				this._page.serialPush(this.parentCartridge);
-				this.close = true;
 				return false;
 			}
 		}
@@ -172,7 +171,6 @@ class SECpopupPicker extends SECpopup{
 			btn1.trigger = false;
 			Sound.playSE("ng");
 			this._page.serialPush(this.parentCartridge);
-			this.close = true;
 			return false;
 		}
 
