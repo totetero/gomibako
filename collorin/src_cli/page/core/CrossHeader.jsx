@@ -69,13 +69,15 @@ class CrossHeader{
 		Ctrl.sctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
 		Ctrl.sctx.strokeRect(10, 10 - hy, 40, 35);
 		// 文字列描画
-		var pixelRatio = 2;
-		if(this._currentTextCvs == null){this._currentTextCvs = Drawer.createText(this._nextText, 18 * pixelRatio, "black");}
-		var w = this._currentTextCvs.width / pixelRatio;
-		var h = this._currentTextCvs.height / pixelRatio;
-		var x = 5 + 50;
-		var y = 5 + (45 - h) * 0.5 - hy;
-		Ctrl.sctx.drawImage(this._currentTextCvs, x, y, w, h);
+		if(this._nextText != ""){
+			var pixelRatio = 2;
+			if(this._currentTextCvs == null){this._currentTextCvs = Drawer.createText(this._nextText, 18 * pixelRatio, "black");}
+			var w = this._currentTextCvs.width / pixelRatio;
+			var h = this._currentTextCvs.height / pixelRatio;
+			var x = 5 + 50;
+			var y = 5 + (45 - h) * 0.5 - hy;
+			Ctrl.sctx.drawImage(this._currentTextCvs, x, y, w, h);
+		}
 		// ボタン描画
 		if(this._currentType == ""){this._currentType = this._nextType;}
 		var lImgCode = "img_system_button_header" + (this._currentType == "mypage" ? "Mypage" : "Top") + "_" + (this.lbtn.active ? "active" : "normal");

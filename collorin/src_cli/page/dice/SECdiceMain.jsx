@@ -35,8 +35,9 @@ class SECdiceMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// ヘッダ有効化
-		this._page.header.setActive(true);
+		// コントローラ表示
+		this._page.ctrler.setLctrl(true);
+		this._page.ctrler.setRctrl("テスト01", "テスト02", "テスト03", "テスト04");
 	}
 
 	// ----------------------------------------------------------------

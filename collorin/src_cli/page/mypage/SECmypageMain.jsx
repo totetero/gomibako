@@ -37,6 +37,9 @@ class SECmypageMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// コントローラとじてる
+		this._page.ctrler.setLctrl(false);
+		this._page.ctrler.setRctrl("", "", "", "");
 		// ヘッダ有効化
 		this._page.header.setActive(true);
 	}
