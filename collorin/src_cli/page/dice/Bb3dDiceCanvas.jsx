@@ -28,10 +28,10 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 
 	// キャラクタの押下
 	var _tappedChara : Bb3dDiceCharacter;
-	var triggerChara : Bb3dDiceCharacter;
+	var charaTrigger : Bb3dDiceCharacter;
 	// フィールドの押下
 	var _hexTapped : boolean;
-	var triggerHex : Bb3dDiceFieldCell;
+	var hexTrigger : Bb3dDiceFieldCell;
 	// マスクカラー
 	var _maskColor = "";
 	// 背景
@@ -93,7 +93,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		}
 
 		// キャラクタータップ完了確認
-		if(!Ctrl.ctdn && this._tappedChara != null){this.triggerChara = this._tappedChara;}
+		if(!Ctrl.ctdn && this._tappedChara != null){this.charaTrigger = this._tappedChara;}
 		// キャラクタータップ中確認
 		this._tappedChara = null;
 		if(Ctrl.ctdn && !Ctrl.ctmv){
@@ -110,7 +110,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		}
 
 		// フィールドタップ完了確認
-		if(!Ctrl.ctdn && this._hexTapped){this.triggerHex = this.field.getHexFromCoordinate(this.tx, this.ty);}
+		if(!Ctrl.ctdn && this._hexTapped){this.hexTrigger = this.field.getHexFromCoordinate(this.tx, this.ty);}
 		// フィールドタップ中確認
 		this._hexTapped = (Ctrl.ctdn && !Ctrl.ctmv && this._tappedChara == null);
 

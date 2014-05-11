@@ -11,7 +11,7 @@ import "../core/Page.jsx";
 import "../core/sec/SECloadTransition.jsx";
 
 import "Bb3dDiceCanvas.jsx";
-import "SECdiceMain.jsx";
+import "SECdiceCommand.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -39,8 +39,6 @@ class PageDice extends Page{
 			this.header.setType("", "");
 			// ロードしたデータの解析
 			this.parse(response["list"] as variant[]);
-			// テスト
-			this.serialPush(new SECdiceMain(this));
 		}));
 	}
 
@@ -58,7 +56,7 @@ class PageDice extends Page{
 		for(var i = 0; i < list.length; i++){
 			switch(list[i]["type"] as string){
 				case "entry": this.bcvs = new Bb3dDiceCanvas(list[i]); break;
-//				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
+				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
 //				case "dice": response = list[i]; break;
 //				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
 //				case "beam": this.serialPush(new SECdiceFaceBeam(this, list[i])); break;

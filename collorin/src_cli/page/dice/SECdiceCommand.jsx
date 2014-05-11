@@ -9,24 +9,28 @@ import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
 import "../core/parts/PartsButton.jsx";
+import "../core/data/DataChara.jsx";
 import "../core/sec/SECpopupMenu.jsx";
 
 import "PageDice.jsx";
 import "Bb3dDiceCanvas.jsx";
+import "Bb3dDiceCharacter.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// すごろくカートリッジ
-class SECdiceMain implements SerialEventCartridge{
+// すごろくコマンド入力待ちカートリッジ
+class SECdiceCommand implements SerialEventCartridge{
 	var _page : PageDice;
+	var _player : Bb3dDiceCharacter;
 	var _btnList = {} : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageDice){
+	function constructor(page : PageDice, response : variant){
 		this._page = page;
+		this._player = this._page.bcvs.member[response["id"] as string];
 
 		// ボタン作成
 		this._btnList["world"] = new PartsButtonBasic("もどる",  250, 10, 60, 30);
@@ -35,9 +39,18 @@ class SECdiceMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// 中心キャラクター設定
+		this._page.bcvs.center = [this._player];
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
+		this._page.bcvs.charaTrigger = null;
+		this._page.ctrler.z_Trigger = false;
+		this._page.ctrler.x_Trigger = false;
+		this._page.ctrler.c_Trigger = false;
+		this._page.ctrler.s_Trigger = false;
 		// コントローラ表示
-		this._page.ctrler.setLctrl(true);
-		this._page.ctrler.setRctrl("テスト01", "テスト02", "テスト03", "テスト04");
+		this._page.ctrler.setLctrl(false);
+		this._page.ctrler.setRctrl("さいころ", "スキル", "マップ", "メニュー");
 	}
 
 	// ----------------------------------------------------------------
@@ -45,7 +58,14 @@ class SECdiceMain implements SerialEventCartridge{
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
-		// ボタン押下処理
+		// キャラクタータップ
+		if(this._page.bcvs.charaTrigger != null){
+			Sound.playSE("ok");
+			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.bcvs.charaTrigger));
+			return false;
+		}
+
+		// テストボタン押下処理
 		var list = ["world"];
 		for(var i = 0; i < list.length; i++){
 			var btn = this._btnList[list[i]];
