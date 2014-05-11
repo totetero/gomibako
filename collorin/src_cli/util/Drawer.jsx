@@ -23,15 +23,15 @@ class Drawer{
 		var h10 = Math.floor(img.height * 0.5);
 		var w05 = Math.floor(Math.min(w, w10) * 0.5);
 		var h05 = Math.floor(Math.min(h, h10) * 0.5);
-		ctx.drawImage(img, w10, h10, 1, 1, x + w05, y + h05, w - w05 * 2, h - h05 * 2);
-		ctx.drawImage(img, w10    ,       0,   1, h10, x     + w05, y          , w - w05 * 2, h05        );
-		ctx.drawImage(img, w10 + 1, h10    , w10,   1, x + w - w05, y     + h05, w05        , h - h05 * 2);
-		ctx.drawImage(img, w10    , h10 + 1,   1, h10, x     + w05, y + h - h05, w - w05 * 2, h05        );
-		ctx.drawImage(img,       0, h10    , w10,   1, x          , y     + h05, w05        , h - h05 * 2);
-		ctx.drawImage(img,       0,       0, w10, h10, x          , y          , w05, h05);
-		ctx.drawImage(img, w10 + 1,       0, w10, h10, x + w - w05, y          , w05, h05);
-		ctx.drawImage(img, w10 + 1, h10 + 1, w10, h10, x + w - w05, y + h - h05, w05, h05);
-		ctx.drawImage(img,       0, h10 + 1, w10, h10, x          , y + h - h05, w05, h05);
+		ctx.drawImage(img, w10, h10, 1, 1, x + w05, y + h05, w - w05 * 2, h - h05 * 2); // 中央
+		ctx.drawImage(img, w10    ,       0,   1, h10, x     + w05, y          , w - w05 * 2, h05        ); // 上
+		ctx.drawImage(img, w10 + 1, h10    , w10,   1, x + w - w05, y     + h05, w05        , h - h05 * 2); // 右
+		ctx.drawImage(img, w10    , h10 + 1,   1, h10, x     + w05, y + h - h05, w - w05 * 2, h05        ); // 下
+		ctx.drawImage(img,       0, h10    , w10,   1, x          , y     + h05, w05        , h - h05 * 2); // 左
+		ctx.drawImage(img,       0,       0, w10, h10, x          , y          , w05, h05); // 左上
+		ctx.drawImage(img, w10 + 1,       0, w10, h10, x + w - w05, y          , w05, h05); // 右上
+		ctx.drawImage(img, w10 + 1, h10 + 1, w10, h10, x + w - w05, y + h - h05, w05, h05); // 右下
+		ctx.drawImage(img,       0, h10 + 1, w10, h10, x          , y + h - h05, w05, h05); // 左下
 	}
 
 	// ----------------------------------------------------------------

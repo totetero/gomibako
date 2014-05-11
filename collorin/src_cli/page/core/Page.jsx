@@ -11,6 +11,7 @@ import "CrossCtrler.jsx";
 import "CrossHeader.jsx";
 import "../mypage/PageMypage.jsx";
 import "../world/PageWorld.jsx";
+import "../chara/PageChara.jsx";
 import "../setting/PageSetting.jsx";
 import "../dice/PageDice.jsx";
 
@@ -58,9 +59,10 @@ abstract class Page extends EventPlayer{
 		if(Page._lastHash != currentHash){
 			Page._lastHash = currentHash;
 			var nextPage : Page = null;
-			if(currentHash.indexOf("world") == 1){nextPage = new PageWorld();}
+			if(currentHash.indexOf("dice") == 1){nextPage = new PageDice();}
+			else if(currentHash.indexOf("world") == 1){nextPage = new PageWorld();}
+			else if(currentHash.indexOf("chara") == 1){nextPage = new PageChara();}
 			else if(currentHash.indexOf("setting") == 1){nextPage = new PageSetting();}
-			else if(currentHash.indexOf("dice") == 1){nextPage = new PageDice();}
 			else{nextPage = new PageMypage();}
 			if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
 				// ページをまたぐ機能を継承

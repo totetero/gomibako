@@ -8,41 +8,42 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECload.jsx";
-import "../core/SECpopupTextarea.jsx";
+import "../core/SECloadTransition.jsx";
+
+import "SECcharaTabTeam.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// ニックネームのテキストエリア
-class SECsettingPopupTextareaNickname extends SECpopupTextarea{
-	var _prevValue : string;
-
+// テストページ
+class PageChara extends Page{
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : SerialEventCartridge, response : variant){
-		super(page, cartridge, "ニックネーム設定", 8);
-		this._parse(response);
-		this.isPermitZero = false;
+	function constructor(){
+		// プロパティ設定
+		this.type = "chara";
+		this.depth = 11;
+		this.bgm = "test01";
 	}
 
 	// ----------------------------------------------------------------
-	// 入力確定時の動作
-	override function onEnter(value : string) : void{
-		if(value != this._prevValue){
-			this.page.serialPush(new SECload(this, "/setting?nickname=" + value, null, function(response : variant) : void{
-				this._parse(response);
-			}));
-		}
+	// 初期化
+	override function init() : void{
+		// ロードと画面遷移
+		this.serialPush(new SECloadTransition(this, "/chara/rest", null, function(response : variant) : void{
+			// ヘッダ設定
+			this.header.setType("キャラクタ", "mypage");
+			// カートリッジ装填
+			log response;
+			this.serialPush(new SECcharaTabTeam(this));
+		}));
 	}
 
 	// ----------------------------------------------------------------
-	// ロード完了時 データの形成
-	function _parse(response : variant) : void{
-		var value = response["nickname"] as string;
-		this.setValue(value);
-		this._prevValue = value;
+	// 破棄
+	override function dispose() : void{
+		super.dispose();
 	}
 }
 

@@ -18,7 +18,7 @@ import "SECpopup.jsx";
 
 // テキストエリアポップアップ
 class SECpopupTextarea extends SECpopup{
-	var _page : Page;
+	var page : Page;
 	var _value : string;
 	var _max : int;
 	var _input : HTMLInputElement;
@@ -38,7 +38,7 @@ class SECpopupTextarea extends SECpopup{
 	// コンストラクタ
 	function constructor(page : Page, cartridge : SerialEventCartridge, title : string, max : int){
 		super(cartridge);
-		this._page = page;
+		this.page = page;
 		this._max = max;
 		this._input = dom.document.getElementById("ctrl").getElementsByTagName("input").item(0) as HTMLInputElement;
 
@@ -77,10 +77,10 @@ class SECpopupTextarea extends SECpopup{
 	// 初期化
 	override function init() : void{
 		// コントローラとじてる
-		this._page.ctrler.setLctrl(false);
-		this._page.ctrler.setRctrl("", "", "", "");
+		this.page.ctrler.setLctrl(false);
+		this.page.ctrler.setRctrl("", "", "", "");
 		// ヘッダ無効化
-		this._page.header.setActive(false);
+		this.page.header.setActive(false);
 
 		// テキストエリア設定
 		this._input.type = "text";
@@ -113,7 +113,7 @@ class SECpopupTextarea extends SECpopup{
 				this.onEnter(this._value);
 			}
 			this._input.className = "";
-			this._page.serialPush(this.parentCartridge);
+			this.page.serialPush(this.parentCartridge);
 			return false;
 		}
 

@@ -7,41 +7,45 @@ import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
-import "../core/Page.jsx";
-import "../core/SECload.jsx";
-import "../core/SECpopupTextarea.jsx";
+import "../core/PartsButton.jsx";
+
+import "PageChara.jsx";
+import "SECcharaTab.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// コメントのテキストエリア
-class SECsettingPopupTextareaComment extends SECpopupTextarea{
-	var _prevValue : string;
+// テストイベントカートリッジ
+class SECcharaTabTeam extends SECcharaTab{
+	var _btnList = {} : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : SerialEventCartridge, response : variant){
-		super(page, cartridge, "コメント設定", 16);
-		this._parse(response);
+	function constructor(page : PageChara){
+		super(page, "team");
+
+		this._btnList["test"] = new PartsButtonBasic("てす", 60, 60, 250, 30);
 	}
 
 	// ----------------------------------------------------------------
-	// 入力確定時の動作
-	override function onEnter(value : string) : void{
-		if(value != this._prevValue){
-			this.page.serialPush(new SECload(this, "/setting?comment=" + value, null, function(response : variant) : void{
-				this._parse(response);
-			}));
-		}
+	// 計算
+	override function tabCalc() : boolean{
+		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		return true;
 	}
 
 	// ----------------------------------------------------------------
-	// ロード完了時 データの形成
-	function _parse(response : variant) : void{
-		var value = response["comment"] as string;
-		this.setValue(value);
-		this._prevValue = value;
+	// 描画
+	override function tabDraw() : void{
+		// ボタン描画
+		for(var name in this._btnList){this._btnList[name].draw();}
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
 	}
 }
 

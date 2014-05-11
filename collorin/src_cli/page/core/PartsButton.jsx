@@ -95,6 +95,8 @@ class PartsButtonBasic extends PartsButton{
 	var _textCvs : HTMLCanvasElement;
 	var _text : string;
 	var _status : string;
+	var buttonType = "basic";
+	var fontSize = 16;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -108,17 +110,27 @@ class PartsButtonBasic extends PartsButton{
 	override function draw() : void{
 		var isInactive = (this.inactive && !this.active && !this.select);
 		// 箱描画
-		var imgCode = "img_system_button_basic_" + (isInactive ? "inactive" : this.active ? "active" : this.select ? "select" : "normal");
+		var imgCode = "img_system_button_" + this.buttonType + "_" + (isInactive ? "inactive" : this.active ? "active" : this.select ? "select" : "normal");
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs[imgCode], this.x, this.y, this.w, this.h);
 		// 文字列描画
 		var pixelRatio = 2;
-		if(!isInactive && this._status != "normal"){this._status = "normal"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "black");}
-		if(isInactive && this._status != "inactive"){this._status = "inactive"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "gray");}
+		if(!isInactive && this._status != "normal"){this._status = "normal"; this._textCvs = Drawer.createText(this._text, this.fontSize * pixelRatio, "black");}
+		if(isInactive && this._status != "inactive"){this._status = "inactive"; this._textCvs = Drawer.createText(this._text, this.fontSize * pixelRatio, "gray");}
 		var w = this._textCvs.width / pixelRatio;
 		var h = this._textCvs.height / pixelRatio;
 		var x = this.x + (this.w - w) * 0.5;
 		var y = this.y + (this.h - h - 2) * 0.5 + (this.active ? 2 : 0);
 		Ctrl.sctx.drawImage(this._textCvs, x, y, w, h);
+	}
+}
+
+class PartsButtonTabLeft extends PartsButtonBasic{
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(text : string, x : int, y : int, w : int, h : int){
+		super(text, x, y, w, h);
+		this.buttonType = "tabLeft";
+		this.fontSize = 14;
 	}
 }
 
