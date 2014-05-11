@@ -21,6 +21,8 @@ class SECpopupMenu extends SECpopup{
 	var _page : Page;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
+	var _menuList = {} : Map.<PartsButton>;
+	var _px : int;
 	var _pw : int;
 	var _ph : int;
 
@@ -29,23 +31,36 @@ class SECpopupMenu extends SECpopup{
 	function constructor(page : Page, cartridge : SerialEventCartridge){
 		super(cartridge);
 		this._page = page;
-		this._pw = 300;
+		this._px = 45;
+		this._pw = 230;
 		this._ph = 220;
 
 		// ラベル作成
-		this._labList["title"] = new PartsLabel("メニュー", 0, 0, this._pw, 40);
+		this._labList["title"] = new PartsLabel("メニュー", this._px, 0, this._pw, 40);
 
 		// ボタン作成
-		this._btnList["outer"] = new PartsButton(0, 0, this._pw, this._ph, false);
-		this._btnList["close"] = new PartsButtonBasic("閉じる", this._pw - 100 - 10, this._ph - 30 - 10, 100, 30);
+		var x0 = this._px + 10;
+		var x1 = this._px + this._pw - 100 - 10;
+		this._menuList["world"] = new PartsButtonBasic("ワールド", x0, 40 + 35 * 0, 100, 30);
+		this._menuList["quest"] = new PartsButtonBasic("クエスト", x1, 40 + 35 * 0, 100, 30);
+		this._menuList["chara"] = new PartsButtonBasic("キャラクタ", x0, 40 + 35 * 1, 100, 30);
+		this._menuList["item"] = new PartsButtonBasic("アイテム", x1, 40 + 35 * 1, 100, 30);
+		this._menuList["friend"] = new PartsButtonBasic("友達", x0, 40 + 35 * 2, 100, 30);
+		this._menuList["refbook"] = new PartsButtonBasic("図鑑", x1, 40 + 35 * 2, 100, 30);
+		this._menuList["setting"] = new PartsButtonBasic("設定", x0, 40 + 35 * 3, 100, 30);
+		this._menuList["help"] = new PartsButtonBasic("ヘルプ", x1, 40 + 35 * 3, 100, 30);
+		this._btnList["outer"] = new PartsButton(this._px, 0, this._pw, this._ph, false);
+		this._btnList["close"] = new PartsButtonBasic("閉じる", this._px + (this._pw - 100) * 0.5, this._ph - 30 - 10, 100, 30);
 		this._btnList["close"].sKey = true;
-		this._btnList["mypage"] = new PartsButtonBasic("マイページ", 10, 40, 100, 30);
-		this._btnList["chara"] = new PartsButtonBasic("キャラクタ", 120, 40, 100, 30);
-		this._btnList["world"] = new PartsButtonBasic("ワールド", 10, 80, 100, 30);
-		this._btnList["setting"] = new PartsButtonBasic("設定", 10, 120, 100, 30);
 
-		var current = this._btnList[Page.current.type];
-		if(current != null){current.select = current.inactive = true;}
+		this._menuList["quest"].inactive = true;
+		this._menuList["item"].inactive = true;
+		this._menuList["friend"].inactive = true;
+		this._menuList["refbook"].inactive = true;
+		this._menuList["help"].inactive = true;
+
+		var current = this._menuList[Page.current.type];
+		if(current != null){current.select = true;}
 	}
 
 	// ----------------------------------------------------------------
@@ -62,16 +77,22 @@ class SECpopupMenu extends SECpopup{
 	// 計算
 	override function popupCalc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
+		for(var name in this._menuList){this._menuList[name].calc(true);}
 
-		// ボタン押下処理
-		var list = ["mypage", "world", "chara", "setting"];
-		for(var i = 0; i < list.length; i++){
-			var btn = this._btnList[list[i]];
+		// メニューボタン押下処理
+		for(var name in this._menuList){
+			var btn = this._menuList[name];
 			if(btn.trigger){
 				btn.trigger = false;
-				Sound.playSE("ok");
-				Page.transitionsPage(list[i]);
-				return true;
+				if(!btn.select){
+					Sound.playSE("ok");
+					Page.transitionsPage(name);
+					return true;
+				}else{
+					Sound.playSE("ng");
+					this._page.serialPush(this.parentCartridge);
+					return false;
+				}
 			}
 		}
 
@@ -95,27 +116,20 @@ class SECpopupMenu extends SECpopup{
 		// 親カートリッジ描画後に上書き
 
 		// ウインドウサイズに対する位置調整
-		var px = (Ctrl.sw - this._pw) * 0.5;
 		var py = (Ctrl.sh - this._ph) * 0.5;
-		for(var name in this._labList){
-			var lab = this._labList[name];
-			lab.x = lab.basex + px;
-			lab.y = lab.basey + py;
-		}
-		for(var name in this._btnList){
-			var btn = this._btnList[name];
-			btn.x = btn.basex + px;
-			btn.y = btn.basey + py;
-		}
+		for(var name in this._labList){this._labList[name].y = this._labList[name].basey + py;}
+		for(var name in this._btnList){this._btnList[name].y = this._btnList[name].basey + py;}
+		for(var name in this._menuList){this._menuList[name].y = this._menuList[name].basey + py;}
 
 		// 枠描画
-		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], px, py, this._pw, this._ph);
+		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], this._px, py, this._pw, this._ph);
 
 		// ラベル描画
 		for(var name in this._labList){this._labList[name].draw();}
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
+		for(var name in this._menuList){this._menuList[name].draw();}
 	}
 
 	// ----------------------------------------------------------------
