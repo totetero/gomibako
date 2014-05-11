@@ -146,11 +146,13 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	// 背景描画
 	function _drawBackground() : void{
 		if(this._bgimg == null){return;}
-		var width = this._bgimg.width * Ctrl.sh / this._bgimg.height;
-		var x = -(this._bgaction++ % width);
-		while(x < Ctrl.sw){
-			Ctrl.gctx.drawImage(this._bgimg, x, 0, width, Ctrl.sh);
-			x += width;
+		var dw = this._bgimg.width * 480 / this._bgimg.height;
+		var dx = -(this._bgaction++ % dw);
+		var sh = this._bgimg.height * Ctrl.sh / 480;
+		var sy = (this._bgimg.height - sh) * 0.5;
+		while(dx < Ctrl.sw){
+			Ctrl.gctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.sh);
+			dx += dw;
 		}
 	}
 
