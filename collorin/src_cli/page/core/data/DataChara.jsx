@@ -55,11 +55,12 @@ class DataCharaBox extends DataChara{
 	// 描画
 	function draw() : void{
 		// 領域全体の描画
-		Ctrl.sctx.fillStyle = this.boxBtn.active ? "rgb(128,128,128)" : "rgb(255,255,255)";
+		Ctrl.sctx.fillStyle = this.boxBtn.active ? "#bbbbbb" : "#eeeeee";
 		Ctrl.sctx.fillRect(this.boxBtn.x, this.boxBtn.y, this.boxBtn.w, this.boxBtn.h);
 		// 顔アイコンの描画
-		Ctrl.sctx.fillStyle = this.faceBtn.active ? "rgb(255,0,0)" : "rgb(255,128,128)";
+		Ctrl.sctx.fillStyle = this.faceBtn.active ? "#999999" : "#ffffff";
 		Ctrl.sctx.fillRect(this.faceBtn.x, this.faceBtn.y, this.faceBtn.w, this.faceBtn.h);
+		Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + this.code], this.faceBtn.x, this.faceBtn.y, this.faceBtn.w, this.faceBtn.h);
 	}
 }
 
@@ -88,7 +89,8 @@ class SECpopupDataChara extends SECpopup{
 		this._ph = 220;
 
 		// ラベル作成
-		this._labList["title"] = new PartsLabel("テスト", this._px, 0, this._pw, 40);
+		this._labList["name"] = new PartsLabel(this._data.name, this._px + 150, 10, this._pw - 160, 30);
+		this._labList["name"].setAlign("left");
 
 		// ボタン作成
 		this._btnList["outer"] = new PartsButton(this._px, 0, this._pw, this._ph, false);
@@ -137,12 +139,28 @@ class SECpopupDataChara extends SECpopup{
 
 		// 枠描画
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], this._px, py, this._pw, this._ph);
+		// タイプ識別リボン
+		Ctrl.sctx.fillStyle = "blue";
+		Ctrl.sctx.beginPath();
+		var x1 = this._px + 3;
+		var x2 = this._px + 30;
+		var y1 = py + 3;
+		var y2 = py + this._ph - 3;
+		Ctrl.sctx.moveTo(x2, y1);
+		Ctrl.sctx.arcTo(x1, y1, x1, y2, 7);
+		Ctrl.sctx.arcTo(x1, y2, x2, y2, 7);
+		Ctrl.sctx.lineTo(x2, y2);
+		Ctrl.sctx.closePath();
+		Ctrl.sctx.fill();
 
 		// ラベル描画
 		for(var name in this._labList){this._labList[name].draw();}
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
+
+		// キャラクター描画
+		Ctrl.sctx.drawImage(Loader.imgs["img_chara_bust_" + this._data.code], 60, 70, 200, 400, this._px + 40, py + 10, 100, 200);
 	}
 
 	// ----------------------------------------------------------------

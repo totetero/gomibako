@@ -76,7 +76,13 @@ class ContentsServer{
 						"/img/system/button/picker/normal.png",
 						"/img/system/button/picker/active.png",
 						"/img/system/button/picker/inactive.png",
-						"/img/character/player0/dot.png",
+						"/img/system/character/partner.png",
+						"/img/system/character/favorite1.png",
+						"/img/system/character/favorite2.png",
+						"/img/system/character/favorite3.png",
+						"/img/system/character/team1.png",
+						"/img/system/character/team2.png",
+						"/img/system/character/team3.png",
 					];
 					addrs = {
 						"mot_human": "/mot/human.json"

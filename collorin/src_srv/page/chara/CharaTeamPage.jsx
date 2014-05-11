@@ -12,7 +12,7 @@ class CharaTeamPage{
 	static function setPage(app : ExApplication) : void{
 		app.get("/chara/team", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
-			var imgs = {} : Map.<string>;
+			var cont = {} : Map.<string>;
 			var type = "get";
 
 			// 受信パラメータ確認
@@ -56,8 +56,8 @@ class CharaTeamPage{
 				jdat["list"] = charaInfoList;
 				for(var i = 0; i < charaInfoList.length; i++){
 					var code = charaInfoList[i]["code"] as string;
-					imgs["css_chara_icon_" + code] = "/img/character/" + code + "/icon.png";
-					imgs["css_chara_bust_" + code] = "/img/character/" + code + "/bust.png";
+					cont["img_chara_icon_" + code] = "/img/character/" + code + "/icon.png";
+					cont["img_chara_bust_" + code] = "/img/character/" + code + "/bust.png";
 				}
 				step["getPartner"]();
 			};
@@ -246,14 +246,7 @@ class CharaTeamPage{
 
 			// ---------------- 送信
 			step["send"] = function() : void{
-				imgs["css_core_chara_partner"] = "/img/system/character/partner.png";
-				imgs["css_core_chara_favorite1"] = "/img/system/character/favorite1.png";
-				imgs["css_core_chara_favorite2"] = "/img/system/character/favorite2.png";
-				imgs["css_core_chara_favorite3"] = "/img/system/character/favorite3.png";
-				imgs["css_core_chara_team1"] = "/img/system/character/team1.png";
-				imgs["css_core_chara_team2"] = "/img/system/character/team2.png";
-				imgs["css_core_chara_team3"] = "/img/system/character/team3.png";
-				jdat["imgs"] = ContentsServer.convertAddress(imgs);
+				jdat["contents"] = ContentsServer.convertAddress(cont);
 				res.setHeader("Content-Type", "application/json");
 				res.setHeader("cache-control", "no-cache");
 				res.send(JSON.stringify(jdat));

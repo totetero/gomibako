@@ -43,7 +43,7 @@ class PartsLabel{
 	// 描画
 	function draw() : void{
 		var pixelRatio = 2;
-		if(this._textCvs == null){this._textCvs = Drawer.createText(this._text, this._size * pixelRatio, this._color);}
+		if(this._textCvs == null){this._textCvs = Drawer.createText(this._text, this._size * pixelRatio, this._color, this.w * pixelRatio);}
 		// 文字列描画
 		var w = this._textCvs.width / pixelRatio;
 		var h = this._textCvs.height / pixelRatio;
