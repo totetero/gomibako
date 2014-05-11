@@ -22,10 +22,18 @@ import "Bb3dDiceCharacter.jsx";
 class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	var field : Bb3dDiceField;
 	var member = {} : Map.<Bb3dDiceCharacter>;
-
+	var center : Bb3dDiceCharacter[];
 	var clist = new Bb3dDrawUnit[];
 	var slist = new Bb3dDrawUnit[];
 
+	// キャラクタの押下
+	var _tappedChara : Bb3dDiceCharacter;
+	var triggerChara : Bb3dDiceCharacter;
+	// フィールドの押下
+	var _hexTapped : boolean;
+	var triggerHex : Bb3dDiceFieldCell;
+	// マスクカラー
+	var _maskColor = "";
 	// 背景
 	var _bgimg : HTMLImageElement;
 	var _bgaction = 0;
@@ -71,6 +79,47 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 			this.member[id].calc(this);
 			if(!this.member[id].exist){delete this.member[id];}
 		}
+
+		if(this.center != null && this.center.length > 0){
+			// カメラ位置
+			var cx = 0;
+			var cy = 0;
+			for(var i = 0; i < this.center.length; i++){
+				cx += this.center[i].x;
+				cy += this.center[i].y;
+			}
+			this.calcx = cx / this.center.length;
+			this.calcy = cy / this.center.length;
+		}
+
+		// キャラクタータップ完了確認
+		if(!Ctrl.ctdn && this._tappedChara != null){this.triggerChara = this._tappedChara;}
+		// キャラクタータップ中確認
+		this._tappedChara = null;
+		if(Ctrl.ctdn && !Ctrl.ctmv){
+			var depth0 = 0;
+			for(var id in this.member){
+				var side = this.member[id].side;
+				if(side != "player" && side != "enemy"){continue;}
+				var depth1 = this.member[id].getDepth();
+				if((this._tappedChara == null || depth0 < depth1) && this.member[id].isOver(Ctrl.ctx, Ctrl.cty)){
+					depth0 = depth1;
+					this._tappedChara = this.member[id];
+				}
+			}
+		}
+
+		// フィールドタップ完了確認
+		if(!Ctrl.ctdn && this._hexTapped){this.triggerHex = this.field.getHexFromCoordinate(this.tx, this.ty);}
+		// フィールドタップ中確認
+		this._hexTapped = (Ctrl.ctdn && !Ctrl.ctmv && this._tappedChara == null);
+
+		// キャラクター描画設定
+		if(this._maskColor == ""){
+			for(var id in this.member){
+				this.member[id].setColor((this._tappedChara == this.member[id]) ? "rgba(255, 255, 255, 0.5)" : "");
+			}
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -81,9 +130,14 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		// 背景描画
 		this._drawBackground();
 		// 地面描画
-		this.field.draw(this, this.cx, this.cy, false);
+		this.field.draw(this, this.cx, this.cy, this._hexTapped);
 		// 影描画
 		Bb3dDrawUnit.drawList(this, this.slist);
+		// 画面を暗くする
+		if(this._maskColor != ""){
+			Ctrl.gctx.fillStyle = this._maskColor;
+			Ctrl.gctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+		}
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
 	}
@@ -97,6 +151,16 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		while(x < Ctrl.sw){
 			Ctrl.gctx.drawImage(this._bgimg, x, 0, width, Ctrl.sh);
 			x += width;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// マスクカラー設定
+	function setMaskColor(color : string) : void{
+		if(this._maskColor == color){return;}
+		this._maskColor = color;
+		for(var id in this.member){
+			this.member[id].setColor(color);
 		}
 	}
 }
