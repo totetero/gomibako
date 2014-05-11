@@ -18,7 +18,7 @@ import "Bb3dDiceCanvas.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// テストイベントカートリッジ
+// すごろくカートリッジ
 class SECdiceMain implements SerialEventCartridge{
 	var _page : PageDice;
 	var _btnList = {} : Map.<PartsButton>;

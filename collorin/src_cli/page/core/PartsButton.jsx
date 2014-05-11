@@ -124,6 +124,7 @@ class PartsButtonBasic extends PartsButton{
 	}
 }
 
+// 左タブクラス
 class PartsButtonTabLeft extends PartsButtonBasic{
 	// ----------------------------------------------------------------
 	// コンストラクタ

@@ -13,7 +13,7 @@ import "Page.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// ページ遷移演出
+// ページ遷移演出カートリッジ
 class SECloadTransition implements SerialEventCartridge{
 	static const _actionMax = 10;
 	static var invisiblePopup = false;

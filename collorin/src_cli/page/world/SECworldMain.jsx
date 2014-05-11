@@ -17,7 +17,7 @@ import "PageWorld.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// テストイベントカートリッジ
+// ワールドカートリッジ
 class SECworldMain implements SerialEventCartridge{
 	var _page : PageWorld;
 	var _btnList = {} : Map.<PartsButton>;

@@ -24,7 +24,7 @@ import "SECsettingPopupPickerSef.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// 設定イベントカートリッジ
+// 設定カートリッジ
 class SECsettingMain implements SerialEventCartridge{
 	var _page : PageSetting;
 	var _scroller : PartsScroll;

@@ -17,7 +17,7 @@ import "PageChara.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// テストイベントカートリッジ
+// キャラクタータブひな形カートリッジ
 abstract class SECcharaTab implements SerialEventCartridge{
 	var page : PageChara;
 	var _tabList = {} : Map.<PartsButton>;

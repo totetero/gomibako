@@ -17,7 +17,7 @@ import "PageMypage.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// テストイベントカートリッジ
+// マイページカートリッジ
 class SECmypageMain implements SerialEventCartridge{
 	var _page : PageMypage;
 	var _btnList = {} : Map.<PartsButton>;
