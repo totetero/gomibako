@@ -22,7 +22,7 @@ class SECcharaTabTeam extends SECcharaTab{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageChara){
+	function constructor(page : PageChara, response : variant){
 		super(page, "team");
 
 		this._btnList["test"] = new PartsButtonBasic("てす", 60, 60, 250, 30);

@@ -7,42 +7,45 @@ import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
-import "../core/Page.jsx";
-import "../core/SECloadTransition.jsx";
+import "../core/PartsButton.jsx";
 
-import "SECcharaTabTeam.jsx";
+import "PageChara.jsx";
+import "SECcharaTab.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// キャラクターページ
-class PageChara extends Page{
+// キャラクター売却タブカートリッジ
+class SECcharaTabSell extends SECcharaTab{
+	var _btnList = {} : Map.<PartsButton>;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(){
-		// プロパティ設定
-		this.type = "chara";
-		this.depth = 11;
-		this.bgm = "test01";
+	function constructor(page : PageChara, response : variant){
+		super(page, "sell");
+
+		this._btnList["test"] = new PartsButtonBasic("てす", 60, 60, 250, 30);
 	}
 
 	// ----------------------------------------------------------------
-	// 初期化
-	override function init() : void{
-		// ロードと画面遷移
-		this.serialPush(new SECloadTransition(this, "/chara/team", null, function(response : variant) : void{
-			// ヘッダ設定
-			this.header.setType("キャラクタ", "mypage");
-			// カートリッジ装填
-			this.serialPush(new SECcharaTabTeam(this, response));
-		}));
+	// 計算
+	override function tabCalc() : boolean{
+		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		return true;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function tabDraw() : void{
+		// ボタン描画
+		for(var name in this._btnList){this._btnList[name].draw();}
 	}
 
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		super.dispose();
 	}
 }
 

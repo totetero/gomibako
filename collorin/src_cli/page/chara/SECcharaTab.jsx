@@ -9,9 +9,15 @@ import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
 import "../core/PartsButton.jsx";
+import "../core/SECload.jsx";
 import "../core/SECpopupMenu.jsx";
 
 import "PageChara.jsx";
+import "SECcharaTabTeam.jsx";
+import "SECcharaTabSupp.jsx";
+import "SECcharaTabRest.jsx";
+import "SECcharaTabPwup.jsx";
+import "SECcharaTabSell.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -54,6 +60,61 @@ abstract class SECcharaTab implements SerialEventCartridge{
 	// 計算
 	override function calc() : boolean{
 		for(var name in this._tabList){this._tabList[name].calc(true);}
+
+		// 編成タブ
+		var tab = this._tabList["team"];
+		if(tab.trigger){
+			tab.trigger = false;
+			Sound.playSE("ok");
+			this.page.serialPush(new SECload(this, "/chara/team", null, function(response : variant) : void{
+				this.page.serialPush(new SECcharaTabTeam(this.page, response));
+			}));
+			return false;
+		}
+
+		// 補給タブ
+		var tab = this._tabList["supp"];
+		if(tab.trigger){
+			tab.trigger = false;
+			Sound.playSE("ok");
+			this.page.serialPush(new SECload(this, "/chara/supp", null, function(response : variant) : void{
+				this.page.serialPush(new SECcharaTabSupp(this.page, response));
+			}));
+			return false;
+		}
+
+		// 休息タブ
+		var tab = this._tabList["rest"];
+		if(tab.trigger){
+			tab.trigger = false;
+			Sound.playSE("ok");
+			this.page.serialPush(new SECload(this, "/chara/rest", null, function(response : variant) : void{
+				this.page.serialPush(new SECcharaTabRest(this.page, response));
+			}));
+			return false;
+		}
+
+		// 強化タブ
+		var tab = this._tabList["pwup"];
+		if(tab.trigger){
+			tab.trigger = false;
+			Sound.playSE("ok");
+			this.page.serialPush(new SECload(this, "/chara/pwup", null, function(response : variant) : void{
+				this.page.serialPush(new SECcharaTabPwup(this.page, response));
+			}));
+			return false;
+		}
+
+		// 売却タブ
+		var tab = this._tabList["sell"];
+		if(tab.trigger){
+			tab.trigger = false;
+			Sound.playSE("ok");
+			this.page.serialPush(new SECload(this, "/chara/sell", null, function(response : variant) : void{
+				this.page.serialPush(new SECcharaTabSell(this.page, response));
+			}));
+			return false;
+		}
 
 		// 左ヘッダ戻るボタン押下処理
 		if(this.page.header.lbtn.trigger){
