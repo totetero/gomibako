@@ -8,8 +8,8 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECload.jsx";
-import "../core/SECpopupTextarea.jsx";
+import "../core/sec/SECload.jsx";
+import "../core/sec/SECpopupTextarea.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

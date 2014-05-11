@@ -8,8 +8,8 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/PartsButton.jsx";
-import "../core/SECpopupMenu.jsx";
+import "../core/parts/PartsButton.jsx";
+import "../core/sec/SECpopupMenu.jsx";
 
 import "PageDice.jsx";
 import "Bb3dDiceCanvas.jsx";

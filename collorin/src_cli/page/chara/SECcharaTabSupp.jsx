@@ -7,7 +7,7 @@ import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
-import "../core/PartsButton.jsx";
+import "../core/parts/PartsButton.jsx";
 
 import "PageChara.jsx";
 import "SECcharaTab.jsx";

@@ -8,7 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECloadTransition.jsx";
+import "../core/sec/SECloadTransition.jsx";
 
 import "SECmypageMain.jsx";
 

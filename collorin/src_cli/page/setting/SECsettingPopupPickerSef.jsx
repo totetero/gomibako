@@ -8,7 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/SECpopupPicker.jsx";
+import "../core/sec/SECpopupPicker.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

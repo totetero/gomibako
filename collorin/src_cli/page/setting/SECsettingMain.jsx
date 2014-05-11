@@ -8,9 +8,9 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../core/Page.jsx";
-import "../core/PartsLabel.jsx";
-import "../core/PartsScroll.jsx";
-import "../core/SECpopupMenu.jsx";
+import "../core/parts/PartsLabel.jsx";
+import "../core/parts/PartsScroll.jsx";
+import "../core/sec/SECpopupMenu.jsx";
 
 import "PageSetting.jsx";
 import "SECsettingPopupTextareaNickname.jsx";

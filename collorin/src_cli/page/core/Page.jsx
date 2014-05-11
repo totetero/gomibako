@@ -7,8 +7,8 @@ import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
-import "CrossCtrler.jsx";
-import "CrossHeader.jsx";
+import "cross/CrossCtrler.jsx";
+import "cross/CrossHeader.jsx";
 import "../mypage/PageMypage.jsx";
 import "../world/PageWorld.jsx";
 import "../chara/PageChara.jsx";

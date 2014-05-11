@@ -1,15 +1,15 @@
 import "js/web.jsx";
 
-import "../../util/Ctrl.jsx";
-import "../../util/Sound.jsx";
-import "../../util/Drawer.jsx";
-import "../../util/Loader.jsx";
-import "../../util/Loading.jsx";
-import "../../util/EventCartridge.jsx";
+import "../../../util/Ctrl.jsx";
+import "../../../util/Sound.jsx";
+import "../../../util/Drawer.jsx";
+import "../../../util/Loader.jsx";
+import "../../../util/Loading.jsx";
+import "../../../util/EventCartridge.jsx";
 
-import "Page.jsx";
-import "PartsLabel.jsx";
-import "PartsButton.jsx";
+import "../Page.jsx";
+import "../parts/PartsLabel.jsx";
+import "../parts/PartsButton.jsx";
 import "SECpopup.jsx";
 
 // ----------------------------------------------------------------
