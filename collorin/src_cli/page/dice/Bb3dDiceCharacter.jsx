@@ -10,6 +10,8 @@ import "../../util/EventCartridge.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 import "../../bb3d/Bb3dDrawShadow.jsx";
 
+import "../core/data/DataChara.jsx";
+
 import "Bb3dDiceCanvas.jsx";
 
 // ----------------------------------------------------------------
@@ -17,7 +19,7 @@ import "Bb3dDiceCanvas.jsx";
 // ----------------------------------------------------------------
 
 // キャラクタークラス
-class Bb3dDiceCharacter{
+class Bb3dDiceCharacter extends DataChara{
 	var _character : Bb3dDrawCharacter;
 	var _shadow : Bb3dDrawShadow;
 
@@ -38,6 +40,7 @@ class Bb3dDiceCharacter{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(bcvs : Bb3dDiceCanvas, response : variant){
+		super(response);
 		this.side = response["side"] as string;
 		this.hp = 100;
 		this.sp = 100;
@@ -49,8 +52,8 @@ class Bb3dDiceCharacter{
 		this.y = bcvs.field.calcHexCoordy(hexx, hexy);
 		this.r = response["r"] as number;
 
-		var img = Loader.imgs["img_chara_dot_" + response["code"] as string];
-		var mot = Loader.mots["mot_human"];
+		var img = Loader.imgs["img_chara_dot_" + this.code];
+		var mot = Loader.mots["mot_" + response["drawInfo"] as string];
 		var size = response["size"] as number;
 		this._character = new Bb3dDrawCharacter(img, mot, size);
 		this._shadow = new Bb3dDrawShadow(size);

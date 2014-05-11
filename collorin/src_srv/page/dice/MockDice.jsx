@@ -1,15 +1,11 @@
 import "js/web.jsx";
 
-//import "../../../src_srv/data/CharacterDrawInfo.jsx";
-
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
 // すごろくモッククラス
 class MockDice{
-	static var isInit : boolean;
-
 	// 管理情報
 	static var _hex : MockDiceHexFieldCell[];
 	static var _cinfo : MockDiceCharaInfo[];
@@ -19,31 +15,25 @@ class MockDice{
 	// ----------------------------------------------------------------
 	// XMLhttpリクエストエミュレート
 	static function loadxhr(url : string, request : variant, successFunc : function(response:variant):void) : void{
-		if(!MockDice.isInit){
-			// すごろくモック初期化
-			MockDice.isInit = true;
-//			CharacterDrawInfo.init();
-		}
-
-		var imgs = {} : Map.<string>;
+		var cont = {} : Map.<string>;
 		var list = new variant[];
 
 		switch(request["type"] as string){
-			case "entry": MockDice._entry(list, imgs); break;
-			case "dice": MockDice._dice(list, imgs, request); break;
-			case "beam": MockDice._beam(list, imgs, request); break;
-			case "move": MockDice._move(list, imgs, request); break;
+			case "entry": MockDice._entry(list, cont); break;
+			case "dice": MockDice._dice(list, cont, request); break;
+			case "beam": MockDice._beam(list, cont, request); break;
+			case "move": MockDice._move(list, cont, request); break;
 		}
 
 		var jdat = {} : Map.<variant>;
-		jdat["imgs"] = imgs;
+		jdat["contents"] = cont;
 		jdat["list"] = list;
 		successFunc(jdat);
 	}
 
 	// ----------------------------------------------------------------
 	// ゲーム開始
-	static function _entry(list : variant[], imgs : Map.<string>) : void{
+	static function _entry(list : variant[], cont : Map.<string>) : void{
 		// --------------------------------
 		// 管理情報作成
 
@@ -109,17 +99,17 @@ class MockDice{
 			jdatCharaInfo[cinfo.id] = {
 				side: cinfo.side,
 				code: cinfo.code,
-//				drawInfo: CharacterDrawInfo.data[cinfo.drawInfo],
+				drawInfo: cinfo.drawInfo,
 				x: cinfo.x,
 				y: cinfo.y,
 				r: cinfo.r,
 				size: cinfo.s,
 			};
 			// 画像情報作成
-			imgs["img_chara_dot_" + cinfo.code] = "/img/character/" + cinfo.code + "/dot.png";
-			imgs["css_chara_icon_" + cinfo.code] = "/img/character/" + cinfo.code + "/icon.png";
-			imgs["css_chara_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
-			imgs["css_chara_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
+			cont["img_chara_dot_" + cinfo.code] = "/img/character/" + cinfo.code + "/dot.png";
+			cont["img_chara_icon_" + cinfo.code] = "/img/character/" + cinfo.code + "/icon.png";
+			cont["img_chara_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
+			cont["img_chara_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
 		}
 		jdat["charaInfo"] = jdatCharaInfo;
 
@@ -128,21 +118,21 @@ class MockDice{
 
 		// 背景画像
 		jdat["background"] = "test";
-		imgs["img_background_test"] = "/img/background/test.png";
+		cont["img_background_test"] = "/img/background/test.png";
 		// さいころ画像
-		imgs["img_dice"] = "/img/dice/test.png";
+		cont["img_dice"] = "/img/dice/test.png";
 		// エフェクト画像
-		imgs["img_effect_star01"] = "/img/effect/star01.png";
+		cont["img_effect_star01"] = "/img/effect/star01.png";
 
 		list.push(jdat);
 
 		// ターン開始
-		MockDice._turn(list, imgs);
+		MockDice._turn(list, cont);
 	}
 
 	// ----------------------------------------------------------------
 	// さいころ投擲
-	static function _dice(list : variant[], imgs : Map.<string>, request : variant) : void{
+	static function _dice(list : variant[], cont : Map.<string>, request : variant) : void{
 		// さいころの目作成
 		var num = request["num"] as int;
 		var fix = request["fix"] as int;
@@ -161,7 +151,7 @@ class MockDice{
 
 	// ----------------------------------------------------------------
 	// ビーム照射
-	static function _beam(list : variant[], imgs : Map.<string>, request : variant) : void{
+	static function _beam(list : variant[], cont : Map.<string>, request : variant) : void{
 		// さいころの目作成
 		var num = request["num"] as int;
 		var fix = request["fix"] as int;
@@ -232,12 +222,12 @@ class MockDice{
 		list.push({type: "beam", id: MockDice._turnId, charge: charge, target: target});
 
 		// ターン切り替え
-		MockDice._turn(list, imgs);
+		MockDice._turn(list, cont);
 	}
 
 	// ----------------------------------------------------------------
 	// 移動処理
-	static function _move(list : variant[], imgs : Map.<string>, request : variant) : void{
+	static function _move(list : variant[], cont : Map.<string>, request : variant) : void{
 		// 移動キャラクター情報獲得
 		var id0 = MockDice._turnId;
 		var chara0 : MockDiceCharaInfo = null;
@@ -265,12 +255,12 @@ class MockDice{
 		}
 
 		// ターン切り替え
-		MockDice._turn(list, imgs);
+		MockDice._turn(list, cont);
 	}
 
 	// ----------------------------------------------------------------
 	// ターン開始処理
-	static function _turn(list : variant[], imgs : Map.<string>) : void{
+	static function _turn(list : variant[], cont : Map.<string>) : void{
 		var turnChara : MockDiceCharaInfo = null;
 		if(MockDice._turnId == ""){
 			// 最初のターン
@@ -351,10 +341,10 @@ class MockDice{
 				list.push({type: "face", id0: turnChara.id, id1: faceId, value: value});
 			}
 			// ターン切り替え
-			MockDice._turn(list, imgs);
+			MockDice._turn(list, cont);
 		}else{
 			// ターン切り替え
-			MockDice._turn(list, imgs);
+			MockDice._turn(list, cont);
 		}
 	}
 }
