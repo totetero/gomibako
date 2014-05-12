@@ -77,10 +77,8 @@ class SECdiceMap implements SerialEventCartridge{
 		// 画面クリア
 		Ctrl.sctx.clearRect(0, 0, Ctrl.sw, Ctrl.sh);
 
-		// ヘッダ描画
-		this._page.header.draw();
-		// キャンバス描画
-		this._page.bcvs.draw();
+		// クロス要素の描画
+		this._page.drawCross();
 	}
 
 	// ----------------------------------------------------------------

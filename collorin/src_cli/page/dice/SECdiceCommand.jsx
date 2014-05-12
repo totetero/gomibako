@@ -47,6 +47,8 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._page.bcvs.cameraCenter = [this._player];
 		this._page.bcvs.isTapChara = true;
 		this._page.bcvs.isTapHex = true;
+		// ゲージ設定
+		this._page.gauge.setLeft(this._player, 30);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
@@ -100,10 +102,8 @@ class SECdiceCommand implements SerialEventCartridge{
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
 
-		// ヘッダ描画
-		this._page.header.draw();
-		// キャンバス描画
-		this._page.bcvs.draw();
+		// クロス要素の描画
+		this._page.drawCross();
 	}
 
 	// ----------------------------------------------------------------
