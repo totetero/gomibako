@@ -10,6 +10,7 @@ import "../../util/EventCartridge.jsx";
 import "../../bb3d/Bb3dCanvas.jsx";
 import "../../bb3d/Bb3dDrawUnit.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
+import "../core/parts/PartsButton.jsx";
 
 import "Bb3dDiceField.jsx";
 import "Bb3dDiceCharacter.jsx";
@@ -22,14 +23,20 @@ import "Bb3dDiceCharacter.jsx";
 class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	var field : Bb3dDiceField;
 	var member = {} : Map.<Bb3dDiceCharacter>;
-	var center : Bb3dDiceCharacter[];
 	var clist = new Bb3dDrawUnit[];
 	var slist = new Bb3dDrawUnit[];
 
+	// カメラ設定
+	var isMapMode : boolean;
+	var cameraLock : boolean;
+	var cameraScale : number;
+	var cameraCenter : Bb3dDiceCharacter[];
 	// キャラクタの押下
+	var isTapChara : boolean;
 	var _tappedChara : Bb3dDiceCharacter;
 	var charaTrigger : Bb3dDiceCharacter;
 	// フィールドの押下
+	var isTapHex : boolean;
 	var _hexTapped : boolean;
 	var hexTrigger : Bb3dDiceFieldCell;
 	// マスクカラー
@@ -52,7 +59,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 			this.member[id] = new Bb3dDiceCharacter(this, charaInfoList[id]);
 		}
 
- 		// 初期カメラ位置
+		// 初期カメラ位置
 		var hexx = response["camera"][0] as int;
 		var hexy = response["camera"][1] as int;
 		this.cx = this.calcx = this.field.calcHexCoordx(hexx, hexy);
@@ -67,12 +74,20 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	function calc() : void{
 		// キャンバス計算
 		this.calcTouchCoordinate();
-		this.calcTouchRotate();
-		this.calcRotv(this.calcrotv, 0.2);
-		this.calcRoth(Math.PI / 180 * 30, 0.1);
-		this.scale -= (this.scale - 1.0) * 0.1;
-		this.cx -= (this.cx - this.calcx) * 0.2;
-		this.cy -= (this.cy - this.calcy) * 0.2;
+		if(this.isMapMode){
+			if(!this.cameraLock){this.calcTouchMove();}
+			this.calcRotv(0, 0.2);
+			this.calcRoth(Math.PI / 180 * 90, 0.1);
+			this.cx -= (this.cx - this.calcx) * 0.5;
+			this.cy -= (this.cy - this.calcy) * 0.5;
+		}else{
+			if(!this.cameraLock){this.calcTouchRotate();}
+			this.calcRotv(this.calcrotv, 0.2);
+			this.calcRoth(Math.PI / 180 * 30, 0.1);
+			this.cx -= (this.cx - this.calcx) * 0.2;
+			this.cy -= (this.cy - this.calcy) * 0.2;
+		}
+		this.scale -= (this.scale - this.cameraScale) * 0.1;
 
 		// キャラクター計算
 		for(var id in this.member){
@@ -80,23 +95,23 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 			if(!this.member[id].exist){delete this.member[id];}
 		}
 
-		if(this.center != null && this.center.length > 0){
-			// カメラ位置
+		// カメラ位置を中心キャラクター位置にもってくる
+		if(!this.isMapMode && this.cameraCenter != null && this.cameraCenter.length > 0){
 			var cx = 0;
 			var cy = 0;
-			for(var i = 0; i < this.center.length; i++){
-				cx += this.center[i].x;
-				cy += this.center[i].y;
+			for(var i = 0; i < this.cameraCenter.length; i++){
+				cx += this.cameraCenter[i].x;
+				cy += this.cameraCenter[i].y;
 			}
-			this.calcx = cx / this.center.length;
-			this.calcy = cy / this.center.length;
+			this.calcx = cx / this.cameraCenter.length;
+			this.calcy = cy / this.cameraCenter.length;
 		}
 
 		// キャラクタータップ完了確認
 		if(!Ctrl.ctdn && this._tappedChara != null){this.charaTrigger = this._tappedChara;}
 		// キャラクタータップ中確認
 		this._tappedChara = null;
-		if(Ctrl.ctdn && !Ctrl.ctmv){
+		if(Ctrl.ctdn && !Ctrl.ctmv && !this.cameraLock && this.isTapChara){
 			var depth0 = 0;
 			for(var id in this.member){
 				var side = this.member[id].side;
@@ -112,20 +127,20 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		// フィールドタップ完了確認
 		if(!Ctrl.ctdn && this._hexTapped){this.hexTrigger = this.field.getHexFromCoordinate(this.tx, this.ty);}
 		// フィールドタップ中確認
-		this._hexTapped = (Ctrl.ctdn && !Ctrl.ctmv && this._tappedChara == null);
-
-		// キャラクター描画設定
-		if(this._maskColor == ""){
-			for(var id in this.member){
-				this.member[id].setColor((this._tappedChara == this.member[id]) ? "rgba(255, 255, 255, 0.5)" : "");
-			}
-		}
+		this._hexTapped = (Ctrl.ctdn && !Ctrl.ctmv && !this.cameraLock && this.isTapHex && this._tappedChara == null);
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
 		for(var id in this.member){this.member[id].preDraw(this);}
+
+		// キャラクタータップ色設定
+		if(this._maskColor == ""){
+			for(var id in this.member){
+				this.member[id].setColor((this._tappedChara == this.member[id]) ? "rgba(255, 255, 255, 0.5)" : "");
+			}
+		}
 
 		// 背景描画
 		this._drawBackground();
@@ -153,6 +168,21 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		while(dx < Ctrl.sw){
 			Ctrl.gctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.sh);
 			dx += dw;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// キャンバスへの影響を考慮したボタン計算
+	function calcButton(btnList : Map.<PartsButton>) : void{
+		this.cameraLock = false;
+		for(var name in btnList){
+			var btn = btnList[name];
+			btn.calc(true);
+			this.cameraLock = this.cameraLock || btn.active || btn.target;
+		}
+		if(this.cameraLock){
+			this._tappedChara = null;
+			this._hexTapped = false;
 		}
 	}
 

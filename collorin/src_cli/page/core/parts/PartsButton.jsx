@@ -19,6 +19,7 @@ class PartsButton{
 	var y : int;
 	var w : int;
 	var h : int;
+	var target : boolean;
 	var active : boolean;
 	var select : boolean;
 	var inactive : boolean;
@@ -30,7 +31,6 @@ class PartsButton{
 	var sKey = false;
 	var _inner : boolean;
 	var _ctdn : boolean;
-	var _press : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -48,8 +48,8 @@ class PartsButton{
 	// 計算
 	function calc(clickable : boolean) : void{
 		// ボタン押下の瞬間を確認
-		var press = false;
-		if(this._ctdn != Ctrl.ctdn){press = this._ctdn = Ctrl.ctdn;}
+		var target = false;
+		if(this._ctdn != Ctrl.ctdn){target = this._ctdn = Ctrl.ctdn;}
 
 		if(this.inactive || !clickable){
 			// ボタン無効状態
@@ -57,7 +57,7 @@ class PartsButton{
 		}else if((this.zKey && Ctrl.k_z) || (this.xKey && Ctrl.k_x) || (this.cKey && Ctrl.k_c) || (this.sKey && Ctrl.k_s)){
 			// 対応キー押下中
 			this.active = true;
-		}else if(Ctrl.ctdn && (this._press || press)){
+		}else if(Ctrl.ctdn && (this.target || target)){
 			// ボタン押下中
 			var x0 = this.x;
 			var y0 = this.y;
@@ -76,12 +76,12 @@ class PartsButton{
 				}
 			}
 			// ボタン押下の瞬間に押下確定フラグ
-			if(press){this._press = this.active;}
+			if(target){this.target = this.active;}
 		}else if(this.active){
 			// ボタンを放した瞬間
 			this.active = false;
 			this.trigger = true;
-			this._press = false;
+			this.target = false;
 		}
 	}
 

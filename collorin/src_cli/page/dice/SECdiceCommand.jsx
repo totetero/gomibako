@@ -33,14 +33,20 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._player = this._page.bcvs.member[response["id"] as string];
 
 		// ボタン作成
-		this._btnList["world"] = new PartsButtonBasic("もどる",  250, 10, 60, 30);
+		this._btnList["back"] = new PartsButtonBasic("もどる", 250, 10, 60, 30);
+		this._btnList["test"] = new PartsButtonBasic("テスト", 100, 100, 60, 30);
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// 中心キャラクター設定
-		this._page.bcvs.center = [this._player];
+		// キャンバス設定
+		this._page.bcvs.isMapMode = false;
+		this._page.bcvs.cameraLock = false;
+		this._page.bcvs.cameraScale = 2;
+		this._page.bcvs.cameraCenter = [this._player];
+		this._page.bcvs.isTapChara = true;
+		this._page.bcvs.isTapHex = true;
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
@@ -56,25 +62,32 @@ class SECdiceCommand implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
+		this._page.bcvs.calcButton(this._btnList);
 
 		// キャラクタータップ
 		if(this._page.bcvs.charaTrigger != null){
 			Sound.playSE("ok");
+			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.bcvs.charaTrigger));
 			return false;
 		}
 
 		// テストボタン押下処理
-		var list = ["world"];
-		for(var i = 0; i < list.length; i++){
-			var btn = this._btnList[list[i]];
-			if(btn.trigger){
-				btn.trigger = false;
-				Sound.playSE("ok");
-				Page.transitionsPage(list[i]);
-				return true;
-			}
+		var btn = this._btnList["test"];
+		if(btn.trigger){
+			btn.trigger = false;
+			Sound.playSE("ok");
+			dom.window.alert("test");
+			return true;
+		}
+
+		// もどるボタン押下処理
+		var btn = this._btnList["back"];
+		if(btn.trigger){
+			btn.trigger = false;
+			Sound.playSE("ok");
+			Page.transitionsPage("world");
+			return true;
 		}
 
 		return true;
