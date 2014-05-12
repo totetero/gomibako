@@ -15,55 +15,44 @@ import "../core/sec/SECpopupMenu.jsx";
 import "PageDice.jsx";
 import "Bb3dDiceCanvas.jsx";
 import "Bb3dDiceCharacter.jsx";
-import "SECdiceMap.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// すごろくコマンド入力待ちカートリッジ
-class SECdiceCommand implements SerialEventCartridge{
+// すごろくマップ表示カートリッジ
+class SECdiceMap implements SerialEventCartridge{
 	var _page : PageDice;
-	var _player : Bb3dDiceCharacter;
-	var _btnList = {} : Map.<PartsButton>;
+	var _cartridge : SerialEventCartridge;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageDice, response : variant){
+	function constructor(page : PageDice, cartridge : SerialEventCartridge){
 		this._page = page;
-		this._player = this._page.bcvs.member[response["id"] as string];
-
-		// ボタン作成
-		this._btnList["back"] = new PartsButtonBasic("もどる", 250, 10, 60, 30);
+		this._cartridge = cartridge;
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
 		// キャンバス設定
-		this._page.bcvs.isMapMode = false;
+		this._page.bcvs.isMapMode = true;
 		this._page.bcvs.cameraLock = false;
-		this._page.bcvs.cameraScale = 2.5;
-		this._page.bcvs.cameraCenter = [this._player];
+		this._page.bcvs.cameraScale = 1;
+		this._page.bcvs.cameraCenter = null;
 		this._page.bcvs.isTapChara = true;
-		this._page.bcvs.isTapHex = true;
+		this._page.bcvs.isTapHex = false;
 		// トリガーリセット
-		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
-		this._page.ctrler.z_Trigger = false;
-		this._page.ctrler.x_Trigger = false;
-		this._page.ctrler.c_Trigger = false;
 		this._page.ctrler.s_Trigger = false;
 		// コントローラ表示
 		this._page.ctrler.setLctrl(false);
-		this._page.ctrler.setRctrl("さいころ", "スキル", "マップ", "メニュー");
+		this._page.ctrler.setRctrl("", "", "", "戻る");
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		this._page.bcvs.calcButton(this._btnList);
-
 		// キャラクタータップ
 		if(this._page.bcvs.charaTrigger != null){
 			Sound.playSE("ok");
@@ -72,20 +61,11 @@ class SECdiceCommand implements SerialEventCartridge{
 			return false;
 		}
 
-		// マップボタン
-		if(this._page.ctrler.c_Trigger){
-			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceMap(this._page, this));
+		// 戻るボタン
+		if(this._page.ctrler.s_Trigger){
+			Sound.playSE("ng");
+			this._page.serialPush(this._cartridge);
 			return false;
-		}
-
-		// もどるボタン押下処理
-		var btn = this._btnList["back"];
-		if(btn.trigger){
-			btn.trigger = false;
-			Sound.playSE("ok");
-			Page.transitionsPage("world");
-			return true;
 		}
 
 		return true;
@@ -96,9 +76,6 @@ class SECdiceCommand implements SerialEventCartridge{
 	override function draw() : void{
 		// 画面クリア
 		Ctrl.sctx.clearRect(0, 0, Ctrl.sw, Ctrl.sh);
-
-		// ボタン描画
-		for(var name in this._btnList){this._btnList[name].draw();}
 
 		// ヘッダ描画
 		this._page.header.draw();
