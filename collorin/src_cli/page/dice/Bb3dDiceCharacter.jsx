@@ -24,10 +24,6 @@ class Bb3dDiceCharacter extends DataChara{
 	var _shadow : Bb3dDrawShadow;
 
 	var side : string;
-	var hp : int;
-	var sp : int;
-	var maxhp : int;
-	var maxsp : int;
 
 	var exist = true;
 	var x : number;
@@ -42,8 +38,8 @@ class Bb3dDiceCharacter extends DataChara{
 	function constructor(bcvs : Bb3dDiceCanvas, response : variant){
 		super(response);
 		this.side = response["side"] as string;
-		this.hp = 100;
-		this.sp = 100;
+		this.hp = 50;
+		this.sp = 50;
 		this.maxhp = 100;
 		this.maxsp = 100;
 		var hexx = response["x"] as int;

@@ -59,9 +59,17 @@ class CrossDiceGauge{
 		var rx = Ctrl.sw - 50 * (1 - Math.abs(this._rAction / CrossDiceGauge._actionMax));
 
 		if(this._currentLchara != null){
-			Ctrl.sctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+			var chara = this._currentLchara;
+			Ctrl.sctx.fillStyle = this.lActive ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)";
 			Ctrl.sctx.fillRect(lx, 0, 50, 50);
-			Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + this._currentLchara.code], lx, 0, 50, 50);
+			Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + chara.code], lx, 0, 50, 50);
+			Ctrl.sctx.fillStyle = "#cccccc";
+			Ctrl.sctx.fillRect(lx, 55, 50, 10);
+			Ctrl.sctx.fillRect(lx, 70, 50, 10);
+			Ctrl.sctx.fillStyle = "red";
+			Ctrl.sctx.fillRect(lx, 55, (chara.hp / chara.maxhp) * 50, 10);
+			Ctrl.sctx.fillStyle = "blue";
+			Ctrl.sctx.fillRect(lx, 70, (chara.sp / chara.maxsp) * 50, 10);
 		}
 	}
 

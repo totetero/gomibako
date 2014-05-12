@@ -34,6 +34,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._player = this._page.bcvs.member[response["id"] as string];
 
 		// ボタン作成
+		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
 		this._btnList["back"] = new PartsButtonBasic("もどる", 250, 10, 60, 30);
 	}
 
@@ -48,7 +49,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._page.bcvs.isTapChara = true;
 		this._page.bcvs.isTapHex = true;
 		// ゲージ設定
-		this._page.gauge.setLeft(this._player, 30);
+		this._page.gauge.setLeft(this._player, -1);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
@@ -65,12 +66,22 @@ class SECdiceCommand implements SerialEventCartridge{
 	// 計算
 	override function calc() : boolean{
 		this._page.bcvs.calcButton(this._btnList);
+		this._page.gauge.lActive = this._btnList["lchara"].active;
 
 		// キャラクタータップ
 		if(this._page.bcvs.charaTrigger != null){
 			Sound.playSE("ok");
 			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.bcvs.charaTrigger));
+			return false;
+		}
+
+		// ゲージアイコンタップ
+		var btn = this._btnList["lchara"];
+		if(btn.trigger){
+			Sound.playSE("ok");
+			this._page.bcvs.cameraLock = true;
+			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.lChara));
 			return false;
 		}
 

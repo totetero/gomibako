@@ -22,6 +22,10 @@ class DataChara{
 	var code : string;
 	var name : string;
 	var level : int;
+	var hp : int;
+	var sp : int;
+	var maxhp : int;
+	var maxsp : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
