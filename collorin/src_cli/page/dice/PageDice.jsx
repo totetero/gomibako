@@ -53,17 +53,6 @@ class PageDice extends Page{
 	}
 
 	// ----------------------------------------------------------------
-	// クロス要素の描画
-	function drawCross() : void{
-		// ゲージ描画
-		this.gauge.draw();
-		// ヘッダ描画
-		this.header.draw();
-		// キャンバス描画
-		this.bcvs.draw();
-	}
-
-	// ----------------------------------------------------------------
 	// ロードしたデータの解析
 	function parse(list : variant[]) : variant{
 		var response : variant = null;

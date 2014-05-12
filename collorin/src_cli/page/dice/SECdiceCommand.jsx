@@ -98,12 +98,16 @@ class SECdiceCommand implements SerialEventCartridge{
 	override function draw() : void{
 		// 画面クリア
 		Ctrl.sctx.clearRect(0, 0, Ctrl.sw, Ctrl.sh);
+		// ゲージ描画
+		this._page.gauge.draw();
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
 
-		// クロス要素の描画
-		this._page.drawCross();
+		// ヘッダ描画
+		this._page.header.draw();
+		// キャンバス描画
+		this._page.bcvs.draw();
 	}
 
 	// ----------------------------------------------------------------

@@ -88,6 +88,19 @@ class SECloadTransition implements SerialEventCartridge{
 			// ヘッダはページと同時には遷移しないので一時的に隠す
 			SECloadTransition.invisibleHeaderCount++;
 
+			// コンテキスト設定関数
+			var setCtx = function(ctx : CanvasRenderingContext2D, x : number) : void{
+				ctx.save();
+				ctx.translate(x, 0);
+				ctx.beginPath();
+				ctx.moveTo(0, 0);
+				ctx.lineTo(Ctrl.sw, 0);
+				ctx.lineTo(Ctrl.sw, Ctrl.sh);
+				ctx.lineTo(0, Ctrl.sh);
+				ctx.closePath();
+				ctx.clip();
+			};
+
 			// 遷移演出
 			var num = this._action / SECloadTransition._actionMax;
 			var x0 = 0;
@@ -96,14 +109,14 @@ class SECloadTransition implements SerialEventCartridge{
 				x1 = 320 * (1 - num * num);
 				if(this._same){x0 = 320 * (0 - num * num);}
 
-				Ctrl.sctx.save(); Ctrl.sctx.translate(x0, 0);
-				Ctrl.gctx.save(); Ctrl.gctx.translate(x0, 0);
+				setCtx(Ctrl.sctx, x0);
+				setCtx(Ctrl.gctx, x0);
 				this._prevPage.draw();
 				Ctrl.sctx.restore();
 				Ctrl.gctx.restore();
 
-				Ctrl.sctx.save(); Ctrl.sctx.translate(x1, 0);
-				Ctrl.gctx.save(); Ctrl.gctx.translate(x1, 0);
+				setCtx(Ctrl.sctx, x1);
+				setCtx(Ctrl.gctx, x1);
 				this._nextCartridge.draw();
 				Ctrl.sctx.restore();
 				Ctrl.gctx.restore();
@@ -111,14 +124,14 @@ class SECloadTransition implements SerialEventCartridge{
 				x0 = 320 * (num * num);
 				if(this._same){x1 = 320 * (num * num - 1);}
 
-				Ctrl.sctx.save(); Ctrl.sctx.translate(x1, 0);
-				Ctrl.gctx.save(); Ctrl.gctx.translate(x1, 0);
+				setCtx(Ctrl.sctx, x1);
+				setCtx(Ctrl.gctx, x1);
 				this._nextCartridge.draw();
 				Ctrl.sctx.restore();
 				Ctrl.gctx.restore();
 
-				Ctrl.sctx.save(); Ctrl.sctx.translate(x0, 0);
-				Ctrl.gctx.save(); Ctrl.gctx.translate(x0, 0);
+				setCtx(Ctrl.sctx, x0);
+				setCtx(Ctrl.gctx, x0);
 				this._prevPage.draw();
 				Ctrl.sctx.restore();
 				Ctrl.gctx.restore();

@@ -22,6 +22,7 @@ class CrossDiceGauge{
 	var lChara : DataChara;
 	var rChara : DataChara;
 
+	var _skip : boolean;
 	var _currentLchara : DataChara;
 	var _currentRchara : DataChara;
 	var _lAction = -CrossDiceGauge._actionMax;
@@ -43,8 +44,8 @@ class CrossDiceGauge{
 		// 展開処理
 		if(this._lAction > 0 || (0 > this._lAction && this.lChara != null)){this._lAction++;}
 		if(this._rAction > 0 || (0 > this._rAction && this.rChara != null)){this._rAction++;}
-		if(this._lAction == 0 && this._lTime > 0 && --this._lTime == 0){this._lAction = 1; this.lChara = null;}
-		if(this._rAction == 0 && this._rTime > 0 && --this._rTime == 0){this._rAction = 1; this.rChara = null;}
+		if(this._lAction == 0 && this._lTime > 0 && --this._lTime == 0){this.lChara = null; this._lAction = this._skip ? -CrossDiceGauge._actionMax : 1;}
+		if(this._rAction == 0 && this._rTime > 0 && --this._rTime == 0){this.rChara = null; this._rAction = this._skip ? -CrossDiceGauge._actionMax : 1;}
 		if(this._lAction > CrossDiceGauge._actionMax){this._lAction = -CrossDiceGauge._actionMax;}
 		if(this._rAction > CrossDiceGauge._actionMax){this._rAction = -CrossDiceGauge._actionMax;}
 		if(this._lAction == -CrossDiceGauge._actionMax && this.lChara != null){this._currentLchara = this.lChara;}
@@ -67,12 +68,15 @@ class CrossDiceGauge{
 	// ----------------------------------------------------------------
 	// 表示設定
 	function setLeft(chara : DataChara, time : int) : void{
-		this.lChara = chara;
+		if(this.lChara != chara){
+			this.lChara = chara;
+			this._lAction = (this._lAction == 0) ? 1 : Math.abs(this._lAction);
+		}
 		this._lTime = time;
-		this._lAction = (this._lAction == 0) ? 1 : Math.abs(this._lAction);
 
 		// 演出スキップ確認
-		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		if(this._skip){
 			this._lAction = (this.lChara != null) ? 0 : -CrossDiceGauge._actionMax;
 			this._currentLchara = this.lChara;
 		}
