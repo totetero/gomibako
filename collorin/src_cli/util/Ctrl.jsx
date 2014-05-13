@@ -19,12 +19,20 @@ class Ctrl{
 	static var sh : int;
 	// ピクセルレシオ
 	static var pixelRatio : number;
-	// キャンバス要素
-	static var mdiv : HTMLDivElement;
-	static var scvs : HTMLCanvasElement;
+	// メインキャンバス要素
+	static var _mdiv : HTMLDivElement;
+	static var _scvs : HTMLCanvasElement;
+	static var _gcvs : HTMLCanvasElement;
 	static var sctx : CanvasRenderingContext2D;
-	static var gcvs : HTMLCanvasElement;
 	static var gctx : CanvasRenderingContext2D;
+	// クロスキャンバス要素
+	static var clctx : CanvasRenderingContext2D;
+	static var crctx : CanvasRenderingContext2D;
+	static var clUpdate : boolean;
+	static var crUpdate : boolean;
+	// コントローラ要素
+	static var rdiv : HTMLDivElement;
+	static var ldiv : HTMLDivElement;
 	// タッチ状態
 	static var isTouch : boolean;
 	static var tx : int = 0;
@@ -56,10 +64,10 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// 初期化
 	static function init() : void{
-		Ctrl.mdiv = dom.document.getElementById("main") as HTMLDivElement;
+		Ctrl._mdiv = dom.document.getElementById("main") as HTMLDivElement;
 		var cdiv = dom.document.getElementById("ctrl") as HTMLDivElement;
-		var ldiv = dom.document.getElementById("lctrl") as HTMLDivElement;
-		var rdiv = dom.document.getElementById("rctrl") as HTMLDivElement;
+		Ctrl.ldiv = dom.document.getElementById("lctrl") as HTMLDivElement;
+		Ctrl.rdiv = dom.document.getElementById("rctrl") as HTMLDivElement;
 
 		// リスナー追加
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
@@ -68,20 +76,20 @@ class Ctrl{
 			cdiv.addEventListener("touchmove", Ctrl._ctmvfn);
 			cdiv.addEventListener("touchend", Ctrl._ctupfn);
 			cdiv.addEventListener("touchcancel", Ctrl._ctupfn);
-			ldiv.addEventListener("touchstart", Ctrl._ltdnfn);
-			ldiv.addEventListener("touchmove", Ctrl._ltmvfn);
-			ldiv.addEventListener("touchend", Ctrl._ltupfn);
-			ldiv.addEventListener("touchcancel", Ctrl._ltupfn);
-			rdiv.addEventListener("touchstart", Ctrl._rtdnfn);
-			rdiv.addEventListener("touchmove", Ctrl._rtmvfn);
-			rdiv.addEventListener("touchend", Ctrl._rtupfn);
-			rdiv.addEventListener("touchcancel", Ctrl._rtupfn);
+			Ctrl.ldiv.addEventListener("touchstart", Ctrl._ltdnfn);
+			Ctrl.ldiv.addEventListener("touchmove", Ctrl._ltmvfn);
+			Ctrl.ldiv.addEventListener("touchend", Ctrl._ltupfn);
+			Ctrl.ldiv.addEventListener("touchcancel", Ctrl._ltupfn);
+			Ctrl.rdiv.addEventListener("touchstart", Ctrl._rtdnfn);
+			Ctrl.rdiv.addEventListener("touchmove", Ctrl._rtmvfn);
+			Ctrl.rdiv.addEventListener("touchend", Ctrl._rtupfn);
+			Ctrl.rdiv.addEventListener("touchcancel", Ctrl._rtupfn);
 		}else{
 			cdiv.addEventListener("mousedown", function(e : Event) : void{
 				var x = (e as MouseEvent).clientX;
 				var y = (e as MouseEvent).clientY;
-				var lw = 144 + Number.parseInt(ldiv.style.left);
-				var rw = 144 + Number.parseInt(rdiv.style.right);
+				var lw = 144 + Number.parseInt(Ctrl.ldiv.style.left); // TODO display式
+				var rw = 144 + Number.parseInt(Ctrl.rdiv.style.right); // TODO display式
 				if(x < lw && y > Ctrl.wh - 144){Ctrl._ltdnfn(e);}
 				else if(x > Ctrl.ww - rw && y > Ctrl.wh - 144){Ctrl._rtdnfn(e);}
 				else{Ctrl._ctdnfn(e);}
@@ -108,10 +116,42 @@ class Ctrl{
 		}
 		dom.document.addEventListener("keydown", Ctrl._kdnfn);
 		dom.document.addEventListener("keyup", Ctrl._kupfn);
+
+		var crossDiv = dom.document.getElementById("cross") as HTMLDivElement;
+		var pixelRatio = dom.window.devicePixelRatio;
+		// 左クロスキャンバス作成
+		var clcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
+		Ctrl.clctx = clcvs.getContext("2d") as CanvasRenderingContext2D;
+		var pixelRatio = dom.window.devicePixelRatio;
+		clcvs.width = Math.floor(160 * pixelRatio);
+		clcvs.height = Math.floor(240 * pixelRatio);
+		Ctrl.clctx.scale(pixelRatio, pixelRatio);
+		clcvs.style.position = "absolute";
+		clcvs.style.left = "0px";
+		clcvs.style.bottom = "0px";
+		clcvs.style.width = "160px";
+		clcvs.style.height = "240px";
+		crossDiv.appendChild(clcvs);
+		// 右クロスキャンバス作成
+		var crcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
+		Ctrl.crctx = crcvs.getContext("2d") as CanvasRenderingContext2D;
+		crcvs.width = Math.floor(144 * pixelRatio);
+		crcvs.height = Math.floor(144 * pixelRatio);
+		Ctrl.crctx.scale(pixelRatio, pixelRatio);
+		crcvs.style.position = "absolute";
+		crcvs.style.right = "0px";
+		crcvs.style.bottom = "0px";
+		crcvs.style.width = "144px";
+		crcvs.style.height = "144px";
+		crossDiv.appendChild(crcvs);
+
+		Ctrl.clUpdate = true;
+		Ctrl.crUpdate = true;
+
 	}
 
 	// ----------------------------------------------------------------
-	// キャンバス設定
+	// メインキャンバス設定
 	static function setCanvas() : void{
 		// ピクセルレシオ設定
 		Ctrl.pixelRatio = 1;
@@ -119,14 +159,14 @@ class Ctrl{
 		if(quality == "high"){Ctrl.pixelRatio = dom.window.devicePixelRatio;}
 		if(quality == "low"){Ctrl.pixelRatio = 0.5;}
 		// キャンバスリセット
-		if(Ctrl.gcvs != null){Ctrl.mdiv.removeChild(Ctrl.gcvs);}
-		if(Ctrl.scvs != null){Ctrl.mdiv.removeChild(Ctrl.scvs);}
+		if(Ctrl._gcvs != null){Ctrl._mdiv.removeChild(Ctrl._gcvs);}
+		if(Ctrl._scvs != null){Ctrl._mdiv.removeChild(Ctrl._scvs);}
 		// スクリーンキャンバス作成
-		Ctrl.scvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		Ctrl.sctx = Ctrl.scvs.getContext("2d") as CanvasRenderingContext2D;
+		Ctrl._scvs = dom.document.createElement("canvas") as HTMLCanvasElement;
+		Ctrl.sctx = Ctrl._scvs.getContext("2d") as CanvasRenderingContext2D;
 		// ゲームキャンバス作成
-		Ctrl.gcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		Ctrl.gctx = Ctrl.gcvs.getContext("2d") as CanvasRenderingContext2D;
+		Ctrl._gcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
+		Ctrl.gctx = Ctrl._gcvs.getContext("2d") as CanvasRenderingContext2D;
 		// キャンバス設定
 		var setting = function(cvs : HTMLCanvasElement, ctx : CanvasRenderingContext2D, pixelRatio : number) : void{
 			if(pixelRatio == 1){
@@ -142,10 +182,10 @@ class Ctrl{
 			cvs.style.top = (Ctrl.sh * -0.5) + "px";
 			cvs.style.width = Ctrl.sw + "px";
 			cvs.style.height = Ctrl.sh + "px";
-			Ctrl.mdiv.appendChild(cvs);
+			Ctrl._mdiv.appendChild(cvs);
 		};
-		setting(Ctrl.gcvs, Ctrl.gctx, Ctrl.pixelRatio);
-		setting(Ctrl.scvs, Ctrl.sctx, Math.max(1, Ctrl.pixelRatio));
+		setting(Ctrl._gcvs, Ctrl.gctx, Ctrl.pixelRatio);
+		setting(Ctrl._scvs, Ctrl.sctx, Math.max(1, Ctrl.pixelRatio));
 
 	}
 

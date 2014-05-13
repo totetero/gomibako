@@ -32,12 +32,6 @@ class CrossCtrler{
 	var c_Trigger : boolean;
 	var s_Trigger : boolean;
 
-	// キャンバス要素
-	var _ldiv : HTMLDivElement;
-	var _rdiv : HTMLDivElement;
-	var _lctx : CanvasRenderingContext2D;
-	var _rctx : CanvasRenderingContext2D;
-
 	var _zbox : CrossCtrler._BtnBox;
 	var _xbox : CrossCtrler._BtnBox;
 	var _cbox : CrossCtrler._BtnBox;
@@ -58,26 +52,6 @@ class CrossCtrler{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
-		// 左コントローラキャンバス作成
-		var lcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		this._ldiv = dom.document.getElementById("lctrl") as HTMLDivElement;
-		this._lctx = lcvs.getContext("2d") as CanvasRenderingContext2D;
-		lcvs.width = lcvs.height = 288;
-		lcvs.style.width = 144 + "px";
-		lcvs.style.height = 144 + "px";
-		this._lctx.scale(2, 2);
-		this._ldiv.appendChild(lcvs);
-
-		// 右コントローラキャンバス作成
-		var rcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		this._rdiv = dom.document.getElementById("rctrl") as HTMLDivElement;
-		this._rctx = rcvs.getContext("2d") as CanvasRenderingContext2D;
-		rcvs.width = rcvs.height = 288;
-		rcvs.style.width = 144 + "px";
-		rcvs.style.height = 144 + "px";
-		this._rctx.scale(2, 2);
-		this._rdiv.appendChild(rcvs);
-
 		// 右コントローラのボタン描画範囲設定
 		this._zbox = new CrossCtrler._BtnBox(5, 30 * 0 - 2 +  3, 134, 30 + 2);
 		this._xbox = new CrossCtrler._BtnBox(5, 30 * 1 - 2 +  9, 134, 30 + 2);
@@ -157,56 +131,64 @@ class CrossCtrler{
 		}
 
 		// 展開処理
-		if(this._lAction > 0 || (0 > this._lAction && this._lShow)){this._lAction++; this._ldiv.style.left = (-144 * Math.abs(this._lAction / CrossCtrler._actionMax)) + "px";}
-		if(this._rAction > 0 || (0 > this._rAction && this._rShow)){this._rAction++; this._rdiv.style.right = (-144 * Math.abs(this._rAction / CrossCtrler._actionMax)) + "px";}
+		if(this._lAction > 0 || (0 > this._lAction && this._lShow)){this._lAction++;}
+		if(this._rAction > 0 || (0 > this._rAction && this._rShow)){this._rAction++;}
 		if(this._lAction > CrossCtrler._actionMax){this._lAction = -CrossCtrler._actionMax;}
 		if(this._rAction > CrossCtrler._actionMax){this._rAction = -CrossCtrler._actionMax;}
-		if(this._rAction == -CrossCtrler._actionMax && this._rShow){
-			this._currentZlabelCvs = null;
-			this._currentXlabelCvs = null;
-			this._currentClabelCvs = null;
-			this._currentSlabelCvs = null;
+		if(this._lAction == -CrossCtrler._actionMax){Ctrl.ldiv.style.display = this._lShow ? "block" : "none";}
+		if(this._rAction == -CrossCtrler._actionMax){
+			Ctrl.rdiv.style.display = this._rShow ? "block" : "none";
+			if(this._rShow){
+				this._currentZlabelCvs = null;
+				this._currentXlabelCvs = null;
+				this._currentClabelCvs = null;
+				this._currentSlabelCvs = null;
+			}
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		// 十字キーの描画
-		var nimg = Loader.imgs["img_system_button_ctrlArrow_normal"];
-		var aimg = Loader.imgs["img_system_button_ctrlArrow_active"];
-		if(nimg != null && aimg != null){
-			this._lctx.clearRect(0, 0, 288, 288);
-			this._lctx.drawImage(this.upActive ? aimg : nimg,  0,      0, 68, 92 + 4, 55     ,  0 - 2 + 15, 34, 46 + 2);
-			this._lctx.drawImage(this.rtActive ? aimg : nimg, 69,      0, 92, 68 + 4, 98 - 15, 55 - 2     , 46, 34 + 2);
-			this._lctx.drawImage(this.dnActive ? aimg : nimg, 93, 69 + 4, 68, 92 + 4, 55     , 98 - 2 - 15, 34, 46 + 2);
-			this._lctx.drawImage(this.ltActive ? aimg : nimg,  0, 93 + 4, 92, 68 + 4,  0 + 15, 55 - 2     , 46, 34 + 2);
+		if(Ctrl.clUpdate){
+			// 十字キーの描画
+			var nimg = Loader.imgs["img_system_button_ctrlArrow_normal"];
+			var aimg = Loader.imgs["img_system_button_ctrlArrow_active"];
+			if(nimg != null && aimg != null){
+				var x = -144 * Math.abs(this._lAction / CrossCtrler._actionMax);
+				Ctrl.clctx.drawImage(this.upActive ? aimg : nimg,  0,      0, 68, 92 + 4, x + 55     , 240 - 144 +  0 - 2 + 15, 34, 46 + 2);
+				Ctrl.clctx.drawImage(this.rtActive ? aimg : nimg, 69,      0, 92, 68 + 4, x + 98 - 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
+				Ctrl.clctx.drawImage(this.dnActive ? aimg : nimg, 93, 69 + 4, 68, 92 + 4, x + 55     , 240 - 144 + 98 - 2 - 15, 34, 46 + 2);
+				Ctrl.clctx.drawImage(this.ltActive ? aimg : nimg,  0, 93 + 4, 92, 68 + 4, x +  0 + 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
+			}
 		}
 
-		// ボタンの描画
-		var nimg = Loader.imgs["img_system_button_ctrlButton_normal"];
-		var aimg = Loader.imgs["img_system_button_ctrlButton_active"];
-		if(nimg != null && aimg != null){
-			this._rctx.clearRect(0, 0, 288, 288);
-			var pixelRatio = 2;
-			var drawBtn = function(box : CrossCtrler._BtnBox, label : string, cvs : HTMLCanvasElement, active : boolean) : HTMLCanvasElement{
-				if(cvs == null && label != "" && this._rAction <= 0){cvs = Drawer.createText(label, 16 * pixelRatio, "black");}
-				if(cvs != null){
-					// ボタン枠の描画
-					Drawer.drawBox(this._rctx, active ? aimg : nimg, box.x, box.y, box.w, box.h);
-					// ボタン文字列の描画
-					var w = cvs.width / pixelRatio;
-					var h = cvs.height / pixelRatio;
-					var x = box.x + (box.w - w) * 0.5;
-					var y = box.y + (box.h - h - 2) * 0.5 + (active ? 2 : 0);
-					this._rctx.drawImage(cvs, x, y, w, h);
-				}
-				return cvs;
-			};
-			this._currentZlabelCvs = drawBtn(this._zbox, this._nextZlavel, this._currentZlabelCvs, this.z_Active);
-			this._currentXlabelCvs = drawBtn(this._xbox, this._nextXlavel, this._currentXlabelCvs, this.x_Active);
-			this._currentClabelCvs = drawBtn(this._cbox, this._nextClavel, this._currentClabelCvs, this.c_Active);
-			this._currentSlabelCvs = drawBtn(this._sbox, this._nextSlavel, this._currentSlabelCvs, this.s_Active);
+		if(Ctrl.crUpdate){
+			// ボタンの描画
+			var nimg = Loader.imgs["img_system_button_ctrlButton_normal"];
+			var aimg = Loader.imgs["img_system_button_ctrlButton_active"];
+			if(nimg != null && aimg != null){
+				var pixelRatio = 2;
+				var x = 144 * Math.abs(this._rAction / CrossCtrler._actionMax);
+				var drawBtn = function(box : CrossCtrler._BtnBox, label : string, cvs : HTMLCanvasElement, active : boolean) : HTMLCanvasElement{
+					if(cvs == null && label != "" && this._rAction <= 0){cvs = Drawer.createText(label, 16 * pixelRatio, "black");}
+					if(cvs != null){
+						// ボタン枠の描画
+						Drawer.drawBox(Ctrl.crctx, active ? aimg : nimg, x + box.x, box.y, box.w, box.h);
+						// ボタン文字列の描画
+						var bw = cvs.width / pixelRatio;
+						var bh = cvs.height / pixelRatio;
+						var bx = box.x + (box.w - bw) * 0.5;
+						var by = box.y + (box.h - bh - 2) * 0.5 + (active ? 2 : 0);
+						Ctrl.crctx.drawImage(cvs, x + bx, by, bw, bh);
+					}
+					return cvs;
+				};
+				this._currentZlabelCvs = drawBtn(this._zbox, this._nextZlavel, this._currentZlabelCvs, this.z_Active);
+				this._currentXlabelCvs = drawBtn(this._xbox, this._nextXlavel, this._currentXlabelCvs, this.x_Active);
+				this._currentClabelCvs = drawBtn(this._cbox, this._nextClavel, this._currentClabelCvs, this.c_Active);
+				this._currentSlabelCvs = drawBtn(this._sbox, this._nextSlavel, this._currentSlabelCvs, this.s_Active);
+			}
 		}
 	}
 
@@ -221,7 +203,7 @@ class CrossCtrler{
 		// 演出スキップ確認
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
 			this._lAction = this._lShow ? 0 : -CrossCtrler._actionMax;
-			this._ldiv.style.left = (-144 * Math.abs(this._lAction / CrossCtrler._actionMax)) + "px";
+			Ctrl.ldiv.style.display = this._lShow ? "block" : "none";
 		}
 	}
 
@@ -241,16 +223,16 @@ class CrossCtrler{
 			change = change || this._nextClavel != cLabel;
 			change = change || this._nextSlavel != sLabel;
 			if(change){this._rAction = (this._rAction == 0) ? 1 : Math.abs(this._rAction);}
-			this._nextZlavel = zLabel;
-			this._nextXlavel = xLabel;
-			this._nextClavel = cLabel;
-			this._nextSlavel = sLabel;
 		}
+		this._nextZlavel = zLabel;
+		this._nextXlavel = xLabel;
+		this._nextClavel = cLabel;
+		this._nextSlavel = sLabel;
 
 		// 演出スキップ確認
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
 			this._rAction = this._rShow ? 0 : -CrossCtrler._actionMax;
-			this._rdiv.style.right = (-144 * Math.abs(this._rAction / CrossCtrler._actionMax)) + "px";
+			Ctrl.rdiv.style.display = this._rShow ? "block" : "none";
 			this._currentZlabelCvs = null;
 			this._currentXlabelCvs = null;
 			this._currentClabelCvs = null;

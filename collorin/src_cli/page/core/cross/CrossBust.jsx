@@ -17,28 +17,20 @@ import "../data/DataChara.jsx";
 class CrossBust{
 	static const _actionMax = 10;
 
-	var _ctx : CanvasRenderingContext2D;
 	var _currentChara : DataChara;
 	var _nextChara : DataChara;
 	var _action = -CrossBust._actionMax;
 	var _tempAction : int;
 
 	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(){
-		// キャンバス作成
-		var cvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		this._ctx = cvs.getContext("2d") as CanvasRenderingContext2D;
-		cvs.width = 320;
-		cvs.height = 480;
-		cvs.style.width = 160 + "px";
-		cvs.style.height = 240 + "px";
-		(dom.document.getElementById("bust") as HTMLDivElement).appendChild(cvs);
-	}
-
-	// ----------------------------------------------------------------
 	// 計算
 	function calc() : void{
+		// 更新確認
+		if(this._tempAction != this._action){
+			this._tempAction = this._action;
+			Ctrl.clUpdate = true;
+		}
+
 		// 展開処理
 		if(this._action > 0 || (0 > this._action && this._nextChara != null)){this._action++;}
 		if(this._action > CrossBust._actionMax){this._action = -CrossBust._actionMax;}
@@ -48,14 +40,10 @@ class CrossBust{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		if(this._tempAction == this._action){return;}
-		this._tempAction = this._action;
-
-		this._ctx.clearRect(0, 0, 320, 480);
-		if(this._currentChara != null){
+		if(Ctrl.clUpdate && this._currentChara != null){
 			var img = Loader.imgs["img_chara_bust_" + this._currentChara.code];
-			var x = -320 * Math.abs(this._action / CrossBust._actionMax);
-			this._ctx.drawImage(img, x, 0);
+			var x = -160 * Math.abs(this._action / CrossBust._actionMax);
+			Ctrl.clctx.drawImage(img, x, 0, 160, 240);
 		}
 	}
 

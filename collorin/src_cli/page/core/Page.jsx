@@ -50,9 +50,13 @@ abstract class Page extends EventPlayer{
 			Page.current.header.calc();
 			Page.current.bust.calc();
 			// ページの描画
+			if(Ctrl.clUpdate){Ctrl.clctx.clearRect(0, 0, 160, 240);}
+			if(Ctrl.crUpdate){Ctrl.crctx.clearRect(0, 0, 144, 244);}
 			Page.current.draw();
-			Page.current.ctrler.draw();
 			Page.current.bust.draw();
+			Page.current.ctrler.draw();
+			//Ctrl.clUpdate = false;
+			//Ctrl.crUpdate = false;
 		}
 	}
 

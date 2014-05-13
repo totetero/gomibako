@@ -34,14 +34,6 @@ class _Main{
 				left: 50%;
 				top: 50%;
 			}
-			#bust{
-				position: absolute;
-				left: 0px;
-				bottom: 0px;
-				width: 160px;
-				height: 240px;
-				//background-color: rgba(0,0,0,0.3);
-			}
 			#ctrl{
 				position: absolute;
 				width: 100%;
@@ -50,7 +42,7 @@ class _Main{
 			}
 			#lctrl{
 				position: absolute;
-				left: -144px;
+				left: 0px;
 				bottom: 0px;
 				width: 144px;
 				height: 144px;
@@ -58,7 +50,7 @@ class _Main{
 			}
 			#rctrl{
 				position: absolute;
-				right: -144px;
+				right: 0px;
 				bottom: 0px;
 				width: 144px;
 				height: 144px;
@@ -104,7 +96,7 @@ class _Main{
 		// dom設定
 		dom.document.body.innerHTML = """
 			<div id="main"></div>
-			<div id="bust"></div>
+			<div id="cross"></div>
 			<div id="ctrl">
 				<div id="lctrl"></div>
 				<div id="rctrl"></div>
