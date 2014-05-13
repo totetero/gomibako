@@ -58,6 +58,7 @@ class CrossDiceGauge{
 		var lx = -50 * Math.abs(this._lAction / CrossDiceGauge._actionMax);
 		var rx = Ctrl.sw - 50 * (1 - Math.abs(this._rAction / CrossDiceGauge._actionMax));
 
+		// 左表示
 		if(this._currentLchara != null){
 			var chara = this._currentLchara;
 			Ctrl.sctx.fillStyle = this.lActive ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)";
@@ -71,10 +72,25 @@ class CrossDiceGauge{
 			Ctrl.sctx.fillStyle = "blue";
 			Ctrl.sctx.fillRect(lx, 70, (chara.sp / chara.maxsp) * 50, 10);
 		}
+
+		// 右表示
+		if(this._currentRchara != null){
+			var chara = this._currentRchara;
+			Ctrl.sctx.fillStyle = this.rActive ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)";
+			Ctrl.sctx.fillRect(rx, 0, 50, 50);
+			Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + chara.code], rx, 0, 50, 50);
+			Ctrl.sctx.fillStyle = "#cccccc";
+			Ctrl.sctx.fillRect(rx, 55, 50, 10);
+			Ctrl.sctx.fillRect(rx, 70, 50, 10);
+			Ctrl.sctx.fillStyle = "red";
+			Ctrl.sctx.fillRect(rx, 55, (chara.hp / chara.maxhp) * 50, 10);
+			Ctrl.sctx.fillStyle = "blue";
+			Ctrl.sctx.fillRect(rx, 70, (chara.sp / chara.maxsp) * 50, 10);
+		}
 	}
 
 	// ----------------------------------------------------------------
-	// 表示設定
+	// 左表示設定
 	function setLeft(chara : DataChara, time : int) : void{
 		if(this.lChara != chara){
 			this.lChara = chara;
@@ -87,6 +103,24 @@ class CrossDiceGauge{
 		if(this._skip){
 			this._lAction = (this.lChara != null) ? 0 : -CrossDiceGauge._actionMax;
 			this._currentLchara = this.lChara;
+		}
+	}
+
+
+	// ----------------------------------------------------------------
+	// 右表示設定
+	function setRight(chara : DataChara, time : int) : void{
+		if(this.rChara != chara){
+			this.rChara = chara;
+			this._rAction = (this._rAction == 0) ? 1 : Math.abs(this._rAction);
+		}
+		this._rTime = time;
+
+		// 演出スキップ確認
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		if(this._skip){
+			this._rAction = (this.rChara != null) ? 0 : -CrossDiceGauge._actionMax;
+			this._currentLchara = this.rChara;
 		}
 	}
 }
