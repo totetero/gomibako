@@ -49,6 +49,10 @@ abstract class SECcharaTab implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// トリガーリセット
+		for(var name in this._tabList){this._tabList[name].trigger = false;}
+		this.page.header.lbtn.trigger = false;
+		this.page.header.rbtn.trigger = false;
 		// コントローラとじてる
 		this.page.ctrler.setLctrl(false);
 		this.page.ctrler.setRctrl("", "", "", "");
@@ -62,9 +66,7 @@ abstract class SECcharaTab implements SerialEventCartridge{
 		for(var name in this._tabList){this._tabList[name].calc(true);}
 
 		// 編成タブ
-		var tab = this._tabList["team"];
-		if(tab.trigger){
-			tab.trigger = false;
+		if(this._tabList["team"].trigger){
 			Sound.playSE("ok");
 			this.page.serialPush(new SECload(this, "/chara/team", null, function(response : variant) : void{
 				this.page.serialPush(new SECcharaTabTeam(this.page, response));
@@ -73,9 +75,7 @@ abstract class SECcharaTab implements SerialEventCartridge{
 		}
 
 		// 補給タブ
-		var tab = this._tabList["supp"];
-		if(tab.trigger){
-			tab.trigger = false;
+		if(this._tabList["supp"].trigger){
 			Sound.playSE("ok");
 			this.page.serialPush(new SECload(this, "/chara/supp", null, function(response : variant) : void{
 				this.page.serialPush(new SECcharaTabSupp(this.page, response));
@@ -84,9 +84,7 @@ abstract class SECcharaTab implements SerialEventCartridge{
 		}
 
 		// 休息タブ
-		var tab = this._tabList["rest"];
-		if(tab.trigger){
-			tab.trigger = false;
+		if(this._tabList["rest"].trigger){
 			Sound.playSE("ok");
 			this.page.serialPush(new SECload(this, "/chara/rest", null, function(response : variant) : void{
 				this.page.serialPush(new SECcharaTabRest(this.page, response));
@@ -95,9 +93,7 @@ abstract class SECcharaTab implements SerialEventCartridge{
 		}
 
 		// 強化タブ
-		var tab = this._tabList["pwup"];
-		if(tab.trigger){
-			tab.trigger = false;
+		if(this._tabList["pwup"].trigger){
 			Sound.playSE("ok");
 			this.page.serialPush(new SECload(this, "/chara/pwup", null, function(response : variant) : void{
 				this.page.serialPush(new SECcharaTabPwup(this.page, response));
@@ -106,9 +102,7 @@ abstract class SECcharaTab implements SerialEventCartridge{
 		}
 
 		// 売却タブ
-		var tab = this._tabList["sell"];
-		if(tab.trigger){
-			tab.trigger = false;
+		if(this._tabList["sell"].trigger){
 			Sound.playSE("ok");
 			this.page.serialPush(new SECload(this, "/chara/sell", null, function(response : variant) : void{
 				this.page.serialPush(new SECcharaTabSell(this.page, response));
@@ -118,7 +112,6 @@ abstract class SECcharaTab implements SerialEventCartridge{
 
 		// 左ヘッダ戻るボタン押下処理
 		if(this.page.header.lbtn.trigger){
-			this.page.header.lbtn.trigger = false;
 			Sound.playSE("ng");
 			Page.transitionsPage("mypage");
 			return true;
@@ -126,7 +119,6 @@ abstract class SECcharaTab implements SerialEventCartridge{
 
 		// 右ヘッダメニューボタン押下処理
 		if(this.page.header.rbtn.trigger){
-			this.page.header.rbtn.trigger = false;
 			Sound.playSE("ok");
 			this.page.serialPush(new SECpopupMenu(this.page, this));
 			return false;

@@ -66,6 +66,9 @@ class SECpopupMenu extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
+		for(var name in this._menuList){this._menuList[name].trigger = false;}
 		// コントローラとじてる
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
@@ -83,7 +86,6 @@ class SECpopupMenu extends SECpopup{
 		for(var name in this._menuList){
 			var btn = this._menuList[name];
 			if(btn.trigger){
-				btn.trigger = false;
 				if(!btn.select){
 					Sound.playSE("ok");
 					Page.transitionsPage(name);
@@ -97,11 +99,7 @@ class SECpopupMenu extends SECpopup{
 		}
 
 		// 閉じるボタン押下処理
-		var btn0 = this._btnList["outer"];
-		var btn1 = this._btnList["close"];
-		if(btn0.trigger || btn1.trigger){
-			btn0.trigger = false;
-			btn1.trigger = false;
+		if(this._btnList["outer"].trigger || this._btnList["close"].trigger){
 			Sound.playSE("ng");
 			this._page.serialPush(this.parentCartridge);
 			return false;

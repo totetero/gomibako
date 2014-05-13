@@ -36,6 +36,15 @@ class SECcharaTabTeam extends SECcharaTab{
 	}
 
 	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		super.init();
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
+		for(var i = 0; i < this._charaList.length; i++){this._charaList[i].faceBtn.trigger = false;}
+	}
+
+	// ----------------------------------------------------------------
 	// 計算
 	override function tabCalc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
@@ -43,9 +52,7 @@ class SECcharaTabTeam extends SECcharaTab{
 		// キャラクターボタン処理
 		for(var i = 0; i < this._charaList.length; i++){
 			// キャラクター情報ポップアップ
-			var btn = this._charaList[i].faceBtn;
-			if(btn.trigger){
-				btn.trigger = false;
+			if(this._charaList[i].faceBtn.trigger){
 				Sound.playSE("ok");
 				this.page.serialPush(new SECpopupDataChara(this.page, this, this._charaList[i]));
 				return false;

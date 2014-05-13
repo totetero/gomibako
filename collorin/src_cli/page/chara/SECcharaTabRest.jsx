@@ -29,6 +29,14 @@ class SECcharaTabRest extends SECcharaTab{
 	}
 
 	// ----------------------------------------------------------------
+	// 初期化
+	override function init() : void{
+		super.init();
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
+	}
+
+	// ----------------------------------------------------------------
 	// 計算
 	override function tabCalc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}

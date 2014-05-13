@@ -122,6 +122,8 @@ class SECpopupPicker extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		// コントローラとじてる
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
@@ -135,6 +137,7 @@ class SECpopupPicker extends SECpopup{
 			var btn = new SECpopupPicker._PartsButtonPickerInner(item.name, 0, 38 * i, 194, 36);
 			btn.select = item.select;
 			btn.inactive = item.inactive;
+			btn.trigger = false;
 			this._scroller.btnList[item.tag] = btn;
 			if(item.select){this._center = i;}
 		}
@@ -152,9 +155,7 @@ class SECpopupPicker extends SECpopup{
 		// 要素選択
 		for(var i = 0; i < this._itemList.length; i++){
 			var item = this._itemList[i];
-			var btn = this._scroller.btnList[item.tag];
-			if(btn.trigger){
-				btn.trigger = false;
+			if(this._scroller.btnList[item.tag].trigger){
 				Sound.playSE("ok");
 				this.setSelectedItem(item.tag);
 				this.onSelect(item.tag);
@@ -164,11 +165,7 @@ class SECpopupPicker extends SECpopup{
 		}
 
 		// 閉じるボタン押下処理
-		var btn0 = this._btnList["outer"];
-		var btn1 = this._btnList["close"];
-		if(btn0.trigger || btn1.trigger){
-			btn0.trigger = false;
-			btn1.trigger = false;
+		if(this._btnList["outer"].trigger || this._btnList["close"].trigger){
 			Sound.playSE("ng");
 			this._page.serialPush(this.parentCartridge);
 			return false;

@@ -76,6 +76,8 @@ class SECpopupTextarea extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		// コントローラとじてる
 		this.page.ctrler.setLctrl(false);
 		this.page.ctrler.setRctrl("", "", "", "");
@@ -103,14 +105,12 @@ class SECpopupTextarea extends SECpopup{
 
 		// ボタン押下時
 		if(this._btnList["ok"].trigger || this._btnList["outer"].trigger || this._btnList["close"].trigger){
-			var ok = this._btnList["ok"].trigger;
-			this._btnList["ok"].trigger = false;
-			this._btnList["outer"].trigger = false;
-			this._btnList["close"].trigger = false;
-			Sound.playSE(ok ? "ok" : "ng");
-			if(ok){
+			if(this._btnList["ok"].trigger){
+				Sound.playSE("ok");
 				this.setValue(this._input.value);
 				this.onEnter(this._value);
+			}else{
+				Sound.playSE("ng");
 			}
 			this._input.className = "";
 			this.page.serialPush(this.parentCartridge);

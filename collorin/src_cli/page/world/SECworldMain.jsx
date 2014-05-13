@@ -34,6 +34,10 @@ class SECworldMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
+		this._page.header.lbtn.trigger = false;
+		this._page.header.rbtn.trigger = false;
 		// コントローラとじてる
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
@@ -49,9 +53,7 @@ class SECworldMain implements SerialEventCartridge{
 		// ボタン押下処理
 		var list = ["dice"];
 		for(var i = 0; i < list.length; i++){
-			var btn = this._btnList[list[i]];
-			if(btn.trigger){
-				btn.trigger = false;
+			if(this._btnList[list[i]].trigger){
 				Sound.playSE("ok");
 				Page.transitionsPage(list[i]);
 				return true;
@@ -60,7 +62,6 @@ class SECworldMain implements SerialEventCartridge{
 
 		// 左ヘッダ戻るボタン押下処理
 		if(this._page.header.lbtn.trigger){
-			this._page.header.lbtn.trigger = false;
 			Sound.playSE("ng");
 			Page.transitionsPage("mypage");
 			return true;
@@ -68,7 +69,6 @@ class SECworldMain implements SerialEventCartridge{
 
 		// 右ヘッダメニューボタン押下処理
 		if(this._page.header.rbtn.trigger){
-			this._page.header.rbtn.trigger = false;
 			Sound.playSE("ok");
 			this._page.serialPush(new SECpopupMenu(this._page, this));
 			return false;
