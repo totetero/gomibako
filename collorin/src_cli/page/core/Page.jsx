@@ -9,6 +9,7 @@ import "../../util/EventCartridge.jsx";
 
 import "cross/CrossCtrler.jsx";
 import "cross/CrossHeader.jsx";
+import "cross/CrossBust.jsx";
 import "../mypage/PageMypage.jsx";
 import "../world/PageWorld.jsx";
 import "../chara/PageChara.jsx";
@@ -47,9 +48,11 @@ abstract class Page extends EventPlayer{
 			Page.current.calc();
 			Page.current.ctrler.calc();
 			Page.current.header.calc();
+			Page.current.bust.calc();
 			// ページの描画
 			Page.current.draw();
 			Page.current.ctrler.draw();
+			Page.current.bust.draw();
 		}
 	}
 
@@ -68,6 +71,7 @@ abstract class Page extends EventPlayer{
 				// ページをまたぐ機能を継承
 				nextPage.ctrler = (Page.current == null) ? new CrossCtrler() : Page.current.ctrler;
 				nextPage.header = (Page.current == null) ? new CrossHeader() : Page.current.header;
+				nextPage.bust = (Page.current == null) ? new CrossBust() : Page.current.bust;
 				// ページ遷移
 				nextPage.init();
 				Page.current = nextPage;
@@ -85,6 +89,7 @@ abstract class Page extends EventPlayer{
 	// クロス要素 (ページをまたぐ機能)
 	var ctrler : CrossCtrler;
 	var header : CrossHeader;
+	var bust : CrossBust;
 
 	// 画面遷移時演出用プロパティ
 	var type : string;

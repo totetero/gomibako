@@ -32,8 +32,9 @@ class PageMypage extends Page{
 	override function init() : void{
 		// ロードと画面遷移
 		this.serialPush(new SECloadTransition(this, "/mypage", null, function(response : variant) : void{
-			// ヘッダ設定
+			// クロス要素設定
 			this.header.setType("マイページ", "top");
+			this.bust.set(null);
 			// カートリッジ装填
 			log response;
 			this.serialPush(new SECmypageMain(this));

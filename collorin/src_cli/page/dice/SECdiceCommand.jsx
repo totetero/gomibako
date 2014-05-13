@@ -46,7 +46,8 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._page.bcvs.cameraCenter = [this._player];
 		this._page.bcvs.isTapChara = true;
 		this._page.bcvs.isTapHex = false;
-		// ゲージ設定
+		// クロス設定
+		this._page.bust.set(this._player);
 		this._page.gauge.setLeft(this._player, -1);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
@@ -70,6 +71,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		// 左ゲージアイコンタップ
 		if(this._page.gauge.lChara != null && this._btnList["lchara"].trigger){
 			Sound.playSE("ok");
+			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.lChara));
 			return false;
@@ -78,6 +80,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		// 右ゲージアイコンタップ
 		if(this._page.gauge.rChara != null && this._btnList["rchara"].trigger){
 			Sound.playSE("ok");
+			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.rChara));
 			return false;
@@ -86,6 +89,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		// キャラクタータップ
 		if(this._page.bcvs.charaTrigger != null){
 			Sound.playSE("ok");
+			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.bcvs.charaTrigger));
 			return false;
@@ -101,6 +105,8 @@ class SECdiceCommand implements SerialEventCartridge{
 		// メニューボタン
 		if(this._page.ctrler.s_Trigger){
 			Sound.playSE("ok");
+			this._page.bust.set(null);
+			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECdicePopupMenu(this._page, this));
 			return false;
 		}

@@ -49,8 +49,6 @@ class SECdicePopupMenu extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// キャンバス設定
-		this._page.bcvs.cameraLock = true;
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		// コントローラ表示
