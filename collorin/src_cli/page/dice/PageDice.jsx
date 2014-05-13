@@ -45,6 +45,14 @@ class PageDice extends Page{
 	}
 
 	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : boolean{
+		if(this.bcvs != null){this.bcvs.calc();}
+		this.gauge.calc();
+		return super.calc();
+	}
+
+	// ----------------------------------------------------------------
 	// クロス要素の描画 最初に行うほう
 	function drawBeforeCross() : void{
 		// 画面クリア
@@ -60,14 +68,6 @@ class PageDice extends Page{
 		this.header.draw();
 		// キャンバス描画
 		this.bcvs.draw();
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc() : boolean{
-		if(this.bcvs != null){this.bcvs.calc();}
-		this.gauge.calc();
-		return super.calc();
 	}
 
 	// ----------------------------------------------------------------
