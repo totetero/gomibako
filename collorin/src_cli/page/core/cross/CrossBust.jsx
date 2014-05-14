@@ -56,6 +56,7 @@ class CrossBust{
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
 			this._action = (this._nextChara != null) ? 0 : -CrossBust._actionMax;
 			this._currentChara = this._nextChara;
+			Ctrl.clUpdate = true;
 		}
 	}
 }

@@ -228,6 +228,7 @@ class CrossCtrler{
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
 			this._lAction = this._lShow ? 0 : -CrossCtrler._actionMax;
 			Ctrl.ldiv.style.display = this._lShow ? "block" : "none";
+			Ctrl.clUpdate = true;
 		}
 	}
 
@@ -257,6 +258,7 @@ class CrossCtrler{
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
 			this._rAction = this._rShow ? 0 : -CrossCtrler._actionMax;
 			Ctrl.rdiv.style.display = this._rShow ? "block" : "none";
+			Ctrl.crUpdate = true;
 			this._currentZlabelCvs = null;
 			this._currentXlabelCvs = null;
 			this._currentClabelCvs = null;

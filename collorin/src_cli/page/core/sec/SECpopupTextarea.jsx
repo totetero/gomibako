@@ -76,13 +76,12 @@ class SECpopupTextarea extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// トリガーリセット
-		for(var name in this._btnList){this._btnList[name].trigger = false;}
-		// コントローラとじてる
+		// クロス設定
 		this.page.ctrler.setLctrl(false);
 		this.page.ctrler.setRctrl("", "", "", "");
-		// ヘッダ無効化
 		this.page.header.setActive(false);
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
 
 		// テキストエリア設定
 		this._input.type = "text";

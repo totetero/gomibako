@@ -49,6 +49,8 @@ class SECdiceCommand implements SerialEventCartridge{
 		// クロス設定
 		this._page.bust.set(this._player);
 		this._page.gauge.setLeft(this._player, -1);
+		this._page.ctrler.setLctrl(false);
+		this._page.ctrler.setRctrl("さいころ", "スキル", "マップ", "メニュー");
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
@@ -56,9 +58,6 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._page.ctrler.x_Trigger = false;
 		this._page.ctrler.c_Trigger = false;
 		this._page.ctrler.s_Trigger = false;
-		// コントローラ表示
-		this._page.ctrler.setLctrl(false);
-		this._page.ctrler.setRctrl("さいころ", "スキル", "マップ", "メニュー");
 	}
 
 	// ----------------------------------------------------------------

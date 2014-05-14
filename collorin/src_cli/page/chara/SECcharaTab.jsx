@@ -49,15 +49,14 @@ abstract class SECcharaTab implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// クロス設定
+		this.page.ctrler.setLctrl(false);
+		this.page.ctrler.setRctrl("", "", "", "");
+		this.page.header.setActive(true);
 		// トリガーリセット
 		for(var name in this._tabList){this._tabList[name].trigger = false;}
 		this.page.header.lbtn.trigger = false;
 		this.page.header.rbtn.trigger = false;
-		// コントローラとじてる
-		this.page.ctrler.setLctrl(false);
-		this.page.ctrler.setRctrl("", "", "", "");
-		// ヘッダ有効化
-		this.page.header.setActive(true);
 	}
 
 	// ----------------------------------------------------------------

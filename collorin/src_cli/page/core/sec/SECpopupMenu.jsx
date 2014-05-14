@@ -66,14 +66,13 @@ class SECpopupMenu extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// クロス設定
+		this._page.ctrler.setLctrl(false);
+		this._page.ctrler.setRctrl("", "", "", "");
+		this._page.header.setActive(false);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		for(var name in this._menuList){this._menuList[name].trigger = false;}
-		// コントローラとじてる
-		this._page.ctrler.setLctrl(false);
-		this._page.ctrler.setRctrl("", "", "", "");
-		// ヘッダ無効化
-		this._page.header.setActive(false);
 	}
 
 	// ----------------------------------------------------------------

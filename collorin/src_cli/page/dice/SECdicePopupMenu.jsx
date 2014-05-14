@@ -49,11 +49,11 @@ class SECdicePopupMenu extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// トリガーリセット
-		for(var name in this._btnList){this._btnList[name].trigger = false;}
-		// コントローラ表示
+		// クロス設定
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
 	}
 
 	// ----------------------------------------------------------------

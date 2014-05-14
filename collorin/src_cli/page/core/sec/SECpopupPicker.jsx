@@ -122,13 +122,12 @@ class SECpopupPicker extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// トリガーリセット
-		for(var name in this._btnList){this._btnList[name].trigger = false;}
-		// コントローラとじてる
+		// クロス設定
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
-		// ヘッダ無効化
 		this._page.header.setActive(false);
+		// トリガーリセット
+		for(var name in this._btnList){this._btnList[name].trigger = false;}
 
 		// スクロールボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
