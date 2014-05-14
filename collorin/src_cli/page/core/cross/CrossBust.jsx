@@ -19,7 +19,7 @@ class CrossBust{
 
 	var _currentChara : DataChara;
 	var _nextChara : DataChara;
-	var _action = -CrossBust._actionMax;
+	var _action = CrossBust._actionMax;
 
 	// ----------------------------------------------------------------
 	// 計算
@@ -39,8 +39,8 @@ class CrossBust{
 	function draw() : void{
 		if(Ctrl.clUpdate && this._currentChara != null){
 			var img = Loader.imgs["img_chara_bust_" + this._currentChara.code];
-			var x = -160 * Math.abs(this._action / CrossBust._actionMax);
-			Ctrl.clctx.drawImage(img, x, 0, 160, 240);
+			var mx = -160 * Math.abs(this._action / CrossBust._actionMax);
+			Ctrl.clctx.drawImage(img, mx, 0, 160, 240);
 		}
 	}
 

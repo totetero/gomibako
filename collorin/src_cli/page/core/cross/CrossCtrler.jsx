@@ -46,8 +46,8 @@ class CrossCtrler{
 	var _nextSlavel : string;
 	var _lShow : boolean;
 	var _rShow : boolean;
-	var _lAction = -CrossCtrler._actionMax;
-	var _rAction = -CrossCtrler._actionMax;
+	var _lAction = CrossCtrler._actionMax;
+	var _rAction = CrossCtrler._actionMax;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -179,11 +179,11 @@ class CrossCtrler{
 			var nimg = Loader.imgs["img_system_button_ctrlArrow_normal"];
 			var aimg = Loader.imgs["img_system_button_ctrlArrow_active"];
 			if(nimg != null && aimg != null){
-				var x = -144 * Math.abs(this._lAction / CrossCtrler._actionMax);
-				Ctrl.clctx.drawImage(this.upActive ? aimg : nimg,  0,      0, 68, 92 + 4, x + 55     , 240 - 144 +  0 - 2 + 15, 34, 46 + 2);
-				Ctrl.clctx.drawImage(this.rtActive ? aimg : nimg, 69,      0, 92, 68 + 4, x + 98 - 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
-				Ctrl.clctx.drawImage(this.dnActive ? aimg : nimg, 93, 69 + 4, 68, 92 + 4, x + 55     , 240 - 144 + 98 - 2 - 15, 34, 46 + 2);
-				Ctrl.clctx.drawImage(this.ltActive ? aimg : nimg,  0, 93 + 4, 92, 68 + 4, x +  0 + 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
+				var mx = -144 * Math.abs(this._lAction / CrossCtrler._actionMax);
+				Ctrl.clctx.drawImage(this.upActive ? aimg : nimg,  0,      0, 68, 92 + 4, mx + 55     , 240 - 144 +  0 - 2 + 15, 34, 46 + 2);
+				Ctrl.clctx.drawImage(this.rtActive ? aimg : nimg, 69,      0, 92, 68 + 4, mx + 98 - 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
+				Ctrl.clctx.drawImage(this.dnActive ? aimg : nimg, 93, 69 + 4, 68, 92 + 4, mx + 55     , 240 - 144 + 98 - 2 - 15, 34, 46 + 2);
+				Ctrl.clctx.drawImage(this.ltActive ? aimg : nimg,  0, 93 + 4, 92, 68 + 4, mx +  0 + 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
 			}
 		}
 
@@ -193,18 +193,18 @@ class CrossCtrler{
 			var aimg = Loader.imgs["img_system_button_ctrlButton_active"];
 			if(nimg != null && aimg != null){
 				var pixelRatio = 2;
-				var x = 144 * Math.abs(this._rAction / CrossCtrler._actionMax);
+				var mx = 144 * Math.abs(this._rAction / CrossCtrler._actionMax);
 				var drawBtn = function(box : CrossCtrler._BtnBox, label : string, cvs : HTMLCanvasElement, active : boolean) : HTMLCanvasElement{
 					if(cvs == null && label != "" && this._rAction <= 0){cvs = Drawer.createText(label, 16 * pixelRatio, "black");}
 					if(cvs != null){
 						// ボタン枠の描画
-						Drawer.drawBox(Ctrl.crctx, active ? aimg : nimg, x + box.x, box.y, box.w, box.h);
+						Drawer.drawBox(Ctrl.crctx, active ? aimg : nimg, box.x + mx, box.y, box.w, box.h);
 						// ボタン文字列の描画
-						var bw = cvs.width / pixelRatio;
-						var bh = cvs.height / pixelRatio;
-						var bx = box.x + (box.w - bw) * 0.5;
-						var by = box.y + (box.h - bh - 2) * 0.5 + (active ? 2 : 0);
-						Ctrl.crctx.drawImage(cvs, x + bx, by, bw, bh);
+						var w = cvs.width / pixelRatio;
+						var h = cvs.height / pixelRatio;
+						var x = box.x + (box.w - w) * 0.5 + mx;
+						var y = box.y + (box.h - h - 2) * 0.5 + (active ? 2 : 0);
+						Ctrl.crctx.drawImage(cvs, x, y, w, h);
 					}
 					return cvs;
 				};

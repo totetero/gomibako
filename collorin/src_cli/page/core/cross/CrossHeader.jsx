@@ -26,9 +26,9 @@ class CrossHeader{
 	var _nextText : string;
 	var _nextType : string;
 	var _show : boolean;
-	var _hAction = -CrossHeader._actionMax;
-	var _lAction = -CrossHeader._actionMax;
-	var _rAction = -CrossHeader._actionMax;
+	var _hAction = CrossHeader._actionMax;
+	var _lAction = CrossHeader._actionMax;
+	var _rAction = CrossHeader._actionMax;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -60,16 +60,17 @@ class CrossHeader{
 		// ページ遷移中の場合通常のヘッダ描画はキャンセルされる
 		if(SECloadTransition.invisibleHeaderCount > 0){return;}
 
-		// TODO 非表示スキップ
+		// 遷移座標計算
+		var hmy = 50 * Math.abs(this._hAction / CrossHeader._actionMax);
+		var lmy = 50 * Math.abs(this._lAction / CrossHeader._actionMax);
+		var rmy = 50 * Math.abs(this._rAction / CrossHeader._actionMax);
+		if(hmy >= 50 && lmy >= 50 && rmy >= 50){return;}
 
-		var hy = 50 * Math.abs(this._hAction / CrossHeader._actionMax);
-		var ly = 50 * Math.abs(this._lAction / CrossHeader._actionMax);
-		var ry = 50 * Math.abs(this._rAction / CrossHeader._actionMax);
 		// 箱描画
-		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 5, 5 - hy, 215, 45);
+		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 5, 5 - hmy, 215, 45);
 		Ctrl.sctx.lineWidth = 2;
 		Ctrl.sctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
-		Ctrl.sctx.strokeRect(10, 10 - hy, 40, 35);
+		Ctrl.sctx.strokeRect(10, 10 - hmy, 40, 35);
 		// 文字列描画
 		if(this._nextText != ""){
 			var pixelRatio = 2;
@@ -77,15 +78,15 @@ class CrossHeader{
 			var w = this._currentTextCvs.width / pixelRatio;
 			var h = this._currentTextCvs.height / pixelRatio;
 			var x = 5 + 50;
-			var y = 5 + (45 - h) * 0.5 - hy;
+			var y = 5 + (45 - h) * 0.5 - hmy;
 			Ctrl.sctx.drawImage(this._currentTextCvs, x, y, w, h);
 		}
 		// ボタン描画
 		if(this._currentType == ""){this._currentType = this._nextType;}
 		var lImgCode = "img_system_button_header" + (this._currentType == "mypage" ? "Mypage" : "Top") + "_" + (this.lbtn.active ? "active" : "normal");
 		var rImgCode = "img_system_button_headerMenu_" + (this.rbtn.active ? "active" : "normal");
-		Ctrl.sctx.drawImage(Loader.imgs[lImgCode], this.lbtn.x, this.lbtn.y - ly, this.lbtn.w, this.lbtn.h);
-		Ctrl.sctx.drawImage(Loader.imgs[rImgCode], this.rbtn.x, this.rbtn.y - ry, this.rbtn.w, this.rbtn.h);
+		Ctrl.sctx.drawImage(Loader.imgs[lImgCode], this.lbtn.x, this.lbtn.y - lmy, this.lbtn.w, this.lbtn.h);
+		Ctrl.sctx.drawImage(Loader.imgs[rImgCode], this.rbtn.x, this.rbtn.y - rmy, this.rbtn.w, this.rbtn.h);
 	}
 
 	// ----------------------------------------------------------------
