@@ -62,6 +62,17 @@ class CrossCtrler{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc() : void{
+		var tempLaction = this._lAction;
+		var tempRaction = this._rAction;
+		var tempUpActive = this.upActive;
+		var tempDnActive = this.dnActive;
+		var tempRtActive = this.rtActive;
+		var tempLtActive = this.ltActive;
+		var tempZ_Active = this.z_Active;
+		var tempX_Active = this.x_Active;
+		var tempC_Active = this.c_Active;
+		var tempS_Active = this.s_Active;
+
 		// 左コントローラの押下確認
 		if(this._lAction != 0){
 			// ボタン無効状態
@@ -145,6 +156,19 @@ class CrossCtrler{
 				this._currentSlabelCvs = null;
 			}
 		}
+
+		// 十字キー更新確認
+		if(tempLaction != this._lAction){Ctrl.clUpdate = true;}
+		if(tempUpActive != this.upActive){Ctrl.clUpdate = true;}
+		if(tempDnActive != this.dnActive){Ctrl.clUpdate = true;}
+		if(tempRtActive != this.rtActive){Ctrl.clUpdate = true;}
+		if(tempLtActive != this.ltActive){Ctrl.clUpdate = true;}
+		// ボタン更新確認
+		if(tempRaction != this._rAction){Ctrl.crUpdate = true;}
+		if(tempZ_Active != this.z_Active){Ctrl.crUpdate = true;}
+		if(tempX_Active != this.x_Active){Ctrl.crUpdate = true;}
+		if(tempC_Active != this.c_Active){Ctrl.crUpdate = true;}
+		if(tempS_Active != this.s_Active){Ctrl.crUpdate = true;}
 	}
 
 	// ----------------------------------------------------------------

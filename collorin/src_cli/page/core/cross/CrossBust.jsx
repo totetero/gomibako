@@ -20,21 +20,18 @@ class CrossBust{
 	var _currentChara : DataChara;
 	var _nextChara : DataChara;
 	var _action = -CrossBust._actionMax;
-	var _tempAction : int;
 
 	// ----------------------------------------------------------------
 	// 計算
 	function calc() : void{
-		// 更新確認
-		if(this._tempAction != this._action){
-			this._tempAction = this._action;
-			Ctrl.clUpdate = true;
-		}
+		var tempAction = this._action;
 
 		// 展開処理
 		if(this._action > 0 || (0 > this._action && this._nextChara != null)){this._action++;}
 		if(this._action > CrossBust._actionMax){this._action = -CrossBust._actionMax;}
 		if(this._action == -CrossBust._actionMax && this._nextChara != null){this._currentChara = this._nextChara;}
+
+		if(tempAction != this._action){Ctrl.clUpdate = true;}
 	}
 
 	// ----------------------------------------------------------------

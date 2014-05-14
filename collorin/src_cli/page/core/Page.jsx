@@ -55,8 +55,8 @@ abstract class Page extends EventPlayer{
 			Page.current.draw();
 			Page.current.bust.draw();
 			Page.current.ctrler.draw();
-			//Ctrl.clUpdate = false;
-			//Ctrl.crUpdate = false;
+			Ctrl.clUpdate = false;
+			Ctrl.crUpdate = false;
 		}
 	}
 
