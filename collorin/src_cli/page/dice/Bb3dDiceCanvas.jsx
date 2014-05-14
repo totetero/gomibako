@@ -8,6 +8,7 @@ import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
 
 import "../../bb3d/Bb3dCanvas.jsx";
+import "../../bb3d/Bb3dDice.jsx";
 import "../../bb3d/Bb3dDrawUnit.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 import "../core/parts/PartsButton.jsx";
@@ -23,6 +24,7 @@ import "Bb3dDiceCharacter.jsx";
 class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	var field : Bb3dDiceField;
 	var member = {} : Map.<Bb3dDiceCharacter>;
+	var dices = new Bb3dDice[];
 	var clist = new Bb3dDrawUnit[];
 	var slist = new Bb3dDrawUnit[];
 
@@ -155,6 +157,8 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		}
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
+		// さいころ描画
+		for(var i = 0; i < this.dices.length; i++){this.dices[i].draw(this);}
 	}
 
 	// ----------------------------------------------------------------

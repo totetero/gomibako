@@ -12,6 +12,7 @@ import "../core/data/DataChara.jsx";
 
 import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
+import "SECdiceDice.jsx";
 import "SECdiceMap.jsx";
 import "SECdicePopupMenu.jsx";
 
@@ -91,6 +92,17 @@ class SECdiceCommand implements SerialEventCartridge{
 			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.bcvs.charaTrigger));
+			return false;
+		}
+
+		// さいころボタン
+		if(this._page.ctrler.z_Trigger){
+			Sound.playSE("ok");
+			this._page.serialPush(new SECdiceDiceRoll(this._page, this, "code", "message", {
+				"type": "dice",
+				"num": 1,
+				"fix": 0,
+			}, this._player));
 			return false;
 		}
 

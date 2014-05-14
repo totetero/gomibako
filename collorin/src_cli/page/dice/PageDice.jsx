@@ -78,11 +78,15 @@ class PageDice extends Page{
 			switch(list[i]["type"] as string){
 				case "entry": this.bcvs = new Bb3dDiceCanvas(list[i]); break;
 				case "command": this.serialPush(new SECdiceCommand(this, list[i])); break;
-//				case "dice": response = list[i]; break;
+				case "dice": response = list[i]; break;
 //				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
 //				case "beam": this.serialPush(new SECdiceFaceBeam(this, list[i])); break;
 //				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
 //				case "moveManual": this.serialPush(new SECdiceMoveManual(this, list[i])); break;
+				case "face": this.serialPush(new SECdiceCommand(this, list[i])); break;
+				case "beam": this.serialPush(new SECdiceCommand(this, list[i])); break;
+				case "moveAuto": this.serialPush(new SECdiceCommand(this, list[i])); break;
+				case "moveManual": this.serialPush(new SECdiceCommand(this, list[i])); break;
 			}
 		}
 		return response;
