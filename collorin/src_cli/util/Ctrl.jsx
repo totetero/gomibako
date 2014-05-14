@@ -88,10 +88,10 @@ class Ctrl{
 			cdiv.addEventListener("mousedown", function(e : Event) : void{
 				var x = (e as MouseEvent).clientX;
 				var y = (e as MouseEvent).clientY;
-				var lw = 144 + Number.parseInt(Ctrl.ldiv.style.left); // TODO display式
-				var rw = 144 + Number.parseInt(Ctrl.rdiv.style.right); // TODO display式
-				if(x < lw && y > Ctrl.wh - 144){Ctrl._ltdnfn(e);}
-				else if(x > Ctrl.ww - rw && y > Ctrl.wh - 144){Ctrl._rtdnfn(e);}
+				var lFlag = Ctrl.ldiv.style.display != "none" && y > Ctrl.wh - 144 && x < 144;
+				var rFlag = Ctrl.rdiv.style.display != "none" && y > Ctrl.wh - 144 && x > Ctrl.ww - 144;
+				if(lFlag){Ctrl._ltdnfn(e);}
+				else if(rFlag){Ctrl._rtdnfn(e);}
 				else{Ctrl._ctdnfn(e);}
 			});
 			cdiv.addEventListener("mousemove", function(e : Event) : void{
