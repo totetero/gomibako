@@ -46,7 +46,7 @@ class SECdiceMap implements SerialEventCartridge{
 		// クロス設定
 		this._page.bust.set(null);
 		this._page.ctrler.setLctrl(false);
-		this._page.ctrler.setRctrl("", "", "", "戻る");
+		this._page.ctrler.setRctrl("", "", "", "もどる");
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;

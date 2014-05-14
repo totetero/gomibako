@@ -60,6 +60,8 @@ class CrossHeader{
 		// ページ遷移中の場合通常のヘッダ描画はキャンセルされる
 		if(SECloadTransition.invisibleHeaderCount > 0){return;}
 
+		// TODO 非表示スキップ
+
 		var hy = 50 * Math.abs(this._hAction / CrossHeader._actionMax);
 		var ly = 50 * Math.abs(this._lAction / CrossHeader._actionMax);
 		var ry = 50 * Math.abs(this._rAction / CrossHeader._actionMax);

@@ -12,6 +12,7 @@ import "../core/sec/SECloadTransition.jsx";
 
 import "Bb3dDiceCanvas.jsx";
 import "CrossDiceGauge.jsx";
+import "CrossDiceMessage.jsx";
 import "SECdiceCommand.jsx";
 
 // ----------------------------------------------------------------
@@ -22,6 +23,7 @@ import "SECdiceCommand.jsx";
 class PageDice extends Page{
 	var bcvs : Bb3dDiceCanvas;
 	var gauge = new CrossDiceGauge();
+	var message = new CrossDiceMessage();
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -49,6 +51,7 @@ class PageDice extends Page{
 	override function calc() : boolean{
 		if(this.bcvs != null){this.bcvs.calc();}
 		this.gauge.calc();
+		this.message.calc();
 		return super.calc();
 	}
 
@@ -59,6 +62,8 @@ class PageDice extends Page{
 		Ctrl.sctx.clearRect(0, 0, Ctrl.sw, Ctrl.sh);
 		// ゲージ描画
 		this.gauge.draw();
+		// メッセージ描画
+		this.message.draw();
 	}
 
 	// ----------------------------------------------------------------
