@@ -128,7 +128,7 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 
 		// なげるボタン
 		if(this._page.ctrler.z_Trigger){
-			Sound.playSE("ng");
+			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceDiceThrow(this._page, this._request));
 			return false;
 		}
