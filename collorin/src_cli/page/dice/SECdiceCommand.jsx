@@ -103,7 +103,7 @@ class SECdiceCommand implements SerialEventCartridge{
 				"type": "dice",
 				"num": 1,
 				"fix": 0,
-			}, this._player));
+			}, null));
 			return false;
 		}
 
