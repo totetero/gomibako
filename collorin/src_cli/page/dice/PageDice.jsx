@@ -14,7 +14,7 @@ import "Bb3dDiceCanvas.jsx";
 import "CrossDiceGauge.jsx";
 import "CrossDiceMessage.jsx";
 import "SECdiceCommand.jsx";
-//import "SECdiceMoveAuto.jsx";
+import "SECdiceMoveAuto.jsx";
 import "SECdiceMoveManual.jsx";
 //import "SECdiceFace.jsx";
 //import "SECdiceFaceBeam.jsx";
@@ -90,12 +90,11 @@ class PageDice extends Page{
 				case "dice": response = list[i]; break;
 //				case "face": this.serialPush(new SECdiceFace(this, list[i])); break;
 //				case "beam": this.serialPush(new SECdiceFaceBeam(this, list[i])); break;
-//				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
+				case "moveAuto": this.serialPush(new SECdiceMoveAuto(this, list[i])); break;
 				case "moveManual": this.serialPush(new SECdiceMoveManual(this, list[i])); break;
 
 				case "face": this.serialPush(new SECdiceCommand(this, list[i])); break;
 				case "beam": this.serialPush(new SECdiceCommand(this, list[i])); break;
-				case "moveAuto": this.serialPush(new SECdiceCommand(this, list[i])); break;
 			}
 		}
 		return response;
