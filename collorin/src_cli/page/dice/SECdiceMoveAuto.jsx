@@ -36,7 +36,7 @@ class SECdiceMoveAuto implements SerialEventCartridge{
 		this._page.bcvs.cameraLock = false;
 		this._page.bcvs.cameraScale = 2.5;
 		this._page.bcvs.cameraCenter = [this._chara];
-		this._page.bcvs.isTapChara = true;
+		this._page.bcvs.isTapChara = false;
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(null);
