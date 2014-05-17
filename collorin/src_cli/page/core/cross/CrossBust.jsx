@@ -6,6 +6,10 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
+import "../Page.jsx";
 
 import "../data/DataChara.jsx";
 
@@ -19,6 +23,7 @@ class CrossBust{
 
 	var _currentChara : DataChara;
 	var _nextChara : DataChara;
+	var _skip : boolean;
 	var _action = CrossBust._actionMax;
 
 	// ----------------------------------------------------------------
@@ -29,18 +34,18 @@ class CrossBust{
 		// 展開処理
 		if(this._action > 0 || (0 > this._action && this._nextChara != null)){this._action++;}
 		if(this._action > CrossBust._actionMax){this._action = -CrossBust._actionMax;}
-		if(this._action == -CrossBust._actionMax && this._nextChara != null){this._currentChara = this._nextChara;}
+		if(this._action == -CrossBust._actionMax && this._nextChara != null){if(this._skip){this._action = 0;} this._currentChara = this._nextChara;}
 
-		if(tempAction != this._action){Ctrl.clUpdate = true;}
+		if(tempAction != this._action){Ctrl.update_lctx = true;}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		if(Ctrl.clUpdate && this._currentChara != null){
+		if(Ctrl.update_lctx && this._currentChara != null){
 			var img = Loader.imgs["img_chara_bust_" + this._currentChara.code];
 			var mx = -160 * Math.abs(this._action / CrossBust._actionMax);
-			Ctrl.clctx.drawImage(img, mx, 0, 160, 240);
+			Ctrl.lctx.drawImage(img, mx, 0, 160, 240);
 		}
 	}
 
@@ -53,11 +58,8 @@ class CrossBust{
 		}
 
 		// 演出スキップ確認
-		if(dom.window.localStorage.getItem("setting_transition") == "off"){
-			this._action = (this._nextChara != null) ? 0 : -CrossBust._actionMax;
-			this._currentChara = this._nextChara;
-			Ctrl.clUpdate = true;
-		}
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		if(this._skip){this._action = CrossBust._actionMax; Ctrl.update_lctx = true;}
 	}
 }
 

@@ -36,7 +36,7 @@ class PageChara extends Page{
 		this.serialPush(new SECloadTransition(this, "/chara/team", null, function(response : variant) : void{
 			// クロス要素設定
 			this.header.setType("キャラクタ", "mypage");
-//			this.bust.set(null);
+			this.bust.set(null);
 			// カートリッジ装填
 			this.serialPush(new SECcharaTabTeam(this, response));
 		}));

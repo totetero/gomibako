@@ -36,7 +36,7 @@ class PageMypage extends Page{
 		this.serialPush(new SECloadTransition(this, "/mypage", null, function(response : variant) : void{
 			// クロス要素設定
 			this.header.setType("マイページ", "top");
-//			this.bust.set(null);
+			this.bust.set(null);
 			// カートリッジ装填
 			this.serialPush(new SECmypageMain(this, response));
 		}));
