@@ -1,14 +1,6 @@
-import "js/web.jsx";
-
-import "../../../util/Ctrl.jsx";
-import "../../../util/Sound.jsx";
-import "../../../util/Drawer.jsx";
-import "../../../util/Loader.jsx";
-import "../../../util/Loading.jsx";
-import "../../../util/EventCartridge.jsx";
-
-import "../parts/PartsLabel.jsx";
-import "../parts/PartsButton.jsx";
+import "Ctrl.jsx";
+import "PartsLabel.jsx";
+import "PartsButton.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -36,9 +28,9 @@ class PartsScroll{
 	var barh : int;
 	var _speedx : number;
 	var _speedy : number;
-	var _ctdn : boolean;
-	var _prevctx : int;
-	var _prevcty : int;
+	var _stdn : boolean;
+	var _prevstx : int;
+	var _prevsty : int;
 	var _clipx0 : int;
 	var _clipy0 : int;
 	var _clipx1 : int;
@@ -64,19 +56,19 @@ class PartsScroll{
 	function calc(clickable : boolean) : void{
 		// スクロール開始終了の確認
 		var btnActive = false;
-		if(this._ctdn != Ctrl.ctdn){
-			this._ctdn = Ctrl.ctdn;
+		if(this._stdn != Ctrl.stdn){
+			this._stdn = Ctrl.stdn;
 			if(this.inactive || !clickable){
 				// スクロール無効状態
 				this.active = false;
-			}else if(this._ctdn){
+			}else if(this._stdn){
 				var x0 = this.x;
 				var y0 = this.y;
 				var x1 = x0 + this.cw;
 				var y1 = y0 + this.ch;
-				this.active = (x0 < Ctrl.ctx && Ctrl.ctx < x1 && y0 < Ctrl.cty && Ctrl.cty < y1);
-				this._prevctx = Ctrl.ctx;
-				this._prevcty = Ctrl.cty;
+				this.active = (x0 < Ctrl.stx && Ctrl.stx < x1 && y0 < Ctrl.sty && Ctrl.sty < y1);
+				this._prevstx = Ctrl.stx;
+				this._prevsty = Ctrl.sty;
 			}else{
 				this.active = false;
 				btnActive = true;
@@ -85,13 +77,13 @@ class PartsScroll{
 		btnActive = btnActive || this.active;
 
 		// スクロール処理
-		if(this.active && Ctrl.ctmv){
-			this._speedx = Ctrl.ctx - this._prevctx + this._speedx * 0.3;
-			this._speedy = Ctrl.cty - this._prevcty + this._speedy * 0.3;
-			this.scrollx += Ctrl.ctx - this._prevctx;
-			this.scrolly += Ctrl.cty - this._prevcty;
-			this._prevctx = Ctrl.ctx;
-			this._prevcty = Ctrl.cty;
+		if(this.active && Ctrl.stmv){
+			this._speedx = Ctrl.stx - this._prevstx + this._speedx * 0.3;
+			this._speedy = Ctrl.sty - this._prevsty + this._speedy * 0.3;
+			this.scrollx += Ctrl.stx - this._prevstx;
+			this.scrolly += Ctrl.sty - this._prevsty;
+			this._prevstx = Ctrl.stx;
+			this._prevsty = Ctrl.sty;
 		}else{
 			this._speedx *= 0.8;
 			this._speedy *= 0.8;
@@ -119,7 +111,7 @@ class PartsScroll{
 		}
 		// スクロール内ボタン計算
 		for(var name in this.btnList){
-			this.btnList[name].calc(btnActive && !Ctrl.ctmv);
+			this.btnList[name].calc(btnActive && !Ctrl.stmv);
 		}
 	}
 
@@ -165,6 +157,11 @@ class PartsScroll{
 		if(this.barw > 0){Ctrl.sctx.fillRect(this.x + this.barx, this.y + this.ch - 3, this.barw, 3);}
 		if(this.barh > 0){Ctrl.sctx.fillRect(this.x + this.cw - 3, this.y + this.bary, 3, this.barh);}
 		Ctrl.sctx.restore();
+
+		//Ctrl.sctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+		//Ctrl.sctx.fillRect(x, y, cw, ch); // クリッピング範囲
+		//Ctrl.sctx.fillRect(this.x, this.y, this.cw, this.ch); // コンテナ範囲
+		//Ctrl.sctx.fillRect(this.x + this.scrollx, this.y + this.scrolly, this.sw, this.sh); // スクローラ範囲
 	}
 	// 描画関数のオーバーロード
 	function draw() : void{this.draw(null, this.x, this.y, this.cw, this.ch);}

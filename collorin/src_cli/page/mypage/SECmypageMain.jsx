@@ -6,11 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/parts/PartsButton.jsx";
-import "../core/sec/SECpopupMenu.jsx";
 
+import "../core/popup/SECpopupMenu.jsx";
 import "PageMypage.jsx";
 
 // ----------------------------------------------------------------
@@ -24,16 +25,18 @@ class SECmypageMain implements SerialEventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageMypage){
+	function constructor(page : PageMypage, response : variant){
 		this._page = page;
 
 		// ボタン作成
-		this._btnList["world"] = new PartsButtonBasic("ワールド",  10, 400, 100, 30);
-		this._btnList["quest"] = new PartsButtonBasic("クエスト",  10, 440, 100, 30);
-		this._btnList["chara"] = new PartsButtonBasic("キャラクタ", 210, 400, 100, 30);
-		this._btnList["item"] = new PartsButtonBasic("アイテム", 210, 440, 100, 30);
+		this._btnList["world"] = new PartsButtonBasic("ワールド",  10, -130, 100, 30);
+		this._btnList["quest"] = new PartsButtonBasic("クエスト",  10, -90, 100, 30);
+		this._btnList["chara"] = new PartsButtonBasic("キャラクタ", -110, -130, 100, 30);
+		this._btnList["item"] = new PartsButtonBasic("アイテム", -110, -90, 100, 30);
 
+		this._btnList["world"].inactive = true;
 		this._btnList["quest"].inactive = true;
+		this._btnList["chara"].inactive = true;
 		this._btnList["item"].inactive = true;
 	}
 
@@ -87,22 +90,22 @@ class SECmypageMain implements SerialEventCartridge{
 		// ウインドウサイズに対する位置調整
 		for(var name in this._btnList){
 			var btn = this._btnList[name];
-			btn.x = btn.basex + (Ctrl.sw - 320);
-			btn.y = btn.basey + (Ctrl.sh - 480) - 50;
+			if(btn.basex < 0){btn.x = Ctrl.screen.w + btn.basex;}
+			if(btn.basey < 0){btn.y = Ctrl.screen.h + btn.basey;}
 		}
 
 		// 画面クリア
 		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+		Ctrl.sctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
 
 		// 仮マイページキャラ顔の位置
 		Ctrl.sctx.fillStyle = "black";
-		Ctrl.sctx.fillRect(0, 120 + 40 * ((Ctrl.sh / 240) - 1), 320, 2);
-		Ctrl.sctx.fillRect(160, 0, 2, Ctrl.sh);
+		Ctrl.sctx.fillRect(0, 120 + 40 * ((Ctrl.screen.h / 240) - 1), Ctrl.screen.w, 2);
+		Ctrl.sctx.fillRect(Ctrl.screen.w * 0.5, 0, 2, Ctrl.screen.h);
 
 		// 仮バナースペース
 		Ctrl.sctx.fillStyle = "#ffffff";
-		Ctrl.sctx.fillRect(0, Ctrl.sh - 50, Ctrl.sw, 50);
+		Ctrl.sctx.fillRect((Ctrl.screen.w - 320) * 0.5, Ctrl.screen.h - 50, 320, 50);
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}

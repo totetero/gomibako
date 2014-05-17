@@ -6,10 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/sec/SECloadTransition.jsx";
 
+import "../core/load/SECloadTransition.jsx";
 import "SECsettingMain.jsx";
 
 // ----------------------------------------------------------------
@@ -34,7 +36,7 @@ class PageSetting extends Page{
 		this.serialPush(new SECloadTransition(this, "/setting", null, function(response : variant) : void{
 			// クロス要素設定
 			this.header.setType("設定", "mypage");
-			this.bust.set(null);
+			//this.bust.set(null);
 			// カートリッジ装填
 			this.serialPush(new SECsettingMain(this, response));
 		}));

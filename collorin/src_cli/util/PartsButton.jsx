@@ -1,11 +1,7 @@
-import "js/web.jsx";
-
-import "../../../util/Ctrl.jsx";
-import "../../../util/Sound.jsx";
-import "../../../util/Drawer.jsx";
-import "../../../util/Loader.jsx";
-import "../../../util/Loading.jsx";
-import "../../../util/EventCartridge.jsx";
+import "Ctrl.jsx";
+import "Drawer.jsx";
+import "Loader.jsx";
+import "PartsLabel.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -30,7 +26,7 @@ class PartsButton{
 	var cKey = false;
 	var sKey = false;
 	var _inner : boolean;
-	var _ctdn : boolean;
+	var _stdn : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -49,7 +45,7 @@ class PartsButton{
 	function calc(clickable : boolean) : void{
 		// ボタン押下の瞬間を確認
 		var target = false;
-		if(this._ctdn != Ctrl.ctdn){target = this._ctdn = Ctrl.ctdn;}
+		if(this._stdn != Ctrl.stdn){target = this._stdn = Ctrl.stdn;}
 
 		if(this.inactive || !clickable){
 			// ボタン無効状態
@@ -57,13 +53,13 @@ class PartsButton{
 		}else if((this.zKey && Ctrl.k_z) || (this.xKey && Ctrl.k_x) || (this.cKey && Ctrl.k_c) || (this.sKey && Ctrl.k_s)){
 			// 対応キー押下中
 			this.active = true;
-		}else if(Ctrl.ctdn && (this.target || target)){
+		}else if(Ctrl.stdn && (this.target || target)){
 			// ボタン押下中
 			var x0 = this.x;
 			var y0 = this.y;
 			var x1 = x0 + this.w;
 			var y1 = y0 + this.h;
-			var inner = (x0 < Ctrl.ctx && Ctrl.ctx < x1 && y0 < Ctrl.cty && Ctrl.cty < y1);
+			var inner = (x0 < Ctrl.stx && Ctrl.stx < x1 && y0 < Ctrl.sty && Ctrl.sty < y1);
 			this.active = (inner == this._inner);
 			// 子要素の範囲内では押下状態にならない
 			if(this.children != null){
@@ -72,7 +68,7 @@ class PartsButton{
 					var y0 = this.children[i].y;
 					var x1 = x0 + this.children[i].w;
 					var y1 = y0 + this.children[i].h;
-					this.active = this.active && !(x0 < Ctrl.ctx && Ctrl.ctx < x1 && y0 < Ctrl.cty && Ctrl.cty < y1);
+					this.active = this.active && !(x0 < Ctrl.stx && Ctrl.stx < x1 && y0 < Ctrl.sty && Ctrl.sty < y1);
 				}
 			}
 			// ボタン押下の瞬間に押下確定フラグ
@@ -92,17 +88,15 @@ class PartsButton{
 
 // ページ用ボタンクラス
 class PartsButtonBasic extends PartsButton{
-	var _textCvs : HTMLCanvasElement;
-	var _text : string;
-	var _status : string;
+	var label : PartsLabel;
 	var buttonType = "basic";
-	var fontSize = 16;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(text : string, x : int, y : int, w : int, h : int){
 		super(x, y, w, h, true);
-		this._text = text;
+		this.label = new PartsLabel(text, 0, 0, 0, 0);
+		this.label.setSize(16);
 	}
 
 	// ----------------------------------------------------------------
@@ -113,25 +107,12 @@ class PartsButtonBasic extends PartsButton{
 		var imgCode = "img_system_button_" + this.buttonType + "_" + (isInactive ? "inactive" : this.active ? "active" : this.select ? "select" : "normal");
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs[imgCode], this.x, this.y, this.w, this.h);
 		// 文字列描画
-		var pixelRatio = 2;
-		if(!isInactive && this._status != "normal"){this._status = "normal"; this._textCvs = Drawer.createText(this._text, this.fontSize * pixelRatio, "black");}
-		if(isInactive && this._status != "inactive"){this._status = "inactive"; this._textCvs = Drawer.createText(this._text, this.fontSize * pixelRatio, "gray");}
-		var w = this._textCvs.width / pixelRatio;
-		var h = this._textCvs.height / pixelRatio;
-		var x = this.x + (this.w - w) * 0.5;
-		var y = this.y + (this.h - h - 2) * 0.5 + (this.active ? 2 : 0);
-		Ctrl.sctx.drawImage(this._textCvs, x, y, w, h);
-	}
-}
-
-// 左タブクラス
-class PartsButtonTabLeft extends PartsButtonBasic{
-	// ----------------------------------------------------------------
-	// コンストラクタ
-	function constructor(text : string, x : int, y : int, w : int, h : int){
-		super(text, x, y, w, h);
-		this.buttonType = "tabLeft";
-		this.fontSize = 14;
+		this.label.setColor(isInactive ? "gray" : "black");
+		this.label.x = this.x;
+		this.label.y = this.y + (this.active ? 2 : 0);
+		this.label.w = this.w ;
+		this.label.h = this.h - 2;
+		this.label.draw();
 	}
 }
 

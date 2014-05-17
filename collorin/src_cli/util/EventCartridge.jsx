@@ -115,35 +115,4 @@ class EventPlayer{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
-/*
-// フレームウエイト
-class ECwait implements EventCartridge{
-	var _wait : int;
-	// コンストラクタ
-	function constructor(wait : int){
-		this._wait = wait;
-	}
-	// 計算
-	override function calc() : boolean{
-		return this._wait-- >= 0;
-	}
-}
-
-// 1フレームイベント
-class ECone implements EventCartridge{
-	var _func : function():void;
-	// コンストラクタ
-	function constructor(func : function():void){
-		this._func = func;
-	}
-	// 計算
-	override function calc() : boolean{
-		this._func();
-		return false;
-	}
-}
-*/
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
 

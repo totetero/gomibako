@@ -6,9 +6,12 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
+import "../Page.jsx";
 
-import "../parts/PartsButton.jsx";
-import "../sec/SECloadTransition.jsx";
+import "../load/SECloadTransition.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -25,6 +28,7 @@ class CrossHeader{
 	var _currentType : string;
 	var _nextText : string;
 	var _nextType : string;
+	var _skip : boolean;
 	var _show : boolean;
 	var _hAction = CrossHeader._actionMax;
 	var _lAction = CrossHeader._actionMax;
@@ -50,8 +54,9 @@ class CrossHeader{
 		if(this._hAction > CrossHeader._actionMax){this._hAction = -CrossHeader._actionMax;}
 		if(this._lAction > CrossHeader._actionMax){this._lAction = -CrossHeader._actionMax;}
 		if(this._rAction > CrossHeader._actionMax){this._rAction = -CrossHeader._actionMax;}
-		if(this._hAction == -CrossHeader._actionMax && this._show){this._currentTextCvs = null;}
-		if(this._lAction == -CrossHeader._actionMax && this._show){this._currentType = "";}
+		if(this._hAction == -CrossHeader._actionMax && this._show){if(this._skip){this._hAction = 0;} this._currentTextCvs = null;}
+		if(this._lAction == -CrossHeader._actionMax && this._show){if(this._skip){this._lAction = 0;} this._currentType = "";}
+		if(this._rAction == -CrossHeader._actionMax && this._show){if(this._skip){this._rAction = 0;}}
 	}
 
 	// ----------------------------------------------------------------
@@ -60,6 +65,10 @@ class CrossHeader{
 		// ページ遷移中の場合通常のヘッダ描画はキャンセルされる
 		if(SECloadTransition.invisibleHeaderCount > 0){return;}
 
+		// ウインドウサイズに対する位置調整
+		this.lbtn.x = Ctrl.screen.w - 95;
+		this.rbtn.x = Ctrl.screen.w - 45;
+
 		// 遷移座標計算
 		var hmy = 50 * Math.abs(this._hAction / CrossHeader._actionMax);
 		var lmy = 50 * Math.abs(this._lAction / CrossHeader._actionMax);
@@ -67,7 +76,7 @@ class CrossHeader{
 		if(hmy >= 50 && lmy >= 50 && rmy >= 50){return;}
 
 		// 箱描画
-		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 5, 5 - hmy, 215, 45);
+		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 5, 5 - hmy, Ctrl.screen.w - 105, 45);
 		Ctrl.sctx.lineWidth = 2;
 		Ctrl.sctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
 		Ctrl.sctx.strokeRect(10, 10 - hmy, 40, 35);
@@ -114,12 +123,11 @@ class CrossHeader{
 		}
 
 		// 演出スキップ確認
-		if(dom.window.localStorage.getItem("setting_transition") == "off"){
-			this._hAction = this._show ? 0 : -CrossHeader._actionMax;
-			this._lAction = this._show ? 0 : -CrossHeader._actionMax;
-			this._rAction = this._show ? 0 : -CrossHeader._actionMax;
-			this._currentTextCvs = null;
-			this._currentType = "";
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		if(this._skip){
+			this._hAction = CrossHeader._actionMax;
+			this._lAction = CrossHeader._actionMax;
+			this._rAction = CrossHeader._actionMax;
 		}
 	}
 

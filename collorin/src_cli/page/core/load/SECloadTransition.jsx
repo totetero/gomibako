@@ -6,7 +6,9 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
-
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
 import "../Page.jsx";
 
 // ----------------------------------------------------------------
@@ -94,9 +96,9 @@ class SECloadTransition implements SerialEventCartridge{
 				ctx.translate(x, 0);
 				ctx.beginPath();
 				ctx.moveTo(0, 0);
-				ctx.lineTo(Ctrl.sw, 0);
-				ctx.lineTo(Ctrl.sw, Ctrl.sh);
-				ctx.lineTo(0, Ctrl.sh);
+				ctx.lineTo(Ctrl.screen.w, 0);
+				ctx.lineTo(Ctrl.screen.w, Ctrl.screen.h);
+				ctx.lineTo(0, Ctrl.screen.h);
 				ctx.closePath();
 				ctx.clip();
 			};
@@ -106,8 +108,8 @@ class SECloadTransition implements SerialEventCartridge{
 			var x0 = 0;
 			var x1 = 0;
 			if(this._next){
-				x1 = 320 * (1 - num * num);
-				if(this._same){x0 = 320 * (0 - num * num);}
+				x1 = Ctrl.screen.w * (1 - num * num);
+				if(this._same){x0 = Ctrl.screen.w * (0 - num * num);}
 
 				setCtx(Ctrl.sctx, x0);
 				setCtx(Ctrl.gctx, x0);
@@ -121,8 +123,8 @@ class SECloadTransition implements SerialEventCartridge{
 				Ctrl.sctx.restore();
 				Ctrl.gctx.restore();
 			}else{
-				x0 = 320 * (num * num);
-				if(this._same){x1 = 320 * (num * num - 1);}
+				x0 = Ctrl.screen.w * (num * num);
+				if(this._same){x1 = Ctrl.screen.w * (num * num - 1);}
 
 				setCtx(Ctrl.sctx, x1);
 				setCtx(Ctrl.gctx, x1);

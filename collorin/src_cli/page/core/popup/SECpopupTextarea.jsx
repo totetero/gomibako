@@ -6,10 +6,11 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
-
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
 import "../Page.jsx";
-import "../parts/PartsLabel.jsx";
-import "../parts/PartsButton.jsx";
+
 import "SECpopup.jsx";
 
 // ----------------------------------------------------------------
@@ -30,9 +31,8 @@ class SECpopupTextarea extends SECpopup{
 	// 文字数0での決定を許可する
 	var isPermitZero = true;
 
+	var _ww : int;
 	var _wh : int;
-	var _textCvs : HTMLCanvasElement;
-	var _textLength : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -43,20 +43,22 @@ class SECpopupTextarea extends SECpopup{
 		this._input = dom.document.getElementById("ctrl").getElementsByTagName("input").item(0) as HTMLInputElement;
 
 		// ラベル作成
-		this._labList["title"] = new PartsLabel(title, 10, 10, 300, 30);
+		this._labList["title"] = new PartsLabel(title, 0, 10, 300, 30);
+		this._labList["count"] = new PartsLabel("", 10, 75, 40, 15);
+		this._labList["count"].setSize(12);
 
 		// ボタン作成
-		this._btnList["outer"] = new PartsButton(10, 10, 300, 110, false);
-		this._btnList["close"] = new PartsButtonBasic("閉じる", 200, 80, 100, 30);
+		this._btnList["outer"] = new PartsButton(0, 10, 300, 110, false);
+		this._btnList["close"] = new PartsButtonBasic("閉じる", 190, 80, 100, 30);
 		this._btnList["close"].sKey = true;
-		this._btnList["ok"] = new PartsButtonBasic("決定", 90, 80, 100, 30);
+		this._btnList["ok"] = new PartsButtonBasic("決定", 80, 80, 100, 30);
 	}
 
 	// ----------------------------------------------------------------
 	// オープンボタン作成
 	function createButton(x : int, y : int, w : int, h : int) : PartsButtonTextareaOpener{
 		this._openButton = new PartsButtonTextareaOpener(x, y, w, h);
-		this._openButton.setText(this._value);
+		this._openButton.label.setText(this._value);
 		return this._openButton;
 	}
 
@@ -70,7 +72,7 @@ class SECpopupTextarea extends SECpopup{
 	// 入力内容設定
 	function setValue(value : string) : void{
 		this._value = value;
-		if(this._openButton != null){this._openButton.setText(this._value);}
+		if(this._openButton != null){this._openButton.label.setText(this._value);}
 	}
 
 	// ----------------------------------------------------------------
@@ -99,8 +101,12 @@ class SECpopupTextarea extends SECpopup{
 			this._input.className = "textarea";
 		}
 
+		// 文字数確認
+		var length = this._input.value.length;
+		this._labList["count"].setText(length + "/" + this._max);
+		this._labList["count"].setColor(length > this._max ? "red" : "black");
 		// 文字数0確認
-		this._btnList["ok"].inactive = (!this.isPermitZero && this._input.value.length <= 0);
+		this._btnList["ok"].inactive = (!this.isPermitZero && length <= 0);
 
 		// ボタン押下時
 		if(this._btnList["ok"].trigger || this._btnList["outer"].trigger || this._btnList["close"].trigger){
@@ -125,27 +131,22 @@ class SECpopupTextarea extends SECpopup{
 		// 親カートリッジ描画後に上書き
 
 		// ウインドウサイズに対する位置調整
-		if(this._wh != Ctrl.wh){this._wh = Ctrl.wh; this._input.style.top = (Ctrl.sy + 40) + "px";}
+		var px = (Ctrl.screen.w - 300) * 0.5;
+		if(this._ww != Ctrl.window.w || this._wh != Ctrl.window.h){
+			this._ww = Ctrl.window.w;
+			this._wh = Ctrl.window.h;
+			this._input.style.left = (Ctrl.screen.x + px + 10) + "px";
+			this._input.style.top = (Ctrl.screen.y + 40) + "px";
+			this._input.style.width = "280px";
+			this._input.style.height = "30px";
+		}
+		for(var name in this._labList){var lab = this._labList[name]; lab.x = px + lab.basex;}
+		for(var name in this._btnList){var btn = this._btnList[name]; btn.x = px + btn.basex;}
 
 		// 枠描画
-		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 10, 10, 300, 110);
+		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], px, 10, 300, 110);
 		Ctrl.sctx.fillStyle = "#ffffff";
-		Ctrl.sctx.fillRect(20, 40, 280, 30);
-
-		// 文字数描画
-		var pixelRatio = 2;
-		if(this._textCvs == null || this._textLength != this._input.value.length){
-			this._textLength = this._input.value.length;
-			var text = this._textLength + "/" + this._max;
-			this._textCvs = Drawer.createText(text, 12 * pixelRatio, "black");
-		}
-		var w = this._textCvs.width / pixelRatio;
-		var h = this._textCvs.height / pixelRatio;
-		var x = 20 + (40 - w) * 0.5;
-		var y = 75 + (15 - h) * 0.5;
-		Ctrl.sctx.drawImage(this._textCvs, x, y, w, h);
-		//Ctrl.sctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-		//Ctrl.sctx.fillRect(20, 75, 40, 15);
+		Ctrl.sctx.fillRect(px + 10, 40, 280, 30);
 
 		// ラベル描画
 		for(var name in this._labList){this._labList[name].draw();}
@@ -172,21 +173,14 @@ class SECpopupTextarea extends SECpopup{
 
 // テキストエリアオープンボタン
 class PartsButtonTextareaOpener extends PartsButton{
-	var _textCvs : HTMLCanvasElement;
-	var _text : string;
-	var _status : string;
+	var label : PartsLabel;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(x : int, y : int, w : int, h : int){
 		super(x, y, w, h, true);
-	}
-
-	// ----------------------------------------------------------------
-	// 文字列設定
-	function setText(text : string) : void{
-		this._text = text;
-		this._status = "";
+		this.label = new PartsLabel("", 0, 0, 0, 0);
+		this.label.setSize(16);
 	}
 
 	// ----------------------------------------------------------------
@@ -199,15 +193,12 @@ class PartsButtonTextareaOpener extends PartsButton{
 		Ctrl.sctx.fillStyle = isInactive ? "#cccccc" : this.active ? "#aaaaaa" : "#ffffff";
 		Ctrl.sctx.fillRect(this.x + 2, this.y + 2, this.w - 4, this.h - 4);
 		// 文字列描画
-		var pixelRatio = 2;
-		var maxWidth = (this.w - 10) * pixelRatio;
-		if(!isInactive && this._status != "normal"){this._status = "normal"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "black", maxWidth);}
-		if(isInactive && this._status != "inactive"){this._status = "inactive"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "gray", maxWidth);}
-		var w = this._textCvs.width / pixelRatio;
-		var h = this._textCvs.height / pixelRatio;
-		var x = this.x + (this.w - w) * 0.5;
-		var y = this.y + (this.h - h) * 0.5;
-		Ctrl.sctx.drawImage(this._textCvs, x, y, w, h);
+		this.label.setColor(isInactive ? "gray" : "black");
+		this.label.x = this.x + 5;
+		this.label.y = this.y;
+		this.label.w = this.w - 10;
+		this.label.h = this.h;
+		this.label.draw();
 	}
 }
 

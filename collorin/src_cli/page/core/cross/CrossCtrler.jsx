@@ -6,6 +6,10 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
+import "../Page.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -13,29 +17,14 @@ import "../../../util/EventCartridge.jsx";
 
 // コントローラクラス ページをまたぐクロス要素
 class CrossCtrler{
-	static const _actionMax = 10;
+	static const _lActionMax = 10;
+	static const _rActionMax = 5;
 
-	var upActive : boolean;
-	var dnActive : boolean;
-	var rtActive : boolean;
-	var ltActive : boolean;
-	var z_Active : boolean;
-	var x_Active : boolean;
-	var c_Active : boolean;
-	var s_Active : boolean;
-	var upTrigger : boolean;
-	var dnTrigger : boolean;
-	var rtTrigger : boolean;
-	var ltTrigger : boolean;
-	var z_Trigger : boolean;
-	var x_Trigger : boolean;
-	var c_Trigger : boolean;
-	var s_Trigger : boolean;
-
-	var _zbox : CrossCtrler._BtnBox;
-	var _xbox : CrossCtrler._BtnBox;
-	var _cbox : CrossCtrler._BtnBox;
-	var _sbox : CrossCtrler._BtnBox;
+	var _arrowBox : Ctrl.Box;
+	var _zBox : Ctrl.Box;
+	var _xBox : Ctrl.Box;
+	var _cBox : Ctrl.Box;
+	var _sBox : Ctrl.Box;
 	var _currentZlabelCvs : HTMLCanvasElement;
 	var _currentXlabelCvs : HTMLCanvasElement;
 	var _currentClabelCvs : HTMLCanvasElement;
@@ -44,19 +33,28 @@ class CrossCtrler{
 	var _nextXlavel : string;
 	var _nextClavel : string;
 	var _nextSlavel : string;
+	var _skip : boolean;
 	var _lShow : boolean;
 	var _rShow : boolean;
-	var _lAction = CrossCtrler._actionMax;
-	var _rAction = CrossCtrler._actionMax;
+	var _lAction = CrossCtrler._lActionMax;
+	var _rAction = CrossCtrler._rActionMax;
+	var _kup : boolean;
+	var _kdn : boolean;
+	var _krt : boolean;
+	var _klt : boolean;
+	var _k_z : boolean;
+	var _k_x : boolean;
+	var _k_c : boolean;
+	var _k_s : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(){
-		// 右コントローラのボタン描画範囲設定
-		this._zbox = new CrossCtrler._BtnBox(5, 30 * 0 - 2 +  3, 134, 30 + 2);
-		this._xbox = new CrossCtrler._BtnBox(5, 30 * 1 - 2 +  9, 134, 30 + 2);
-		this._cbox = new CrossCtrler._BtnBox(5, 30 * 2 - 2 + 15, 134, 30 + 2);
-		this._sbox = new CrossCtrler._BtnBox(5, 30 * 3 - 2 + 21, 134, 30 + 2);
+		this._arrowBox = new Ctrl.Box(0, -144, 144, 144);
+		this._zBox = new Ctrl.Box(5 - 144, 30 * 0 - 2 +  3 - 144, 134, 30 + 2);
+		this._xBox = new Ctrl.Box(5 - 144, 30 * 1 - 2 +  9 - 144, 134, 30 + 2);
+		this._cBox = new Ctrl.Box(5 - 144, 30 * 2 - 2 + 15 - 144, 134, 30 + 2);
+		this._sBox = new Ctrl.Box(5 - 144, 30 * 3 - 2 + 21 - 144, 134, 30 + 2);
 	}
 
 	// ----------------------------------------------------------------
@@ -64,154 +62,88 @@ class CrossCtrler{
 	function calc() : void{
 		var tempLaction = this._lAction;
 		var tempRaction = this._rAction;
-		var tempUpActive = this.upActive;
-		var tempDnActive = this.dnActive;
-		var tempRtActive = this.rtActive;
-		var tempLtActive = this.ltActive;
-		var tempZ_Active = this.z_Active;
-		var tempX_Active = this.x_Active;
-		var tempC_Active = this.c_Active;
-		var tempS_Active = this.s_Active;
-
-		// 左コントローラの押下確認
-		if(this._lAction != 0){
-			// ボタン無効状態
-			this.upActive = false;
-			this.dnActive = false;
-			this.rtActive = false;
-			this.ltActive = false;
-		}else{
-			if(Ctrl.ltdn){
-				// ボタン押下中
-				this.upActive = false;
-				this.dnActive = false;
-				this.rtActive = false;
-				this.ltActive = false;
-				var x = Ctrl.ltx - 72;
-				var y = Ctrl.lty - 72;
-				if(x * x + y * y < 72 * 72){
-					if(y < 0 && x < y * y * 0.18 && x > y * y * -0.18){this.upActive = true;}
-					if(y > 0 && x < y * y * 0.18 && x > y * y * -0.18){this.dnActive = true;}
-					if(x > 0 && y < x * x * 0.18 && y > x * x * -0.18){this.rtActive = true;}
-					if(x < 0 && y < x * x * 0.18 && y > x * x * -0.18){this.ltActive = true;}
-				}
-			}
-			// キー押下確認
-			if(Ctrl.kup){this.upActive = true;}
-			if(Ctrl.kdn){this.dnActive = true;}
-			if(Ctrl.krt){this.rtActive = true;}
-			if(Ctrl.klt){this.ltActive = true;}
-			// ボタンを放した瞬間
-			if(!Ctrl.ltdn && !Ctrl.kup && this.upActive){this.upActive = false; this.upTrigger = true;}
-			if(!Ctrl.ltdn && !Ctrl.kdn && this.dnActive){this.dnActive = false; this.dnTrigger = true;}
-			if(!Ctrl.ltdn && !Ctrl.krt && this.rtActive){this.rtActive = false; this.rtTrigger = true;}
-			if(!Ctrl.ltdn && !Ctrl.klt && this.ltActive){this.ltActive = false; this.ltTrigger = true;}
-		}
-
-		// 右コントローラの押下確認
-		if(this._rAction != 0){
-			// ボタン無効状態
-			this.z_Active = false;
-			this.x_Active = false;
-			this.c_Active = false;
-			this.s_Active = false;
-		}else{
-			if(Ctrl.rtdn){
-				// ボタン押下中
-				this.z_Active = false;
-				this.x_Active = false;
-				this.c_Active = false;
-				this.s_Active = false;
-				var x = Ctrl.rtx;
-				var y = Ctrl.rty;
-				var b = this._zbox; if(b.x < x && x < b.x + b.w && b.y < y && y < b.y + b.h){this.z_Active = true;}
-				var b = this._xbox; if(b.x < x && x < b.x + b.w && b.y < y && y < b.y + b.h){this.x_Active = true;}
-				var b = this._cbox; if(b.x < x && x < b.x + b.w && b.y < y && y < b.y + b.h){this.c_Active = true;}
-				var b = this._sbox; if(b.x < x && x < b.x + b.w && b.y < y && y < b.y + b.h){this.s_Active = true;}
-			}
-			// キー押下確認
-			if(Ctrl.k_z){this.z_Active = true;}
-			if(Ctrl.k_x){this.x_Active = true;}
-			if(Ctrl.k_c){this.c_Active = true;}
-			if(Ctrl.k_s){this.s_Active = true;}
-			// ボタンを放した瞬間
-			if(!Ctrl.rtdn && !Ctrl.k_z && this.z_Active){this.z_Active = false; this.z_Trigger = true;}
-			if(!Ctrl.rtdn && !Ctrl.k_x && this.x_Active){this.x_Active = false; this.x_Trigger = true;}
-			if(!Ctrl.rtdn && !Ctrl.k_c && this.c_Active){this.c_Active = false; this.c_Trigger = true;}
-			if(!Ctrl.rtdn && !Ctrl.k_s && this.s_Active){this.s_Active = false; this.s_Trigger = true;}
-		}
 
 		// 展開処理
 		if(this._lAction > 0 || (0 > this._lAction && this._lShow)){this._lAction++;}
 		if(this._rAction > 0 || (0 > this._rAction && this._rShow)){this._rAction++;}
-		if(this._lAction > CrossCtrler._actionMax){this._lAction = -CrossCtrler._actionMax;}
-		if(this._rAction > CrossCtrler._actionMax){this._rAction = -CrossCtrler._actionMax;}
-		if(this._lAction == -CrossCtrler._actionMax){Ctrl.ldiv.style.display = this._lShow ? "block" : "none";}
-		if(this._rAction == -CrossCtrler._actionMax){
-			Ctrl.rdiv.style.display = this._rShow ? "block" : "none";
-			if(this._rShow){
-				this._currentZlabelCvs = null;
-				this._currentXlabelCvs = null;
-				this._currentClabelCvs = null;
-				this._currentSlabelCvs = null;
-			}
+		if(this._lAction > CrossCtrler._lActionMax){this._lAction = -CrossCtrler._lActionMax;}
+		if(this._rAction > CrossCtrler._rActionMax){this._rAction = -CrossCtrler._rActionMax;}
+		if(this._lAction == -CrossCtrler._lActionMax){
+			if(this._skip && this._lShow){this._lAction = 0;}
+			Ctrl.arrowBox = this._lShow ? this._arrowBox : null;
+		}
+		if(this._rAction == -CrossCtrler._rActionMax){
+			if(this._skip && this._rShow){this._rAction = 0;}
+			Ctrl.zBox = (this._rShow && this._nextZlavel != "") ? this._zBox : null;
+			Ctrl.xBox = (this._rShow && this._nextXlavel != "") ? this._xBox : null;
+			Ctrl.cBox = (this._rShow && this._nextClavel != "") ? this._cBox : null;
+			Ctrl.sBox = (this._rShow && this._nextSlavel != "") ? this._sBox : null;
+			this._currentZlabelCvs = null;
+			this._currentXlabelCvs = null;
+			this._currentClabelCvs = null;
+			this._currentSlabelCvs = null;
 		}
 
 		// 十字キー更新確認
-		if(tempLaction != this._lAction){Ctrl.clUpdate = true;}
-		if(tempUpActive != this.upActive){Ctrl.clUpdate = true;}
-		if(tempDnActive != this.dnActive){Ctrl.clUpdate = true;}
-		if(tempRtActive != this.rtActive){Ctrl.clUpdate = true;}
-		if(tempLtActive != this.ltActive){Ctrl.clUpdate = true;}
+		if(tempLaction != this._lAction){Ctrl.update_lctx = true;}
+		if(this._kup != Ctrl.kup){this._kup = Ctrl.kup; Ctrl.update_lctx = true;}
+		if(this._kdn != Ctrl.kdn){this._kdn = Ctrl.kdn; Ctrl.update_lctx = true;}
+		if(this._krt != Ctrl.krt){this._krt = Ctrl.krt; Ctrl.update_lctx = true;}
+		if(this._klt != Ctrl.klt){this._klt = Ctrl.klt; Ctrl.update_lctx = true;}
 		// ボタン更新確認
-		if(tempRaction != this._rAction){Ctrl.crUpdate = true;}
-		if(tempZ_Active != this.z_Active){Ctrl.crUpdate = true;}
-		if(tempX_Active != this.x_Active){Ctrl.crUpdate = true;}
-		if(tempC_Active != this.c_Active){Ctrl.crUpdate = true;}
-		if(tempS_Active != this.s_Active){Ctrl.crUpdate = true;}
+		if(tempRaction != this._rAction){Ctrl.update_rctx = true;}
+		if(this._k_z != Ctrl.k_z){this._k_z = Ctrl.k_z; Ctrl.update_rctx = true;}
+		if(this._k_x != Ctrl.k_x){this._k_x = Ctrl.k_x; Ctrl.update_rctx = true;}
+		if(this._k_c != Ctrl.k_c){this._k_c = Ctrl.k_c; Ctrl.update_rctx = true;}
+		if(this._k_s != Ctrl.k_s){this._k_s = Ctrl.k_s; Ctrl.update_rctx = true;}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		if(Ctrl.clUpdate){
-			// 十字キーの描画
-			var nimg = Loader.imgs["img_system_button_ctrlArrow_normal"];
-			var aimg = Loader.imgs["img_system_button_ctrlArrow_active"];
-			if(nimg != null && aimg != null){
-				var mx = -144 * Math.abs(this._lAction / CrossCtrler._actionMax);
-				Ctrl.clctx.drawImage(this.upActive ? aimg : nimg,  0,      0, 68, 92 + 4, mx + 55     , 240 - 144 +  0 - 2 + 15, 34, 46 + 2);
-				Ctrl.clctx.drawImage(this.rtActive ? aimg : nimg, 69,      0, 92, 68 + 4, mx + 98 - 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
-				Ctrl.clctx.drawImage(this.dnActive ? aimg : nimg, 93, 69 + 4, 68, 92 + 4, mx + 55     , 240 - 144 + 98 - 2 - 15, 34, 46 + 2);
-				Ctrl.clctx.drawImage(this.ltActive ? aimg : nimg,  0, 93 + 4, 92, 68 + 4, mx +  0 + 15, 240 - 144 + 55 - 2     , 46, 34 + 2);
-			}
-		}
-
-		if(Ctrl.crUpdate){
+		if(Ctrl.update_rctx){
 			// ボタンの描画
 			var nimg = Loader.imgs["img_system_button_ctrlButton_normal"];
 			var aimg = Loader.imgs["img_system_button_ctrlButton_active"];
 			if(nimg != null && aimg != null){
 				var pixelRatio = 2;
-				var mx = 144 * Math.abs(this._rAction / CrossCtrler._actionMax);
-				var drawBtn = function(box : CrossCtrler._BtnBox, label : string, cvs : HTMLCanvasElement, active : boolean) : HTMLCanvasElement{
+				var mx = 144 * Math.abs(this._rAction / CrossCtrler._rActionMax);
+				var drawBtn = function(box : Ctrl.Box, label : string, cvs : HTMLCanvasElement, active : boolean) : HTMLCanvasElement{
+					if(box == null){return null;}
 					if(cvs == null && label != "" && this._rAction <= 0){cvs = Drawer.createText(label, 16 * pixelRatio, "black");}
 					if(cvs != null){
 						// ボタン枠の描画
-						Drawer.drawBox(Ctrl.crctx, active ? aimg : nimg, box.x + mx, box.y, box.w, box.h);
+						var x = 144 + (box.x < 0 ? box.x : box.x - Ctrl.window.w) + mx;
+						var y = 144 + (box.y < 0 ? box.y : box.y - Ctrl.window.h);
+						Drawer.drawBox(Ctrl.rctx, active ? aimg : nimg, x, y, box.w, box.h);
 						// ボタン文字列の描画
-						var w = cvs.width / pixelRatio;
-						var h = cvs.height / pixelRatio;
-						var x = box.x + (box.w - w) * 0.5 + mx;
-						var y = box.y + (box.h - h - 2) * 0.5 + (active ? 2 : 0);
-						Ctrl.crctx.drawImage(cvs, x, y, w, h);
+						var tw = cvs.width / pixelRatio;
+						var th = cvs.height / pixelRatio;
+						var tx = x + (box.w - tw) * 0.5;
+						var ty = y + (box.h - th - 2) * 0.5 + (active ? 2 : 0);
+						Ctrl.rctx.drawImage(cvs, tx, ty, tw, th);
 					}
 					return cvs;
 				};
-				this._currentZlabelCvs = drawBtn(this._zbox, this._nextZlavel, this._currentZlabelCvs, this.z_Active);
-				this._currentXlabelCvs = drawBtn(this._xbox, this._nextXlavel, this._currentXlabelCvs, this.x_Active);
-				this._currentClabelCvs = drawBtn(this._cbox, this._nextClavel, this._currentClabelCvs, this.c_Active);
-				this._currentSlabelCvs = drawBtn(this._sbox, this._nextSlavel, this._currentSlabelCvs, this.s_Active);
+				this._currentZlabelCvs = drawBtn(Ctrl.zBox, this._nextZlavel, this._currentZlabelCvs, Ctrl.k_z);
+				this._currentXlabelCvs = drawBtn(Ctrl.xBox, this._nextXlavel, this._currentXlabelCvs, Ctrl.k_x);
+				this._currentClabelCvs = drawBtn(Ctrl.cBox, this._nextClavel, this._currentClabelCvs, Ctrl.k_c);
+				this._currentSlabelCvs = drawBtn(Ctrl.sBox, this._nextSlavel, this._currentSlabelCvs, Ctrl.k_s);
+			}
+		}
+
+		if(Ctrl.update_lctx){
+			// 十字キーの描画
+			var nimg = Loader.imgs["img_system_button_ctrlArrow_normal"];
+			var aimg = Loader.imgs["img_system_button_ctrlArrow_active"];
+			if(nimg != null && aimg != null && Ctrl.arrowBox != null){
+				var mx = -144 * Math.abs(this._lAction / CrossCtrler._lActionMax);
+				var x = (Ctrl.arrowBox.x < 0 ? Ctrl.window.w + Ctrl.arrowBox.x : Ctrl.arrowBox.x) + mx;
+				var y = 240 + (Ctrl.arrowBox.y < 0 ? Ctrl.arrowBox.y : Ctrl.arrowBox.y - Ctrl.window.h);
+				Ctrl.lctx.drawImage(Ctrl.kup ? aimg : nimg,  0,      0, 68, 92 + 4, x + 55     , y +  0 - 2 + 15, 34, 46 + 2);
+				Ctrl.lctx.drawImage(Ctrl.krt ? aimg : nimg, 69,      0, 92, 68 + 4, x + 98 - 15, y + 55 - 2     , 46, 34 + 2);
+				Ctrl.lctx.drawImage(Ctrl.kdn ? aimg : nimg, 93, 69 + 4, 68, 92 + 4, x + 55     , y + 98 - 2 - 15, 34, 46 + 2);
+				Ctrl.lctx.drawImage(Ctrl.klt ? aimg : nimg,  0, 93 + 4, 92, 68 + 4, x +  0 + 15, y + 55 - 2     , 46, 34 + 2);
 			}
 		}
 	}
@@ -225,11 +157,8 @@ class CrossCtrler{
 		}
 
 		// 演出スキップ確認
-		if(dom.window.localStorage.getItem("setting_transition") == "off"){
-			this._lAction = this._lShow ? 0 : -CrossCtrler._actionMax;
-			Ctrl.ldiv.style.display = this._lShow ? "block" : "none";
-			Ctrl.clUpdate = true;
-		}
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		if(this._skip){this._lAction = CrossCtrler._lActionMax; Ctrl.update_lctx = true;}
 	}
 
 	// ----------------------------------------------------------------
@@ -255,30 +184,8 @@ class CrossCtrler{
 		this._nextSlavel = sLabel;
 
 		// 演出スキップ確認
-		if(dom.window.localStorage.getItem("setting_transition") == "off"){
-			this._rAction = this._rShow ? 0 : -CrossCtrler._actionMax;
-			Ctrl.rdiv.style.display = this._rShow ? "block" : "none";
-			Ctrl.crUpdate = true;
-			this._currentZlabelCvs = null;
-			this._currentXlabelCvs = null;
-			this._currentClabelCvs = null;
-			this._currentSlabelCvs = null;
-		}
-	}
-
-	// ----------------------------------------------------------------
-	// 右コントローラのボタン描画範囲構造体
-	class _BtnBox{
-		var x : int;
-		var y : int;
-		var w : int;
-		var h : int;
-		function constructor(x : int, y : int, w : int, h : int){
-			this.x = x;
-			this.y = y;
-			this.w = w;
-			this.h = h;
-		}
+		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		if(this._skip){this._rAction = CrossCtrler._rActionMax; Ctrl.update_rctx = true;}
 	}
 }
 

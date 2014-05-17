@@ -6,11 +6,11 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
-
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
 import "../Page.jsx";
-import "../parts/PartsLabel.jsx";
-import "../parts/PartsButton.jsx";
-import "../parts/PartsScroll.jsx";
+
 import "SECpopup.jsx";
 
 // ----------------------------------------------------------------
@@ -48,6 +48,8 @@ class SECpopupPicker extends SECpopup{
 	var _openButton : PartsButtonPickerOpener;
 
 	var _center : int;
+	var _pw = 200; // ウインドウ幅
+	var _bh = 36; // 選択ボタン高さ
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -57,14 +59,14 @@ class SECpopupPicker extends SECpopup{
 		this._itemList = itemList;
 
 		// スクローラ作成
-		this._scroller = new PartsScroll(63, 0, 194, 0, 60, 0);
+		this._scroller = new PartsScroll(0, 0, this._pw - 6, 0, 0, 0);
 
 		// ラベル作成
-		this._labList["title"] = new PartsLabel(title, 60, 0, 200, 30);
+		this._labList["title"] = new PartsLabel(title, 0, 0, this._pw, 30);
 
 		// ボタン作成
-		this._btnList["outer"] = new PartsButton(60, 0, 200, 0, false);
-		this._btnList["close"] = new PartsButtonBasic("閉じる", 120, 0, 80, 30);
+		this._btnList["outer"] = new PartsButton(0, 0, this._pw, 0, false);
+		this._btnList["close"] = new PartsButtonBasic("閉じる", 0, 0, 80, 30);
 		this._btnList["close"].sKey = true;
 	}
 
@@ -75,7 +77,7 @@ class SECpopupPicker extends SECpopup{
 		for(var i = 0; i < this._itemList.length; i++){
 			var item = this._itemList[i];
 			if(item.select){
-				this._openButton.setText(item.name);
+				this._openButton.label.setText(item.name);
 			}
 		}
 		return this._openButton;
@@ -112,7 +114,7 @@ class SECpopupPicker extends SECpopup{
 			var item = this._itemList[i];
 			item.select = (item.tag == tag);
 
-			if(item.select && this._openButton != null){this._openButton.setText(item.name);}
+			if(item.select && this._openButton != null){this._openButton.label.setText(item.name);}
 
 			var btn = this._scroller.btnList[item.tag];
 			if(btn != null){btn.select = item.select;}
@@ -133,7 +135,7 @@ class SECpopupPicker extends SECpopup{
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		for(var i = 0; i < this._itemList.length; i++){
 			var item = this._itemList[i];
-			var btn = new SECpopupPicker._PartsButtonPickerInner(item.name, 0, 38 * i, 194, 36);
+			var btn = new SECpopupPicker._PartsButtonPickerInner(item.name, 0, (this._bh + 2) * i, this._pw - 6, this._bh);
 			btn.select = item.select;
 			btn.inactive = item.inactive;
 			btn.trigger = false;
@@ -142,7 +144,7 @@ class SECpopupPicker extends SECpopup{
 		}
 
 		// スクローラサイズ設定
-		this._scroller.sh = 38 * this._itemList.length - 2;
+		this._scroller.sh = (this._bh + 2) * this._itemList.length - 2;
 	}
 
 	// ----------------------------------------------------------------
@@ -179,28 +181,34 @@ class SECpopupPicker extends SECpopup{
 		// 親カートリッジ描画後に上書き
 
 		// ウインドウサイズに対する位置調整
-		var ph = Math.min(Ctrl.sh - 20, this._scroller.sh + (3 + 30 + 2) + (3 + 42 + 2));
-		var py = Math.floor((Ctrl.sh - ph) * 0.5);
-		this._labList["title"].y = py + 3;
-		this._btnList["close"].y = py + ph - 3 - (42 + 30) * 0.5;
-		this._btnList["outer"].y = py;
-		this._btnList["outer"].h = ph;
-		this._scroller.y = py + (3 + 30 + 2);
-		this._scroller.ch = ph - (3 + 30 + 2) - (3 + 42 + 2);
+		var tLab = this._labList["title"];
+		var oBtn = this._btnList["outer"];
+		var cBtn = this._btnList["close"];
+		var cArea = 42;
+		var ph = oBtn.x = Math.min(Ctrl.screen.h - 20, this._scroller.sh + (3 + tLab.h + 2) + (3 + cArea + 2));
+		var px = oBtn.y = Math.floor((Ctrl.screen.w - this._pw) * 0.5);
+		var py = oBtn.h = Math.floor((Ctrl.screen.h - ph) * 0.5);
+		tLab.x = px;
+		tLab.y = py + 3;
+		cBtn.x = px + (this._pw - cBtn.w) * 0.5;
+		cBtn.y = py + ph - 3 - (cArea + cBtn.h) * 0.5;
+		this._scroller.x = px + 3;
+		this._scroller.y = py + (3 + tLab.h + 2);
+		this._scroller.ch = ph - (3 + tLab.h + 2) - (3 + cArea + 2);
 
 		// 最初の場合、選択されている要素をできるだけ中心に持ってくる
 		if(this._center >= 0){
 			var maxy = this._scroller.sh - this._scroller.ch;
-			var centery = this._scroller.ch * 0.5 - 18 - this._center * 38;
+			var centery = (this._scroller.ch - this._bh) * 0.5 - this._center * (this._bh + 2);
 			this._scroller.scrolly = Math.min(Math.max(centery, -maxy), 0);
 			this._center = -1;
 		}
 
 		// 枠描画
-		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], 60, py, 200, ph);
+		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], px, py, this._pw, ph);
 		Ctrl.sctx.fillStyle = "black";
-		Ctrl.sctx.fillRect(63, py + (3 + 30), 194, 2);
-		Ctrl.sctx.fillRect(63, py + ph - (3 + 42) - 2, 194, 2);
+		Ctrl.sctx.fillRect(px + 3, py + (3 + tLab.h), this._pw - 6, 2);
+		Ctrl.sctx.fillRect(px + 3, py + ph - (3 + cArea) - 2, this._pw - 6, 2);
 
 		// ラベル描画
 		for(var name in this._labList){this._labList[name].draw();}
@@ -212,8 +220,11 @@ class SECpopupPicker extends SECpopup{
 		this._scroller.draw(function() : void{
 			Ctrl.sctx.fillStyle = "black";
 			for(var i = 0; i < this._itemList.length - 1; i++){
-				if(this._scroller.isDrawClip(17, 38 * i + 36, 160, 2)){
-					Ctrl.sctx.fillRect(17, 38 * i + 36, 160, 2);
+				var x = 20 - 3;
+				var y = (this._bh + 2) * i + this._bh;
+				var w = this._pw - 20 * 2;
+				if(this._scroller.isDrawClip(x, y, w, 2)){
+					Ctrl.sctx.fillRect(x, y, w, 2);
 				}
 			}
 		});
@@ -231,15 +242,14 @@ class SECpopupPicker extends SECpopup{
 	// ----------------------------------------------------------------
 	// ピッカー内部ボタン
 	class _PartsButtonPickerInner extends PartsButton{
-		var _textCvs : HTMLCanvasElement;
-		var _text : string;
-		var _status : string;
+		var label : PartsLabel;
 
 		// ----------------------------------------------------------------
 		// コンストラクタ
 		function constructor(text : string, x : int, y : int, w : int, h : int){
 			super(x, y, w, h, true);
-			this._text = text;
+			this.label = new PartsLabel(text, 0, 0, 0, 0);
+			this.label.setSize(16);
 		}
 
 		// ----------------------------------------------------------------
@@ -250,14 +260,12 @@ class SECpopupPicker extends SECpopup{
 			Ctrl.sctx.fillStyle = isInactive ? "#cccccc" : this.active ? "#aaaaaa" : this.select ? "#ffffff" : "#cccccc";
 			Ctrl.sctx.fillRect(this.x, this.y, this.w, this.h);
 			// 文字列描画
-			var pixelRatio = 2;
-			if(!isInactive && this._status != "normal"){this._status = "normal"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "black");}
-			if(isInactive && this._status != "inactive"){this._status = "inactive"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "gray");}
-			var w = this._textCvs.width / pixelRatio;
-			var h = this._textCvs.height / pixelRatio;
-			var x = this.x + (this.w - w) * 0.5;
-			var y = this.y + (this.h - h) * 0.5;
-			Ctrl.sctx.drawImage(this._textCvs, x, y, w, h);
+			this.label.setColor(isInactive ? "gray" : "black");
+			this.label.x = this.x;
+			this.label.y = this.y;
+			this.label.w = this.w;
+			this.label.h = this.h;
+			this.label.draw();
 		}
 	}
 }
@@ -268,21 +276,14 @@ class SECpopupPicker extends SECpopup{
 
 // ピッカーオープンボタン
 class PartsButtonPickerOpener extends PartsButton{
-	var _textCvs : HTMLCanvasElement;
-	var _text : string;
-	var _status : string;
+	var label : PartsLabel;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(x : int, y : int, w : int){
 		super(x, y, w, 38, true);
-	}
-
-	// ----------------------------------------------------------------
-	// 文字列設定
-	function setText(text : string) : void{
-		this._text = text;
-		this._status = "";
+		this.label = new PartsLabel("", 0, 0, 0, 0);
+		this.label.setSize(16);
 	}
 
 	// ----------------------------------------------------------------
@@ -294,14 +295,12 @@ class PartsButtonPickerOpener extends PartsButton{
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_button_basic_" + type], this.x + 28, this.y + 4, this.w - 28, 30);
 		Ctrl.sctx.drawImage(Loader.imgs["img_system_button_picker_" + type], this.x, this.y, 38, 38);
 		// 文字列描画
-		var pixelRatio = 2;
-		if(!isInactive && this._status != "normal"){this._status = "normal"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "black");}
-		if(isInactive && this._status != "inactive"){this._status = "inactive"; this._textCvs = Drawer.createText(this._text, 16 * pixelRatio, "gray");}
-		var w = this._textCvs.width / pixelRatio;
-		var h = this._textCvs.height / pixelRatio;
-		var x = this.x + 14 + (this.w - w) * 0.5;
-		var y = this.y + (this.h - h - 2) * 0.5 + (this.active ? 2 : 0);
-		Ctrl.sctx.drawImage(this._textCvs, x, y, w, h);
+		this.label.setColor(isInactive ? "gray" : "black");
+		this.label.x = this.x + 28;
+		this.label.y = this.y + (this.active ? 2 : 0);
+		this.label.w = this.w - 28;
+		this.label.h = this.h - 2;
+		this.label.draw();
 	}
 }
 

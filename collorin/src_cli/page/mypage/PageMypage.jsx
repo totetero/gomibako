@@ -6,10 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/sec/SECloadTransition.jsx";
 
+import "../core/load/SECloadTransition.jsx";
 import "SECmypageMain.jsx";
 
 // ----------------------------------------------------------------
@@ -34,10 +36,9 @@ class PageMypage extends Page{
 		this.serialPush(new SECloadTransition(this, "/mypage", null, function(response : variant) : void{
 			// クロス要素設定
 			this.header.setType("マイページ", "top");
-			this.bust.set(null);
+//			this.bust.set(null);
 			// カートリッジ装填
-			log response;
-			this.serialPush(new SECmypageMain(this));
+			this.serialPush(new SECmypageMain(this, response));
 		}));
 	}
 

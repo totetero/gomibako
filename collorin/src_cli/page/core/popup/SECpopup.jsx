@@ -6,9 +6,12 @@ import "../../../util/Drawer.jsx";
 import "../../../util/Loader.jsx";
 import "../../../util/Loading.jsx";
 import "../../../util/EventCartridge.jsx";
-
+import "../../../util/PartsLabel.jsx";
+import "../../../util/PartsButton.jsx";
+import "../../../util/PartsScroll.jsx";
 import "../Page.jsx";
-import "SECloadTransition.jsx";
+
+import "../load/SECloadTransition.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -61,7 +64,7 @@ abstract class SECpopup implements SerialEventCartridge{
 
 		// 暗幕
 		Ctrl.sctx.fillStyle = "rgba(0, 0, 0, " + (0.5 * (1 - Math.abs(num))) + ")";
-		Ctrl.sctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+		Ctrl.sctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
 
 		if(this._openStep == 0){
 			// 通常描画
