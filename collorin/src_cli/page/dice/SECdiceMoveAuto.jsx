@@ -6,6 +6,10 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
 import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
@@ -44,7 +48,7 @@ class SECdiceMoveAuto implements SerialEventCartridge{
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "スキップ");
 		// トリガーリセット
-		this._page.ctrler.s_Trigger = false;
+		Ctrl.trigger_s = false;
 
 		// 移動先設定
 		this._chara.dstList = this._dstList;
@@ -56,7 +60,7 @@ class SECdiceMoveAuto implements SerialEventCartridge{
 		if(this._chara.dstList.length <= 0){
 			// 移動完了
 			return false;
-		}else if(this._page.ctrler.s_Trigger){
+		}else if(Ctrl.trigger_s){
 			// スキップボタン
 			Sound.playSE("ng");
 			var x0 = this._chara.x;

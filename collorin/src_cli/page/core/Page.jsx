@@ -18,7 +18,7 @@ import "../mypage/PageMypage.jsx";
 import "../world/PageWorld.jsx";
 import "../chara/PageChara.jsx";
 import "../setting/PageSetting.jsx";
-//import "../dice/PageDice.jsx";
+import "../dice/PageDice.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -80,7 +80,7 @@ abstract class Page extends EventPlayer{
 
 	// 次ページ作成関数
 	static function _nextPage(hash : string) : Page{
-//		if(hash.indexOf("dice") == 1){return new PageDice();}
+		if(hash.indexOf("dice") == 1){return new PageDice();}
 		if(hash.indexOf("world") == 1){return new PageWorld();}
 		if(hash.indexOf("chara") == 1){return new PageChara();}
 		if(hash.indexOf("setting") == 1){return new PageSetting();}

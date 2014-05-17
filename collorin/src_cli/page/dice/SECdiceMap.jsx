@@ -6,10 +6,13 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
-import "../core/parts/PartsButton.jsx";
 import "../core/data/DataChara.jsx";
-
+import "../core/data/SECpopupDataChara.jsx";
 import "PageDice.jsx";
 
 // ----------------------------------------------------------------
@@ -30,7 +33,7 @@ class SECdiceMap implements SerialEventCartridge{
 
 		// ボタン作成
 		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
-		this._btnList["rchara"] = new PartsButton(Ctrl.sw - 50, 0, 50, 50, true);
+		this._btnList["rchara"] = new PartsButton(Ctrl.screen.w - 50, 0, 50, 50, true);
 	}
 
 	// ----------------------------------------------------------------
@@ -50,7 +53,7 @@ class SECdiceMap implements SerialEventCartridge{
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
-		this._page.ctrler.s_Trigger = false;
+		Ctrl.trigger_s = false;
 	}
 
 	// ----------------------------------------------------------------
@@ -85,7 +88,7 @@ class SECdiceMap implements SerialEventCartridge{
 		}
 
 		// 戻るボタン
-		if(this._page.ctrler.s_Trigger){
+		if(Ctrl.trigger_s){
 			Sound.playSE("ng");
 			this._page.serialPush(this._cartridge);
 			return false;

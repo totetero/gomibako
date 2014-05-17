@@ -6,10 +6,13 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
-import "../core/parts/PartsButton.jsx";
 import "../core/data/DataChara.jsx";
-
+import "../core/data/SECpopupDataChara.jsx";
 import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
 import "SECdiceDice.jsx";
@@ -34,7 +37,7 @@ class SECdiceCommand implements SerialEventCartridge{
 
 		// ボタン作成
 		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
-		this._btnList["rchara"] = new PartsButton(Ctrl.sw - 50, 0, 50, 50, true);
+		this._btnList["rchara"] = new PartsButton(Ctrl.screen.w - 50, 0, 50, 50, true);
 	}
 
 	// ----------------------------------------------------------------
@@ -56,10 +59,10 @@ class SECdiceCommand implements SerialEventCartridge{
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
-		this._page.ctrler.z_Trigger = false;
-		this._page.ctrler.x_Trigger = false;
-		this._page.ctrler.c_Trigger = false;
-		this._page.ctrler.s_Trigger = false;
+		Ctrl.trigger_z = false;
+		Ctrl.trigger_x = false;
+		Ctrl.trigger_c = false;
+		Ctrl.trigger_s = false;
 	}
 
 	// ----------------------------------------------------------------
@@ -97,7 +100,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		}
 
 		// さいころボタン
-		if(this._page.ctrler.z_Trigger){
+		if(Ctrl.trigger_z){
 			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceDiceRoll(this._page, this, "code", "message", {
 				"type": "dice",
@@ -108,14 +111,14 @@ class SECdiceCommand implements SerialEventCartridge{
 		}
 
 		// マップボタン
-		if(this._page.ctrler.c_Trigger){
+		if(Ctrl.trigger_c){
 			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceMap(this._page, this));
 			return false;
 		}
 
 		// メニューボタン
-		if(this._page.ctrler.s_Trigger){
+		if(Ctrl.trigger_s){
 			Sound.playSE("ok");
 			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;

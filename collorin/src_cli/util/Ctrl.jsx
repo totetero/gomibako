@@ -445,14 +445,14 @@ class Ctrl{
 		}else{
 			// コントローラーモード
 			switch((e as KeyboardEvent).keyCode){
-				case 37: Ctrl._kklt = false; break;
-				case 38: Ctrl._kkup = false; break;
-				case 39: Ctrl._kkrt = false; break;
-				case 40: Ctrl._kkdn = false; break;
-				case 88: Ctrl._kk_x = false; break;
-				case 90: Ctrl._kk_z = false; break;
-				case 67: Ctrl._kk_c = false; break;
-				case 32: Ctrl._kk_s = false; break;
+				case 37: Ctrl._kklt = false; Ctrl.trigger_lt = true; break;
+				case 38: Ctrl._kkup = false; Ctrl.trigger_up = true; break;
+				case 39: Ctrl._kkrt = false; Ctrl.trigger_rt = true; break;
+				case 40: Ctrl._kkdn = false; Ctrl.trigger_dn = true; break;
+				case 88: Ctrl._kk_x = false; Ctrl.trigger_x = true; break;
+				case 90: Ctrl._kk_z = false; Ctrl.trigger_z = true; break;
+				case 67: Ctrl._kk_c = false; Ctrl.trigger_c = true; break;
+				case 32: Ctrl._kk_s = false; Ctrl.trigger_s = true; break;
 			}
 			// キーイベント終了
 			e.preventDefault();

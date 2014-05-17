@@ -6,10 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/sec/SECloadTransition.jsx";
 
+import "../core/load/SECloadTransition.jsx";
 import "Bb3dDiceCanvas.jsx";
 import "CrossDiceGauge.jsx";
 import "CrossDiceMessage.jsx";
@@ -63,7 +65,7 @@ class PageDice extends Page{
 	// クロス要素の描画 最初に行うほう
 	function drawBeforeCross() : void{
 		// 画面クリア
-		Ctrl.sctx.clearRect(0, 0, Ctrl.sw, Ctrl.sh);
+		Ctrl.sctx.clearRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
 		// ゲージ描画
 		this.gauge.draw();
 		// メッセージ描画

@@ -6,6 +6,10 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
 import "Bb3dDiceCanvas.jsx";
 
@@ -114,7 +118,7 @@ class Bb3dDiceField{
 	function draw(bcvs : Bb3dDiceCanvas, x : number, y : number, select : boolean) : void {
 		// 描画開始
 		Ctrl.gctx.save();
-		Ctrl.gctx.translate(Ctrl.sw * 0.5, Ctrl.sh * 0.5);
+		Ctrl.gctx.translate(Ctrl.screen.w * 0.5, Ctrl.screen.h * 0.5);
 		Ctrl.gctx.scale(bcvs.scale, bcvs.scale * bcvs.sinh);
 		Ctrl.gctx.rotate(bcvs.rotv);
 		Ctrl.gctx.translate(-x, -y);

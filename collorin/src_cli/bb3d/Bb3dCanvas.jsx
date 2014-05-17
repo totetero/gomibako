@@ -42,11 +42,11 @@ class Bb3dCanvas{
 // キャンバス情報管理 スクリーン全面使用
 class Bb3dCanvasFullscreen extends Bb3dCanvas{
 	// マウス状態 キャンバスとの相対位置
-	var ctx : int = 0;
-	var cty : int = 0;
-	var prevctx : int;
-	var prevcty : int;
-	var _tempctdn : boolean;
+	var stx : int = 0;
+	var sty : int = 0;
+	var prevstx : int;
+	var prevsty : int;
+	var _tempstdn : boolean;
 	// ゲーム座標タッチ位置
 	var tx : number;
 	var ty : number;
@@ -72,31 +72,31 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 
 	// マウス状態とタッチ状態の計算
 	function calcTouchCoordinate() : void{
-		this.w = Ctrl.sw;
-		this.h = Ctrl.sh;
+		this.w = Ctrl.screen.w;
+		this.h = Ctrl.screen.h;
 		// キャンバスからみたマウス位置を確認
-		this.prevctx = this.ctx;
-		this.prevcty = this.cty;
-		this.ctx = Ctrl.ctx;
-		this.cty = Ctrl.cty;
+		this.prevstx = this.stx;
+		this.prevsty = this.sty;
+		this.stx = Ctrl.stx;
+		this.sty = Ctrl.sty;
 		// クリック開始時に直前座標リセット
-		if(this._tempctdn != Ctrl.ctdn){
-			this._tempctdn = Ctrl.ctdn;
-			if(this._tempctdn){
-				this.prevctx = this.ctx;
-				this.prevcty = this.cty;
+		if(this._tempstdn != Ctrl.stdn){
+			this._tempstdn = Ctrl.stdn;
+			if(this._tempstdn){
+				this.prevstx = this.stx;
+				this.prevsty = this.sty;
 			}
 		}
 		// マウス位置をゲーム座標タッチ位置に変換
-		var x0 = (this.ctx - Ctrl.sw * 0.5) / this.scale;
-		var y0 = (this.cty - Ctrl.sh * 0.5) / (this.scale * this.sinh);
+		var x0 = (this.stx - Ctrl.screen.w * 0.5) / this.scale;
+		var y0 = (this.sty - Ctrl.screen.h * 0.5) / (this.scale * this.sinh);
 		this.tx = (x0 *  this.cosv + y0 * this.sinv) + this.cx;
 		this.ty = (x0 * -this.sinv + y0 * this.cosv) + this.cy;
 	}
 
 	// タッチによる移動の計算
 	function calcTouchMove() : void{
-		if(Ctrl.ctdn && Ctrl.ctmv){
+		if(Ctrl.stdn && Ctrl.stmv){
 			var x1 = this.cxmax * this.cosv + this.cymax * -this.sinv;
 			var y1 = this.cxmax * this.sinv + this.cymax *  this.cosv;
 			var x2 = this.cxmax * this.cosv + this.cymin * -this.sinv;
@@ -110,8 +110,8 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 			var xmin = Math.min(x1, x2, x3, x4);
 			var ymin = Math.min(y1, y2, y3, y4);
 
-			var x0 = (this.calcx * this.cosv + this.calcy * -this.sinv) + (this.prevctx - this.ctx) / this.scale;
-			var y0 = (this.calcx * this.sinv + this.calcy *  this.cosv) + (this.prevcty - this.cty) / (this.scale * this.sinh);
+			var x0 = (this.calcx * this.cosv + this.calcy * -this.sinv) + (this.prevstx - this.stx) / this.scale;
+			var y0 = (this.calcx * this.sinv + this.calcy *  this.cosv) + (this.prevsty - this.sty) / (this.scale * this.sinh);
 			if(x0 > xmax){x0 = xmax;}else if(x0 < xmin){x0 = xmin;}
 			if(y0 > ymax){y0 = ymax;}else if(y0 < ymin){y0 = ymin;}
 			this.calcx = x0 *  this.cosv + y0 * this.sinv;
@@ -121,12 +121,12 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 
 	// タッチによる回転の計算
 	function calcTouchRotate() : void{
-		if(Ctrl.ctdn && Ctrl.ctmv){
-			var x0 = this.prevctx - Ctrl.sw * 0.5;
-			var y0 = this.prevcty - Ctrl.sh * 0.5;
+		if(Ctrl.stdn && Ctrl.stmv){
+			var x0 = this.prevstx - Ctrl.screen.w * 0.5;
+			var y0 = this.prevsty - Ctrl.screen.h * 0.5;
 			var r0 = Math.sqrt(x0 * x0 + y0 * y0);
-			var x1 = this.ctx - Ctrl.sw * 0.5;
-			var y1 = this.cty - Ctrl.sh * 0.5;
+			var x1 = this.stx - Ctrl.screen.w * 0.5;
+			var y1 = this.sty - Ctrl.screen.h * 0.5;
 			var r1 = Math.sqrt(x1 * x1 + y1 * y1);
 			if(r0 > 20 && r1 > 20){
 				var cos = (x0 * x1 + y0 * y1) / (r0 * r1);

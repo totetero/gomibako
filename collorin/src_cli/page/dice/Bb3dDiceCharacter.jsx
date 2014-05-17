@@ -6,12 +6,14 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 import "../../bb3d/Bb3dDrawShadow.jsx";
-
 import "../core/data/DataChara.jsx";
-
 import "Bb3dDiceCanvas.jsx";
 
 // ----------------------------------------------------------------

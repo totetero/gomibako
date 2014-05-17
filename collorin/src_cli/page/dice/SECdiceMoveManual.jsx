@@ -6,11 +6,14 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
-import "../core/parts/PartsButton.jsx";
 import "../core/data/DataChara.jsx";
-import "../core/sec/SECload.jsx";
-
+import "../core/data/SECpopupDataChara.jsx";
+import "../core/load/SECload.jsx";
 import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
 import "SECdiceMap.jsx";
@@ -39,7 +42,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 
 		// ボタン作成
 		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
-		this._btnList["rchara"] = new PartsButton(Ctrl.sw - 50, 0, 50, 50, true);
+		this._btnList["rchara"] = new PartsButton(Ctrl.screen.w - 50, 0, 50, 50, true);
 	}
 
 	// ----------------------------------------------------------------
@@ -60,9 +63,9 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
-		this._page.ctrler.x_Trigger = false;
-		this._page.ctrler.c_Trigger = false;
-		this._page.ctrler.s_Trigger = false;
+		Ctrl.trigger_x = false;
+		Ctrl.trigger_c = false;
+		Ctrl.trigger_s = false;
 	}
 
 	// ----------------------------------------------------------------
@@ -99,14 +102,14 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		}
 
 		// マップボタン
-		if(this._page.ctrler.c_Trigger){
+		if(Ctrl.trigger_c){
 			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceMap(this._page, this));
 			return false;
 		}
 
 		// メニューボタン
-		if(this._page.ctrler.s_Trigger){
+		if(Ctrl.trigger_s){
 			Sound.playSE("ok");
 			this._page.bust.set(null);
 			bcvs.cameraLock = true;
@@ -116,10 +119,10 @@ class SECdiceMoveManual implements SerialEventCartridge{
 
 		if(this._player.dstList.length > 0){
 			// ヘックス目的地移動完了を待つ
-		}else if(this._page.ctrler.x_Trigger){
+		}else if(Ctrl.trigger_x){
 			// 一つ戻るボタン
 			Sound.playSE("ng");
-			this._page.ctrler.x_Trigger = false;
+			Ctrl.trigger_x = false;
 			if(this._srcList.length > 0){
 				this._pip++;
 				this._player.dstList.unshift(this._srcList.shift());
@@ -128,16 +131,15 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
 			var dir = 0;
-			var isMove = true;
-			var ctrl = this._page.ctrler; // TODO -------- 関数化 --------
-			if     (ctrl.rtActive && ctrl.upActive){dir = 1.75;}
-			else if(ctrl.ltActive && ctrl.upActive){dir = 1.25;}
-			else if(ctrl.ltActive && ctrl.dnActive){dir = 0.75;}
-			else if(ctrl.rtActive && ctrl.dnActive){dir = 0.25;}
-			else if(ctrl.rtActive){dir = 0.00;}
-			else if(ctrl.upActive){dir = 1.50;}
-			else if(ctrl.ltActive){dir = 1.00;}
-			else if(ctrl.dnActive){dir = 0.50;}
+			var isMove = true; // TODO -------- 関数化 --------
+			if     (Ctrl.krt && Ctrl.kup){dir = 1.75;}
+			else if(Ctrl.klt && Ctrl.kup){dir = 1.25;}
+			else if(Ctrl.klt && Ctrl.kdn){dir = 0.75;}
+			else if(Ctrl.krt && Ctrl.kdn){dir = 0.25;}
+			else if(Ctrl.krt){dir = 0.00;}
+			else if(Ctrl.kup){dir = 1.50;}
+			else if(Ctrl.klt){dir = 1.00;}
+			else if(Ctrl.kdn){dir = 0.50;}
 			else{isMove = false;}
 			if(isMove){
 				// プレイヤーの現在座標

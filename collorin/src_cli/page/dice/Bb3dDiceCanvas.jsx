@@ -6,13 +6,15 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
 import "../../bb3d/Bb3dCanvas.jsx";
 import "../../bb3d/Bb3dDice.jsx";
 import "../../bb3d/Bb3dDrawUnit.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
-import "../core/parts/PartsButton.jsx";
-
 import "Bb3dDiceField.jsx";
 import "Bb3dDiceCharacter.jsx";
 
@@ -110,16 +112,16 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		}
 
 		// キャラクタータップ完了確認
-		if(!Ctrl.ctdn && this._tappedChara != null){this.charaTrigger = this._tappedChara;}
+		if(!Ctrl.stdn && this._tappedChara != null){this.charaTrigger = this._tappedChara;}
 		// キャラクタータップ中確認
 		this._tappedChara = null;
-		if(Ctrl.ctdn && !Ctrl.ctmv && !this.cameraLock && this.isTapChara){
+		if(Ctrl.stdn && !Ctrl.stmv && !this.cameraLock && this.isTapChara){
 			var depth0 = 0;
 			for(var id in this.member){
 				var side = this.member[id].side;
 				if(side != "player" && side != "enemy"){continue;}
 				var depth1 = this.member[id].getDepth();
-				if((this._tappedChara == null || depth0 < depth1) && this.member[id].isOver(Ctrl.ctx, Ctrl.cty)){
+				if((this._tappedChara == null || depth0 < depth1) && this.member[id].isOver(Ctrl.stx, Ctrl.sty)){
 					depth0 = depth1;
 					this._tappedChara = this.member[id];
 				}
@@ -127,9 +129,9 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		}
 
 		// フィールドタップ完了確認
-		if(!Ctrl.ctdn && this._hexTapped){this.hexTrigger = this.field.getHexFromCoordinate(this.tx, this.ty);}
+		if(!Ctrl.stdn && this._hexTapped){this.hexTrigger = this.field.getHexFromCoordinate(this.tx, this.ty);}
 		// フィールドタップ中確認
-		this._hexTapped = (Ctrl.ctdn && !Ctrl.ctmv && !this.cameraLock && this.isTapHex && this._tappedChara == null);
+		this._hexTapped = (Ctrl.stdn && !Ctrl.stmv && !this.cameraLock && this.isTapHex && this._tappedChara == null);
 	}
 
 	// ----------------------------------------------------------------
@@ -153,7 +155,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		// 画面を暗くする
 		if(this._maskColor != ""){
 			Ctrl.gctx.fillStyle = this._maskColor;
-			Ctrl.gctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+			Ctrl.gctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
 		}
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
@@ -167,10 +169,10 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		if(this._bgimg == null){return;}
 		var dw = this._bgimg.width * 480 / this._bgimg.height;
 		var dx = -(this._bgaction++ % dw);
-		var sh = this._bgimg.height * Ctrl.sh / 480;
+		var sh = this._bgimg.height * Ctrl.screen.h / 480;
 		var sy = (this._bgimg.height - sh) * 0.5;
-		while(dx < Ctrl.sw){
-			Ctrl.gctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.sh);
+		while(dx < Ctrl.screen.w){
+			Ctrl.gctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.screen.h);
 			dx += dw;
 		}
 	}

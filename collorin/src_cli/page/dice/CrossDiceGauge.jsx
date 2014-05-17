@@ -6,6 +6,10 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
 import "../core/data/DataChara.jsx";
 
@@ -51,7 +55,7 @@ class CrossDiceGauge{
 	// 描画
 	function draw() : void{
 		var lmx = -50 * Math.abs(this._lAction / CrossDiceGauge._actionMax);
-		var rmx = Ctrl.sw - 50 * (1 - Math.abs(this._rAction / CrossDiceGauge._actionMax));
+		var rmx = Ctrl.screen.w - 50 * (1 - Math.abs(this._rAction / CrossDiceGauge._actionMax));
 
 		// 左表示
 		if(this._currentLchara != null){

@@ -6,12 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/parts/PartsLabel.jsx";
-import "../core/parts/PartsButton.jsx";
-import "../core/sec/SECpopup.jsx";
 
+import "../core/popup/SECpopup.jsx";
 import "PageDice.jsx";
 
 // ----------------------------------------------------------------
@@ -84,7 +84,7 @@ class SECdicePopupMenu extends SECpopup{
 		// 親カートリッジ描画後に上書き
 
 		// ウインドウサイズに対する位置調整
-		var py = (Ctrl.sh - this._ph) * 0.5;
+		var py = (Ctrl.screen.h - this._ph) * 0.5;
 		for(var name in this._labList){this._labList[name].y = this._labList[name].basey + py;}
 		for(var name in this._btnList){this._btnList[name].y = this._btnList[name].basey + py;}
 

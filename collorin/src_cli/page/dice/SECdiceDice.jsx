@@ -6,9 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
+import "../core/Page.jsx";
 
 import "../../bb3d/Bb3dDice.jsx";
-
 import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
 
@@ -65,8 +68,8 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 		this._page.ctrler.setLctrl(this._player != null);
 		this._page.ctrler.setRctrl("なげる", "", "", "もどる");
 		// トリガーリセット
-		this._page.ctrler.z_Trigger = false;
-		this._page.ctrler.s_Trigger = false;
+		Ctrl.trigger_z = false;
+		Ctrl.trigger_s = false;
 
 		// さいころ初期化
 		var num = this._request["num"] as int;
@@ -128,14 +131,14 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 		if(this._player != null){this._calcTurn();}
 
 		// なげるボタン
-		if(this._page.ctrler.z_Trigger){
+		if(Ctrl.trigger_z){
 			Sound.playSE("ok");
 			this._page.serialPush(new SECdiceDiceThrow(this._page, this._request));
 			return false;
 		}
 
 		// もどるボタン
-		if(this._page.ctrler.s_Trigger){
+		if(Ctrl.trigger_s){
 			Sound.playSE("ng");
 			this._page.bcvs.dices.length = 0;
 			this._page.serialPush(this._cartridge);
@@ -149,15 +152,14 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 	function _calcTurn() : void{
 		var dir = 0;
 		var isMove = true;
-		var ctrl = this._page.ctrler;
-		if     (ctrl.rtActive && ctrl.upActive){dir = 1.75;}
-		else if(ctrl.ltActive && ctrl.upActive){dir = 1.25;}
-		else if(ctrl.ltActive && ctrl.dnActive){dir = 0.75;}
-		else if(ctrl.rtActive && ctrl.dnActive){dir = 0.25;}
-		else if(ctrl.rtActive){dir = 0.00;}
-		else if(ctrl.upActive){dir = 1.50;}
-		else if(ctrl.ltActive){dir = 1.00;}
-		else if(ctrl.dnActive){dir = 0.50;}
+		if     (Ctrl.krt && Ctrl.kup){dir = 1.75;}
+		else if(Ctrl.klt && Ctrl.kup){dir = 1.25;}
+		else if(Ctrl.klt && Ctrl.kdn){dir = 0.75;}
+		else if(Ctrl.krt && Ctrl.kdn){dir = 0.25;}
+		else if(Ctrl.krt){dir = 0.00;}
+		else if(Ctrl.kup){dir = 1.50;}
+		else if(Ctrl.klt){dir = 1.00;}
+		else if(Ctrl.kdn){dir = 0.50;}
 		else{isMove = false;}
 		if(isMove){
 			// 角度を使いやすい形に変換する
@@ -262,7 +264,7 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 				// クロス設定
 				if(this._loadCount < 24){this._page.ctrler.setRctrl("", "", "", "スキップ");}
 				// トリガーリセット
-				this._page.ctrler.s_Trigger = false;
+				Ctrl.trigger_s = false;
 			});
 		});
 
@@ -282,8 +284,8 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 
 		if(this._request == null){
 			// 演出終了もしくはスキップボタン
-			if(!throwing || this._page.ctrler.s_Trigger){
-				if(this._page.ctrler.s_Trigger){Sound.playSE("ok");}
+			if(!throwing || Ctrl.trigger_s){
+				if(Ctrl.trigger_s){Sound.playSE("ok");}
 				this._page.bcvs.dices.length = 0;
 				return false;
 			}
