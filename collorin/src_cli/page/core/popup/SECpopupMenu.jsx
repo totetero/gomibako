@@ -50,7 +50,6 @@ class SECpopupMenu extends SECpopup{
 		this._btnList["close"] = new PartsButtonBasic("閉じる", (this._pw - 100) * 0.5, this._ph - 30 - 10, 100, 30);
 		this._btnList["close"].sKey = true;
 
-		this._menuList["world"].inactive = true;
 		this._menuList["quest"].inactive = true;
 		this._menuList["item"].inactive = true;
 		this._menuList["friend"].inactive = true;

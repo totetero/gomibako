@@ -34,7 +34,6 @@ class SECmypageMain implements SerialEventCartridge{
 		this._btnList["chara"] = new PartsButtonBasic("キャラクタ", -110, -130, 100, 30);
 		this._btnList["item"] = new PartsButtonBasic("アイテム", -110, -90, 100, 30);
 
-		this._btnList["world"].inactive = true;
 		this._btnList["quest"].inactive = true;
 		this._btnList["item"].inactive = true;
 	}

@@ -6,10 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/sec/SECloadTransition.jsx";
 
+import "../core/load/SECloadTransition.jsx";
 import "SECworldMain.jsx";
 
 // ----------------------------------------------------------------
@@ -36,8 +38,7 @@ class PageWorld extends Page{
 			this.header.setType("ワールド", "mypage");
 			this.bust.set(null);
 			// カートリッジ装填
-			log response;
-			this.serialPush(new SECworldMain(this));
+			this.serialPush(new SECworldMain(this, response));
 		}));
 	}
 

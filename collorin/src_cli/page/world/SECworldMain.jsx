@@ -6,11 +6,12 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/parts/PartsButton.jsx";
-import "../core/sec/SECpopupMenu.jsx";
 
+import "../core/popup/SECpopupMenu.jsx";
 import "PageWorld.jsx";
 
 // ----------------------------------------------------------------
@@ -24,11 +25,11 @@ class SECworldMain implements SerialEventCartridge{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageWorld){
+	function constructor(page : PageWorld, response : variant){
 		this._page = page;
 
 		// ボタン作成
-		this._btnList["dice"] = new PartsButtonBasic("テストステージ",  60, 70, 200, 40);
+		this._btnList["dice"] = new PartsButtonBasic("テストステージ",  20, 70, 200, 40);
 	}
 
 	// ----------------------------------------------------------------
@@ -81,7 +82,7 @@ class SECworldMain implements SerialEventCartridge{
 	override function draw() : void{
 		// 画面クリア
 		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(0, 0, Ctrl.sw, Ctrl.sh);
+		Ctrl.sctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
