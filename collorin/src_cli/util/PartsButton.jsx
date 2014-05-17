@@ -116,6 +116,17 @@ class PartsButtonBasic extends PartsButton{
 	}
 }
 
+// 左タブクラス
+class PartsButtonTabLeft extends PartsButtonBasic{
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(text : string, x : int, y : int, w : int, h : int){
+		super(text, x, y, w, h);
+		this.buttonType = "tabLeft";
+		this.label.setSize(14);
+	}
+}
+
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

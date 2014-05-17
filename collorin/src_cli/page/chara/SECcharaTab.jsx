@@ -6,12 +6,13 @@ import "../../util/Drawer.jsx";
 import "../../util/Loader.jsx";
 import "../../util/Loading.jsx";
 import "../../util/EventCartridge.jsx";
-
+import "../../util/PartsLabel.jsx";
+import "../../util/PartsButton.jsx";
+import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
-import "../core/parts/PartsButton.jsx";
-import "../core/sec/SECload.jsx";
-import "../core/sec/SECpopupMenu.jsx";
 
+import "../core/load/SECload.jsx";
+import "../core/popup/SECpopupMenu.jsx";
 import "PageChara.jsx";
 import "SECcharaTabTeam.jsx";
 import "SECcharaTabSupp.jsx";
@@ -130,7 +131,7 @@ abstract class SECcharaTab implements SerialEventCartridge{
 	// 描画
 	override function draw() : void{
 		// ウインドウサイズに対する位置調整
-		var h = Math.floor((Ctrl.sh - 60) / 5);
+		var h = Math.floor((Ctrl.screen.h - 60) / 5);
 		this._tabList["team"].y = 55 + h * 0;
 		this._tabList["supp"].y = 55 + h * 1;
 		this._tabList["rest"].y = 55 + h * 2;
@@ -144,11 +145,11 @@ abstract class SECcharaTab implements SerialEventCartridge{
 
 		// 画面クリア
 		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(0, 0, 48, Ctrl.sh);
+		Ctrl.sctx.fillRect(0, 0, 48, Ctrl.screen.h);
 		Ctrl.sctx.fillStyle = "#000000";
-		Ctrl.sctx.fillRect(48, 0, 2, Ctrl.sh);
+		Ctrl.sctx.fillRect(48, 0, 2, Ctrl.screen.h);
 		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(50, 0, Ctrl.sw - 50, Ctrl.sh);
+		Ctrl.sctx.fillRect(50, 0, Ctrl.screen.w - 50, Ctrl.screen.h);
 
 		// ボタン描画
 		for(var name in this._tabList){this._tabList[name].draw();}

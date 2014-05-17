@@ -36,7 +36,6 @@ class SECmypageMain implements SerialEventCartridge{
 
 		this._btnList["world"].inactive = true;
 		this._btnList["quest"].inactive = true;
-		this._btnList["chara"].inactive = true;
 		this._btnList["item"].inactive = true;
 	}
 

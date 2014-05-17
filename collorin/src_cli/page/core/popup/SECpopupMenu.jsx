@@ -52,7 +52,6 @@ class SECpopupMenu extends SECpopup{
 
 		this._menuList["world"].inactive = true;
 		this._menuList["quest"].inactive = true;
-		this._menuList["chara"].inactive = true;
 		this._menuList["item"].inactive = true;
 		this._menuList["friend"].inactive = true;
 		this._menuList["refbook"].inactive = true;
