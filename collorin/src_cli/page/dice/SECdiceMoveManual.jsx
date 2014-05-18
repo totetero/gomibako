@@ -28,7 +28,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 	var _page : PageDice;
 	var _player : Bb3dDiceCharacter;
 	var _pip : int;
-//	var _display = false;
+	var _total : int;
 	var _srcList = new int[][];
 	var _dstList = new int[][];
 	var _btnList = {} : Map.<PartsButton>;
@@ -39,6 +39,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		this._page = page;
 		this._player = this._page.bcvs.member[response["id"] as string];
 		this._pip = response["pip"] as int;
+		this._total = this._pip;
 
 		// ボタン作成
 		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
@@ -58,13 +59,12 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		// クロス設定
 		this._page.bust.set(null);
 		this._page.gauge.setLeft(this._player, 0);
-		this._page.message.set("あと" + this._pip + "マス", "move", 0);
+		this._page.message.set("あと" + this._pip + "/" + this._total + "マス", "move", 0);
 		this._page.ctrler.setLctrl(true);
 		this._page.ctrler.setRctrl("", "一歩戻る", "マップ", "メニュー");
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
-		Ctrl.trigger_x = false;
 		Ctrl.trigger_c = false;
 		Ctrl.trigger_s = false;
 	}
@@ -79,61 +79,63 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		this._page.gauge.rActive = this._btnList["rchara"].active;
 		var request : variant = null;
 
-		// 左ゲージアイコンタップ
-		if(this._page.gauge.lChara != null && this._btnList["lchara"].trigger){
-			Sound.playSE("ok");
-			bcvs.cameraLock = true;
-			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.lChara));
-			return false;
-		}
+		if(this._pip > 0){
+			// 左ゲージアイコンタップ
+			if(this._page.gauge.lChara != null && this._btnList["lchara"].trigger){
+				Sound.playSE("ok");
+				bcvs.cameraLock = true;
+				this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.lChara));
+				return false;
+			}
 
-		// 右ゲージアイコンタップ
-		if(this._page.gauge.rChara != null && this._btnList["rchara"].trigger){
-			Sound.playSE("ok");
-			bcvs.cameraLock = true;
-			this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.rChara));
-			return false;
-		}
+			// 右ゲージアイコンタップ
+			if(this._page.gauge.rChara != null && this._btnList["rchara"].trigger){
+				Sound.playSE("ok");
+				bcvs.cameraLock = true;
+				this._page.serialPush(new SECpopupDataChara(this._page, this, this._page.gauge.rChara));
+				return false;
+			}
 
-		// キャラクタータップ
-		if(bcvs.charaTrigger != null){
-			Sound.playSE("ok");
-			bcvs.cameraLock = true;
-			this._page.serialPush(new SECpopupDataChara(this._page, this, bcvs.charaTrigger));
-			return false;
-		}
+			// キャラクタータップ
+			if(bcvs.charaTrigger != null){
+				Sound.playSE("ok");
+				bcvs.cameraLock = true;
+				this._page.serialPush(new SECpopupDataChara(this._page, this, bcvs.charaTrigger));
+				return false;
+			}
 
-		// マップボタン
-		if(Ctrl.trigger_c){
-			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceMap(this._page, this));
-			return false;
-		}
+			// マップボタン
+			if(Ctrl.trigger_c){
+				Sound.playSE("ok");
+				this._page.serialPush(new SECdiceMap(this._page, this));
+				return false;
+			}
 
-		// メニューボタン
-		if(Ctrl.trigger_s){
-			Sound.playSE("ok");
-			this._page.bust.set(null);
-			bcvs.cameraLock = true;
-			this._page.serialPush(new SECdicePopupMenu(this._page, this));
-			return false;
+			// メニューボタン
+			if(Ctrl.trigger_s){
+				Sound.playSE("ok");
+				this._page.bust.set(null);
+				bcvs.cameraLock = true;
+				this._page.serialPush(new SECdicePopupMenu(this._page, this));
+				return false;
+			}
 		}
 
 		if(this._player.dstList.length > 0){
 			// ヘックス目的地移動完了を待つ
-		}else if(Ctrl.trigger_x){
+		}else if(Ctrl.k_x){
 			// 一つ戻るボタン
-			Sound.playSE("ng");
-			Ctrl.trigger_x = false;
 			if(this._srcList.length > 0){
+				Sound.playSE("ng");
 				this._pip++;
 				this._player.dstList.unshift(this._srcList.shift());
-				this._page.message.set("あと" + this._pip + "マス", "move", 0);
+				this._player.motion = "walk";
+				this._page.message.set("あと" + this._pip + "/" + this._total + "マス", "move", 0);
 			}
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
 			var dir = 0;
-			var isMove = true; // TODO -------- 関数化 --------
+			var isMove = true;
 			if     (Ctrl.krt && Ctrl.kup){dir = 1.75;}
 			else if(Ctrl.klt && Ctrl.kup){dir = 1.25;}
 			else if(Ctrl.klt && Ctrl.kdn){dir = 0.75;}
@@ -222,7 +224,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 							this._dstList.push([x1, y1] : int[]);
 						}
 						this._player.motion = "walk";
-						this._page.message.set("あと" + this._pip + "マス", "move", 0);
+						this._page.message.set("あと" + this._pip + "/" + this._total + "マス", "move", 0);
 						// 強制停止系のイベントタイルを確認する
 						if(this._srcList.length > 0 && bcvs.field.getHexFromIndex(x1, y1).type == 2){
 							this._pip = 0;

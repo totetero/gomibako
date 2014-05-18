@@ -86,7 +86,7 @@ class Bb3dDiceCharacter extends DataChara{
 			var dy = bcvs.field.calcHexCoordy(this.dstList[0][0], this.dstList[0][1]);
 			var x = dx - this.x;
 			var y = dy - this.y;
-			var speed = 3.0;
+			var speed = bcvs.skip ? 5.0 : 3.0;
 			if(x * x + y * y < speed * speed){
 				this.x = dx;
 				this.y = dy;
