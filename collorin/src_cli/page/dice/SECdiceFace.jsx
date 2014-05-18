@@ -49,13 +49,7 @@ class SECdiceFace implements SerialEventCartridge{
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(null);
-		if(this._chara1.side == "player" && this._chara0.side != "player"){
-			this._page.gauge.setLeft(this._chara1, 90);
-			this._page.gauge.setRight(this._chara0, 90);
-		}else{
-			this._page.gauge.setLeft(this._chara0, 90);
-			this._page.gauge.setRight(this._chara1, 90);
-		}
+		this._setGauge(0);
 		this._page.message.set("", "", 0);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
@@ -64,6 +58,18 @@ class SECdiceFace implements SerialEventCartridge{
 		var r = Math.atan2(this._chara1.y - this._chara0.y, this._chara1.x - this._chara0.x);
 		this._chara0.r = r;
 		this._chara1.r = r + Math.PI;
+	}
+
+	// ----------------------------------------------------------------
+	// ゲージ設定
+	function _setGauge(frame : int) : void{
+		if(this._chara1.side == "player" && this._chara0.side != "player"){
+			this._page.gauge.setLeft(this._chara1, frame);
+			this._page.gauge.setRight(this._chara0, frame);
+		}else{
+			this._page.gauge.setLeft(this._chara0, frame);
+			this._page.gauge.setRight(this._chara1, frame);
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -126,6 +132,7 @@ class SECdiceFace implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+		this._setGauge(90);
 	}
 }
 
