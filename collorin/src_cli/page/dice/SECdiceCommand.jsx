@@ -37,7 +37,7 @@ class SECdiceCommand implements SerialEventCartridge{
 
 		// ボタン作成
 		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
-		this._btnList["rchara"] = new PartsButton(Ctrl.screen.w - 50, 0, 50, 50, true);
+		this._btnList["rchara"] = new PartsButton(0, 0, 50, 50, true);
 	}
 
 	// ----------------------------------------------------------------
@@ -68,6 +68,7 @@ class SECdiceCommand implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
+		this._btnList["rchara"].x = Ctrl.screen.w - 50;
 		this._page.bcvs.calcButton(this._btnList);
 		this._page.gauge.lActive = this._btnList["lchara"].active;
 		this._page.gauge.rActive = this._btnList["rchara"].active;

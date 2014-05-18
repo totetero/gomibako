@@ -35,6 +35,11 @@ class CrossDiceGauge{
 	var _lFrame : int;
 	var _rFrame : int;
 
+	var _rhp : number;
+	var _rsp : number;
+	var _lhp : number;
+	var _lsp : number;
+
 	// ----------------------------------------------------------------
 	// 計算
 	function calc() : void{
@@ -56,36 +61,52 @@ class CrossDiceGauge{
 	// 描画
 	function draw() : void{
 		var lmx = -50 * Math.abs(this._lAction / CrossDiceGauge._actionMax);
-		var rmx = Ctrl.screen.w - 50 * (1 - Math.abs(this._rAction / CrossDiceGauge._actionMax));
+		var rmx = -50 * Math.abs(this._rAction / CrossDiceGauge._actionMax);
+
+		// 表示関数
+		var drawGauge = function(active : boolean, chara : DataChara, hp : number, sp : number) : void{
+			Ctrl.sctx.fillStyle = active ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)";
+			Ctrl.sctx.fillRect(0, 0, 50, 50);
+			Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + chara.code], 0, 0, 50, 50);
+			// ゲージ土台
+			Ctrl.sctx.fillStyle = "#ffffff";
+			Ctrl.sctx.fillRect(0, 55, 50, 10);
+			Ctrl.sctx.fillRect(0, 70, 50, 10);
+			Ctrl.sctx.fillStyle = "#cccccc";
+			Ctrl.sctx.fillRect(2, 57, 46, 6);
+			Ctrl.sctx.fillRect(2, 72, 46, 6);
+			// HPゲージ
+			Ctrl.sctx.fillStyle = "#ff6666";
+			Ctrl.sctx.fillRect(2, 57, Math.max(0, Math.min(1, (Math.max(chara.hp, hp) / chara.maxhp))) * 46, 6);
+			Ctrl.sctx.fillStyle = "#ff0000";
+			Ctrl.sctx.fillRect(2, 57, Math.max(0, Math.min(1, (Math.min(chara.hp, hp) / chara.maxhp))) * 46, 6);
+			// SPゲージ
+			Ctrl.sctx.fillStyle = "#6666ff";
+			Ctrl.sctx.fillRect(2, 72, Math.max(0, Math.min(1, (Math.max(chara.sp, sp) / chara.maxsp))) * 46, 6);
+			Ctrl.sctx.fillStyle = "#0000ff";
+			Ctrl.sctx.fillRect(2, 72, Math.max(0, Math.min(1, (Math.min(chara.sp, sp) / chara.maxsp))) * 46, 6);
+		};
 
 		// 左表示
 		if(this._currentLchara != null){
-			var chara = this._currentLchara;
-			Ctrl.sctx.fillStyle = this.lActive ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)";
-			Ctrl.sctx.fillRect(lmx, 0, 50, 50);
-			Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + chara.code], lmx, 0, 50, 50);
-			Ctrl.sctx.fillStyle = "#cccccc";
-			Ctrl.sctx.fillRect(lmx, 55, 50, 10);
-			Ctrl.sctx.fillRect(lmx, 70, 50, 10);
-			Ctrl.sctx.fillStyle = "red";
-			Ctrl.sctx.fillRect(lmx, 55, (chara.hp / chara.maxhp) * 50, 10);
-			Ctrl.sctx.fillStyle = "blue";
-			Ctrl.sctx.fillRect(lmx, 70, (chara.sp / chara.maxsp) * 50, 10);
+			Ctrl.sctx.save();
+			Ctrl.sctx.translate(lmx, 0);
+			drawGauge(this.lActive, this._currentLchara, this._lhp, this._lsp);
+			Ctrl.sctx.restore();
+			this._lhp -= (this._lhp - this._currentLchara.hp) * 0.1;
+			this._lsp -= (this._lsp - this._currentLchara.sp) * 0.1;
 		}
 
 		// 右表示
 		if(this._currentRchara != null){
-			var chara = this._currentRchara;
-			Ctrl.sctx.fillStyle = this.rActive ? "rgba(0, 0, 0, 0.5)" : "rgba(255, 255, 255, 0.5)";
-			Ctrl.sctx.fillRect(rmx, 0, 50, 50);
-			Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + chara.code], rmx, 0, 50, 50);
-			Ctrl.sctx.fillStyle = "#cccccc";
-			Ctrl.sctx.fillRect(rmx, 55, 50, 10);
-			Ctrl.sctx.fillRect(rmx, 70, 50, 10);
-			Ctrl.sctx.fillStyle = "red";
-			Ctrl.sctx.fillRect(rmx, 55, (chara.hp / chara.maxhp) * 50, 10);
-			Ctrl.sctx.fillStyle = "blue";
-			Ctrl.sctx.fillRect(rmx, 70, (chara.sp / chara.maxsp) * 50, 10);
+			Ctrl.sctx.save();
+			Ctrl.sctx.translate(Ctrl.screen.w - 50 - rmx + 25, 0);
+			Ctrl.sctx.scale(-1, 1);
+			Ctrl.sctx.translate(-25, 0);
+			drawGauge(this.rActive, this._currentRchara, this._rhp, this._rsp);
+			Ctrl.sctx.restore();
+			this._rhp -= (this._rhp - this._currentRchara.hp) * 0.1;
+			this._rsp -= (this._rsp - this._currentRchara.sp) * 0.1;
 		}
 	}
 
@@ -128,14 +149,22 @@ class CrossDiceGauge{
 	// 左切り替え
 	function _lToggle() : void{
 		if(!this._lShow){return;}
-		this._currentLchara = this.lChara;
+		if(this._currentLchara != this.lChara){
+			this._currentLchara = this.lChara;
+			this._lhp = this.lChara.hp;
+			this._lsp = this.lChara.sp;
+		}
 	}
 
 	// ----------------------------------------------------------------
 	// 右切り替え
 	function _rToggle() : void{
 		if(!this._rShow){return;}
-		this._currentRchara = this.rChara;
+		if(this._currentRchara != this.rChara){
+			this._currentRchara = this.rChara;
+			this._rhp = this.rChara.hp;
+			this._rsp = this.rChara.sp;
+		}
 	}
 }
 

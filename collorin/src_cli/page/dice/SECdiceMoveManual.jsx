@@ -42,7 +42,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 
 		// ボタン作成
 		this._btnList["lchara"] = new PartsButton(0, 0, 50, 50, true);
-		this._btnList["rchara"] = new PartsButton(Ctrl.screen.w - 50, 0, 50, 50, true);
+		this._btnList["rchara"] = new PartsButton(0, 0, 50, 50, true);
 	}
 
 	// ----------------------------------------------------------------
@@ -57,6 +57,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(null);
+		this._page.gauge.setLeft(this._player, -1);
 		this._page.message.set("あと" + this._pip + "マス", -1);
 		this._page.ctrler.setLctrl(true);
 		this._page.ctrler.setRctrl("", "一歩戻る", "マップ", "メニュー");
@@ -72,6 +73,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 	// 計算
 	override function calc() : boolean{
 		var bcvs = this._page.bcvs;
+		this._btnList["rchara"].x = Ctrl.screen.w - 50;
 		bcvs.calcButton(this._btnList);
 		this._page.gauge.lActive = this._btnList["lchara"].active;
 		this._page.gauge.rActive = this._btnList["rchara"].active;
