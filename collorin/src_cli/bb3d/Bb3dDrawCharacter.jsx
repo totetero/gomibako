@@ -24,8 +24,9 @@ import "Bb3dDrawUnit.jsx";
 // キャラクタークラス
 class Bb3dDrawCharacter extends Bb3dDrawUnit{
 	var _duList = new Bb3dDrawUnit[];
-	var _parts = {} : Map.<Bb3dDrawCharacterParts[]>;
 	var _pose : Map.<Map.<number[]>[]>;
+	var _parts = {} : Map.<Bb3dDrawCharacterParts[]>;
+	var _weapon : Bb3dDrawCharacterWeapon;
 	var _scale : number;
 
 	// パーツ描画用変数
@@ -76,6 +77,10 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 				this._duList.push(this._parts[i][j]);
 			}
 		}
+
+		// 武器の登録
+		this._weapon = new Bb3dDrawCharacterWeapon(this);
+		this._duList.push(this._weapon);
 	}
 
 	// ----------------------------------------------------------------
@@ -121,8 +126,9 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 		// 姿勢の解釈
 		var pose = this._pose[motion][action];
 		for(var i in pose){
-			if(i == "weapon"){
+			if(i.indexOf("weapon_") == 0){
 				// 特殊パーツ 武器
+				this._weapon.preDraw(bcvs, i, pose[i]);
 			}else{
 				// 体のパーツ
 				for(var j in this._parts[i]){
@@ -154,6 +160,10 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 		//Ctrl.gctx.beginPath(); for(var i = 0; i <= 20; i++){Ctrl.gctx.lineTo(((this.maxx + this.minx) + (this.maxx - this.minx) * Math.cos(Math.PI * (i / 10))) * 0.5, ((this.maxy + this.miny) + (this.maxy - this.miny) * Math.sin(Math.PI * (i / 10))) * 0.5);} Ctrl.gctx.stroke();
 	}
 }
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
 
 // 体のパーツクラス
 class Bb3dDrawCharacterParts extends Bb3dDrawUnit{
@@ -275,6 +285,116 @@ class Bb3dDrawCharacterParts extends Bb3dDrawUnit{
 				Ctrl.gctx.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
 			}
 		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// 武器とその軌跡クラス
+class Bb3dDrawCharacterWeapon extends Bb3dDrawUnit{
+	static var drawed : Map.<HTMLCanvasElement> = {} : Map.<HTMLCanvasElement>;
+
+	var _character : Bb3dDrawCharacter;
+	var _canvas : HTMLCanvasElement = null;
+
+	var _drr : number;
+	var _action : int;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(character : Bb3dDrawCharacter){
+		this._character = character;
+	}
+
+	// ----------------------------------------------------------------
+	// 描画準備
+	function preDraw(bcvs : Bb3dCanvas, code : string, pose : number[]) : void{
+		if(Bb3dDrawCharacterWeapon.drawed[code] == null){
+			// 武器画像作成
+			var canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
+			var context = canvas.getContext("2d") as CanvasRenderingContext2D;
+			switch(code){
+				case "weapon_whiteSword": case "weapon_redSword":
+					// ステップ毎の軌跡開始角度と終了角度
+					var rslist = [-45 * Math.PI / 180, -45 * Math.PI / 180, -45 * Math.PI / 180, 45 * Math.PI / 180];
+					var rglist = [-45 * Math.PI / 180, -20 * Math.PI / 180,  45 * Math.PI / 180, 45 * Math.PI / 180];
+					canvas.height = 96;
+					canvas.width = canvas.height * rslist.length;
+					// 剣の長さ
+					var len0 = 20;
+					var len1 = 66;
+					// 剣と軌跡の色と太さ
+					switch(code){
+						case "weapon_whiteSword":
+							context.strokeStyle = "#fff";
+							context.fillStyle = "rgba(255, 255, 255 , 0.5)";
+							context.lineWidth = 6;
+							break;
+						case "weapon_redSword":
+							context.strokeStyle = "#f00";
+							context.fillStyle = "rgba(255, 0, 0 , 0.5)";
+							context.lineWidth = 6;
+							break;
+					}
+					// 剣と軌跡描画
+					for(var i = 0; i < rslist.length; i++){
+						var x = canvas.height * i;
+						var y = canvas.height * 0.5;
+						var c = Math.cos(rglist[i]);
+						var s = Math.sin(rglist[i]);
+						// 剣の軌跡
+						context.beginPath();
+						context.arc(x, y, len0, rslist[i], rglist[i], false);
+						context.arc(x, y, len1, rglist[i], rslist[i], true);
+						context.fill();
+						// 剣の形
+						context.beginPath();	
+						context.moveTo(x + len0 * c, y + len0 * s);
+						context.lineTo(x + len1 * c, y + len1 * s);
+						context.stroke();
+					}
+					// 武器画像作成完了
+					this._canvas = Bb3dDrawCharacterWeapon.drawed[code] = canvas;
+					//log canvas.toDataURL("image/png");
+					break;
+				default:
+					// サーバからもらった画像も使うかも
+					return;
+			}
+		}else{
+			// 同じ画像を既に作っていれば使い回す
+			this._canvas = Bb3dDrawCharacterWeapon.drawed[code];
+		}
+
+		this.visible = true;
+		this._action = Math.round(pose[0]);
+
+		// パーツローカル角度の確認
+		this._drr = this._character.drRotv + Math.PI * pose[4] / 180;
+
+		// ボディローカル座標
+		var x1 = pose[1];
+		var y1 = pose[2];
+		var z1 = pose[3];
+		// グローバル座標
+		this._character.preDrawParts(bcvs, this, x1, y1, z1);
+	}
+
+	// ----------------------------------------------------------------
+	// 描画
+	override function draw(bcvs : Bb3dCanvas) : void{
+		var ps = this._canvas.height * 0.5 * this._character.drScale;
+		var px = this.drx + bcvs.x + bcvs.w * 0.5;
+		var py = this.dry + bcvs.y + bcvs.h * 0.5;
+		Ctrl.gctx.save();
+		Ctrl.gctx.translate(px, py);
+		Ctrl.gctx.scale(1, bcvs.sinh);
+		Ctrl.gctx.rotate(this._drr);
+		Ctrl.gctx.translate(ps * -0.5, ps * -0.5);
+		Ctrl.gctx.drawImage(this._canvas, this._canvas.height * this._action, 0, this._canvas.height, this._canvas.height, 0, 0, ps, ps);
+		Ctrl.gctx.restore();
 	}
 }
 
