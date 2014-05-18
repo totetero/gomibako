@@ -33,7 +33,6 @@ class CrossCtrler{
 	var _nextXlavel : string;
 	var _nextClavel : string;
 	var _nextSlavel : string;
-	var _skip : boolean;
 	var _lShow : boolean;
 	var _rShow : boolean;
 	var _lAction = CrossCtrler._lActionMax;
@@ -68,21 +67,8 @@ class CrossCtrler{
 		if(this._rAction > 0 || (0 > this._rAction && this._rShow)){this._rAction++;}
 		if(this._lAction > CrossCtrler._lActionMax){this._lAction = -CrossCtrler._lActionMax;}
 		if(this._rAction > CrossCtrler._rActionMax){this._rAction = -CrossCtrler._rActionMax;}
-		if(this._lAction == -CrossCtrler._lActionMax){
-			if(this._skip && this._lShow){this._lAction = 0;}
-			Ctrl.arrowBox = this._lShow ? this._arrowBox : null;
-		}
-		if(this._rAction == -CrossCtrler._rActionMax){
-			if(this._skip && this._rShow){this._rAction = 0;}
-			Ctrl.zBox = (this._rShow && this._nextZlavel != "") ? this._zBox : null;
-			Ctrl.xBox = (this._rShow && this._nextXlavel != "") ? this._xBox : null;
-			Ctrl.cBox = (this._rShow && this._nextClavel != "") ? this._cBox : null;
-			Ctrl.sBox = (this._rShow && this._nextSlavel != "") ? this._sBox : null;
-			this._currentZlabelCvs = null;
-			this._currentXlabelCvs = null;
-			this._currentClabelCvs = null;
-			this._currentSlabelCvs = null;
-		}
+		if(this._lAction == -CrossCtrler._lActionMax){this._lToggle();}
+		if(this._rAction == -CrossCtrler._rActionMax){this._rToggle();}
 
 		// 十字キー更新確認
 		if(tempLaction != this._lAction){Ctrl.update_lctx = true;}
@@ -157,8 +143,10 @@ class CrossCtrler{
 		}
 
 		// 演出スキップ確認
-		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
-		if(this._skip){this._lAction = CrossCtrler._lActionMax; Ctrl.update_lctx = true;}
+		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+			this._lAction = this._lShow ? 0 : CrossCtrler._lActionMax;
+			this._lToggle();
+		}
 	}
 
 	// ----------------------------------------------------------------
@@ -184,8 +172,42 @@ class CrossCtrler{
 		this._nextSlavel = sLabel;
 
 		// 演出スキップ確認
-		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
-		if(this._skip){this._rAction = CrossCtrler._rActionMax; Ctrl.update_rctx = true;}
+		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+			this._rAction = this._rShow ? 0 : CrossCtrler._rActionMax;
+			this._rToggle();
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 左切り替え
+	function _lToggle() : void{
+		if(this._lShow){
+			Ctrl.arrowBox = this._arrowBox;
+			Ctrl.update_lctx = true;
+		}else{
+			Ctrl.arrowBox = null;
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 右切り替え
+	function _rToggle() : void{
+		if(this._rShow){
+			Ctrl.zBox = (this._nextZlavel != "") ? this._zBox : null;
+			Ctrl.xBox = (this._nextXlavel != "") ? this._xBox : null;
+			Ctrl.cBox = (this._nextClavel != "") ? this._cBox : null;
+			Ctrl.sBox = (this._nextSlavel != "") ? this._sBox : null;
+			this._currentZlabelCvs = null;
+			this._currentXlabelCvs = null;
+			this._currentClabelCvs = null;
+			this._currentSlabelCvs = null;
+			Ctrl.update_rctx = true;
+		}else{
+			Ctrl.zBox = null;
+			Ctrl.xBox = null;
+			Ctrl.cBox = null;
+			Ctrl.sBox = null;
+		}
 	}
 }
 

@@ -23,26 +23,22 @@ class SECdicePopupMenu extends SECpopup{
 	var _page : PageDice;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
-	var _px : int;
-	var _pw : int;
-	var _ph : int;
+	var _pw = 300;
+	var _ph = 220;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : PageDice, cartridge : SerialEventCartridge){
 		super(cartridge);
 		this._page = page;
-		this._px = 10;
-		this._pw = 300;
-		this._ph = 220;
 
 		// ラベル作成
-		this._labList["name"] = new PartsLabel("メニュー", this._px, 10, this._pw, 30);
+		this._labList["name"] = new PartsLabel("メニュー", 0, 10, this._pw, 30);
 
 		// ボタン作成
-		this._btnList["back"] = new PartsButtonBasic("戻る", this._px + 10, 40, 100, 30);
-		this._btnList["outer"] = new PartsButton(this._px, 0, this._pw, this._ph, false);
-		this._btnList["close"] = new PartsButtonBasic("閉じる", this._px + this._pw - 100 - 10, this._ph - 30 - 10, 100, 30);
+		this._btnList["back"] = new PartsButtonBasic("戻る", 10, 40, 100, 30);
+		this._btnList["outer"] = new PartsButton(0, 0, this._pw, this._ph, false);
+		this._btnList["close"] = new PartsButtonBasic("閉じる", this._pw - 100 - 10, this._ph - 30 - 10, 100, 30);
 		this._btnList["close"].sKey = true;
 	}
 
@@ -84,12 +80,13 @@ class SECdicePopupMenu extends SECpopup{
 		// 親カートリッジ描画後に上書き
 
 		// ウインドウサイズに対する位置調整
+		var px = (Ctrl.screen.w - this._pw) * 0.5;
 		var py = (Ctrl.screen.h - this._ph) * 0.5;
-		for(var name in this._labList){this._labList[name].y = this._labList[name].basey + py;}
-		for(var name in this._btnList){this._btnList[name].y = this._btnList[name].basey + py;}
+		for(var name in this._labList){var lab = this._labList[name]; lab.x = lab.basex + px; lab.y = lab.basey + py;}
+		for(var name in this._btnList){var btn = this._btnList[name]; btn.x = btn.basex + px; btn.y = btn.basey + py;}
 
 		// 枠描画
-		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], this._px, py, this._pw, this._ph);
+		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], px, py, this._pw, this._ph);
 
 		// ラベル描画
 		for(var name in this._labList){this._labList[name].draw();}

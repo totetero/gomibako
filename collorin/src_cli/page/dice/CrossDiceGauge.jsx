@@ -28,7 +28,8 @@ class CrossDiceGauge{
 
 	var _currentLchara : DataChara;
 	var _currentRchara : DataChara;
-	var _skip : boolean;
+	var _lShow : boolean;
+	var _rShow : boolean;
 	var _lAction = CrossDiceGauge._actionMax;
 	var _rAction = CrossDiceGauge._actionMax;
 	var _lFrame : int;
@@ -41,14 +42,14 @@ class CrossDiceGauge{
 		this.rActive = false;
 
 		// 展開処理
-		if(this._lAction > 0 || (0 > this._lAction && this.lChara != null)){this._lAction++;}
-		if(this._rAction > 0 || (0 > this._rAction && this.rChara != null)){this._rAction++;}
-		if(this._lAction == 0 && this._lFrame > 0 && --this._lFrame == 0){this.lChara = null; this._lAction = this._skip ? -CrossDiceGauge._actionMax : 1;}
-		if(this._rAction == 0 && this._rFrame > 0 && --this._rFrame == 0){this.rChara = null; this._rAction = this._skip ? -CrossDiceGauge._actionMax : 1;}
+		if(this._lAction > 0 || (0 > this._lAction && this._lShow)){this._lAction++;}
+		if(this._rAction > 0 || (0 > this._rAction && this._rShow)){this._rAction++;}
+		if(this._lAction == 0 && this._lFrame > 0 && --this._lFrame == 0){this.setLeft(null, 0);}
+		if(this._rAction == 0 && this._rFrame > 0 && --this._rFrame == 0){this.setRight(null, 0);}
 		if(this._lAction > CrossDiceGauge._actionMax){this._lAction = -CrossDiceGauge._actionMax;}
 		if(this._rAction > CrossDiceGauge._actionMax){this._rAction = -CrossDiceGauge._actionMax;}
-		if(this._lAction == -CrossDiceGauge._actionMax && this.lChara != null){this._currentLchara = this.lChara;}
-		if(this._rAction == -CrossDiceGauge._actionMax && this.rChara != null){this._currentRchara = this.rChara;}
+		if(this._lAction == -CrossDiceGauge._actionMax){this._lToggle();}
+		if(this._rAction == -CrossDiceGauge._actionMax){this._rToggle();}
 	}
 
 	// ----------------------------------------------------------------
@@ -95,13 +96,13 @@ class CrossDiceGauge{
 			this.lChara = chara;
 			this._lAction = (this._lAction == 0) ? 1 : Math.abs(this._lAction);
 		}
+		this._lShow = (this.lChara != null);
 		this._lFrame = frame;
 
 		// 演出スキップ確認
-		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
-		if(this._skip){
-			this._lAction = (this.lChara != null) ? 0 : -CrossDiceGauge._actionMax;
-			this._currentLchara = this.lChara;
+		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+			this._lAction = this._lShow ? 0 : CrossDiceGauge._actionMax;
+			this._lToggle();
 		}
 	}
 
@@ -113,14 +114,28 @@ class CrossDiceGauge{
 			this.rChara = chara;
 			this._rAction = (this._rAction == 0) ? 1 : Math.abs(this._rAction);
 		}
+		this._rShow = (this.rChara != null);
 		this._rFrame = frame;
 
 		// 演出スキップ確認
-		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
-		if(this._skip){
-			this._rAction = (this.rChara != null) ? 0 : -CrossDiceGauge._actionMax;
-			this._currentLchara = this.rChara;
+		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+			this._rAction = this._rShow ? 0 : CrossDiceGauge._actionMax;
+			this._rToggle();
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 左切り替え
+	function _lToggle() : void{
+		if(!this._lShow){return;}
+		this._currentLchara = this.lChara;
+	}
+
+	// ----------------------------------------------------------------
+	// 右切り替え
+	function _rToggle() : void{
+		if(!this._rShow){return;}
+		this._currentRchara = this.rChara;
 	}
 }
 

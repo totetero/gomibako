@@ -23,7 +23,7 @@ class CrossBust{
 
 	var _currentChara : DataChara;
 	var _nextChara : DataChara;
-	var _skip : boolean;
+	var _show : boolean;
 	var _action = CrossBust._actionMax;
 
 	// ----------------------------------------------------------------
@@ -32,9 +32,9 @@ class CrossBust{
 		var tempAction = this._action;
 
 		// 展開処理
-		if(this._action > 0 || (0 > this._action && this._nextChara != null)){this._action++;}
+		if(this._action > 0 || (0 > this._action && this._show)){this._action++;}
 		if(this._action > CrossBust._actionMax){this._action = -CrossBust._actionMax;}
-		if(this._action == -CrossBust._actionMax && this._nextChara != null){if(this._skip){this._action = 0;} this._currentChara = this._nextChara;}
+		if(this._action == -CrossBust._actionMax){this._toggle();}
 
 		if(tempAction != this._action){Ctrl.update_lctx = true;}
 	}
@@ -56,10 +56,21 @@ class CrossBust{
 			this._nextChara = nextChara;
 			this._action = (this._action == 0) ? 1 : Math.abs(this._action);
 		}
+		this._show = (this._nextChara != null);
 
 		// 演出スキップ確認
-		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
-		if(this._skip){this._action = CrossBust._actionMax; Ctrl.update_lctx = true;}
+		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+			this._action = this._show ? 0 : CrossBust._actionMax;
+			this._toggle();
+		}
+	}
+
+	// ----------------------------------------------------------------
+	// 切り替え
+	function _toggle() : void{
+		if(!this._show){return;}
+		this._currentChara = this._nextChara;
+		Ctrl.update_lctx = true;
 	}
 }
 

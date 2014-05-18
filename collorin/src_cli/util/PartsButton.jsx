@@ -110,7 +110,7 @@ class PartsButtonBasic extends PartsButton{
 		this.label.setColor(isInactive ? "gray" : "black");
 		this.label.x = this.x;
 		this.label.y = this.y + (this.active ? 2 : 0);
-		this.label.w = this.w ;
+		this.label.w = this.w;
 		this.label.h = this.h - 2;
 		this.label.draw();
 	}

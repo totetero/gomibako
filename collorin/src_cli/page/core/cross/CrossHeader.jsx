@@ -28,7 +28,6 @@ class CrossHeader{
 	var _currentType : string;
 	var _nextText : string;
 	var _nextType : string;
-	var _skip : boolean;
 	var _show : boolean;
 	var _hAction = CrossHeader._actionMax;
 	var _lAction = CrossHeader._actionMax;
@@ -54,9 +53,8 @@ class CrossHeader{
 		if(this._hAction > CrossHeader._actionMax){this._hAction = -CrossHeader._actionMax;}
 		if(this._lAction > CrossHeader._actionMax){this._lAction = -CrossHeader._actionMax;}
 		if(this._rAction > CrossHeader._actionMax){this._rAction = -CrossHeader._actionMax;}
-		if(this._hAction == -CrossHeader._actionMax && this._show){if(this._skip){this._hAction = 0;} this._currentTextCvs = null;}
-		if(this._lAction == -CrossHeader._actionMax && this._show){if(this._skip){this._lAction = 0;} this._currentType = "";}
-		if(this._rAction == -CrossHeader._actionMax && this._show){if(this._skip){this._rAction = 0;}}
+		if(this._hAction == -CrossHeader._actionMax){this._hToggle();}
+		if(this._lAction == -CrossHeader._actionMax){this._lToggle();}
 	}
 
 	// ----------------------------------------------------------------
@@ -123,11 +121,12 @@ class CrossHeader{
 		}
 
 		// 演出スキップ確認
-		this._skip = (dom.window.localStorage.getItem("setting_transition") == "off");
-		if(this._skip){
-			this._hAction = CrossHeader._actionMax;
-			this._lAction = CrossHeader._actionMax;
-			this._rAction = CrossHeader._actionMax;
+		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+			this._hAction = this._show ? 0 : CrossHeader._actionMax;
+			this._lAction = this._show ? 0 : CrossHeader._actionMax;
+			this._rAction = this._show ? 0 : CrossHeader._actionMax;
+			this._hToggle();
+			this._lToggle();
 		}
 	}
 
@@ -143,6 +142,20 @@ class CrossHeader{
 			this.lbtn.inactive = true;
 			this.rbtn.inactive = true;
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// ヘッダ切り替え
+	function _hToggle() : void{
+		if(!this._show){return;}
+		this._currentTextCvs = null;
+	}
+
+	// ----------------------------------------------------------------
+	// 左ボタン切り替え
+	function _lToggle() : void{
+		if(!this._show){return;}
+		this._currentType = "";
 	}
 }
 
