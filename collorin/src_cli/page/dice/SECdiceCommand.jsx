@@ -52,7 +52,7 @@ class SECdiceCommand implements SerialEventCartridge{
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(this._player);
-		this._page.gauge.setLeft(this._player, -1);
+		this._page.gauge.setLeft(this._player, 0);
 		this._page.message.set("", "", 0);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("さいころ", "スキル", "マップ", "メニュー");

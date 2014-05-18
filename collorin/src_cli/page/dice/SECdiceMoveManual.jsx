@@ -57,7 +57,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(null);
-		this._page.gauge.setLeft(this._player, -1);
+		this._page.gauge.setLeft(this._player, 0);
 		this._page.message.set("あと" + this._pip + "マス", "move", 0);
 		this._page.ctrler.setLctrl(true);
 		this._page.ctrler.setRctrl("", "一歩戻る", "マップ", "メニュー");
