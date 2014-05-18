@@ -64,7 +64,7 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(null);
-		this._page.message.set(this._message, -1);
+		this._page.message.set(this._message, "", 0);
 		this._page.ctrler.setLctrl(this._player != null);
 		this._page.ctrler.setRctrl("なげる", "", "", "もどる");
 		// トリガーリセット
@@ -236,7 +236,7 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 		this._page.bcvs.isTapHex = false;
 		// クロス設定
 		this._page.bust.set(null);
-		this._page.message.set("", -1);
+		this._page.message.set("", "", 0);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
 

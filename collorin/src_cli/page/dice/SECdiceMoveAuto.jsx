@@ -45,7 +45,7 @@ class SECdiceMoveAuto implements SerialEventCartridge{
 		// クロス設定
 		this._page.bust.set(null);
 		this._page.gauge.setLeft(this._chara, -1);
-		this._page.message.set("", -1);
+		this._page.message.set("", "", 0);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "スキップ");
 		// トリガーリセット

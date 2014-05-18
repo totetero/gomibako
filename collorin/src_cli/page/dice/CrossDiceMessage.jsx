@@ -21,6 +21,7 @@ class CrossDiceMessage{
 
 	var _label : PartsLabel;
 	var _nextText : string;
+	var _code : string;
 	var _show : boolean;
 	var _action = CrossDiceMessage._actionMax;
 	var _frame : int;
@@ -36,7 +37,7 @@ class CrossDiceMessage{
 	function calc() : void{
 		// 展開処理
 		if(this._action > 0 || (0 > this._action && this._show)){this._action++;}
-		if(this._action == 0 && this._frame > 0 && --this._frame == 0){this.set("", 0);}
+		if(this._action == 0 && this._frame > 0 && --this._frame == 0){this.set("", "", 0);}
 		if(this._action > CrossDiceMessage._actionMax){this._action = -CrossDiceMessage._actionMax;}
 		if(this._action == -CrossDiceMessage._actionMax){this._toggle();}
 	}
@@ -48,10 +49,10 @@ class CrossDiceMessage{
 		var my = 50 * Math.abs(this._action / CrossDiceMessage._actionMax);
 		if(my >= 50){return;}
 
-		var x = 5;
-		var y = 5 - my;
-		var w = Ctrl.screen.w - 10;
+		var w = 310;
 		var h = 30;
+		var x = (Ctrl.screen.w - w) * 0.5;
+		var y = 5 - my;
 		// 箱描画
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], x, y, w, h);
 		// 文字列描画
@@ -64,7 +65,7 @@ class CrossDiceMessage{
 
 	// ----------------------------------------------------------------
 	// 表示設定
-	function set(text : string, frame : int) : void{
+	function set(text : string, code : string, frame : int) : void{
 		if(this._nextText != text){
 			this._nextText = text;
 			this._action = (this._action == 0) ? 1 : Math.abs(this._action);
@@ -73,10 +74,13 @@ class CrossDiceMessage{
 		this._frame = frame;
 
 		// 演出スキップ確認
-		if(dom.window.localStorage.getItem("setting_transition") == "off"){
+		var codeSkip = (code != "" && this._code == code);
+		var settingSkip = dom.window.localStorage.getItem("setting_transition") == "off";
+		if(codeSkip || settingSkip){
 			this._action = this._show ? 0 : CrossDiceMessage._actionMax;
 			this._toggle();
 		}
+		this._code = code;
 	}
 
 	// ----------------------------------------------------------------

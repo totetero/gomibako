@@ -58,7 +58,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		// クロス設定
 		this._page.bust.set(null);
 		this._page.gauge.setLeft(this._player, -1);
-		this._page.message.set("あと" + this._pip + "マス", -1);
+		this._page.message.set("あと" + this._pip + "マス", "move", 0);
 		this._page.ctrler.setLctrl(true);
 		this._page.ctrler.setRctrl("", "一歩戻る", "マップ", "メニュー");
 		// トリガーリセット
@@ -128,7 +128,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 			if(this._srcList.length > 0){
 				this._pip++;
 				this._player.dstList.unshift(this._srcList.shift());
-				this._page.message.set("あと" + this._pip + "マス", -1);
+				this._page.message.set("あと" + this._pip + "マス", "move", 0);
 			}
 		}else if(this._pip > 0){
 			// ヘックス目的地の十字キー指定
@@ -222,7 +222,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 							this._dstList.push([x1, y1] : int[]);
 						}
 						this._player.motion = "walk";
-						this._page.message.set("あと" + this._pip + "マス", -1);
+						this._page.message.set("あと" + this._pip + "マス", "move", 0);
 						// 強制停止系のイベントタイルを確認する
 						if(this._srcList.length > 0 && bcvs.field.getHexFromIndex(x1, y1).type == 2){
 							this._pip = 0;
@@ -241,7 +241,7 @@ class SECdiceMoveManual implements SerialEventCartridge{
 		// 通信を行う
 		if(request != null){
 			// クロス設定
-			this._page.message.set("", -1);
+			this._page.message.set("", "", 0);
 			this._page.ctrler.setLctrl(false);
 			this._page.ctrler.setRctrl("", "", "", "");
 			// 通信開始

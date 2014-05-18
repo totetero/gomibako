@@ -55,7 +55,7 @@ class SECdiceFace implements SerialEventCartridge{
 			this._page.gauge.setLeft(this._chara0, 90);
 			this._page.gauge.setRight(this._chara1, 90);
 		}
-		this._page.message.set("", -1);
+		this._page.message.set("", "", 0);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
 
