@@ -15,6 +15,7 @@ import "../../bb3d/Bb3dCanvas.jsx";
 import "../../bb3d/Bb3dDice.jsx";
 import "../../bb3d/Bb3dDrawUnit.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
+import "../../bb3d/Bb3dDrawEffect.jsx";
 import "Bb3dDiceField.jsx";
 import "Bb3dDiceCharacter.jsx";
 
@@ -27,6 +28,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	var field : Bb3dDiceField;
 	var member = {} : Map.<Bb3dDiceCharacter>;
 	var dices = new Bb3dDice[];
+	var effect = new Bb3dDrawEffect[];
 	var clist = new Bb3dDrawUnit[];
 	var slist = new Bb3dDrawUnit[];
 
@@ -104,6 +106,12 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 			if(!this.member[id].exist){delete this.member[id];}
 		}
 
+		// エフェクト計算
+		for(var i = 0; i < this.effect.length; i++){
+			this.effect[i].calc();
+			if(!this.effect[i].exist){this.effect.splice(i--, 1);}
+		}
+
 		// カメラ位置を中心キャラクター位置にもってくる
 		if(!this.isMapMode && this.cameraCenter != null && this.cameraCenter.length > 0){
 			var cx = 0;
@@ -143,6 +151,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	// 描画
 	function draw() : void{
 		for(var id in this.member){this.member[id].preDraw(this);}
+		for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
 
 		// キャラクタータップ色設定
 		if(this._maskColor == ""){
@@ -205,6 +214,13 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		for(var id in this.member){
 			this.member[id].setColor(color);
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// エフェクト追加
+	function pushEffect(effect : Bb3dDrawEffect) : void{
+		this.effect.push(effect);
+		this.clist.push(effect);
 	}
 }
 

@@ -11,6 +11,7 @@ import "../../util/PartsButton.jsx";
 import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
+import "../../bb3d/Bb3dDrawEffect.jsx";
 import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
 
@@ -83,12 +84,11 @@ class SECdiceFace implements SerialEventCartridge{
 				if(this._action == 0){
 					// テスト
 					this._chara1.hp -= this._value;
-//					ccvs.pushEffect(new DrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
-//					this._setGauge(-1);
-//					// エフェクト
-//					for(var i = 0; i < 3; i++){
-//						ccvs.pushEffect(new DrawEffectHopImage(this._chara1.x, this._chara1.y));
-//					}
+					this._page.bcvs.pushEffect(new Bb3dDrawEffectHopNumber(this._value as string, this._chara1.x, this._chara1.y));
+					// エフェクト
+					for(var i = 0; i < 3; i++){
+						this._page.bcvs.pushEffect(new Bb3dDrawEffectHopImage(this._chara1.x, this._chara1.y));
+					}
 				}
 				this._chara0.motion = "attack2";
 				this._chara0.action = this._action;
