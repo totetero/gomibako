@@ -13,6 +13,7 @@ import "../core/Page.jsx";
 
 import "../core/popup/SECpopup.jsx";
 import "PageDice.jsx";
+import "SECdicePopupMenuSetting.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -23,8 +24,8 @@ class SECdicePopupMenu extends SECpopup{
 	var _page : PageDice;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
-	var _pw = 300;
-	var _ph = 220;
+	var _pw = 240;
+	var _ph = 200;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -33,12 +34,14 @@ class SECdicePopupMenu extends SECpopup{
 		this._page = page;
 
 		// ラベル作成
-		this._labList["name"] = new PartsLabel("メニュー", 0, 0, this._pw, 40);
+		this._labList["title"] = new PartsLabel("メニュー", 0, 0, this._pw, 40);
+		this._labList["info"] = new PartsLabel("クエスト情報とかものせる", 0, 40, this._pw, 40);
 
 		// ボタン作成
-		this._btnList["back"] = new PartsButtonBasic("戻る", 10, 40, 100, 30);
+		this._btnList["setting"] = new PartsButtonBasic("設定", (this._pw - 100) * 0.5, 80, 100, 30);
+		this._btnList["back"] = new PartsButtonBasic("退出", (this._pw - 100) * 0.5, 120, 100, 30);
 		this._btnList["outer"] = new PartsButton(0, 0, this._pw, this._ph, false);
-		this._btnList["close"] = new PartsButtonBasic("閉じる", this._pw - 100 - 10, this._ph - 30 - 10, 100, 30);
+		this._btnList["close"] = new PartsButtonBasic("閉じる", (this._pw - 80) * 0.5, this._ph - 30 - 10, 80, 30);
 		this._btnList["close"].sKey = true;
 	}
 
@@ -59,6 +62,13 @@ class SECdicePopupMenu extends SECpopup{
 	// 計算
 	override function popupCalc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		// 設定ボタン
+		if(this._btnList["setting"].trigger){
+			Sound.playSE("ok");
+			this._page.serialPush(new SECdicePopupMenuSetting(this._page, this.parentCartridge));
+			return false;
+		}
 
 		// 中断ボタン
 		if(this._btnList["back"].trigger){

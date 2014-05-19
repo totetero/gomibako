@@ -63,7 +63,7 @@ class SECsettingMain implements SerialEventCartridge{
 		this._scroller.labList["quality"].setAlign("right");
 
 		this._scroller.btnList["transition"] = this._transitionPicker.createButton(0, 0, 120);
-		this._scroller.labList["transition"] = new PartsLabel("ページ遷移演出", 0, 0, 130, 38);
+		this._scroller.labList["transition"] = new PartsLabel("遷移演出", 0, 0, 130, 38);
 		this._scroller.labList["transition"].setAlign("right");
 
 		this._scroller.btnList["bgm"] = this._bgmPicker.createButton(0, 0, 120);

@@ -17,12 +17,12 @@ import "../core/popup/SECpopupPicker.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// ページ遷移演出のピッカー
+// 遷移演出のピッカー
 class SECsettingPopupPickerTransition extends SECpopupPicker{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : Page, cartridge : SerialEventCartridge){
-		super(page, cartridge, "ページ遷移演出", [
+		super(page, cartridge, "遷移演出", [
 			new SECpopupPickerItem("on", "ON"),
 			new SECpopupPickerItem("off", "OFF")
 		]);
