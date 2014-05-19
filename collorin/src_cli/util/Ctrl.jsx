@@ -255,6 +255,11 @@ class Ctrl{
 			Ctrl.setCanvas();
 		}
 
+		if(Ctrl.arrowBox == null){Ctrl._tkup = Ctrl._tkdn = Ctrl._tkrt = Ctrl._tklt = false;}
+		if(Ctrl.zBox == null){Ctrl._tk_z = false;}
+		if(Ctrl.xBox == null){Ctrl._tk_x = false;}
+		if(Ctrl.cBox == null){Ctrl._tk_c = false;}
+		if(Ctrl.sBox == null){Ctrl._tk_s = false;}
 		Ctrl.kup = Ctrl._tkup || Ctrl._kkup;
 		Ctrl.kdn = Ctrl._tkdn || Ctrl._kkdn;
 		Ctrl.krt = Ctrl._tkrt || Ctrl._kkrt;
