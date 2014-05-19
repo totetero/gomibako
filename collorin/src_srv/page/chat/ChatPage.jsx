@@ -51,10 +51,10 @@ class ChatPage{
 		// -------- expressページ --------
 		app.post("/chat", function(req : ExRequest, res : ExResponse, next : function():void) : void{
 			var jdat = {} : Map.<variant>;
-			var imgs = {} : Map.<string>;
+			var cont = {} : Map.<string>;
 
 			// フィールド情報
-			imgs["img_grid"] = "/img/gridField/test.png";
+			cont["img_grid"] = "/img/gridField/test.png";
 			jdat["grid"] = [
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -73,6 +73,10 @@ class ChatPage{
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 				[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 			];
+
+			// 背景画像
+			jdat["background"] = "test";
+			cont["img_background_test"] = "/img/background/test.png";
 
 			var codeList = [
 				"player0",
@@ -97,7 +101,7 @@ class ChatPage{
 
 			// ユーザー情報の設定
 			ChatPage._setUinfo(req.session.passport["user"] as string, uinfo, function(){
-				jdat["imgs"] = ContentsServer.convertAddress(imgs);
+				jdat["contents"] = ContentsServer.convertAddress(cont);
 				res.setHeader("Content-Type", "application/json");
 				res.setHeader("cache-control", "no-cache");
 				res.send(JSON.stringify(jdat));
@@ -112,8 +116,8 @@ class ChatPage{
 			client.on("entry", function() : void{
 				var newData : variant = null;
 				var allData = new variant[];
-				var newImgs = {} : Map.<string>;
-				var allImgs = {} : Map.<string>;
+				var newCont = {} : Map.<string>;
+				var allCont = {} : Map.<string>;
 				var step = {} : Map.<function():void>;
 				step["start"] = function() : void{step["getuinfo"]();};
 				// ユーザー情報の確認
@@ -139,16 +143,16 @@ class ChatPage{
 								tmpdata["size"] = 1.2;
 								delete tmpdata["room"];
 								// 画像情報の確認
-								var tmpimgs = {} : Map.<string>;
+								var tmpCont = {} : Map.<string>;
 								var code = tmpdata["code"] as string;
-								tmpimgs["img_chara_dot_" + code] = "/img/character/" + code + "/dot.png";
-								tmpimgs["css_chara_bust_" + code] = "/img/character/" + code + "/bust.png";
+								tmpCont["img_chara_dot_" + code] = "/img/character/" + code + "/dot.png";
+								tmpCont["css_chara_bust_" + code] = "/img/character/" + code + "/bust.png";
 								// 情報の一時保存
 								allData.push(tmpdata);
-								for(var tag in tmpimgs){allImgs[tag] = tmpimgs[tag];}
+								for(var tag in tmpCont){allCont[tag] = tmpCont[tag];}
 								if(uinfo.uid == tmpdata["uid"]){
 									newData = tmpdata;
-									for(var tag in tmpimgs){newImgs[tag] = tmpimgs[tag];}
+									for(var tag in tmpCont){newCont[tag] = tmpCont[tag];}
 								}
 								if(--count == 0){step["send"]();}
 							});
@@ -158,8 +162,8 @@ class ChatPage{
 				// データの送信
 				step["send"] = function() : void{
 					client.join(uinfo.room);
-					client.emit("entry", uinfo.uid, allData, ContentsServer.convertAddress(allImgs));
-					client.broadcast.to(uinfo.room).emit("add", newData, ContentsServer.convertAddress(newImgs));
+					client.emit("entry", uinfo.uid, allData, ContentsServer.convertAddress(allCont));
+					client.broadcast.to(uinfo.room).emit("add", newData, ContentsServer.convertAddress(newCont));
 				};
 				// プログラムステップ開始
 				step["start"]();
