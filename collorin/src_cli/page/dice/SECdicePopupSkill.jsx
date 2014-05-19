@@ -54,7 +54,10 @@ class SECdicePopupSkill extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// キャンバス設定
+		this._page.bcvs.cameraLock = true;
 		// クロス設定
+		this._page.bust.set(null);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
 		// トリガーリセット

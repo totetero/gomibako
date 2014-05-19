@@ -114,8 +114,6 @@ class SECdiceMoveManual implements SerialEventCartridge{
 			// メニューボタン
 			if(Ctrl.trigger_s){
 				Sound.playSE("ok");
-				this._page.bust.set(null);
-				bcvs.cameraLock = true;
 				this._page.serialPush(new SECdicePopupMenu(this._page, this));
 				return false;
 			}

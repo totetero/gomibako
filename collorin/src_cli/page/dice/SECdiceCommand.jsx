@@ -115,8 +115,6 @@ class SECdiceCommand implements SerialEventCartridge{
 		// スキルボタン
 		if(Ctrl.trigger_x){
 			Sound.playSE("ok");
-			this._page.bust.set(null);
-			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECdicePopupSkill(this._page, this, this._player));
 			return false;
 		}
@@ -131,8 +129,6 @@ class SECdiceCommand implements SerialEventCartridge{
 		// メニューボタン
 		if(Ctrl.trigger_s){
 			Sound.playSE("ok");
-			this._page.bust.set(null);
-			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECdicePopupMenu(this._page, this));
 			return false;
 		}
