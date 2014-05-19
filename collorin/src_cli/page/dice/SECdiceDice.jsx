@@ -60,6 +60,7 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 	// 初期化
 	override function init() : void{
 		// キャンバス設定
+		this._page.bcvs.cameraLock = false;
 		this._page.bcvs.isTapChara = false;
 		this._page.bcvs.isTapHex = false;
 		// クロス設定

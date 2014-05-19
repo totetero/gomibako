@@ -17,6 +17,7 @@ import "PageDice.jsx";
 import "Bb3dDiceCharacter.jsx";
 import "SECdiceDice.jsx";
 import "SECdiceMap.jsx";
+import "SECdicePopupSkill.jsx";
 import "SECdicePopupMenu.jsx";
 
 // ----------------------------------------------------------------
@@ -103,11 +104,20 @@ class SECdiceCommand implements SerialEventCartridge{
 		// さいころボタン
 		if(Ctrl.trigger_z){
 			Sound.playSE("ok");
-			this._page.serialPush(new SECdiceDiceRoll(this._page, this, "code", "message", {
+			this._page.serialPush(new SECdiceDiceRoll(this._page, this, "code", "", {
 				"type": "dice",
 				"num": 1,
 				"fix": 0,
 			}, null));
+			return false;
+		}
+
+		// スキルボタン
+		if(Ctrl.trigger_x){
+			Sound.playSE("ok");
+			this._page.bust.set(null);
+			this._page.bcvs.cameraLock = true;
+			this._page.serialPush(new SECdicePopupSkill(this._page, this, this._player));
 			return false;
 		}
 
