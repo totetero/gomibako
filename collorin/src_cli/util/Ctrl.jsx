@@ -24,6 +24,8 @@ class Ctrl{
 	static var rctx : CanvasRenderingContext2D;
 	static var update_lctx : boolean;
 	static var update_rctx : boolean;
+	// 入力要素
+	static var input : HTMLInputElement;
 	// タッチ状態
 	static var isTouch : boolean;
 	static var stdn : boolean;
@@ -152,6 +154,7 @@ class Ctrl{
 		Ctrl._mdiv = dom.document.getElementById("main") as HTMLDivElement;
 		var ctrlDiv = dom.document.getElementById("ctrl") as HTMLDivElement;
 		var crossDiv = dom.document.getElementById("cross") as HTMLDivElement;
+		Ctrl.input = ctrlDiv.getElementsByTagName("input").item(0) as HTMLInputElement;
 
 		// リスナー追加
 		Ctrl.isTouch = js.eval("'ontouchstart' in window") as boolean;
@@ -417,12 +420,16 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// キーを押す
 	static function _kdnfn(e : Event) : void{
-		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
+		var keyCode = (e as KeyboardEvent).keyCode;
+		if(dom.document.activeElement == Ctrl.input){
 			// インプットモード
-			Ctrl._keydownCode = (e as KeyboardEvent).keyCode;
+			Ctrl._keydownCode = keyCode;
+		}else if(Ctrl.input.className != "" && 65 <= keyCode && keyCode <= 90){
+			// 入力要素を表示中にアルファベットキー押下でインプットモードに移行
+			Ctrl.input.focus();
 		}else{
 			// コントローラーモード
-			switch((e as KeyboardEvent).keyCode){
+			switch(keyCode){
 				case 37: Ctrl._kklt = true; break;
 				case 38: Ctrl._kkup = true; break;
 				case 39: Ctrl._kkrt = true; break;
@@ -441,15 +448,16 @@ class Ctrl{
 	// ----------------------------------------------------------------
 	// キーを離す
 	static function _kupfn(e : Event) : void{
-		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
+		var keyCode = (e as KeyboardEvent).keyCode;
+		if(dom.document.activeElement == Ctrl.input){
 			// インプットモード
-			if((e as KeyboardEvent).keyCode == 13 && Ctrl._keydownCode == 13){
+			if(keyCode == 13 && Ctrl._keydownCode == 13){
 				Ctrl.trigger_enter = true;
-				(dom.document.activeElement as HTMLInputElement).blur();
+				Ctrl.input.blur();
 			}
 		}else{
 			// コントローラーモード
-			switch((e as KeyboardEvent).keyCode){
+			switch(keyCode){
 				case 37: Ctrl._kklt = false; Ctrl.trigger_lt = true; break;
 				case 38: Ctrl._kkup = false; Ctrl.trigger_up = true; break;
 				case 39: Ctrl._kkrt = false; Ctrl.trigger_rt = true; break;

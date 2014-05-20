@@ -84,9 +84,9 @@ class SECpopupTextarea extends SECpopup{
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 
 		// テキストエリア設定
-		Page.input.type = "text";
-		Page.input.value = this._value;
-		Page.input.maxLength = this._max;
+		Ctrl.input.type = "text";
+		Ctrl.input.value = this._value;
+		Ctrl.input.maxLength = this._max;
 	}
 
 	// ----------------------------------------------------------------
@@ -95,12 +95,12 @@ class SECpopupTextarea extends SECpopup{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// テキストエリア表示
-		if(Page.input.className != "textarea"){
-			Page.input.className = "textarea";
+		if(Ctrl.input.className != "textarea"){
+			Ctrl.input.className = "textarea";
 		}
 
 		// 文字数確認
-		var length = Page.input.value.length;
+		var length = Ctrl.input.value.length;
 		this._labList["count"].setText(length + "/" + this._max);
 		this._labList["count"].setColor(length > this._max ? "red" : "black");
 		// 文字数0確認
@@ -112,13 +112,13 @@ class SECpopupTextarea extends SECpopup{
 		if(ok || ng){
 			if(ok){
 				Sound.playSE("ok");
-				this.setValue(Page.input.value);
+				this.setValue(Ctrl.input.value);
 				this.onEnter(this._value);
 			}else{
 				Sound.playSE("ng");
 			}
 			Ctrl.trigger_enter = false;
-			Page.input.className = "";
+			Ctrl.input.className = "";
 			this.page.serialPush(this.parentCartridge);
 			return false;
 		}
@@ -136,10 +136,10 @@ class SECpopupTextarea extends SECpopup{
 		if(this._ww != Ctrl.window.w || this._wh != Ctrl.window.h){
 			this._ww = Ctrl.window.w;
 			this._wh = Ctrl.window.h;
-			Page.input.style.left = (Ctrl.screen.x + px + 10) + "px";
-			Page.input.style.top = (Ctrl.screen.y + 40) + "px";
-			Page.input.style.width = "280px";
-			Page.input.style.height = "30px";
+			Ctrl.input.style.left = (Ctrl.screen.x + px + 10) + "px";
+			Ctrl.input.style.top = (Ctrl.screen.y + 40) + "px";
+			Ctrl.input.style.width = "280px";
+			Ctrl.input.style.height = "30px";
 		}
 		for(var name in this._labList){var lab = this._labList[name]; lab.x = px + lab.basex;}
 		for(var name in this._btnList){var btn = this._btnList[name]; btn.x = px + btn.basex;}
@@ -163,8 +163,8 @@ class SECpopupTextarea extends SECpopup{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		Page.input.blur();
-		Page.input.className = "";
+		Ctrl.input.blur();
+		Ctrl.input.className = "";
 	}
 }
 

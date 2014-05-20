@@ -39,7 +39,7 @@ class SECchatMain implements SerialEventCartridge{
 		this._btnList["send"] = new PartsButtonBasic("送信", -90, 10, 80, 30);
 		this._btnList["back"] = new PartsButtonBasic("退出", -90, -40, 80, 30);
 		// テキストエリアリセット
-		Page.input.value = "";
+		Ctrl.input.value = "";
 	}
 
 	// ----------------------------------------------------------------
@@ -57,8 +57,8 @@ class SECchatMain implements SerialEventCartridge{
 		this._page.bcvs.charaTrigger = null;
 
 		// テキストエリア設定
-		Page.input.type = "text";
-		Page.input.maxLength = 16;
+		Ctrl.input.type = "text";
+		Ctrl.input.maxLength = 16;
 	}
 
 	// ----------------------------------------------------------------
@@ -68,8 +68,8 @@ class SECchatMain implements SerialEventCartridge{
 		bcvs.calcButton(this._btnList);
 
 		// テキストエリア表示
-		if(Page.input.className != "textarea"){
-			Page.input.className = "textarea";
+		if(Ctrl.input.className != "textarea"){
+			Ctrl.input.className = "textarea";
 		}
 
 		// グリッドタップ
@@ -130,8 +130,8 @@ class SECchatMain implements SerialEventCartridge{
 			Sound.playSE("ok");
 			Ctrl.trigger_enter = false;
 			this._btnList["send"].trigger = false;
-			this._page.socket.sendSerif(Page.input.value);
-			Page.input.value = "";
+			this._page.socket.sendSerif(Ctrl.input.value);
+			Ctrl.input.value = "";
 		}
 
 		// 退出ボタン
@@ -156,10 +156,10 @@ class SECchatMain implements SerialEventCartridge{
 		if(this._ww != Ctrl.window.w || this._wh != Ctrl.window.h){
 			this._ww = Ctrl.window.w;
 			this._wh = Ctrl.window.h;
-			Page.input.style.left = (Ctrl.screen.x + Ctrl.screen.w - 310) + "px";
-			Page.input.style.top = (Ctrl.screen.y + 10) + "px";
-			Page.input.style.width = "210px";
-			Page.input.style.height = "30px";
+			Ctrl.input.style.left = (Ctrl.screen.x + Ctrl.screen.w - 310) + "px";
+			Ctrl.input.style.top = (Ctrl.screen.y + 10) + "px";
+			Ctrl.input.style.width = "210px";
+			Ctrl.input.style.height = "30px";
 		}
 		for(var name in this._btnList){
 			var btn = this._btnList[name];
@@ -205,8 +205,8 @@ class SECchatMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		Page.input.blur();
-		Page.input.className = "";
+		Ctrl.input.blur();
+		Ctrl.input.className = "";
 	}
 }
 

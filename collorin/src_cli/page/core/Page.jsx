@@ -28,7 +28,6 @@ import "../chat/PageChat.jsx";
 // ページクラス 継承して使う
 abstract class Page extends EventPlayer{
 	static var current : Page;
-	static var input : HTMLInputElement;
 	static var _coreLoaded = false;
 	static var _lastHash : string = "none";
 
@@ -40,7 +39,6 @@ abstract class Page extends EventPlayer{
 			Loading.hide();
 			Page._coreLoaded = true;
 		});
-		Page.input = dom.document.getElementById("ctrl").getElementsByTagName("input").item(0) as HTMLInputElement;
 	}
 
 	// ----------------------------------------------------------------
@@ -54,8 +52,8 @@ abstract class Page extends EventPlayer{
 				var nextPage = Page._nextPage(currentHash);
 				if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
 					// いろいろリセット
-					Page.input.blur();
-					Page.input.className = "";
+					Ctrl.input.blur();
+					Ctrl.input.className = "";
 					// ページをまたぐ機能を継承
 					nextPage.ctrler = (Page.current == null) ? new CrossCtrler() : Page.current.ctrler;
 					nextPage.header = (Page.current == null) ? new CrossHeader() : Page.current.header;
