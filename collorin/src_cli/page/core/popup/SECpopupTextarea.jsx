@@ -22,7 +22,6 @@ class SECpopupTextarea extends SECpopup{
 	var page : Page;
 	var _value : string;
 	var _max : int;
-	var _input : HTMLInputElement;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
 	// ポップアップ展開用のボタン
@@ -40,7 +39,6 @@ class SECpopupTextarea extends SECpopup{
 		super(cartridge);
 		this.page = page;
 		this._max = max;
-		this._input = dom.document.getElementById("ctrl").getElementsByTagName("input").item(0) as HTMLInputElement;
 
 		// ラベル作成
 		this._labList["title"] = new PartsLabel(title, 0, 10, 300, 30);
@@ -86,9 +84,9 @@ class SECpopupTextarea extends SECpopup{
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 
 		// テキストエリア設定
-		this._input.type = "text";
-		this._input.value = this._value;
-		this._input.maxLength = this._max;
+		Page.input.type = "text";
+		Page.input.value = this._value;
+		Page.input.maxLength = this._max;
 	}
 
 	// ----------------------------------------------------------------
@@ -97,27 +95,30 @@ class SECpopupTextarea extends SECpopup{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
 
 		// テキストエリア表示
-		if(this._input.className != "textarea"){
-			this._input.className = "textarea";
+		if(Page.input.className != "textarea"){
+			Page.input.className = "textarea";
 		}
 
 		// 文字数確認
-		var length = this._input.value.length;
+		var length = Page.input.value.length;
 		this._labList["count"].setText(length + "/" + this._max);
 		this._labList["count"].setColor(length > this._max ? "red" : "black");
 		// 文字数0確認
 		this._btnList["ok"].inactive = (!this.isPermitZero && length <= 0);
 
 		// ボタン押下時
-		if(this._btnList["ok"].trigger || this._btnList["outer"].trigger || this._btnList["close"].trigger){
-			if(this._btnList["ok"].trigger){
+		var ok = Ctrl.trigger_enter || this._btnList["ok"].trigger;
+		var ng = this._btnList["outer"].trigger || this._btnList["close"].trigger;
+		if(ok || ng){
+			if(ok){
 				Sound.playSE("ok");
-				this.setValue(this._input.value);
+				this.setValue(Page.input.value);
 				this.onEnter(this._value);
 			}else{
 				Sound.playSE("ng");
 			}
-			this._input.className = "";
+			Ctrl.trigger_enter = false;
+			Page.input.className = "";
 			this.page.serialPush(this.parentCartridge);
 			return false;
 		}
@@ -135,10 +136,10 @@ class SECpopupTextarea extends SECpopup{
 		if(this._ww != Ctrl.window.w || this._wh != Ctrl.window.h){
 			this._ww = Ctrl.window.w;
 			this._wh = Ctrl.window.h;
-			this._input.style.left = (Ctrl.screen.x + px + 10) + "px";
-			this._input.style.top = (Ctrl.screen.y + 40) + "px";
-			this._input.style.width = "280px";
-			this._input.style.height = "30px";
+			Page.input.style.left = (Ctrl.screen.x + px + 10) + "px";
+			Page.input.style.top = (Ctrl.screen.y + 40) + "px";
+			Page.input.style.width = "280px";
+			Page.input.style.height = "30px";
 		}
 		for(var name in this._labList){var lab = this._labList[name]; lab.x = px + lab.basex;}
 		for(var name in this._btnList){var btn = this._btnList[name]; btn.x = px + btn.basex;}
@@ -162,8 +163,8 @@ class SECpopupTextarea extends SECpopup{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
-		this._input.blur();
-		this._input.className = "";
+		Page.input.blur();
+		Page.input.className = "";
 	}
 }
 

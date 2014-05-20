@@ -28,6 +28,7 @@ import "../chat/PageChat.jsx";
 // ページクラス 継承して使う
 abstract class Page extends EventPlayer{
 	static var current : Page;
+	static var input : HTMLInputElement;
 	static var _coreLoaded = false;
 	static var _lastHash : string = "none";
 
@@ -39,6 +40,7 @@ abstract class Page extends EventPlayer{
 			Loading.hide();
 			Page._coreLoaded = true;
 		});
+		Page.input = dom.document.getElementById("ctrl").getElementsByTagName("input").item(0) as HTMLInputElement;
 	}
 
 	// ----------------------------------------------------------------
@@ -51,6 +53,9 @@ abstract class Page extends EventPlayer{
 				Page._lastHash = currentHash;
 				var nextPage = Page._nextPage(currentHash);
 				if(Page.current == null || Page.current.type != nextPage.type || Page.current.depth != nextPage.depth){
+					// いろいろリセット
+					Page.input.blur();
+					Page.input.className = "";
 					// ページをまたぐ機能を継承
 					nextPage.ctrler = (Page.current == null) ? new CrossCtrler() : Page.current.ctrler;
 					nextPage.header = (Page.current == null) ? new CrossHeader() : Page.current.header;
@@ -67,12 +72,12 @@ abstract class Page extends EventPlayer{
 			Page.current.calc();
 			Page.current.ctrler.calc();
 			Page.current.header.calc();
-			Page.current.bust.calc();			
+			Page.current.bust.calc();
 			// ページの描画
 			if(Ctrl.update_lctx){Ctrl.lctx.clearRect(0, 0, 160, 240);}
 			if(Ctrl.update_rctx){Ctrl.rctx.clearRect(0, 0, 144, 244);}
 			Page.current.draw();
-			Page.current.bust.draw();			
+			Page.current.bust.draw();
 			Page.current.ctrler.draw();
 			Ctrl.update_lctx = false;
 			Ctrl.update_rctx = false;
