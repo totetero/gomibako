@@ -13,6 +13,7 @@ import "../core/Page.jsx";
 
 import "../core/load/SECloadTransition.jsx";
 import "Bb3dChatCanvas.jsx";
+import "SocketChat.jsx";
 import "SECchatMain.jsx";
 
 // ----------------------------------------------------------------
@@ -22,6 +23,7 @@ import "SECchatMain.jsx";
 // チャットページ
 class PageChat extends Page{
 	var bcvs : Bb3dChatCanvas;
+	var socket : SocketChat;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -40,8 +42,10 @@ class PageChat extends Page{
 			// クロス要素設定
 			this.header.setType("", "");
 			this.bust.set(null);
-			// カートリッジ装填
+			// ソケット準備
 			this.bcvs = new Bb3dChatCanvas(response);
+			this.socket = new SocketChat(this.bcvs);
+			// カートリッジ装填
 			this.serialPush(new SECchatMain(this, response));
 		}));
 	}
@@ -73,6 +77,7 @@ class PageChat extends Page{
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
+		this.socket.dispose();
 	}
 }
 

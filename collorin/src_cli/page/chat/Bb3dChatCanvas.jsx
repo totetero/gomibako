@@ -26,6 +26,7 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 	var field : Bb3dChatField;
 	var player : Bb3dChatCharacter;
 	var member = new Bb3dChatCharacter[];
+	var pathFinder : Bb3dChatFieldPathFinder;
 	var clist = new Bb3dDrawUnit[];
 	var slist = new Bb3dDrawUnit[];
 
@@ -50,6 +51,7 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 
 		// フィールド
 		this.field = new Bb3dChatField(this, Loader.imgs["img_grid"], response["grid"] as int[][]);
+		this.pathFinder = new Bb3dChatFieldPathFinder(this.field);
 
 		// 初期カメラ位置
 		this.cx = this.calcx = (this.cxmax + this.cxmin) * 0.5;
