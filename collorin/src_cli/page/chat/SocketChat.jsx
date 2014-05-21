@@ -31,6 +31,7 @@ class SocketChat{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(bcvs : Bb3dChatCanvas){
+		Loading.show();
 		SocketIOClient.connect(function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
 			this._socketof = this._socket.of("chat");
@@ -108,7 +109,10 @@ class SocketChat{
 		log uinfo;
 		var character = new Bb3dChatCharacter(bcvs, uinfo);
 		bcvs.member.push(character);
-		if(isPlayer){bcvs.player = character;}
+		if(isPlayer){
+			bcvs.player = character;
+			Loading.hide();
+		}
 	}
 
 	// ----------------------------------------------------------------

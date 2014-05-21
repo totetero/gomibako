@@ -36,8 +36,8 @@ abstract class Page extends EventPlayer{
 	static function init() : void{
 		Loading.show();
 		Loader.loadContents("core", function() : void{
-			Loading.hide();
 			Page._coreLoaded = true;
+			Loading.hide();
 		});
 	}
 

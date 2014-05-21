@@ -29,9 +29,9 @@ class SECload implements SerialEventCartridge{
 		Loading.show();
 		Loader.loadxhr(url, request, function(response : variant) : void{
 			Loader.loadContents(response["contents"] as Map.<string>, function() : void{
-				Loading.hide();
 				this._loading = false;
 				callback(response);
+				Loading.hide();
 			});
 		});
 	}

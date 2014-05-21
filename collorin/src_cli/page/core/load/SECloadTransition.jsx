@@ -53,13 +53,13 @@ class SECloadTransition implements SerialEventCartridge{
 		Loading.show();
 		Loader.loadxhr(url, request, function(response : variant) : void{
 			Loader.loadContents(response["contents"] as Map.<string>, function() : void{
-				Loading.hide();
 				this._loading = false;
 				callback(response);
 				this._nextCartridge = this._nextPage.getSerialNext();
 				this._nextCartridge.init();
 				// ヘッダ無効化
 				this._nextPage.header.setActive(false);
+				Loading.hide();
 			});
 		});
 	}

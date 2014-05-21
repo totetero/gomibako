@@ -252,7 +252,6 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 		// ロード開始
 		Loader.loadxhr("/dice", this._request, function(response : variant) : void{
 			Loader.loadContents(response["contents"] as Map.<string>, function() : void{
-				if(this._loadCount > 24){Loading.hide();}
 				// 通信成功
 				this._request = null;
 				var diceResponse = this._page.parse(response["list"] as variant[]);
@@ -266,6 +265,8 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 				if(this._loadCount < 24){this._page.ctrler.setRctrl("", "", "", "スキップ");}
 				// トリガーリセット
 				Ctrl.trigger_s = false;
+				// ローディング完了
+				if(this._loadCount > 24){Loading.hide();}
 			});
 		});
 
