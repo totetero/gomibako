@@ -36,11 +36,13 @@ class Loading{
 		}
 	}
 
+	// ----------------------------------------------------------------
 	// ローディング表示開始
 	static function show() : void{
 		Loading._count++;
 	}
 
+	// ----------------------------------------------------------------
 	// ローディング表示終了
 	static function hide() : void{
 		Loading._count = Math.max(Loading._count - 1, 0);
