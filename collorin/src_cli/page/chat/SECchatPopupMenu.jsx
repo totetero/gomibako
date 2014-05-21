@@ -13,33 +13,32 @@ import "../core/Page.jsx";
 
 import "../core/popup/SECpopup.jsx";
 import "../setting/SECsettingPopupLocal.jsx";
-import "PageDice.jsx";
+import "PageChat.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// すごろくメニューポップアップ
-class SECdicePopupMenu extends SECpopup{
-	var _page : PageDice;
+// チャットメニューポップアップ
+class SECchatPopupMenu extends SECpopup{
+	var _page : PageChat;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
-	var _pw = 240;
-	var _ph = 200;
+	var _pw = 120;
+	var _ph = 160;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageDice, cartridge : SerialEventCartridge){
+	function constructor(page : PageChat, cartridge : SerialEventCartridge){
 		super(cartridge);
 		this._page = page;
 
 		// ラベル作成
 		this._labList["title"] = new PartsLabel("メニュー", 0, 0, this._pw, 40);
-		this._labList["info"] = new PartsLabel("クエスト情報とかものせる", 0, 40, this._pw, 40);
 
 		// ボタン作成
-		this._btnList["setting"] = new PartsButtonBasic("設定", (this._pw - 100) * 0.5, 80, 100, 30);
-		this._btnList["back"] = new PartsButtonBasic("退出", (this._pw - 100) * 0.5, 120, 100, 30);
+		this._btnList["setting"] = new PartsButtonBasic("設定", (this._pw - 100) * 0.5, 40, 100, 30);
+		this._btnList["back"] = new PartsButtonBasic("退出", (this._pw - 100) * 0.5, 80, 100, 30);
 		this._btnList["outer"] = new PartsButton(0, 0, this._pw, this._ph, false);
 		this._btnList["close"] = new PartsButtonBasic("閉じる", (this._pw - 80) * 0.5, this._ph - 30 - 10, 80, 30);
 		this._btnList["close"].sKey = true;
@@ -66,7 +65,6 @@ class SECdicePopupMenu extends SECpopup{
 		// 設定ボタン
 		if(this._btnList["setting"].trigger){
 			Sound.playSE("ok");
-			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;
 			this._page.serialPush(new SECsettingPopupLocal(this._page, this.parentCartridge));
 			return false;

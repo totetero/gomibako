@@ -13,6 +13,7 @@ import "../core/Page.jsx";
 
 import "../core/data/SECpopupDataChara.jsx";
 import "PageChat.jsx";
+import "SECchatPopupMenu.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -37,7 +38,7 @@ class SECchatMain implements SerialEventCartridge{
 
 		// ボタン作成
 		this._btnList["send"] = new PartsButtonBasic("送信", -90, 10, 80, 30);
-		this._btnList["back"] = new PartsButtonBasic("退出", -90, -40, 80, 30);
+		this._btnList["menu"] = new PartsButtonBasic("メニュー", -90, -40, 80, 30);
 		// テキストエリアリセット
 		Ctrl.input.value = "";
 	}
@@ -134,11 +135,11 @@ class SECchatMain implements SerialEventCartridge{
 			Ctrl.input.value = "";
 		}
 
-		// 退出ボタン
-		if(this._btnList["back"].trigger){
-			Sound.playSE("ng");
-			Page.transitionsPage("world");
-			return true;
+		// メニューボタン
+		if(this._btnList["menu"].trigger){
+			Sound.playSE("ok");
+			this._page.serialPush(new SECchatPopupMenu(this._page, this));
+			return false;
 		}
 
 		// 一定間隔毎に位置の通信

@@ -12,19 +12,18 @@ import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
 import "../core/popup/SECpopup.jsx";
-import "../setting/SECsettingPopupPickerQuality.jsx";
-import "../setting/SECsettingPopupPickerTransition.jsx";
-import "../setting/SECsettingPopupPickerBgm.jsx";
-import "../setting/SECsettingPopupPickerSef.jsx";
-import "PageDice.jsx";
+import "SECsettingPopupPickerQuality.jsx";
+import "SECsettingPopupPickerTransition.jsx";
+import "SECsettingPopupPickerBgm.jsx";
+import "SECsettingPopupPickerSef.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// すごろくメニュー設定ポップアップ
-class SECdicePopupMenuSetting extends SECpopup{
-	var _page : PageDice;
+// ローカルで完結する設定ポップアップ
+class SECsettingPopupLocal extends SECpopup{
+	var _page : Page;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
 	var _scroller : PartsScroll;
@@ -36,7 +35,7 @@ class SECdicePopupMenuSetting extends SECpopup{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageDice, cartridge : SerialEventCartridge){
+	function constructor(page : Page, cartridge : SerialEventCartridge){
 		super(cartridge);
 		this._page = page;
 		this._qualityPicker = new SECsettingPopupPickerQuality(this._page, this);
@@ -79,12 +78,10 @@ class SECdicePopupMenuSetting extends SECpopup{
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
-		// キャンバス設定
-		this._page.bcvs.cameraLock = true;
 		// クロス設定
-		this._page.bust.set(null);
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
+		this._page.header.setActive(false);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		for(var name in this._scroller.btnList){this._scroller.btnList[name].trigger = false;}
