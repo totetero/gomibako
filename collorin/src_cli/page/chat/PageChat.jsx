@@ -44,7 +44,7 @@ class PageChat extends Page{
 			this.bust.set(null);
 			// ソケット準備
 			this.bcvs = new Bb3dChatCanvas(response);
-			this.socket = new SocketChat(this.bcvs);
+			this.socket = new SocketChat();
 			// カートリッジ装填
 			this.serialPush(new SECchatMain(this, response));
 		}));
@@ -54,6 +54,7 @@ class PageChat extends Page{
 	// 計算
 	override function calc() : boolean{
 		if(this.bcvs != null){this.bcvs.calc();}
+		if(this.socket != null){this.socket.calc(this.bcvs);}
 		return super.calc();
 	}
 

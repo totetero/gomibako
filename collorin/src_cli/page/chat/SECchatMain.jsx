@@ -23,10 +23,7 @@ import "SECchatPopupMenu.jsx";
 class SECchatMain implements SerialEventCartridge{
 	var _page : PageChat;
 	var _btnList = {} : Map.<PartsButton>;
-
-	var _socketCounter : int = 0;
 	var _arrowKey : boolean;
-	var _dst : int[];
 
 	var _ww : int;
 	var _wh : int;
@@ -142,11 +139,6 @@ class SECchatMain implements SerialEventCartridge{
 			return false;
 		}
 
-		// 一定間隔毎に位置の通信
-		if((this._socketCounter++) % 30 == 0){
-			this._page.socket.sendDestination(this._dst);
-		}
-
 		return true;
 	}
 
@@ -184,14 +176,14 @@ class SECchatMain implements SerialEventCartridge{
 		var sy : int = Math.floor(bcvs.player.y / 16);
 		if(bcvs.field.getGridFromIndex(x, y) > 0){
 			// 移動
-			this._dst = [x, y, r];
-			if(this._arrowKey){bcvs.player.dstList = [this._dst];}
-			else{bcvs.player.dstList = bcvs.pathFinder.getDstList(sx, sy, this._dst);}
+			var dst = this._page.socket.nextDst = [x, y, r];
+			if(this._arrowKey){bcvs.player.dstList = [dst];}
+			else{bcvs.player.dstList = bcvs.pathFinder.getDstList(sx, sy, dst);}
 			bcvs.player.motion = "walk";
 		}else if(r != this._calcRotID(bcvs.player.r)){
 			// 方向転換
-			this._dst = [sx, sy, r];
-			bcvs.player.dstList = [this._dst];
+			var dst = this._page.socket.nextDst = [sx, sy, r];
+			bcvs.player.dstList = [dst];
 		}
 	}
 

@@ -24,13 +24,19 @@ import "Bb3dChatCharacter.jsx";
 class SocketChat{
 	var _socket : SocketIOClientSocket;
 	var _socketof : SocketIOClientSocket;
+	var _packet = new variant[];
 	var _strayPacket = new variant[];
 	var _sendDst : int[];
 	var _sendSerif : string;
 
+	// 一定間隔の通信
+	var _nextCount : int = 0;
+	// プレイヤー次の移動先
+	var nextDst : int[];
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(bcvs : Bb3dChatCanvas){
+	function constructor(){
 		Loading.show();
 		SocketIOClient.connect(function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
@@ -42,7 +48,7 @@ class SocketChat{
 					// 画像ロード完了
 					var uinfoList = uinfoListData as variant[];
 					for(var i = 0; i < uinfoList.length; i++){
-						this._create(bcvs, uid, uinfoList[i]);
+						this._packet.push({type: "add", uid: uid, uinfo: uinfoList[i]});
 					}
 				});
 			});
@@ -51,46 +57,23 @@ class SocketChat{
 			this._socketof.on("add", function(uinfo : variant, contents : variant):void{
 				Loader.loadContents(contents as Map.<string>, function() : void{
 					// 画像ロード完了
-					this._create(bcvs, null, uinfo);
+					this._packet.push({type: "add", uid: "", uinfo: uinfo});
 				});
 			});
 
 			// ユーザー位置更新
 			this._socketof.on("walk", function(uid : variant, dst : variant):void{
-				log "移動 " + uid as string + " " + dst[0] as string + " " + dst[1] as string + " " + dst[2] as string;
-				var isUse = false;
-				for(var i = 0; i < bcvs.member.length; i++){
-					if(uid == bcvs.member[i].uid){
-						var sx = Math.floor(bcvs.member[i].x / 16);
-						var sy = Math.floor(bcvs.member[i].y / 16);
-						bcvs.member[i].dstList = bcvs.pathFinder.getDstList(sx, sy, dst as int[]);
-						isUse = true;
-					}
-				}
-				// 迷子パケット
-				if(!isUse){this._strayPacket.push({type: "talk", dst: dst});}
+				this._packet.push({type: "walk", uid: uid, dst: dst});
 			});
 
 			// ユーザー台詞更新
 			this._socketof.on("talk", function(uid : variant, serif : variant):void{
-				log "発言 " + uid as string + " " + serif as string;
-				var isUse = false;
-				for(var i = 0; i < bcvs.member.length; i++){
-					if(uid == bcvs.member[i].uid){
-						bcvs.member[i].setTalk(serif as string);
-						isUse = true;
-					}
-				}
-				// 迷子パケット
-				if(!isUse){this._strayPacket.push({type: "talk", uid: uid, serif: serif});}
+				this._packet.push({type: "talk", uid: uid, serif: serif});
 			});
 
 			// ユーザー退出
 			this._socketof.on("kill", function(uid : variant):void{
-				log "退出 " + uid as string;
-				var isUse = this._kill(bcvs, uid);
-				// 迷子パケット
-				if(!isUse){this._strayPacket.push({type: "kill", uid: uid});}
+				this._packet.push({type: "kill", uid: uid});
 			});
 
 			this._socketof.emit("entry");
@@ -98,60 +81,93 @@ class SocketChat{
 	}
 
 	// ----------------------------------------------------------------
-	// キャラクターを作成
-	function _create(bcvs : Bb3dChatCanvas, uid : variant, uinfo : variant) : void{
-		if(!this._strayPacketCheck(uinfo)){return;} // 迷子パケットの適用確認
-		this._kill(bcvs, uinfo["uid"]); // uidが重複しているキャラクターがいたら除去
-		var isPlayer = (uid == uinfo["uid"]);
-		var type = (isPlayer ? "自分" : ((uid == null) ? "新規" : "継続"));
-		log type + " " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
-		// キャラクター作成
-		log uinfo;
-		var character = new Bb3dChatCharacter(bcvs, uinfo);
-		bcvs.member.push(character);
-		if(isPlayer){
-			bcvs.player = character;
-			Loading.hide();
-		}
-	}
+	// 計算
+	function calc(bcvs : Bb3dChatCanvas) : void{
+		// パケット処理
+		for(var i = 0; i < this._packet.length; i++){
+			var packet = this._packet[i];
+			var type = packet["type"] as string;
+			var uid = packet["uid"] as string;
 
-	// ----------------------------------------------------------------
-	// 指定したuidのキャラクターを除去
-	function _kill(bcvs : Bb3dChatCanvas, uid : variant) : boolean{
-		var isUse = false;
-		for(var i = 0; i < bcvs.member.length; i++){
-			if(uid == bcvs.member[i].uid){
-				bcvs.member[i].dispose();
-				bcvs.member.splice(i--, 1);
-				isUse = true;
+			if(type == "add"){
+				// ---------------- 追加 ----------------
+				var uinfo = packet["uinfo"] as variant;
+				// uidが重複しているキャラクターがいたら除去
+				for(var j = 0; j < bcvs.member.length; j++){
+					if(uid == bcvs.member[j].uid){
+						bcvs.member[j].dispose();
+						bcvs.member.splice(j, 1);
+					}
+				}
+				// 迷子パケットの適用確認
+				var isKill = false;
+				for(var j = 0; j < this._strayPacket.length; j++){
+					var strayPacket = this._strayPacket[j];
+					if(uinfo["uid"] == strayPacket["uid"]){
+						var type = strayPacket["type"] as string;
+						if(type == "walk"){
+							// 移動
+							uinfo["x"] = strayPacket["dst"][0];
+							uinfo["y"] = strayPacket["dst"][1];
+							uinfo["r"] = strayPacket["dst"][2];
+						}else if(type == "talk"){
+							// 発言
+							uinfo["serif"] = strayPacket["serif"];
+						}else if(type == "kill"){
+							// 退出
+							isKill = true;
+						}
+						this._strayPacket.splice(i--, 1);
+					}
+				}
+				if(isKill){continue;}
+				// キャラクター作成
+				var isPlayer = (uid == uinfo["uid"]);
+				var type = (isPlayer ? "自分" : ((uid == "") ? "新規" : "継続"));
+				log type + " " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
+				var character = new Bb3dChatCharacter(bcvs, uinfo);
+				bcvs.member.push(character);
+				if(isPlayer){
+					bcvs.player = character;
+					Loading.hide();
+				}
+			}else{
+				// 対象キャラ確認
+				var isUse = false;
+				for(var j = 0; j < bcvs.member.length; j++){
+					if(uid == bcvs.member[j].uid){
+						if(type == "walk"){
+							// ---------------- 移動 ----------------
+							var dst = packet["dst"] as int[];
+							log "移動 " + uid + " " + dst[0] + " " + dst[1] + " " + dst[2];
+							var sx = Math.floor(bcvs.member[j].x / 16);
+							var sy = Math.floor(bcvs.member[j].y / 16);
+							bcvs.member[j].dstList = bcvs.pathFinder.getDstList(sx, sy, dst);
+						}else if(type == "talk"){
+							// ---------------- 発言 ----------------
+							var serif = packet["serif"] as string;
+							log "発言 " + uid + " " + serif;
+							bcvs.member[j].setTalk(serif);
+						}else if(type == "kill"){
+							// ---------------- 退出 ----------------
+							log "退出 " + uid as string;
+							bcvs.member[j].dispose();
+							bcvs.member.splice(j--, 1);
+						}
+						isUse = true;
+					}
+				}
+				// 迷子パケット保管
+				if(!isUse){this._strayPacket.push(packet);}
 			}
 		}
-		return isUse;
-	}
+		// パケット完了
+		if(this._packet.length > 0){this._packet.length = 0;}
 
-	// ----------------------------------------------------------------
-	// 迷子パケットの適用確認
-	function _strayPacketCheck(uinfo : variant) : boolean{
-		var exist = true;
-		for(var i = 0; i < this._strayPacket.length; i++){
-			if(uinfo["uid"] == this._strayPacket[i]["uid"]){
-				var type = this._strayPacket[i]["type"] as string;
-				if(type == "walk"){
-					// 移動
-					uinfo["x"] = this._strayPacket[i]["dst"][0];
-					uinfo["y"] = this._strayPacket[i]["dst"][1];
-					uinfo["r"] = this._strayPacket[i]["dst"][2];
-				}else if(type == "talk"){
-					// 発言
-					uinfo["serif"] = this._strayPacket[i]["serif"];
-				}else if(type == "kill"){
-					// 退出
-					exist = false;
-				}else{continue;}
-				this._strayPacket.splice(i--, 1);
-			}
+		// 一定間隔毎に位置の通信
+		if((this._nextCount++) % 30 == 0){
+			this.sendDestination(this.nextDst);
 		}
-		return exist;
 	}
 
 	// ----------------------------------------------------------------
