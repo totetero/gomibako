@@ -14,7 +14,7 @@ import "../core/Page.jsx";
 import "../core/data/DataChara.jsx";
 import "../core/data/PartsButtonDataChara.jsx";
 import "../core/data/SECpopupDataChara.jsx";
-import "../core/popup/SECpopupPicker.jsx";
+import "../core/data/SECpopupDataCharaPicker.jsx";
 import "../core/popup/SECpopupTextarea.jsx";
 import "PageChara.jsx";
 import "SECcharaTab.jsx";
@@ -27,7 +27,6 @@ import "SECcharaTab.jsx";
 class SECcharaTabTeam extends SECcharaTab{
 	var _scroller : PartsScroll;
 	var _charaList : PartsButtonDataChara[];
-	var _sortPicker : SECpopupPicker;
 
 	// パートナーデータ
 	var _partner : PartsButtonDataChara;
@@ -65,6 +64,7 @@ class SECcharaTabTeam extends SECcharaTab{
 		for(var i = 0; i < this._charaList.length; i++){
 			if(this._charaList[i].data.id == partnerId){
 				this._partner = new PartsButtonDataChara(this._charaList[i]);
+				this._partner.basey = 40;
 				this._partner.partner = false;
 				this._partner.sortTeam = 0;
 				// キャラクターリストのパートナーアイコン設定
@@ -111,7 +111,7 @@ class SECcharaTabTeam extends SECcharaTab{
 		this._scroller.btnList["pbox"] = this._partner;
 		this._scroller.btnList["face0"] = this._partner.faceBtn;
 		for(var i = 0; i < this._teams.length; i++){
-			this._scroller.btnList["t" + i + "name"] = this._teams[i].name.createButton(0, 0, 160, 24);
+			this._scroller.btnList["t" + i + "name"] = this._teams[i].name.createButton(40, 0, 160, 24);
 			for(var j = 0; j < this._teams[i].members.length; j++){
 				var member = this._teams[i].members[j];
 				this._scroller.btnList["t" + i + "m" + j + "box"] = member;
@@ -132,6 +132,13 @@ class SECcharaTabTeam extends SECcharaTab{
 	// 計算
 	override function tabCalc() : boolean{
 		this._scroller.calc(true);
+
+		// test
+		if(this._partner.trigger){
+			Sound.playSE("ok");
+			this.page.serialPush(new SECpopupDataCharaPicker(this.page, this, "test", this._charaList));
+			return false;
+		}
 
 		// パートナー情報ポップアップボタン処理
 		if(this._partner.faceBtn.trigger){
@@ -163,25 +170,21 @@ class SECcharaTabTeam extends SECcharaTab{
 		// ウインドウサイズに対する位置調整
 		this._scroller.cw = Ctrl.screen.w - SECcharaTab.tabWidth;
 		this._scroller.ch = Ctrl.screen.h - 50;
-		var lineNum = Math.floor((this._scroller.cw - 10) / 190);
-		var teamHeight = 2 + 44 + 70 * (4 - lineNum);
-		var x = (this._scroller.cw - (190 * lineNum - 10)) * 0.5;
+		var rowNum = Math.floor((this._scroller.cw - 10) / (this._partner.w + 10));
+		var colNum = 4 - rowNum;
+		var teamHeight = 2 + 44 + 70 * colNum;
+		var cx = (this._scroller.cw - ((this._partner.w + 10) * rowNum - 10)) * 0.5;
 		this._scroller.sh = 110 + teamHeight * this._teams.length;
 		// パートナー位置調整
-		this._partner.basex = x;
-		this._partner.basey = 40;
+		this._partner.basex = cx;
 		for(var i = 0; i < this._teams.length; i++){
 			// チーム名位置調整
-			var nameBtn = this._scroller.btnList["t" + i + "name"];
-			nameBtn.basex = 40;
-			nameBtn.basey = 110 + 2 + 10 + teamHeight * i;
+			this._scroller.btnList["t" + i + "name"].basey = 110 + 2 + 10 + teamHeight * i;
 			for(var j = 0; j < this._teams[i].members.length; j++){
 				// チームメンバー位置調整
 				var member = this._teams[i].members[j];
-				if(member != null){
-					member.basex = x + 190 * (j % lineNum);
-					member.basey = 110 + 2 + 44 + 70 * Math.floor(j / lineNum) + teamHeight * i;
-				}
+				member.basex = cx + (this._partner.w + 10) * (j % rowNum);
+				member.basey = 110 + 2 + 44 + 70 * Math.floor(j / rowNum) + teamHeight * i;
 			}
 		}
 
