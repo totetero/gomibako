@@ -26,6 +26,7 @@ import "SECcharaTabSell.jsx";
 
 // キャラクタータブひな形カートリッジ
 abstract class SECcharaTab implements SerialEventCartridge{
+	static const tabWidth = 50;
 	var page : PageChara;
 	var _tabList = {} : Map.<PartsButton>;
 
@@ -38,11 +39,11 @@ abstract class SECcharaTab implements SerialEventCartridge{
 		this.page = page;
 
 		// ボタン作成
-		this._tabList["team"] = new PartsButtonTabLeft("編成",  0, 0, 50, 40);
-		this._tabList["supp"] = new PartsButtonTabLeft("補給",  0, 0, 50, 40);
-		this._tabList["rest"] = new PartsButtonTabLeft("休息",  0, 0, 50, 40);
-		this._tabList["pwup"] = new PartsButtonTabLeft("強化",  0, 0, 50, 40);
-		this._tabList["sell"] = new PartsButtonTabLeft("別れ",  0, 0, 50, 40);
+		this._tabList["team"] = new PartsButtonTabLeft("編成",  0, 0, SECcharaTab.tabWidth, 0);
+		this._tabList["supp"] = new PartsButtonTabLeft("補給",  0, 0, SECcharaTab.tabWidth, 0);
+		this._tabList["rest"] = new PartsButtonTabLeft("休息",  0, 0, SECcharaTab.tabWidth, 0);
+		this._tabList["pwup"] = new PartsButtonTabLeft("強化",  0, 0, SECcharaTab.tabWidth, 0);
+		this._tabList["sell"] = new PartsButtonTabLeft("別れ",  0, 0, SECcharaTab.tabWidth, 0);
 		this._tabList[type].select = true;
 		this._tabList[type].inactive = true;
 	}
@@ -145,11 +146,11 @@ abstract class SECcharaTab implements SerialEventCartridge{
 
 		// 画面クリア
 		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(0, 0, 48, Ctrl.screen.h);
+		Ctrl.sctx.fillRect(0, 0, SECcharaTab.tabWidth - 2, Ctrl.screen.h);
 		Ctrl.sctx.fillStyle = "#000000";
-		Ctrl.sctx.fillRect(48, 0, 2, Ctrl.screen.h);
+		Ctrl.sctx.fillRect(SECcharaTab.tabWidth - 2, 0, 2, Ctrl.screen.h);
 		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(50, 0, Ctrl.screen.w - 50, Ctrl.screen.h);
+		Ctrl.sctx.fillRect(SECcharaTab.tabWidth, 0, Ctrl.screen.w - SECcharaTab.tabWidth, Ctrl.screen.h);
 
 		// ボタン描画
 		for(var name in this._tabList){this._tabList[name].draw();}
