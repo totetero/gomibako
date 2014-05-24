@@ -68,7 +68,7 @@ class SECdicePopupMenu extends SECpopup{
 			Sound.playSE("ok");
 			this._page.bust.set(null);
 			this._page.bcvs.cameraLock = true;
-			this._page.serialPush(new SECsettingPopupLocal(this._page, this.parentCartridge));
+			this._page.serialPush(new SECdiceSettingPopupLocal(this._page, this.parentCartridge));
 			return false;
 		}
 
@@ -113,6 +113,29 @@ class SECdicePopupMenu extends SECpopup{
 	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// ローカルで完結する設定ポップアップ 閉じるときにキャンバス設定を行う
+class SECdiceSettingPopupLocal extends SECsettingPopupLocal{
+	var _pageDice : PageDice;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : PageDice, cartridge : SerialEventCartridge){
+		super(page, cartridge);
+		this._pageDice = page;
+	}
+
+	// ----------------------------------------------------------------
+	// 破棄
+	override function dispose() : void{
+		this._pageDice.bcvs.isFastForward = (dom.window.localStorage.getItem("setting_transition") == "off");
+		super.dispose();
 	}
 }
 

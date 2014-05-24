@@ -51,7 +51,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	var _bgimg : HTMLImageElement;
 	var _bgaction = 0;
 	// 設定
-	var skip : boolean;
+	var isFastForward : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -77,7 +77,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
 
 		// 設定
-		this.skip = (dom.window.localStorage.getItem("setting_transition") == "off");
+		this.isFastForward = (dom.window.localStorage.getItem("setting_transition") == "off");
 	}
 
 	// ----------------------------------------------------------------
