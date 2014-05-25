@@ -105,7 +105,7 @@ class SECcharaTabTeam extends SECcharaTab{
 						member.partner = (this._partner.data == member.data);
 						member.sortTeam = 65535;
 						// キャラクターリストのチームアイコン設定
-						var sortTeam = (i + 1) * 128 + k;
+						var sortTeam = (i + 1) * 128 + j;
 						this._charaList[k].sortTeam = sortTeam;
 						// パートナーのチームアイコン設定
 						if(member.partner){this._partner.sortTeam = sortTeam;}
