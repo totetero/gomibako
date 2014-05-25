@@ -36,10 +36,10 @@ class SECcharaTabSupp extends SECcharaTab{
 		super(page, "supp");
 
 		// スクローラ作成
-		this._scroller = new PartsScroll(SECcharaTab.tabWidth, 125, 0, 0, 0, 0);
+		this._scroller = new PartsScroll(SECcharaTab.tabWidth, 122, 0, 0, 0, 0);
 
 		// ラベル作成
-		this._labList["max"] = new PartsLabel("", 100, 98, 90, 20);
+		this._labList["max"] = new PartsLabel("", 0, 95, 90, 20);
 		this._labList["max"].setSize(14);
 		this._labList["max"].setAlign("right");
 
@@ -55,8 +55,8 @@ class SECcharaTabSupp extends SECcharaTab{
 		this._sortPicker.setSelectedItem("sp");
 
 		// ボタン作成
-		this._btnList["picker"] = this._sortPicker.createButton(60, 60, 135);
-		this._btnList["supp"] = new PartsButtonBasic("補給", 205, 64, 100, 30);
+		this._btnList["picker"] = this._sortPicker.createButton(this._scroller.x + 10, this._scroller.y - 45, 135);
+		this._btnList["supp"] = new PartsButtonBasic("補給", 0, 60, 100, 30);
 
 		// データ形成
 		this._parse(response);
@@ -124,7 +124,7 @@ class SECcharaTabSupp extends SECcharaTab{
 
 		// 枠描画
 		Ctrl.sctx.fillStyle = "black";
-		Ctrl.sctx.fillRect(this._scroller.x + 10, 123, this._scroller.cw - 20, 2);
+		Ctrl.sctx.fillRect(this._scroller.x + 10, this._scroller.y - 2, this._scroller.cw - 20, 2);
 
 		// ラベル描画
 		if(this._maxCharaNum > 0){mLab.setText(this._charaList.length + "/" + this._maxCharaNum);}
