@@ -70,6 +70,7 @@ class SECcharaTabTeam extends SECcharaTab{
 			var chara = this._charaList[i];
 			chara.partner = false;
 			chara.sortTeam = 65535;
+			chara.inactive = false;
 		}
 
 		// パートナーデータ読み取り
@@ -100,19 +101,22 @@ class SECcharaTabTeam extends SECcharaTab{
 			for(var j = 0; j < memberIds.length; j++){
 				var member : PartsButtonDataChara = null;
 				for(var k = 0; k < this._charaList.length; k++){
-					if(this._charaList[k].data.id == memberIds[j]){
-						member = new PartsButtonDataChara(this._charaList[k]);
+					var chara = this._charaList[k];
+					if(chara.data.id == memberIds[j]){
+						member = new PartsButtonDataChara(chara);
 						member.partner = (this._partner.data == member.data);
 						member.sortTeam = 65535;
-						// キャラクターリストのチームアイコン設定
 						var sortTeam = (i + 1) * 128 + j;
-						this._charaList[k].sortTeam = sortTeam;
-						// パートナーのチームアイコン設定
+						// パートナーの設定
 						if(member.partner){this._partner.sortTeam = sortTeam;}
+						// キャラクターリストの設定
+						chara.sortTeam = sortTeam;
+						if(team.lock){chara.inactive = true;}
 						break;
 					}
 				}
 				if(member == null){member = new PartsButtonDataChara(0, 0);}
+				member.inactive = team.lock;
 				team.members[j] = member;
 			}
 			this._teams.push(team);
@@ -127,7 +131,9 @@ class SECcharaTabTeam extends SECcharaTab{
 		this._scroller.btnList["pbox"] = this._partner;
 		this._scroller.btnList["face0"] = this._partner.faceBtn;
 		for(var i = 0; i < this._teams.length; i++){
-			this._scroller.btnList["t" + i + "name"] = this._teams[i].name.createButton(40, 0, 160, 24);
+			var nameBtn = this._teams[i].name.createButton(40, 0, 160, 24);
+			nameBtn.inactive = this._teams[i].lock;
+			this._scroller.btnList["t" + i + "name"] = nameBtn;
 			for(var j = 0; j < this._teams[i].members.length; j++){
 				var member = this._teams[i].members[j];
 				this._scroller.btnList["t" + i + "m" + j + "box"] = member;

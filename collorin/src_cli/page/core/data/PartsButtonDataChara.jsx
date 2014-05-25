@@ -150,6 +150,10 @@ class PartsButtonDataChara extends PartsButton{
 		Ctrl.sctx.fillRect(113 + this.x, 47 + this.y, 50, 6);
 
 		// ラベル描画
+		var isInactive = (this.inactive && !this.active && !this.select);
+		var color = isInactive ? "gray" : "black";
+		this._labList["name"].setColor(color);
+		this._labList["level"].setColor(color);
 		for(var name in this._labList){this._labList[name].draw();}
 	}
 }
