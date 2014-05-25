@@ -184,7 +184,7 @@ class SECpopupPicker extends SECpopup{
 		var tLab = this._labList["title"];
 		var oBtn = this._btnList["outer"];
 		var cBtn = this._btnList["close"];
-		var cArea = 42;
+		var cArea = 40;
 		var ph = oBtn.h = Math.min(Ctrl.screen.h - 20, this._scroller.sh + (3 + tLab.h + 2) + (3 + cArea + 2));
 		var px = oBtn.x = Math.floor((Ctrl.screen.w - this._pw) * 0.5);
 		var py = oBtn.y = Math.floor((Ctrl.screen.h - ph) * 0.5);

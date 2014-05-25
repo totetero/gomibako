@@ -12,6 +12,7 @@ import "../../../util/PartsScroll.jsx";
 import "../Page.jsx";
 
 import "../popup/SECpopup.jsx";
+import "../popup/SECpopupPicker.jsx";
 import "DataChara.jsx";
 import "PartsButtonDataChara.jsx";
 import "SECpopupDataChara.jsx";
@@ -24,16 +25,19 @@ import "SECpopupDataChara.jsx";
 class SECpopupDataCharaPicker extends SECpopup{
 	var _page : Page;
 	var _charaList : PartsButtonDataChara[];
+	var _sortPicker : SECpopupPicker;
 	var _labList = {} : Map.<PartsLabel>;
 	var _btnList = {} : Map.<PartsButton>;
 	var _scroller : PartsScroll;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : SerialEventCartridge, title : string, charaList : PartsButtonDataChara[]){
+	function constructor(page : Page, cartridge : SerialEventCartridge, title : string, charaList : PartsButtonDataChara[], sortPicker : SECpopupPicker, isRemovable : boolean){
 		super(cartridge);
 		this._page = page;
 		this._charaList = charaList;
+		this._sortPicker = sortPicker;
+		this._sortPicker.parentCartridge = this;
 
 		// スクローラ作成
 		this._scroller = new PartsScroll(0, 0, 0, 0, 0, 0);
@@ -47,8 +51,10 @@ class SECpopupDataCharaPicker extends SECpopup{
 		this._labList["title"] = new PartsLabel(title, 0, 0, 0, 30);
 
 		// ボタン作成
+		this._btnList["picker"] = this._sortPicker.createButton(0, 0, 120);
+		if(isRemovable){this._btnList["remove"] = new PartsButtonBasic("はずす", 0, 0, 80, 30);}
 		this._btnList["outer"] = new PartsButton(0, 0, 0, 0, false);
-		this._btnList["close"] = new PartsButtonBasic("閉じる", 0, 0, 80, 30);
+		this._btnList["close"] = new PartsButtonBasic("とじる", 0, 0, 80, 30);
 		this._btnList["close"].sKey = true;
 	}
 
@@ -62,6 +68,9 @@ class SECpopupDataCharaPicker extends SECpopup{
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		for(var name in this._scroller.btnList){this._scroller.btnList[name].trigger = false;}
+
+		// ソート
+		PartsButtonDataChara.sort(this._charaList, this._sortPicker.getSelectedItem().tag);
 	}
 
 	// ----------------------------------------------------------------
@@ -69,6 +78,14 @@ class SECpopupDataCharaPicker extends SECpopup{
 	override function popupCalc() : boolean{
 		this._scroller.calc(true);
 		for(var name in this._btnList){this._btnList[name].calc(true);}
+
+		// ピッカーボタン押下処理
+		if(this._btnList["picker"].trigger){
+			Sound.playSE("ok");
+			this._page.serialPush(this._sortPicker);
+			this.close = false;
+			return false;
+		}
 
 		for(var i = 0; i < this._charaList.length; i++){
 			var chara = this._charaList[i];
@@ -90,7 +107,16 @@ class SECpopupDataCharaPicker extends SECpopup{
 			}
 		}
 
-		// 閉じるボタン押下処理
+		// はずすボタン押下処理
+		var btn = this._btnList["remove"];
+		if(btn != null && btn.trigger){
+			Sound.playSE("ok");
+			this.onSelect("");
+			this._page.serialPush(this.parentCartridge);
+			return false;
+		}
+
+		// とじるボタン押下処理
 		if(this._btnList["outer"].trigger || this._btnList["close"].trigger){
 			Sound.playSE("ng");
 			this._page.serialPush(this.parentCartridge);
@@ -107,11 +133,12 @@ class SECpopupDataCharaPicker extends SECpopup{
 
 		// ウインドウサイズに対する位置調整
 		var tLab = this._labList["title"];
-		//var pBtn = this._btnList["picker"];
+		var pBtn = this._btnList["picker"];
 		var oBtn = this._btnList["outer"];
+		var rBtn = this._btnList["remove"];
 		var cBtn = this._btnList["close"];
-		var pArea = 42;
-		var cArea = 48;
+		var pArea = 48;
+		var cArea = 40;
 		// 縦横の要素数計算
 		var itemw = this._charaList[0].w;
 		var itemh = this._charaList[0].h;
@@ -122,18 +149,27 @@ class SECpopupDataCharaPicker extends SECpopup{
 		var diff = itemh * 0.3;
 		this._scroller.sh = colNum * (itemh + 5) + ((this._charaList.length - 1) % rowNum) * diff - 5;
 		var pw = oBtn.w = rowNum * (itemw + 5) - 5 + 6;
-		var ph = oBtn.h = Math.min(Ctrl.screen.h - 20, this._scroller.sh + (3 + tLab.h + 2) + (2 + pArea + 2) + (3 + cArea + 2));
+		var ph = oBtn.h = Math.min(Ctrl.screen.h - 20, this._scroller.sh + (3 + tLab.h + 2) + (pArea + 2) + (3 + cArea + 2));
 		var px = oBtn.x = Math.floor((Ctrl.screen.w - pw) * 0.5);
 		var py = oBtn.y = Math.floor((Ctrl.screen.h - ph) * 0.5);
 		tLab.x = px;
 		tLab.y = py + 3;
 		tLab.w = pw;
-		cBtn.x = px + (pw - cBtn.w) * 0.5;
+		pBtn.x = px + (pw - pBtn.w) * 0.5;
+		pBtn.y = py + (3 + tLab.h + 2) + (pArea - pBtn.h) * 0.5;
 		cBtn.y = py + ph - 3 - (cArea + cBtn.h) * 0.5;
+		if(rBtn != null){
+			var cw = (pw - rBtn.w - cBtn.w) / 3;
+			rBtn.y = cBtn.y;
+			rBtn.x = px + cw;
+			cBtn.x = rBtn.x + rBtn.w + cw;
+		}else{
+			cBtn.x = px + (pw - cBtn.w) * 0.5;
+		}
 		this._scroller.x = px + 3;
-		this._scroller.y = py + (3 + tLab.h + 2) + (2 + pArea + 2);
+		this._scroller.y = py + (3 + tLab.h + 2) + (pArea + 2);
 		this._scroller.cw = pw - 6;
-		this._scroller.ch = ph - (3 + tLab.h + 2) - (2 + pArea + 2) - (3 + cArea + 2);
+		this._scroller.ch = ph - (3 + tLab.h + 2) - (pArea + 2) - (3 + cArea + 2);
 		for(var i = 0; i < this._charaList.length; i++){
 			this._charaList[i].basex = (itemw + 5) * (i % rowNum);
 			this._charaList[i].basey = (itemh + 5) * Math.floor(i / rowNum) + (i % rowNum) * diff;
@@ -143,7 +179,7 @@ class SECpopupDataCharaPicker extends SECpopup{
 		Drawer.drawBox(Ctrl.sctx, Loader.imgs["img_system_box_basic"], px, py, pw, ph);
 		Ctrl.sctx.fillStyle = "black";
 		Ctrl.sctx.fillRect(px + 3, py + (3 + tLab.h), pw - 6, 2);
-		Ctrl.sctx.fillRect(px + 3, py + (3 + tLab.h + 2) + (2 + pArea), pw - 6, 2);
+		Ctrl.sctx.fillRect(px + 3, py + (3 + tLab.h + 2) + pArea, pw - 6, 2);
 		Ctrl.sctx.fillRect(px + 3, py + ph - (3 + cArea) - 2, pw - 6, 2);
 
 		// ラベル描画

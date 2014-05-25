@@ -15,6 +15,7 @@ import "../core/data/DataChara.jsx";
 import "../core/data/PartsButtonDataChara.jsx";
 import "../core/data/SECpopupDataChara.jsx";
 import "../core/data/SECpopupDataCharaPicker.jsx";
+import "../core/popup/SECpopupPicker.jsx";
 import "../core/popup/SECpopupTextarea.jsx";
 import "PageChara.jsx";
 import "SECcharaTab.jsx";
@@ -27,6 +28,7 @@ import "SECcharaTab.jsx";
 class SECcharaTabTeam extends SECcharaTab{
 	var _scroller : PartsScroll;
 	var _charaList : PartsButtonDataChara[];
+	var _sortPicker : SECpopupPicker;
 
 	// パートナーデータ
 	var _partner : PartsButtonDataChara;
@@ -38,6 +40,16 @@ class SECcharaTabTeam extends SECcharaTab{
 	function constructor(page : PageChara, response : variant){
 		super(page, "team");
 		this.parse(response);
+
+		// ピッカー作成
+		this._sortPicker = new SECpopupPicker(this.page, null, "並べ替え", [
+			new SECpopupPickerItem("level", "レベル順"),
+			new SECpopupPickerItem("team", "チーム順"),
+			new SECpopupPickerItem("favorite", "ファボ順"),
+			new SECpopupPickerItem("type", "種類順"),
+			new SECpopupPickerItem("new", "新着順"),
+		]);
+		this._sortPicker.setSelectedItem("level");
 	}
 
 	// ----------------------------------------------------------------
@@ -136,7 +148,7 @@ class SECcharaTabTeam extends SECcharaTab{
 		// test
 		if(this._partner.trigger){
 			Sound.playSE("ok");
-			this.page.serialPush(new SECpopupDataCharaPicker(this.page, this, "test", this._charaList));
+			this.page.serialPush(new SECpopupDataCharaPicker(this.page, this, "test", this._charaList, this._sortPicker, false));
 			return false;
 		}
 

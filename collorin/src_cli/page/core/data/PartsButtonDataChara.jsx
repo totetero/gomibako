@@ -19,6 +19,25 @@ import "DataChara.jsx";
 
 // キャラクター情報表示ボタン
 class PartsButtonDataChara extends PartsButton{
+	// 並べ替え
+	static function sort(list : PartsButtonDataChara[], type : string) : void{
+		for(var i = 0; i < list.length; i++){
+			list[i].sortIndex = i;
+			switch(type){
+				case "hp": break;
+				case "sp": break;
+				case "level": list[i].sortIndex += -list[i].data.level * list.length; break;
+				case "team": list[i].sortIndex += list[i].sortTeam * list.length; break;
+				case "favorite": list[i].sortIndex += -(list[i].partner ? 5 : list[i].favorite) * list.length; break;
+				case "type": list[i].sortIndex += list[i].sortKind * list.length; break;
+				case "new": list[i].sortIndex = -list[i].sortDate.getTime(); break;
+			}
+		}
+		list.sort(function(i0 : Nullable.<PartsButtonDataChara>, i1 : Nullable.<PartsButtonDataChara>):number{return i0.sortIndex - i1.sortIndex;});
+	}
+
+	// ----------------------------------------------------------------
+
 	var data : DataChara;
 	var faceBtn : PartsButton;
 	var _labList = {} : Map.<PartsLabel>;
