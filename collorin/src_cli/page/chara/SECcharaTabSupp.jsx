@@ -114,9 +114,9 @@ class SECcharaTabSupp extends SECcharaTab{
 		var itemh = this._charaList[0].h;
 		var rowNum = Math.min(Math.floor((this._scroller.cw - 20 + 5) / (itemw + 5)), this._charaList.length);
 		var colNum = Math.ceil(this._charaList.length / rowNum);
-		var cx = (this._scroller.cw - ((itemw + 5) * rowNum - 5)) * 0.5;
 		this._scroller.sh = colNum * (itemh + 5) - 5;
 		// キャラクター位置調整
+		var cx = (this._scroller.cw - ((itemw + 5) * rowNum - 5)) * 0.5;
 		for(var i = 0; i < this._charaList.length; i++){
 			this._charaList[i].basex = cx + (itemw + 5) * (i % rowNum);
 			this._charaList[i].basey = (itemh + 5) * Math.floor(i / rowNum);

@@ -168,8 +168,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		var rowNum = Math.min(Math.floor((maxcw + 5) / (itemw + 5)), this._charaList.length);
 		var colNum = Math.ceil(this._charaList.length / rowNum);
 		// 各要素の位置調整
-		var diff = itemh * 0.3;
-		this._scroller.sh = colNum * (itemh + 5) + ((this._charaList.length - 1) % rowNum) * diff - 5;
+		this._scroller.sh = colNum * (itemh + 5) - 5;
 		var pw = oBtn.w = ((rowNum > 1) ? rowNum * (itemw + 5) - 5 : itemw + 66) + 6;
 		var ph = oBtn.h = Math.min(Ctrl.screen.h - 20, this._scroller.sh + (3 + tLab.h + 2) + (pArea + 2) + (3 + cArea + 2));
 		var px = oBtn.x = Math.floor((Ctrl.screen.w - pw) * 0.5);
@@ -196,7 +195,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		this._scroller.ch = ph - (3 + tLab.h + 2) - (pArea + 2) - (3 + cArea + 2);
 		for(var i = 0; i < this._charaList.length; i++){
 			this._charaList[i].basex = (rowNum > 1) ? (itemw + 5) * (i % rowNum) : 33;
-			this._charaList[i].basey = (itemh + 5) * Math.floor(i / rowNum) + (i % rowNum) * diff;
+			this._charaList[i].basey = (itemh + 5) * Math.floor(i / rowNum);
 		}
 
 		// 枠描画

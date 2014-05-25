@@ -223,10 +223,9 @@ class SECcharaTabTeam extends SECcharaTab{
 		var rowNum = Math.floor((this._scroller.cw - 10) / (itemw + 10));
 		var colNum = 4 - rowNum;
 		var teamHeight = 2 + 44 + 70 * colNum;
-		var cx = (this._scroller.cw - ((itemw + 10) * rowNum - 10)) * 0.5;
 		this._scroller.sh = 110 + teamHeight * this._teams.length;
 		// パートナー位置調整
-		this._partner.basex = cx;
+		var cx = this._partner.basex = (this._scroller.cw - ((itemw + 10) * rowNum - 10)) * 0.5;
 		for(var i = 0; i < this._teams.length; i++){
 			// チーム名位置調整
 			this._scroller.btnList["t" + i + "name"].basey = 110 + 2 + 10 + teamHeight * i;
