@@ -24,6 +24,9 @@ class CharaTeamPage{
 				}
 			}
 
+			// 所持可能キャラ数
+			jdat["max"] = 100;
+
 			var step = {} : Map.<function():void>;
 			step["start"] = function() : void{
 				if(type == "get"){

@@ -28,29 +28,40 @@ import "SECcharaTab.jsx";
 // キャラクター編成タブカートリッジ
 class SECcharaTabTeam extends SECcharaTab{
 	var _scroller : PartsScroll;
-	var _charaList : PartsButtonDataChara[];
-	var _sortPicker : SECpopupPicker;
+	var charaList : PartsButtonDataChara[];
+	var sortPicker : SECpopupPicker;
 
 	// パートナーデータ
 	var _partner : PartsButtonDataChara;
 	// チームデータ
 	var _teams : SECcharaTabTeam._Team[];
 
+	var maxCharaNum : int;
+	var charaPickerScrolly = 0;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : PageChara, response : variant){
 		super(page, "team");
+
+		// スクローラ作成
+		this._scroller = new PartsScroll(SECcharaTab.tabWidth, 50, 0, 0, 0, 0);
+		// ラベル設定
+		this._scroller.labList["partner"] = new PartsLabel("パートナー", 40, 10, 150, 20);
+		this._scroller.labList["partner"].setAlign("left");
+
+		// データ形成
 		this.parse(response);
 
 		// ピッカー作成
-		this._sortPicker = new SECpopupPicker(this.page, null, "並べ替え", [
+		this.sortPicker = new SECpopupPicker(this.page, null, "並べ替え", [
 			new SECpopupPickerItem("level", "レベル順"),
 			new SECpopupPickerItem("team", "チーム順"),
 			new SECpopupPickerItem("favorite", "ファボ順"),
 			new SECpopupPickerItem("type", "種類順"),
 			new SECpopupPickerItem("new", "新着順"),
 		]);
-		this._sortPicker.setSelectedItem("level");
+		this.sortPicker.setSelectedItem("level");
 	}
 
 	// ----------------------------------------------------------------
@@ -59,15 +70,16 @@ class SECcharaTabTeam extends SECcharaTab{
 		// キャラクターリスト作成
 		var list = response["list"] as variant[];
 		if(list != null){
-			this._charaList = new PartsButtonDataChara[];
+			this.charaList = new PartsButtonDataChara[];
 			for(var i = 0; i < list.length; i++){
-				this._charaList.push(new PartsButtonDataChara(0, 0, list[i]));
+				this.charaList.push(new PartsButtonDataChara(0, 0, list[i]));
 			}
 		}
+		this.maxCharaNum = response["max"] as int;
 
-		// パートナーアイコンとチームアイコンリセット
-		for(var i = 0; i < this._charaList.length; i++){
-			var chara = this._charaList[i];
+		// キャラクターリストの一部設定リセット
+		for(var i = 0; i < this.charaList.length; i++){
+			var chara = this.charaList[i];
 			chara.partner = false;
 			chara.sortTeam = 65535;
 			chara.inactive = false;
@@ -75,14 +87,14 @@ class SECcharaTabTeam extends SECcharaTab{
 
 		// パートナーデータ読み取り
 		var partnerId = response["partner"] as string;
-		for(var i = 0; i < this._charaList.length; i++){
-			if(this._charaList[i].data.id == partnerId){
-				this._partner = new PartsButtonDataChara(this._charaList[i]);
+		for(var i = 0; i < this.charaList.length; i++){
+			if(this.charaList[i].data.id == partnerId){
+				this._partner = new PartsButtonDataChara(this.charaList[i]);
 				this._partner.basey = 40;
 				this._partner.partner = false;
 				this._partner.sortTeam = 0;
 				// キャラクターリストのパートナーアイコン設定
-				this._charaList[i].partner = true;
+				this.charaList[i].partner = true;
 				break;
 			}
 		}
@@ -100,8 +112,8 @@ class SECcharaTabTeam extends SECcharaTab{
 			var memberIds = teams[i]["members"] as string[];
 			for(var j = 0; j < memberIds.length; j++){
 				var member : PartsButtonDataChara = null;
-				for(var k = 0; k < this._charaList.length; k++){
-					var chara = this._charaList[k];
+				for(var k = 0; k < this.charaList.length; k++){
+					var chara = this.charaList[k];
 					if(chara.data.id == memberIds[j]){
 						member = new PartsButtonDataChara(chara);
 						member.partner = (this._partner.data == member.data);
@@ -122,12 +134,8 @@ class SECcharaTabTeam extends SECcharaTab{
 			this._teams.push(team);
 		}
 
-		// スクローラ作成
-		this._scroller = new PartsScroll(SECcharaTab.tabWidth, 50, 0, 0, 0, 0);
-		// ラベル設定
-		this._scroller.labList["partner"] = new PartsLabel("パートナー", 40, 10, 150, 20);
-		this._scroller.labList["partner"].setAlign("left");
-		// ボタン作成
+		// スクローラボタン作成
+		this._scroller.btnList = {} : Map.<PartsButton>;
 		this._scroller.btnList["pbox"] = this._partner;
 		this._scroller.btnList["face0"] = this._partner.faceBtn;
 		for(var i = 0; i < this._teams.length; i++){
@@ -160,7 +168,7 @@ class SECcharaTabTeam extends SECcharaTab{
 			Sound.playSE("ok");
 			var id = this._partner.data.id;
 			var command = "type=partner";
-			this.page.serialPush(new SECcharaTabTeamPopupDataCharaPicker(this.page, this, "パートナー選択", this._charaList, this._sortPicker, command, id));
+			this.page.serialPush(new SECcharaTabTeamPopupDataCharaPicker(this.page, this, "パートナー選択", command, id));
 			return false;
 		}
 
@@ -189,7 +197,7 @@ class SECcharaTabTeam extends SECcharaTab{
 					Sound.playSE("ok");
 					var id = member.data != null ? member.data.id : "";
 					var command = "type=teamMember&teamId=" + this._teams[i].id + "&index=" + j;
-					this.page.serialPush(new SECcharaTabTeamPopupDataCharaPicker(this.page, this, "メンバー選択", this._charaList, this._sortPicker, command, id));
+					this.page.serialPush(new SECcharaTabTeamPopupDataCharaPicker(this.page, this, "メンバー選択", command, id));
 					return false;
 				}
 
@@ -276,14 +284,15 @@ class SECcharaTabTeamPopupDataCharaPicker extends SECpopupDataCharaPicker{
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : SECcharaTabTeam, title : string, charaList : PartsButtonDataChara[], sortPicker : SECpopupPicker, command : string, id : string){
-		super(page, cartridge, title, charaList, sortPicker, (command.indexOf("partner") < 0 && id != ""));
+	function constructor(page : Page, cartridge : SECcharaTabTeam, title : string, command : string, id : string){
+		super(page, cartridge, title, cartridge.charaList, cartridge.sortPicker, cartridge.maxCharaNum, (command.indexOf("partner") < 0 && id != ""), cartridge.charaPickerScrolly);
 		this._cartridgeTabTeam = cartridge;
 		this._command = command;
 		this._prevId = id;
 
 		// キャラクターリスト選択状態
-		for(var i = 0; i < this._charaList.length; i++){this._charaList[i].select = (this._charaList[i].data.id == id);}
+		var cList = this._cartridgeTabTeam.charaList;
+		for(var i = 0; i < cList.length; i++){cList[i].select = (cList[i].data.id == id);}
 	}
 
 	// ----------------------------------------------------------------
@@ -295,6 +304,12 @@ class SECcharaTabTeamPopupDataCharaPicker extends SECpopupDataCharaPicker{
 				this._cartridgeTabTeam.parse(response);
 			}));
 		}
+	}
+
+	// ----------------------------------------------------------------
+	// 閉じるときの動作 継承用
+	override function onClose(scrolly : int) : void{
+		this._cartridgeTabTeam.charaPickerScrolly = scrolly;
 	}
 }
 
