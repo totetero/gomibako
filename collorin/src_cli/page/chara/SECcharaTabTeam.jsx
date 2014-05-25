@@ -31,12 +31,12 @@ class SECcharaTabTeam extends SECcharaTab{
 	var charaList : PartsButtonDataChara[];
 	var sortPicker : SECpopupPicker;
 
+	var maxCharaNum : int;
 	// パートナーデータ
 	var _partner : PartsButtonDataChara;
 	// チームデータ
 	var _teams : SECcharaTabTeam._Team[];
 
-	var maxCharaNum : int;
 	var charaPickerScrolly = 0;
 
 	// ----------------------------------------------------------------
@@ -50,9 +50,6 @@ class SECcharaTabTeam extends SECcharaTab{
 		this._scroller.labList["partner"] = new PartsLabel("パートナー", 40, 10, 150, 20);
 		this._scroller.labList["partner"].setAlign("left");
 
-		// データ形成
-		this.parse(response);
-
 		// ピッカー作成
 		this.sortPicker = new SECpopupPicker(this.page, null, "並べ替え", [
 			new SECpopupPickerItem("level", "レベル順"),
@@ -62,6 +59,9 @@ class SECcharaTabTeam extends SECcharaTab{
 			new SECpopupPickerItem("new", "新着順"),
 		]);
 		this.sortPicker.setSelectedItem("level");
+
+		// データ形成
+		this.parse(response);
 	}
 
 	// ----------------------------------------------------------------
@@ -217,12 +217,13 @@ class SECcharaTabTeam extends SECcharaTab{
 	// 描画
 	override function tabDraw() : void{
 		// ウインドウサイズに対する位置調整
-		this._scroller.cw = Ctrl.screen.w - SECcharaTab.tabWidth;
-		this._scroller.ch = Ctrl.screen.h - 50;
-		var rowNum = Math.floor((this._scroller.cw - 10) / (this._partner.w + 10));
+		this._scroller.cw = Ctrl.screen.w - this._scroller.x;
+		this._scroller.ch = Ctrl.screen.h - this._scroller.y;
+		var itemw = this._partner.w;
+		var rowNum = Math.floor((this._scroller.cw - 10) / (itemw + 10));
 		var colNum = 4 - rowNum;
 		var teamHeight = 2 + 44 + 70 * colNum;
-		var cx = (this._scroller.cw - ((this._partner.w + 10) * rowNum - 10)) * 0.5;
+		var cx = (this._scroller.cw - ((itemw + 10) * rowNum - 10)) * 0.5;
 		this._scroller.sh = 110 + teamHeight * this._teams.length;
 		// パートナー位置調整
 		this._partner.basex = cx;
@@ -232,7 +233,7 @@ class SECcharaTabTeam extends SECcharaTab{
 			for(var j = 0; j < this._teams[i].members.length; j++){
 				// チームメンバー位置調整
 				var member = this._teams[i].members[j];
-				member.basex = cx + (this._partner.w + 10) * (j % rowNum);
+				member.basex = cx + (itemw + 10) * (j % rowNum);
 				member.basey = 110 + 2 + 44 + 70 * Math.floor(j / rowNum) + teamHeight * i;
 			}
 		}

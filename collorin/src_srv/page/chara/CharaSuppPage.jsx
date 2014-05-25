@@ -13,6 +13,9 @@ class CharaSuppPage{
 			var jdat = {} : Map.<variant>;
 			var cont = {} : Map.<string>;
 
+			// 所持可能キャラ数
+			jdat["max"] = 100;
+
 			var step = {} : Map.<function():void>;
 			step["start"] = function() : void{step["getCharas"]();};
 			// キャラクター情報獲得

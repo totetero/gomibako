@@ -60,7 +60,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		// ラベル作成
 		this._labList["title"] = new PartsLabel(title, 0, 0, 0, 30);
 		this._labList["max"] = new PartsLabel("", 0, 0, 90, 20);
-		this._labList["max"].setSize(16);
+		this._labList["max"].setSize(14);
 		this._labList["max"].setAlign("right");
 
 		// ボタン作成
