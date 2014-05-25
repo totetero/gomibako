@@ -64,7 +64,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		this._labList["max"].setAlign("right");
 
 		// ボタン作成
-		this._btnList["picker"] = this._sortPicker.createButton(0, 0, 120);
+		this._btnList["picker"] = this._sortPicker.createButton(0, 0, 135);
 		if(isRemovable){this._btnList["remove"] = new PartsButtonBasic("はずす", 0, 0, 80, 30);}
 		this._btnList["outer"] = new PartsButton(0, 0, 0, 0, false);
 		this._btnList["close"] = new PartsButtonBasic("とじる", 0, 0, 80, 30);
@@ -170,7 +170,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		// 各要素の位置調整
 		var diff = itemh * 0.3;
 		this._scroller.sh = colNum * (itemh + 5) + ((this._charaList.length - 1) % rowNum) * diff - 5;
-		var pw = oBtn.w = ((rowNum > 1) ? rowNum * (itemw + 5) - 5 : itemw + 50) + 6;
+		var pw = oBtn.w = ((rowNum > 1) ? rowNum * (itemw + 5) - 5 : itemw + 66) + 6;
 		var ph = oBtn.h = Math.min(Ctrl.screen.h - 20, this._scroller.sh + (3 + tLab.h + 2) + (pArea + 2) + (3 + cArea + 2));
 		var px = oBtn.x = Math.floor((Ctrl.screen.w - pw) * 0.5);
 		var py = oBtn.y = Math.floor((Ctrl.screen.h - ph) * 0.5);
@@ -195,7 +195,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		this._scroller.cw = pw - 6;
 		this._scroller.ch = ph - (3 + tLab.h + 2) - (pArea + 2) - (3 + cArea + 2);
 		for(var i = 0; i < this._charaList.length; i++){
-			this._charaList[i].basex = (rowNum > 1) ? (itemw + 5) * (i % rowNum) : 25;
+			this._charaList[i].basex = (rowNum > 1) ? (itemw + 5) * (i % rowNum) : 33;
 			this._charaList[i].basey = (itemh + 5) * Math.floor(i / rowNum) + (i % rowNum) * diff;
 		}
 
