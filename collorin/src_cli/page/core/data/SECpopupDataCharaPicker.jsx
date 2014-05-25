@@ -23,7 +23,7 @@ import "SECpopupDataChara.jsx";
 
 // ピッカーポップアップ
 class SECpopupDataCharaPicker extends SECpopup{
-	var _page : Page;
+	var page : Page;
 	var _charaList : PartsButtonDataChara[];
 	var _sortPicker : SECpopupPicker;
 	var _labList = {} : Map.<PartsLabel>;
@@ -34,7 +34,7 @@ class SECpopupDataCharaPicker extends SECpopup{
 	// コンストラクタ
 	function constructor(page : Page, cartridge : SerialEventCartridge, title : string, charaList : PartsButtonDataChara[], sortPicker : SECpopupPicker, isRemovable : boolean){
 		super(cartridge);
-		this._page = page;
+		this.page = page;
 		this._charaList = charaList;
 		this._sortPicker = sortPicker;
 		this._sortPicker.parentCartridge = this;
@@ -62,15 +62,17 @@ class SECpopupDataCharaPicker extends SECpopup{
 	// 初期化
 	override function init() : void{
 		// クロス設定
-		this._page.ctrler.setLctrl(false);
-		this._page.ctrler.setRctrl("", "", "", "");
-		this._page.header.setActive(false);
+		this.page.ctrler.setLctrl(false);
+		this.page.ctrler.setRctrl("", "", "", "");
+		this.page.header.setActive(false);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		for(var name in this._scroller.btnList){this._scroller.btnList[name].trigger = false;}
 
 		// ソート
-		PartsButtonDataChara.sort(this._charaList, this._sortPicker.getSelectedItem().tag);
+		var sortTag = this._sortPicker.getSelectedItem().tag;
+		PartsButtonDataChara.sort(this._charaList, sortTag);
+		this._scroller.scrolly = 0; // TODO
 	}
 
 	// ----------------------------------------------------------------
@@ -82,7 +84,7 @@ class SECpopupDataCharaPicker extends SECpopup{
 		// ピッカーボタン押下処理
 		if(this._btnList["picker"].trigger){
 			Sound.playSE("ok");
-			this._page.serialPush(this._sortPicker);
+			this.page.serialPush(this._sortPicker);
 			this.close = false;
 			return false;
 		}
@@ -94,14 +96,14 @@ class SECpopupDataCharaPicker extends SECpopup{
 			if(chara.trigger){
 				Sound.playSE("ok");
 				this.onSelect(chara.data.id);
-				this._page.serialPush(this.parentCartridge);
+				this.page.serialPush(this.parentCartridge);
 				return false;
 			}
 
 			// キャラクタ情報ポップアップ
 			if(chara.faceBtn.trigger){
 				Sound.playSE("ok");
-				this._page.serialPush(new SECpopupDataChara(this._page, this, chara.data));
+				this.page.serialPush(new SECpopupDataChara(this.page, this, chara.data));
 				this.close = false;
 				return false;
 			}
@@ -112,14 +114,14 @@ class SECpopupDataCharaPicker extends SECpopup{
 		if(btn != null && btn.trigger){
 			Sound.playSE("ok");
 			this.onSelect("");
-			this._page.serialPush(this.parentCartridge);
+			this.page.serialPush(this.parentCartridge);
 			return false;
 		}
 
 		// とじるボタン押下処理
 		if(this._btnList["outer"].trigger || this._btnList["close"].trigger){
 			Sound.playSE("ng");
-			this._page.serialPush(this.parentCartridge);
+			this.page.serialPush(this.parentCartridge);
 			return false;
 		}
 

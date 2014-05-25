@@ -113,7 +113,7 @@ class PartsButtonDataChara extends PartsButton{
 		}
 
 		// 領域全体の描画
-		Ctrl.sctx.fillStyle = this.active ? "#bbbbbb" : "#eeeeee";
+		Ctrl.sctx.fillStyle = this.active ? "#bbbbbb" : this.select ? "red" : "#eeeeee";
 		Ctrl.sctx.fillRect(this.x, this.y, this.w, this.h);
 
 		// データが無ければ以下の描画は行わない

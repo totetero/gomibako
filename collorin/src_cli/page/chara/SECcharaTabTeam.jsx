@@ -15,6 +15,7 @@ import "../core/data/DataChara.jsx";
 import "../core/data/PartsButtonDataChara.jsx";
 import "../core/data/SECpopupDataChara.jsx";
 import "../core/data/SECpopupDataCharaPicker.jsx";
+import "../core/load/SECload.jsx";
 import "../core/popup/SECpopupPicker.jsx";
 import "../core/popup/SECpopupTextarea.jsx";
 import "PageChara.jsx";
@@ -33,7 +34,7 @@ class SECcharaTabTeam extends SECcharaTab{
 	// パートナーデータ
 	var _partner : PartsButtonDataChara;
 	// チームデータ
-	var _teams = new SECcharaTabTeam._Team[];
+	var _teams : SECcharaTabTeam._Team[];
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -87,11 +88,14 @@ class SECcharaTabTeam extends SECcharaTab{
 
 		// チームデータ読み取り
 		var teams = response["teams"] as variant[];
+		this._teams = new SECcharaTabTeam._Team[];
 		for(var i = 0; i < teams.length; i++){
 			var team = new SECcharaTabTeam._Team();
 			team.id = teams[i]["id"] as string;
-			team.name = new SECcharaPopupTabTeamName(this.page, this, teams[i]["name"] as string);
 			team.lock = teams[i]["lock"] as boolean;
+			var name = teams[i]["name"] as string;
+			var command = "type=teamName&teamId=" + team.id;
+			team.name = new SECcharaTabTeamPopupName(this.page, this, command, name);
 			var memberIds = teams[i]["members"] as string[];
 			for(var j = 0; j < memberIds.length; j++){
 				var member : PartsButtonDataChara = null;
@@ -145,10 +149,12 @@ class SECcharaTabTeam extends SECcharaTab{
 	override function tabCalc() : boolean{
 		this._scroller.calc(true);
 
-		// test
+		// パートナー選択ポップアップボタン処理
 		if(this._partner.trigger){
 			Sound.playSE("ok");
-			this.page.serialPush(new SECpopupDataCharaPicker(this.page, this, "test", this._charaList, this._sortPicker, false));
+			var id = this._partner.data.id;
+			var command = "type=partner";
+			this.page.serialPush(new SECcharaTabTeamPopupDataCharaPicker(this.page, this, "パートナー選択", this._charaList, this._sortPicker, command, id));
 			return false;
 		}
 
@@ -159,10 +165,27 @@ class SECcharaTabTeam extends SECcharaTab{
 			return false;
 		}
 
-		// チームメンバーボタン処理
+		// チームボタン処理
 		for(var i = 0; i < this._teams.length; i++){
+			// チーム名ボタン
+			var btn = this._scroller.btnList["t" + i + "name"];
+			if(btn.trigger){
+				Sound.playSE("ok");
+				this.page.serialPush(this._teams[i].name);
+				return false;
+			}
+
 			for(var j = 0; j < this._teams[i].members.length; j++){
 				var member = this._teams[i].members[j];
+
+				// メンバー択ポップアップボタン処理
+				if(member.trigger){
+					Sound.playSE("ok");
+					var id = member.data != null ? member.data.id : "";
+					var command = "type=teamMember&teamId=" + this._teams[i].id + "&index=" + j;
+					this.page.serialPush(new SECcharaTabTeamPopupDataCharaPicker(this.page, this, "メンバー選択", this._charaList, this._sortPicker, command, id));
+					return false;
+				}
 
 				// メンバー情報ポップアップ
 				if(member.data != null && member.faceBtn.trigger){
@@ -230,7 +253,7 @@ class SECcharaTabTeam extends SECcharaTab{
 	class _Team{
 		var id : string;
 		var lock : boolean;
-		var name : SECcharaPopupTabTeamName;
+		var name : SECcharaTabTeamPopupName;
 		var members = new PartsButtonDataChara[];
 	}
 }
@@ -239,25 +262,64 @@ class SECcharaTabTeam extends SECcharaTab{
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
+// キャラクタ選択のピッカーポップアップ
+class SECcharaTabTeamPopupDataCharaPicker extends SECpopupDataCharaPicker{
+	var _cartridgeTabTeam : SECcharaTabTeam;
+	var _command : string;
+	var _prevId : string;
+
+	// ----------------------------------------------------------------
+	// コンストラクタ
+	function constructor(page : Page, cartridge : SECcharaTabTeam, title : string, charaList : PartsButtonDataChara[], sortPicker : SECpopupPicker, command : string, id : string){
+		super(page, cartridge, title, charaList, sortPicker, (command.indexOf("partner") < 0 && id != ""));
+		this._cartridgeTabTeam = cartridge;
+		this._command = command;
+		this._prevId = id;
+
+		// キャラクターリスト選択状態
+		for(var i = 0; i < this._charaList.length; i++){this._charaList[i].select = (this._charaList[i].data.id == id);}
+	}
+
+	// ----------------------------------------------------------------
+	// 選択時の動作
+	override function onSelect(id : string) : void{
+		if(this._prevId != id){
+			var url = "/chara/team?" + this._command + "&charaId=" + id;
+			this.page.serialPush(new SECload(this, url, null, function(response : variant) : void{
+				this._cartridgeTabTeam.parse(response);
+			}));
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
 // チーム名変更のテキストエリア
-class SECcharaPopupTabTeamName extends SECpopupTextarea{
+class SECcharaTabTeamPopupName extends SECpopupTextarea{
+	var _cartridgeTabTeam : SECcharaTabTeam;
+	var _command : string;
 	var _prevName : string;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : Page, cartridge : SerialEventCartridge, name : string){
+	function constructor(page : Page, cartridge : SECcharaTabTeam, command : string, name : string){
 		super(page, cartridge, "チーム名", 16);
 		this.setValue(name);
+		this._cartridgeTabTeam = cartridge;
+		this._command = command;
 		this._prevName = name;
 	}
 
 	// ----------------------------------------------------------------
 	// 入力確定時の動作
 	override function onEnter(value : string) : void{
-		if(value != this._prevName){
-			//this.page.serialPush(new SECload(this, "/setting?comment=" + value, null, function(response : variant) : void{
-			//	this._parse(response);
-			//}));
+		if(this._prevName != value){
+			var url = "/chara/team?" + this._command + "&name=" + value;
+			this.page.serialPush(new SECload(this, url, null, function(response : variant) : void{
+				this._cartridgeTabTeam.parse(response);
+			}));
 		}
 	}
 }
