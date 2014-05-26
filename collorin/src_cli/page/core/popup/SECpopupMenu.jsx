@@ -39,8 +39,8 @@ class SECpopupMenu extends SECpopup{
 		var x0 = 10;
 		var x1 = this._pw - 100 - 10;
 		this._menuList["world"] = new PartsButtonBasic("ワールド", x0, 40 + 35 * 0, 100, 30);
-		this._menuList["quest"] = new PartsButtonBasic("クエスト", x1, 40 + 35 * 0, 100, 30);
-		this._menuList["chara"] = new PartsButtonBasic("キャラクタ", x0, 40 + 35 * 1, 100, 30);
+		this._menuList["chara"] = new PartsButtonBasic("キャラクタ", x1, 40 + 35 * 0, 100, 30);
+		this._menuList["quest"] = new PartsButtonBasic("クエスト", x0, 40 + 35 * 1, 100, 30);
 		this._menuList["item"] = new PartsButtonBasic("アイテム", x1, 40 + 35 * 1, 100, 30);
 		this._menuList["friend"] = new PartsButtonBasic("友達", x0, 40 + 35 * 2, 100, 30);
 		this._menuList["refbook"] = new PartsButtonBasic("図鑑", x1, 40 + 35 * 2, 100, 30);
