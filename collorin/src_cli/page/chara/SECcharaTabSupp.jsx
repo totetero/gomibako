@@ -119,6 +119,7 @@ class SECcharaTabSupp extends SECcharaTab{
 
 			// キャラクタ選択ボタン処理
 			if(chara.trigger){
+				Sound.playSE(chara.select ? "ng" : "ok");
 				chara.trigger = false;
 				chara.select = !chara.select;
 			}
@@ -151,6 +152,7 @@ class SECcharaTabSupp extends SECcharaTab{
 		// 全選択ボタン
 		var btn = this._scroller.btnList["all"];
 		if(btn.trigger){
+			Sound.playSE(isAll ? "ng" : "ok");
 			btn.trigger = false;
 			for(var i = 0; i < this._charaList.length; i++){
 				var chara = this._charaList[i];
