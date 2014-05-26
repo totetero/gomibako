@@ -16,13 +16,13 @@ import "cross/CrossBust.jsx";
 
 import "../mypage/PageMypage.jsx";
 import "../world/PageWorld.jsx";
-//import "../quest/PageQuest.jsx";
+import "../quest/PageQuest.jsx";
 import "../chara/PageChara.jsx";
 import "../item/PageItem.jsx";
-//import "../friend/PageFriend.jsx";
-//import "../refbook/PageRefbook.jsx";
+import "../friend/PageFriend.jsx";
+import "../refbook/PageRefbook.jsx";
 import "../setting/PageSetting.jsx";
-//import "../help/PageHelp.jsx";
+import "../help/PageHelp.jsx";
 import "../dice/PageDice.jsx";
 import "../chat/PageChat.jsx";
 
@@ -92,13 +92,13 @@ abstract class Page extends EventPlayer{
 		if(hash.indexOf("dice") == 1){return new PageDice();}
 		if(hash.indexOf("chat") == 1){return new PageChat();}
 		if(hash.indexOf("world") == 1){return new PageWorld();}
-		//if(hash.indexOf("quest") == 1){return new PageQuest();}
+		if(hash.indexOf("quest") == 1){return new PageQuest();}
 		if(hash.indexOf("chara") == 1){return new PageChara();}
 		if(hash.indexOf("item") == 1){return new PageItem();}
-		//if(hash.indexOf("friend") == 1){return new PageFriend();}
-		//if(hash.indexOf("refbook") == 1){return new PageRefbook();}
+		if(hash.indexOf("friend") == 1){return new PageFriend();}
+		if(hash.indexOf("refbook") == 1){return new PageRefbook();}
 		if(hash.indexOf("setting") == 1){return new PageSetting();}
-		//if(hash.indexOf("help") == 1){return new PageHelp();}
+		if(hash.indexOf("help") == 1){return new PageHelp();}
 		return new PageMypage();
 	}
 

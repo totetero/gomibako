@@ -29,8 +29,7 @@ class SECitemMain implements SerialEventCartridge{
 		this._page = page;
 
 		// ボタン作成
-		this._btnList["dice"] = new PartsButtonBasic("テストステージ",  20, 70, 200, 40);
-		this._btnList["chat"] = new PartsButtonBasic("テストチャット",  20, 120, 200, 40);
+		this._btnList["test"] = new PartsButtonBasic("アイテム",  20, 70, 200, 40);
 	}
 
 	// ----------------------------------------------------------------
@@ -50,16 +49,6 @@ class SECitemMain implements SerialEventCartridge{
 	// 計算
 	override function calc() : boolean{
 		for(var name in this._btnList){this._btnList[name].calc(true);}
-
-		// ボタン押下処理
-		var list = ["dice", "chat"];
-		for(var i = 0; i < list.length; i++){
-			if(this._btnList[list[i]].trigger){
-				Sound.playSE("ok");
-				Page.transitionsPage(list[i]);
-				return true;
-			}
-		}
 
 		// 左ヘッダ戻るボタン押下処理
 		if(this._page.header.lbtn.trigger){
