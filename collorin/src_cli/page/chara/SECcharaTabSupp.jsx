@@ -99,7 +99,9 @@ class SECcharaTabSupp extends SECcharaTab{
 		if(this._prevSortTag != sortTag){
 			this._prevSortTag = sortTag;
 			PartsButtonDataChara.sort(this._charaList, sortTag);
-			this._scroller.scrolly = -40; // TODO 何故か初回スクロールされない
+			// 初期スクロール設定
+			this._scroller.sh = Math.max(40, this._scroller.sh);
+			this._scroller.scrolly = -40;
 		}
 	}
 
@@ -111,6 +113,7 @@ class SECcharaTabSupp extends SECcharaTab{
 
 		// キャラクターリストボタン
 		var count = 0;
+		var isAll = true;
 		for(var i = 0; i < this._charaList.length; i++){
 			var chara = this._charaList[i];
 
@@ -128,6 +131,7 @@ class SECcharaTabSupp extends SECcharaTab{
 			}
 
 			if(chara.select){count++;}
+			else if(!chara.inactive){isAll = false;}
 		}
 
 		// ピッカーボタン
@@ -146,10 +150,15 @@ class SECcharaTabSupp extends SECcharaTab{
 
 		// 全選択ボタン
 		var btn = this._scroller.btnList["all"];
-		(btn as PartsButtonBasic).label.setText("全選択");
 		if(btn.trigger){
-			// TODO ポップアップ作成
+			btn.trigger = false;
+			for(var i = 0; i < this._charaList.length; i++){
+				var chara = this._charaList[i];
+				if(!chara.inactive){chara.select = !isAll;}
+			}
+			isAll = !isAll;
 		}
+		(btn as PartsButtonBasic).label.setText(isAll ? "全選択解除" : "全選択");
 
 		return true;
 	}
