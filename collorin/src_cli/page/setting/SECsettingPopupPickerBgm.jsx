@@ -41,6 +41,14 @@ class SECsettingPopupPickerBgm extends SECpopupPicker{
 	}
 
 	// ----------------------------------------------------------------
+	// オープンボタン作成
+	override function createButton(x : int, y : int, w : int) : PartsButtonPickerOpener{
+		var openButton = super.createButton(x, y, w);
+		openButton.inactive = !Sound.isSupported;
+		return openButton;
+	}
+
+	// ----------------------------------------------------------------
 	// 選択時の動作
 	override function onSelect(tag : string) : void{
 		Sound.setBgmVolume(tag);
