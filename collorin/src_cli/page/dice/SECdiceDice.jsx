@@ -266,7 +266,7 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 				// トリガーリセット
 				Ctrl.trigger_s = false;
 				// ローディング完了
-				if(this._loadCount > 24){Loading.hide();}
+				if(this._loadCount > 5){Loading.hide();}
 			});
 		});
 
@@ -292,7 +292,7 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 				return false;
 			}
 		}else{
-			if(this._loadCount++ == 24){Loading.show();}
+			if(this._loadCount++ == 5){Loading.show();}
 		}
 
 		return true;
