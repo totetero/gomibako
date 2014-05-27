@@ -132,10 +132,10 @@ class SECdiceSettingPopupLocal extends SECsettingPopupLocal{
 	}
 
 	// ----------------------------------------------------------------
-	// 破棄
-	override function dispose() : void{
-		this._pageDice.bcvs.isFastForward = (dom.window.localStorage.getItem("setting_transition") == "off");
-		super.dispose();
+	// 初期化
+	override function init() : void{
+		super.init();
+		this._pageDice.bcvs.setting();
 	}
 }
 

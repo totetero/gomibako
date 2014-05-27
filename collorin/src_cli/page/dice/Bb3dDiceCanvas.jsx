@@ -77,6 +77,12 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
 
 		// 設定
+		this.setting();
+	}
+
+	// ----------------------------------------------------------------
+	// 設定
+	function setting() : void{
 		this.isFastForward = (dom.window.localStorage.getItem("setting_transition") == "off");
 	}
 

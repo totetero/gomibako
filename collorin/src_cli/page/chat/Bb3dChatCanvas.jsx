@@ -32,6 +32,7 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 
 	// カメラ設定
 	var cameraLock : boolean;
+	var cameraScale : number;
 	// キャラクタの押下
 	var isTapChara : boolean;
 	var _tappedChara : Bb3dChatCharacter;
@@ -59,6 +60,16 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
+
+		// 設定
+		this.setting();
+	}
+
+	// ----------------------------------------------------------------
+	// 設定
+	function setting() : void{
+		var quality = dom.window.localStorage.getItem("setting_quality");
+		this.cameraScale = (quality == "low") ? 2 : 1;
 	}
 
 	// ----------------------------------------------------------------
@@ -71,7 +82,7 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 		this.calcRoth(Math.PI / 180 * 30, 0.1);
 		this.cx -= (this.cx - this.calcx) * 0.2;
 		this.cy -= (this.cy - this.calcy) * 0.2;
-		this.scale -= (this.scale - 1) * 0.1;
+		this.scale -= (this.scale - this.cameraScale) * 0.1;
 
 		// キャラクター計算
 		for(var i = 0; i < this.member.length; i++){
