@@ -100,7 +100,7 @@ class SECcharaTabSupp extends SECcharaTab{
 			this._prevSortTag = sortTag;
 			PartsButtonDataChara.sort(this._charaList, sortTag);
 			// 初期スクロール設定
-			this._scroller.sh = Math.max(40, this._scroller.sh);
+			this._scroller.sh = Math.max(this._scroller.ch + 40, this._scroller.sh);
 			this._scroller.scrolly = -40;
 		}
 	}
@@ -181,7 +181,7 @@ class SECcharaTabSupp extends SECcharaTab{
 		var itemh = this._charaList[0].h;
 		var rowNum = Math.min(Math.floor((this._scroller.cw - 20 + 5) / (itemw + 5)), this._charaList.length);
 		var colNum = Math.ceil(this._charaList.length / rowNum);
-		this._scroller.sh = 40 + colNum * (itemh + 5) - 5;
+		this._scroller.sh = 40 + Math.max(this._scroller.ch, colNum * (itemh + 5) - 5);
 		// キャラクター位置調整
 		var cx = (this._scroller.cw - ((itemw + 5) * rowNum - 5)) * 0.5;
 		for(var i = 0; i < this._charaList.length; i++){
