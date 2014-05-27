@@ -15,16 +15,12 @@ import "../Page.jsx";
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// キャラクター情報
-class DataChara{
+// アイテム情報
+class DataItem{
 	var id : string;
 	var code : string;
 	var name : string;
-	var level : int;
-	var hp : int;
-	var sp : int;
-	var maxhp : int;
-	var maxsp : int;
+	var num : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -32,7 +28,7 @@ class DataChara{
 		this.id = response["id"] as string;
 		this.code = response["code"] as string;
 		this.name = response["name"] as string;
-		this.level = response["level"] as int;
+		this.num = response["num"] as int;
 	}
 }
 

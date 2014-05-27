@@ -11,6 +11,7 @@ import "../../util/PartsButton.jsx";
 import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
+import "../core/data/PartsButtonDataItem.jsx";
 import "../core/popup/SECpopupMenu.jsx";
 import "PageItem.jsx";
 
@@ -22,14 +23,23 @@ import "PageItem.jsx";
 class SECitemMain implements SerialEventCartridge{
 	var _page : PageItem;
 	var _btnList = {} : Map.<PartsButton>;
+	var _itemList : PartsButtonDataItem[];
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : PageItem, response : variant){
 		this._page = page;
 
-		// ボタン作成
-		this._btnList["test"] = new PartsButtonBasic("アイテム",  20, 70, 200, 40);
+		this._itemList = new PartsButtonDataItem[];
+		var item = new PartsButtonDataItem(10, 60, {
+			id: "id",
+			code: "code",
+			name: "test",
+			num: 999
+		});
+		this._itemList.push(item);
+		this._btnList["testBox"] = item;
+		this._btnList["testIcon"] = item.iconBtn;
 	}
 
 	// ----------------------------------------------------------------
