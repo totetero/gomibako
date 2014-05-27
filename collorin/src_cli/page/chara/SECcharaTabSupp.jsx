@@ -82,7 +82,7 @@ class SECcharaTabSupp extends SECcharaTab{
 		this._scroller.btnList["all"] = new PartsButtonBasic("", 0, 5, 100, 30);
 		for(var i = 0; i < this._charaList.length; i++){
 			this._scroller.btnList["box" + i] = this._charaList[i];
-			this._scroller.btnList["face" + i] = this._charaList[i].faceBtn;
+			this._scroller.btnList["icon" + i] = this._charaList[i].iconBtn;
 		}
 	}
 
@@ -125,7 +125,7 @@ class SECcharaTabSupp extends SECcharaTab{
 			}
 
 			// キャラクタ情報ポップアップ
-			if(chara.faceBtn.trigger){
+			if(chara.iconBtn.trigger){
 				Sound.playSE("ok");
 				this.page.serialPush(new SECpopupDataChara(this.page, this, chara.data));
 				return false;

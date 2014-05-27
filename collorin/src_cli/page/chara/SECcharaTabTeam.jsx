@@ -137,7 +137,7 @@ class SECcharaTabTeam extends SECcharaTab{
 		// スクローラボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		this._scroller.btnList["pbox"] = this._partner;
-		this._scroller.btnList["face0"] = this._partner.faceBtn;
+		this._scroller.btnList["icon0"] = this._partner.iconBtn;
 		for(var i = 0; i < this._teams.length; i++){
 			var nameBtn = this._teams[i].name.createButton(40, 0, 160, 24);
 			nameBtn.inactive = this._teams[i].lock;
@@ -145,7 +145,7 @@ class SECcharaTabTeam extends SECcharaTab{
 			for(var j = 0; j < this._teams[i].members.length; j++){
 				var member = this._teams[i].members[j];
 				this._scroller.btnList["t" + i + "m" + j + "box"] = member;
-				if(member.data != null){this._scroller.btnList["t" + i + "m" + j + "face"] = member.faceBtn;}
+				if(member.data != null){this._scroller.btnList["t" + i + "m" + j + "icon"] = member.iconBtn;}
 			}
 		}
 	}
@@ -173,7 +173,7 @@ class SECcharaTabTeam extends SECcharaTab{
 		}
 
 		// パートナー情報ポップアップボタン処理
-		if(this._partner.faceBtn.trigger){
+		if(this._partner.iconBtn.trigger){
 			Sound.playSE("ok");
 			this.page.serialPush(new SECpopupDataChara(this.page, this, this._partner.data));
 			return false;
@@ -202,7 +202,7 @@ class SECcharaTabTeam extends SECcharaTab{
 				}
 
 				// メンバー情報ポップアップ
-				if(member.data != null && member.faceBtn.trigger){
+				if(member.data != null && member.iconBtn.trigger){
 					Sound.playSE("ok");
 					this.page.serialPush(new SECpopupDataChara(this.page, this, member.data));
 					return false;

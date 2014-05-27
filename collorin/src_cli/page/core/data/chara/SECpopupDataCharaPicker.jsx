@@ -48,7 +48,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 		this._scroller.btnList = {} : Map.<PartsButton>;
 		for(var i = 0; i < this._charaList.length; i++){
 			this._scroller.btnList["item" + i] = this._charaList[i];
-			this._scroller.btnList["face" + i] = this._charaList[i].faceBtn;
+			this._scroller.btnList["icon" + i] = this._charaList[i].iconBtn;
 		}
 		this._scroller.scrolly = scrolly;
 
@@ -118,7 +118,7 @@ abstract class SECpopupDataCharaPicker extends SECpopup{
 			}
 
 			// キャラクタ情報ポップアップ
-			if(chara.faceBtn.trigger){
+			if(chara.iconBtn.trigger){
 				Sound.playSE("ok");
 				this.page.serialPush(new SECpopupDataChara(this.page, this, chara.data));
 				this.close = false;

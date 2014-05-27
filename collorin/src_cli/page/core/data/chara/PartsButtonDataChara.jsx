@@ -39,7 +39,7 @@ class PartsButtonDataChara extends PartsButton{
 	// ----------------------------------------------------------------
 
 	var data : DataChara;
-	var faceBtn : PartsButton;
+	var iconBtn : PartsButton;
 	var _labList = {} : Map.<PartsLabel>;
 
 	// 並べ替え情報
@@ -79,8 +79,8 @@ class PartsButtonDataChara extends PartsButton{
 	function constructor(x : int, y : int){super(x, y, 180, 60, true);}
 	// コンストラクタ共通処理
 	function _commonConstructor() : void{
-		this.faceBtn = new PartsButton(0, 0, 50, 50, true);
-		this.children = [this.faceBtn];
+		this.iconBtn = new PartsButton(0, 0, 50, 50, true);
+		this.children = [this.iconBtn];
 		// ラベル作成
 		this._labList["name"] = new PartsLabel(this.data.name, 60, 5, 115, 20);
 		this._labList["name"].setSize(16);
@@ -93,11 +93,11 @@ class PartsButtonDataChara extends PartsButton{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc(clickable : boolean) : void{
-		if(this.faceBtn != null){
-			this.faceBtn.x = this.x + 5;
-			this.faceBtn.y = this.y + 5;
-			this.faceBtn.basex = this.basex + 5;
-			this.faceBtn.basey = this.basey + 5;
+		if(this.iconBtn != null){
+			this.iconBtn.x = this.x + 5;
+			this.iconBtn.y = this.y + 5;
+			this.iconBtn.basex = this.basex + 5;
+			this.iconBtn.basey = this.basey + 5;
 		}
 		super.calc(clickable);
 	}
@@ -119,8 +119,8 @@ class PartsButtonDataChara extends PartsButton{
 		// データが無ければ以下の描画は行わない
 		if(this.data == null){return;}
 
-		// 顔アイコンの描画
-		Ctrl.sctx.fillStyle = this.faceBtn.active ? "#999999" : "#ffffff";
+		// アイコンの描画
+		Ctrl.sctx.fillStyle = this.iconBtn.active ? "#999999" : "#ffffff";
 		Ctrl.sctx.fillRect(this.x + 5, this.y + 5, 50, 50);
 		Ctrl.sctx.drawImage(Loader.imgs["img_chara_icon_" + this.data.code], this.x + 5, this.y + 5, 50, 50);
 
