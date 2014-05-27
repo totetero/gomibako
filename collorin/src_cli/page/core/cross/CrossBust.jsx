@@ -11,7 +11,7 @@ import "../../../util/PartsButton.jsx";
 import "../../../util/PartsScroll.jsx";
 import "../Page.jsx";
 
-import "../data/DataChara.jsx";
+import "../data/chara/DataChara.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------

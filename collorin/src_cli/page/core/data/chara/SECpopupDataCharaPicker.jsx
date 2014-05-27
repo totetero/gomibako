@@ -1,18 +1,18 @@
 import "js/web.jsx";
 
-import "../../../util/Ctrl.jsx";
-import "../../../util/Sound.jsx";
-import "../../../util/Drawer.jsx";
-import "../../../util/Loader.jsx";
-import "../../../util/Loading.jsx";
-import "../../../util/EventCartridge.jsx";
-import "../../../util/PartsLabel.jsx";
-import "../../../util/PartsButton.jsx";
-import "../../../util/PartsScroll.jsx";
-import "../Page.jsx";
+import "../../../../util/Ctrl.jsx";
+import "../../../../util/Sound.jsx";
+import "../../../../util/Drawer.jsx";
+import "../../../../util/Loader.jsx";
+import "../../../../util/Loading.jsx";
+import "../../../../util/EventCartridge.jsx";
+import "../../../../util/PartsLabel.jsx";
+import "../../../../util/PartsButton.jsx";
+import "../../../../util/PartsScroll.jsx";
+import "../../Page.jsx";
 
-import "../popup/SECpopup.jsx";
-import "../popup/SECpopupPicker.jsx";
+import "../../popup/SECpopup.jsx";
+import "../../popup/SECpopupPicker.jsx";
 import "DataChara.jsx";
 import "PartsButtonDataChara.jsx";
 import "SECpopupDataChara.jsx";

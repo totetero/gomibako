@@ -11,7 +11,7 @@ import "../../util/PartsButton.jsx";
 import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
-import "../core/data/SECpopupDataChara.jsx";
+import "../core/data/chara/SECpopupDataChara.jsx";
 import "PageChat.jsx";
 import "SECchatPopupMenu.jsx";
 

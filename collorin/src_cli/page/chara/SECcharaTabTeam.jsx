@@ -11,10 +11,10 @@ import "../../util/PartsButton.jsx";
 import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
-import "../core/data/DataChara.jsx";
-import "../core/data/PartsButtonDataChara.jsx";
-import "../core/data/SECpopupDataChara.jsx";
-import "../core/data/SECpopupDataCharaPicker.jsx";
+import "../core/data/chara/DataChara.jsx";
+import "../core/data/chara/PartsButtonDataChara.jsx";
+import "../core/data/chara/SECpopupDataChara.jsx";
+import "../core/data/chara/SECpopupDataCharaPicker.jsx";
 import "../core/load/SECload.jsx";
 import "../core/popup/SECpopupPicker.jsx";
 import "../core/popup/SECpopupTextarea.jsx";

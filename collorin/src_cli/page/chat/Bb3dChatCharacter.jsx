@@ -14,7 +14,7 @@ import "../core/Page.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 import "../../bb3d/Bb3dDrawShadow.jsx";
 import "../../bb3d/Bb3dDrawText.jsx";
-import "../core/data/DataChara.jsx";
+import "../core/data/chara/DataChara.jsx";
 import "Bb3dChatCanvas.jsx";
 
 // ----------------------------------------------------------------
