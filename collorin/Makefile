@@ -14,8 +14,14 @@ test: build
 start: build
 	node game.js
 
+srvStart: build
+	node_modules/forever/bin/forever start game.js
+
+srvStop:
+	node_modules/forever/bin/forever stop game.js
+
 put: build
-	rsync -av * uni:/home/tote/test
+	rsync -av * uni:/home/tote/nodeTest/collorin_new
 
 build: game.js content/main.js
 

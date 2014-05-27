@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "express": "~3.4.2",
+    "forever": "~0.11.1",
     "ejs": "~1.0.0",
     "mongoose": "~3.6.20",
     "redis": "~0.10.0",
