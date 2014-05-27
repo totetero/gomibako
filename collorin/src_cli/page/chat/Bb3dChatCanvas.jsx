@@ -49,6 +49,7 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 	// コンストラクタ
 	function constructor(response : variant){
 		super(Math.PI / 180 * 45, Math.PI / 180 * 45, 2);
+		this.setting();
 
 		// フィールド
 		this.field = new Bb3dChatField(this, Loader.imgs["img_grid"], response["grid"] as int[][]);
@@ -60,9 +61,6 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
-
-		// 設定
-		this.setting();
 	}
 
 	// ----------------------------------------------------------------
