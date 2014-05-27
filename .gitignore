@@ -14,8 +14,3 @@
 *.swp
 *.min.js
 
-/old/node_modules
-/old/game.js
-*.min.css
-/content/main.css
-

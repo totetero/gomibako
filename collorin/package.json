@@ -13,7 +13,6 @@
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
     "jsx": "~0.9.87",
-    "uglify-js": "~2.4.0",
-    "less": "~1.6.1"
+    "uglify-js": "~2.4.0"
   }
 }
