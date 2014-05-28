@@ -14,7 +14,7 @@ class _Main{
 	// main関数
 	static function main(args : string[]) : void{
 		Bb3dDrawCharacterMotion.init();
-		fs.mkdirSync("./content/mot");
+		try{fs.mkdirSync("./content/mot");}catch(e : Error){}
 		fs.writeFileSync("./content/mot/human.json", JSON.stringify(Bb3dDrawCharacterMotion.data["human"]));
 	}
 }
