@@ -24,16 +24,19 @@ class CharaTeamPage{
 				}
 			}
 
-			// 所持可能キャラ数
-			jdat["max"] = 100;
+			var userStatusModel : UserStatusModel = null;
 
+			// ---------------- ステップ開始 まずはユーザー情報を読み込む
 			var step = {} : Map.<function():void>;
 			step["start"] = function() : void{
-				if(type == "get"){
-					step["getCharas"]();
-				}else{
-					step["getPartner"]();
-				}
+				UserStatusModel.findOne({userId: req.user._id}, function(err : variant, model : UserStatusModel) : void{
+					userStatusModel = model;
+					if(type == "get"){
+						step["getCharas"]();
+					}else{
+						step["getPartner"]();
+					}
+				});
 			};
 
 			// ---------------- キャラクター情報獲得
@@ -56,7 +59,8 @@ class CharaTeamPage{
 			};
 			step["getCharas_jdat"] = function() : void{
 				// キャラクター情報送信セット
-				jdat["list"] = charaInfoList;
+				jdat["charaList"] = charaInfoList;
+				jdat["maxCharaNum"] = userStatusModel.maxCharaNum;
 				for(var i = 0; i < charaInfoList.length; i++){
 					var code = charaInfoList[i]["code"] as string;
 					cont["img_chara_icon_" + code] = "/img/character/" + code + "/icon.png";
@@ -66,19 +70,14 @@ class CharaTeamPage{
 			};
 
 			// ---------------- パートナー情報獲得
-			var userStatusModel : UserStatusModel = null;
 			step["getPartner"] = function() : void{
-				// パートナー情報獲得
-				UserStatusModel.findOne({userId: req.user._id}, function(err : variant, model : UserStatusModel) : void{
-					userStatusModel = model;
-					if(type == "partner"){
-						// パートナー変更コマンド
-						step["getPartner_change"]();
-					}else{
-						// 普通の情報取得
-						step["getPartner_jdat"]();
-					}
-				});
+				if(type == "partner"){
+					// パートナー変更コマンド
+					step["getPartner_change"]();
+				}else{
+					// 普通の情報取得
+					step["getPartner_jdat"]();
+				}
 			};
 			step["getPartner_change"] = function() : void{
 				// パートナー変更コマンド

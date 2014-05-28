@@ -68,14 +68,14 @@ class SECcharaTabTeam extends SECcharaTab{
 	// ロード完了時 データの形成
 	function parse(response : variant) : void{
 		// キャラクターリスト作成
-		var list = response["list"] as variant[];
+		var list = response["charaList"] as variant[];
 		if(list != null){
 			this.charaList = new PartsButtonDataChara[];
 			for(var i = 0; i < list.length; i++){
 				this.charaList.push(new PartsButtonDataChara(0, 0, list[i]));
 			}
+			this.maxCharaNum = response["maxCharaNum"] as int;
 		}
-		this.maxCharaNum = response["max"] as int;
 
 		// キャラクターリストの一部設定リセット
 		for(var i = 0; i < this.charaList.length; i++){

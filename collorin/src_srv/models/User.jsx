@@ -39,12 +39,14 @@ native class UserStatusModel{
 	var _id: string;
 	var userId: string; // ひもづくユーザーID
 	var partnerCharaId: string; // パートナーキャラクターID
+	var maxCharaNum: int; // 所有キャラ最大数
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
 	static function findOne(conditions : variant, callback : function(err:variant,model:UserStatusModel):void) : void;
 } = """require("mongoose").model("UserStatus", new require("mongoose").Schema({
 	userId: {type: String},
 	partnerCharaId: {type: String},
+	maxCharaNum: {type: Number, default: 20},
 }))""";
 
 // ----------------------------------------------------------------

@@ -13,12 +13,18 @@ class CharaSuppPage{
 			var jdat = {} : Map.<variant>;
 			var cont = {} : Map.<string>;
 
-			// 所持可能キャラ数
-			jdat["max"] = 100;
+			var userStatusModel : UserStatusModel = null;
 
+			// ---------------- ステップ開始 まずはユーザー情報を読み込む
 			var step = {} : Map.<function():void>;
-			step["start"] = function() : void{step["getCharas"]();};
-			// キャラクター情報獲得
+			step["start"] = function() : void{
+				UserStatusModel.findOne({userId: req.user._id}, function(err : variant, model : UserStatusModel) : void{
+					userStatusModel = model;
+					step["getCharas"]();
+				});
+			};
+
+			// ---------------- キャラクター情報獲得
 			var charaInfoList = new variant[];
 			step["getCharas"] = function() : void{
 				CharacterModelUtil.getUserCharaList(req.user, function(charaBase : CharaBaseModel, charaData : CharaDataModel) : void{
@@ -40,7 +46,8 @@ class CharaSuppPage{
 			};
 			step["getCharas_jdat"] = function() : void{
 				// キャラクター情報整理
-				jdat["list"] = charaInfoList;
+				jdat["charaList"] = charaInfoList;
+				jdat["maxCharaNum"] = userStatusModel.maxCharaNum;
 				for(var i = 0; i < charaInfoList.length; i++){
 					var code = charaInfoList[i]["code"] as string;
 					cont["img_chara_icon_" + code] = "/img/character/" + code + "/icon.png";
@@ -48,13 +55,15 @@ class CharaSuppPage{
 				}
 				step["send"]();
 			};
-			// 送信
+
+			// ---------------- 送信
 			step["send"] = function() : void{
 				jdat["contents"] = ContentsServer.convertAddress(cont);
 				res.setHeader("Content-Type", "application/json");
 				res.setHeader("cache-control", "no-cache");
 				res.send(JSON.stringify(jdat));
 			};
+
 			// プログラムステップ開始
 			step["start"]();
 		});

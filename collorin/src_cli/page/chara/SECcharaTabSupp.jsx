@@ -68,14 +68,14 @@ class SECcharaTabSupp extends SECcharaTab{
 	// ロード完了時 データの形成
 	function _parse(response : variant) : void{
 		// キャラクターリスト作成
-		var list = response["list"] as variant[];
+		var list = response["charaList"] as variant[];
 		this._charaList = new PartsButtonDataChara[];
 		for(var i = 0; i < list.length; i++){
 			var chara = new PartsButtonDataChara(0, 0, list[i]);
 			//chara.inactive = (i == 0); // TODO 補給不能状態(出撃中 or SPMAX or 使い捨てキャラ?)
 			this._charaList.push(chara);
 		}
-		this._maxCharaNum = response["max"] as int;
+		this._maxCharaNum = response["maxCharaNum"] as int;
 
 		// スクローラボタン作成
 		this._scroller.btnList = {} : Map.<PartsButton>;
