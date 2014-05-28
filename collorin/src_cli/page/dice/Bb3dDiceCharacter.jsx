@@ -51,7 +51,7 @@ class Bb3dDiceCharacter extends DataChara{
 		this.r = response["r"] as number;
 
 		var img = Loader.imgs["img_chara_dot_" + this.code];
-		var mot = Loader.mots["mot_" + response["drawInfo"] as string];
+		var mot = Loader.mots["mot_" + response["motion"] as string];
 		var size = response["size"] as number;
 		this._character = new Bb3dDrawCharacter(img, mot, size);
 		this._shadow = new Bb3dDrawShadow(size);

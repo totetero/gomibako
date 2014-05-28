@@ -26,7 +26,7 @@ class _Main{
 			temp.charaCode = "player0";
 			temp.name = "コニワ";
 			temp.imageCode = "player0";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
@@ -34,7 +34,7 @@ class _Main{
 			temp.charaCode = "player1";
 			temp.name = "レッドパピヨン";
 			temp.imageCode = "player1";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
@@ -42,7 +42,7 @@ class _Main{
 			temp.charaCode = "player2";
 			temp.name = "パステル";
 			temp.imageCode = "player2";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
@@ -50,7 +50,7 @@ class _Main{
 			temp.charaCode = "player3";
 			temp.name = "ぽに子";
 			temp.imageCode = "player3";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
@@ -58,7 +58,7 @@ class _Main{
 			temp.charaCode = "enemy1";
 			temp.name = "赤しゃれこうべ";
 			temp.imageCode = "enemy1";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
@@ -66,7 +66,7 @@ class _Main{
 			temp.charaCode = "enemy2";
 			temp.name = "緑しゃれこうべ";
 			temp.imageCode = "enemy2";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		}).add(function(next:function():void):void{
@@ -74,7 +74,7 @@ class _Main{
 			temp.charaCode = "enemy3";
 			temp.name = "青しゃれこうべ";
 			temp.imageCode = "enemy3";
-			temp.drawInfoCode = "human";
+			temp.motionCode = "human";
 			temp.refbookIndex = refbookIndex++;
 			temp.save(function(err:variant):void{next();});
 		});

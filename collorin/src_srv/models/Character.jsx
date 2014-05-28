@@ -9,7 +9,7 @@ native class CharaBaseModel{
 	var charaCode: string; // 固有キャラクターコード
 	var name: string; // キャラクター名
 	var imageCode: string; // 画像コード
-	var drawInfoCode: string; // モーションコード
+	var motionCode: string; // モーションコード
 	var refbookIndex : number; // 図鑑番号
 	function save(callback : function(err:variant):void) : void;
 	function remove(callback : function(err:variant):void) : void;
@@ -18,7 +18,7 @@ native class CharaBaseModel{
 	charaCode: {type: String},
 	name: {type: String},
 	imageCode: {type: String},
-	drawInfoCode: {type: String},
+	motionCode: {type: String},
 	refbookIndex: {type: Number},
 }))""";
 

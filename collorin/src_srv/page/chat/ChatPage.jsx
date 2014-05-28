@@ -138,7 +138,7 @@ class ChatPage{
 							ChatPage._rcli.get([ChatPage._rhead + "uinfo:" + results[i]], function(err : variant, result : Nullable.<string>) : void{
 								// メンバー情報の形成
 								var tmpdata = JSON.parse(result);
-								tmpdata["drawInfo"] = "human";
+								tmpdata["motion"] = "human";
 								tmpdata["size"] = 1.2;
 								delete tmpdata["room"];
 								// 画像情報の確認

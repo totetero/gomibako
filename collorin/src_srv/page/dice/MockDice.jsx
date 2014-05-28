@@ -99,7 +99,7 @@ class MockDice{
 			jdatCharaInfo[cinfo.id] = {
 				side: cinfo.side,
 				code: cinfo.code,
-				drawInfo: cinfo.drawInfo,
+				motion: cinfo.motion,
 				x: cinfo.x,
 				y: cinfo.y,
 				r: cinfo.r,
@@ -357,16 +357,16 @@ class MockDiceCharaInfo{
 	var id : string;
 	var side : string;
 	var code : string;
-	var drawInfo : string;
+	var motion : string;
 	var x : int;
 	var y : int;
 	var r : number;
 	var s : number;
-	function constructor(id : string, side : string, code : string, drawInfo : string, x : int, y : int, r : number, s : number){
+	function constructor(id : string, side : string, code : string, motion : string, x : int, y : int, r : number, s : number){
 		this.id = id;
 		this.side = side;
 		this.code = code;
-		this.drawInfo = drawInfo;
+		this.motion = motion;
 		this.x = x;
 		this.y = y;
 		this.r = r;
