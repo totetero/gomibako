@@ -1,6 +1,6 @@
 import "js.jsx";
-import "require/mongo.jsx";
-import "models/Character.jsx";
+import "../require/mongo.jsx";
+import "../models/Character.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
