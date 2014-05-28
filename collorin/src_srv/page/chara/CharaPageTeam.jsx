@@ -6,7 +6,7 @@ import "../../models/Character.jsx";
 import "../../models/Team.jsx";
 
 // キャラクター編成ページ
-class CharaTeamPage{
+class CharaPageTeam{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
