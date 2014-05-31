@@ -29,7 +29,7 @@ class SECworldMain implements SerialEventCartridge{
 		this._page = page;
 
 		// ボタン作成
-		this._btnList["dice"] = new PartsButtonBasic("テストステージ",  20, 70, 200, 40);
+		this._btnList["dice"] = new PartsButtonBasic("テストすごろく",  20, 70, 200, 40);
 		this._btnList["chat"] = new PartsButtonBasic("テストチャット",  20, 120, 200, 40);
 	}
 
