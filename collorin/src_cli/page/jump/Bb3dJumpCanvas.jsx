@@ -15,6 +15,7 @@ import "../../bb3d/Bb3dCanvas.jsx";
 import "../../bb3d/Bb3dDrawUnit.jsx";
 import "../../bb3d/Bb3dDrawCharacter.jsx";
 import "Bb3dJumpCharacter.jsx";
+import "Bb3dJumpFoothold.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -23,6 +24,7 @@ import "Bb3dJumpCharacter.jsx";
 // キャンバス情報管理
 class Bb3dJumpCanvas extends Bb3dCanvas{
 	var player : Bb3dJumpCharacter;
+	var foothold : Bb3dJumpFoothold;
 	var member = new Bb3dJumpCharacter[];
 	var clist = new Bb3dDrawUnit[];
 //	var slist = new Bb3dDrawUnit[];
@@ -67,6 +69,9 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 				"size": 1.2, 
 			}));
 		}
+
+		// テスト足場
+		this.foothold = new Bb3dJumpFoothold(this);
 	}
 
 	// ----------------------------------------------------------------
@@ -76,7 +81,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		this.w = Ctrl.screen.w;
 		this.h = Ctrl.screen.h;
 		this.centerx = this.w * 0.5;
-		this.centery = this.h - 50;
+		this.centery = this.h - 96;
 		this.cx -= (this.cx - this.calcx) * 0.2;
 		this.cz -= (this.cz - this.calcz) * 0.2;
 		this.scale -= (this.scale - this.cameraScale) * 0.1;
@@ -86,6 +91,9 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 			this.member[i].calc(this);
 			if(!this.member[i].exist){this.member.splice(i--,1);}
 		}
+
+		// 足場計算テスト
+		this.foothold.calc(this);
 
 		if(this.player != null){
 			// カメラ位置をプレイヤーに
@@ -121,6 +129,9 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 
 		// 背景描画
 		this._drawBackground();
+		// 足場描画テスト
+		this.foothold.preDraw(this);
+		this.foothold.draw(this);
 		// 影描画
 //		Bb3dDrawUnit.drawList(this, this.slist);
 		// キャラクター描画

@@ -13,6 +13,7 @@ class PageJump{
 			var cont = {} : Map.<string>;
 
 			cont["img_chara_dot_player1"] = "/img/character/player1/dot.png";
+			cont["img_foothold_test"] = "/img/foothold/test.png";
 
 			// 背景画像
 			jdat["background"] = "test";
