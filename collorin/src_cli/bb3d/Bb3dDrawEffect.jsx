@@ -17,10 +17,31 @@ import "Bb3dDrawUnit.jsx";
 
 // エフェクトクラス
 abstract class Bb3dDrawEffect extends Bb3dDrawUnit{
+	// 位置情報
+	var x : number;
+	var y : number;
+	var z : number;
 	// 計算
 	abstract function calc() : void;
+}
+
+// 使い捨てエフェクトクラス
+abstract class Bb3dDrawEffectOnce extends Bb3dDrawEffect{
+	// 使い捨て情報
+	var _used = false;
+
+	// ----------------------------------------------------------------
+	// 計算
+	override function calc() : void{
+		if(!this._used){this._used = true;}
+		else{this.exist = false;}
+	}
+
+	// ----------------------------------------------------------------
 	// 描画準備
-	abstract function preDraw(bcvs : Bb3dCanvas, cx : number, cy : number) : void;
+	override function preDraw(bcvs : Bb3dCanvas, x : number, y : number, z : number) : void{
+		if(this._used){super.preDraw(bcvs, x, y, z);}
+	}
 }
 
 // ----------------------------------------------------------------
@@ -31,9 +52,6 @@ abstract class Bb3dDrawEffect extends Bb3dDrawUnit{
 class Bb3dDrawEffectHopImage extends Bb3dDrawEffect{
 	var _img : HTMLImageElement;
 	// 位置情報
-	var _x : number;
-	var _y : number;
-	var _z : number;
 	var _vx : number;
 	var _vy : number;
 	var _vz : number;
@@ -48,9 +66,9 @@ class Bb3dDrawEffectHopImage extends Bb3dDrawEffect{
 	function constructor(x : number, y : number){
 		this._img = Loader.imgs["img_effect_star01"];
 		// 位置初期化
-		this._x = x;
-		this._y = y;
-		this._z = 0;
+		this.x = x;
+		this.y = y;
+		this.z = 0;
 		var r = Math.PI * 2 * Math.random();
 		var s = 1;
 		this._vx = s * Math.cos(r);
@@ -63,24 +81,18 @@ class Bb3dDrawEffectHopImage extends Bb3dDrawEffect{
 	override function calc() : void{
 		// 位置計算
 		this._vz -= 1;
-		this._x += this._vx;
-		this._y += this._vy;
-		this._z += this._vz;
-		if(this._z < 0){this.exist = false;}
+		this.x += this._vx;
+		this.y += this._vy;
+		this.z += this._vz;
+		if(this.z < 0){this.exist = false;}
 		// テクスチャきりかえ
 		this._u = this._size * (((this._action++ / 6) as int) % 2);
 	}
 
 	// ----------------------------------------------------------------
-	// 描画準備
-	override function preDraw(bcvs : Bb3dCanvas, cx : number, cy : number) : void{
-		super.preDraw(bcvs, this._x - cx, this._y - cy, this._z, 1);
-	}
-
-	// ----------------------------------------------------------------
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
-		var ps = (this._size * 0.5 * this.drScale) as int;
+		var ps = (this._size * 0.5 * bcvs.scale) as int;
 		var px = (this.drx - ps * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - ps * 0.5 + bcvs.y + bcvs.centery) as int;
 		Ctrl.gctx.drawImage(this._img, this._u, this._v, this._size, this._size, px, py, ps, ps);
@@ -95,9 +107,6 @@ class Bb3dDrawEffectHopImage extends Bb3dDrawEffect{
 class Bb3dDrawEffectHopNumber extends Bb3dDrawEffect{
 	var _canvas : HTMLCanvasElement;
 	// 位置情報
-	var _x : number;
-	var _y : number;
-	var _z : number;
 	var _vx : number;
 	var _vy : number;
 	var _vz : number;
@@ -121,9 +130,9 @@ class Bb3dDrawEffectHopNumber extends Bb3dDrawEffect{
 		context.fillStyle = "black";
 		context.fillText(txt, this._canvas.width * 0.5, this._canvas.height * 0.5);
 		// 位置初期化
-		this._x = x;
-		this._y = y;
-		this._z = 0;
+		this.x = x;
+		this.y = y;
+		this.z = 0;
 		var r = Math.PI * 2 * Math.random();
 		var s = 1;
 		this._vx = s * Math.cos(r);
@@ -136,23 +145,17 @@ class Bb3dDrawEffectHopNumber extends Bb3dDrawEffect{
 	override function calc() : void{
 		// 位置計算
 		this._vz -= 1;
-		this._x += this._vx;
-		this._y += this._vy;
-		this._z += this._vz;
-		if(this._z < 0){this.exist = false;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画準備
-	override function preDraw(bcvs : Bb3dCanvas, cx : number, cy : number) : void{
-		super.preDraw(bcvs, this._x - cx, this._y - cy, this._z, 1);
+		this.x += this._vx;
+		this.y += this._vy;
+		this.z += this._vz;
+		if(this.z < 0){this.exist = false;}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
-		var psx = (this._canvas.width * 0.5 * this.drScale) as int;
-		var psy = (this._canvas.height * 0.5 * this.drScale) as int;
+		var psx = (this._canvas.width * 0.5 * bcvs.scale) as int;
+		var psy = (this._canvas.height * 0.5 * bcvs.scale) as int;
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
 		Ctrl.gctx.drawImage(this._canvas, px, py, psx, psy);
@@ -164,15 +167,10 @@ class Bb3dDrawEffectHopNumber extends Bb3dDrawEffect{
 // ----------------------------------------------------------------
 
 // ビーム画像エフェクトクラス
-class Bb3dDrawEffectBeam extends Bb3dDrawEffect{
+class Bb3dDrawEffectBeam extends Bb3dDrawEffectOnce{
 	static var _canvas : HTMLCanvasElement = null;
 
-	var _x : number;
-	var _y : number;
-	var _z : number;
 	var _scale : number;
-	// 使い捨て情報
-	var _used = false;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -189,32 +187,16 @@ class Bb3dDrawEffectBeam extends Bb3dDrawEffect{
 			context.fillRect(0, 0, 32, 32);
 		}
 		// 初期位置
-		this._x = x;
-		this._y = y;
-		this._z = z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
 		this._scale = scale;
-	}
-
-	// ----------------------------------------------------------------
-	// 計算
-	override function calc() : void{
-		// 使い捨て
-		if(!this._used){this._used = true;}
-		else{this.exist = false;}
-	}
-
-	// ----------------------------------------------------------------
-	// 描画準備
-	override function preDraw(bcvs : Bb3dCanvas, cx : number, cy : number) : void{
-		if(this._used){
-			super.preDraw(bcvs, this._x - cx, this._y - cy, this._z, this._scale);
-		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
-		var ps = (16 * this.drScale) as int;
+		var ps = (16 * bcvs.scale * this._scale) as int;
 		var cx = (this.drx + bcvs.x + bcvs.centerx) as int;
 		var cy = (this.dry + bcvs.y + bcvs.centery) as int;
 		var px = (cx - ps * 0.5) as int;

@@ -30,7 +30,7 @@ class Bb3dJumpCharacter extends DataChara{
 	var exist = true;
 	var x : number;
 	var y : number;
-	var r : number;
+	var z : number;
 	var motion : string;
 	var action : int;
 
@@ -40,7 +40,7 @@ class Bb3dJumpCharacter extends DataChara{
 		super(response);
 		this.x = response["x"] as int;
 		this.y = response["y"] as int;
-		this.r = response["r"] as int * Math.PI * 0.25;
+		this.z = 0;
 
 		var img = Loader.imgs["img_chara_dot_" + this.code];
 		var mot = Loader.mots["mot_" + response["motion"] as string];
@@ -81,11 +81,13 @@ class Bb3dJumpCharacter extends DataChara{
 	function preDraw(bcvs : Bb3dJumpCanvas) : void{
 		var x = this.x - bcvs.cx;
 		var y = this.y - bcvs.cy;
-		this._nametag.preDraw(bcvs, x, y, 40, 1.0);
+		var z = this.z - bcvs.cz;
+		var r = Math.PI * 0.5;
+		this._nametag.preDraw(bcvs, x, y, 40);
 		this._shadow.preDraw(bcvs, x, y, 0);
 		switch(this.motion){
-			case "walk": this._character.preDraw(bcvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
-			default: this._character.preDraw(bcvs, x, y, 0, this.r, "stand", 0); break;
+			case "walk": this._character.preDraw(bcvs, x, y, z, r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
+			default: this._character.preDraw(bcvs, x, y, z, r, "stand", 0); break;
 		}
 	}
 

@@ -28,6 +28,8 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 	var slist = new Bb3dDrawUnit[];
 
 	// カメラ設定
+	var cz : number;
+	var calcz : number;
 	var cameraLock : boolean;
 	var cameraScale : number;
 	// キャラクタの押下
@@ -41,11 +43,13 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(response : variant){
-		super(Math.PI / 180 * 45, Math.PI / 180 * 45, 2);
+		super(0, Math.PI / 180 * 30, 2);
+		this.cameraScale = 2;
 
 		// 初期カメラ位置
 		this.cx = this.calcx = (this.cxmax + this.cxmin) * 0.5;
 		this.cy = this.calcy = (this.cymax + this.cymin) * 0.5;
+		this.cz = this.calcy = 0;
 
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
@@ -60,11 +64,8 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 				"size": 1.2, 
 				"x": 0, 
 				"y": 0,
-				"r": 0,
 			}));
 		}
-
-		this.cameraScale = 2;
 	}
 
 	// ----------------------------------------------------------------
@@ -74,11 +75,9 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 		this.calcBasicSize();
 		this.centery = this.h - 50;
 		this.calcTouchCoordinate();
-		if(!this.cameraLock){this.calcTouchRotate();}
-		this.calcRotv(this.calcrotv, 0.2);
-		this.calcRoth(Math.PI / 180 * 30, 0.1);
 		this.cx -= (this.cx - this.calcx) * 0.2;
 		this.cy -= (this.cy - this.calcy) * 0.2;
+		this.cz -= (this.cz - this.calcz) * 0.2;
 		this.scale -= (this.scale - this.cameraScale) * 0.1;
 
 		// キャラクター計算
@@ -91,6 +90,7 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 			// カメラ位置をプレイヤーに
 			this.calcx = this.player.x;
 			this.calcy = this.player.y;
+			this.calcz = this.player.z;
 		}
 
 		// キャラクタータップ完了確認

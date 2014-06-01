@@ -116,8 +116,8 @@ class Bb3dChatCharacter extends DataChara{
 	function preDraw(bcvs : Bb3dChatCanvas) : void{
 		var x = this.x - bcvs.cx;
 		var y = this.y - bcvs.cy;
-		this._nametag.preDraw(bcvs, x, y, 40, 1.0);
-		this._balloon.preDraw(bcvs, x, y, 50, 1.0);
+		this._nametag.preDraw(bcvs, x, y, 40);
+		this._balloon.preDraw(bcvs, x, y, 50);
 		this._shadow.preDraw(bcvs, x, y, 0);
 		switch(this.motion){
 			case "walk": this._character.preDraw(bcvs, x, y, 0, this.r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;

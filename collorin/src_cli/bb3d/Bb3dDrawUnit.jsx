@@ -30,16 +30,14 @@ abstract class Bb3dDrawUnit{
 	var drx : number;
 	var dry : number;
 	var drz : number;
-	var drScale : number;
 	// 描画準備
-	function preDraw(bcvs : Bb3dCanvas, x : number, y : number, z : number, s : number) : void{
+	function preDraw(bcvs : Bb3dCanvas, x : number, y : number, z : number) : void{
 		this.visible = true;
 		this.drx = bcvs.scale * (x * bcvs.cosv - y * bcvs.sinv);
 		var y0 = bcvs.scale * (x * bcvs.sinv + y * bcvs.cosv);
 		var z0 = bcvs.scale * z;
 		this.dry = y0 * bcvs.sinh - z0 * bcvs.cosh;
 		this.drz = y0 * bcvs.cosh + z0 * bcvs.sinh;
-		this.drScale = bcvs.scale * s;
 	}
 	// 描画
 	abstract function draw(bcvs : Bb3dCanvas) : void;

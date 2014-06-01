@@ -42,8 +42,8 @@ class Bb3dDrawText extends Bb3dDrawUnit{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
-		var psx = (this._canvas.width * 0.5 * this.drScale) as int;
-		var psy = (this._canvas.height * 0.5 * this.drScale) as int;
+		var psx = (this._canvas.width * 0.5 * bcvs.scale) as int;
+		var psy = (this._canvas.height * 0.5 * bcvs.scale) as int;
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
 		Ctrl.gctx.drawImage(this._canvas, px, py, psx, psy);
@@ -122,17 +122,17 @@ class Bb3dDrawBalloon extends Bb3dDrawUnit{
 
 	// ----------------------------------------------------------------
 	// 描画準備
-	override function preDraw(bcvs : Bb3dCanvas, x : number, y : number, z : number, s : number) : void{
+	override function preDraw(bcvs : Bb3dCanvas, x : number, y : number, z : number) : void{
 		if(this._action <= this._time || this._time < 0){
-			super.preDraw(bcvs, x, y, z, s);
+			super.preDraw(bcvs, x, y, z);
 		}
 	}
 
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
-		var psx = (this._canvas.width * 0.5 * this.drScale) as int;
-		var psy = (this._canvas.height * 0.5 * this.drScale) as int;
+		var psx = (this._canvas.width * 0.5 * bcvs.scale) as int;
+		var psy = (this._canvas.height * 0.5 * bcvs.scale) as int;
 
 		if(this._action < 10){
 			var size = 0.2 * Math.sin(Math.PI * 2 * this._action / 10);

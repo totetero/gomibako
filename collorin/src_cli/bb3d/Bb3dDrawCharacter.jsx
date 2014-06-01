@@ -35,6 +35,7 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 	var drX0 : number;
 	var drY0 : number;
 	var drZ0 : number;
+	var drScale : number;
 	var drRotv : number;
 	var drSin : number;
 	var drCos : number;

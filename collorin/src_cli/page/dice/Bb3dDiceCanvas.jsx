@@ -156,7 +156,10 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	// 描画
 	function draw() : void{
 		for(var id in this.member){this.member[id].preDraw(this);}
-		for(var i = 0; i < this.effect.length; i++){this.effect[i].preDraw(this, this.cx, this.cy);}
+		for(var i = 0; i < this.effect.length; i++){
+			var effect = this.effect[i];
+			effect.preDraw(this, effect.x - this.cx, effect.y - this.cy, effect.z);
+		}
 
 		// キャラクタータップ色設定
 		if(this._maskColor == ""){

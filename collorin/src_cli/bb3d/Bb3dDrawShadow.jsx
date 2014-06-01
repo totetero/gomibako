@@ -38,15 +38,9 @@ class Bb3dDrawShadow extends Bb3dDrawUnit{
 	}
 
 	// ----------------------------------------------------------------
-	// 描画準備
-	function preDraw(bcvs : Bb3dCanvas, x : number, y : number, z : number) : void{
-		super.preDraw(bcvs, x, y, z, this._scale);
-	}
-
-	// ----------------------------------------------------------------
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
-		var psx = (16 * this.drScale) as int;
+		var psx = (16 * bcvs.scale * this._scale) as int;
 		var psy = (psx * bcvs.sinh) as int;
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
