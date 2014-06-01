@@ -18,6 +18,8 @@ class Bb3dCanvas{
 	var y : int;
 	var w : int;
 	var h : int;
+	var centerx : int;
+	var centery : int;
 	// 画面回転拡大
 	var rotv : number;
 	var roth : number;
@@ -27,6 +29,7 @@ class Bb3dCanvas{
 	var sinh : number;
 	var cosh : number;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(rotv : number, roth : number, scale : number){
 		this.rotv = rotv;
@@ -62,6 +65,7 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 	var calcy : number;
 	var calcrotv : number;
 
+	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(rotv : number, roth : number, scale : number){
 		super(rotv, roth, scale);
@@ -70,10 +74,18 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 		this.calcrotv = this.rotv;
 	}
 
-	// マウス状態とタッチ状態の計算
-	function calcTouchCoordinate() : void{
+	// ----------------------------------------------------------------
+	// 計算ステップ01 基本サイズ計算
+	function calcBasicSize() : void{
 		this.w = Ctrl.screen.w;
 		this.h = Ctrl.screen.h;
+		this.centerx = this.w * 0.5;
+		this.centery = this.h * 0.5;
+	}
+
+	// ----------------------------------------------------------------
+	// 計算ステップ02 マウス状態とタッチ状態の計算
+	function calcTouchCoordinate() : void{
 		// キャンバスからみたマウス位置を確認
 		this.prevstx = this.stx;
 		this.prevsty = this.sty;
@@ -88,13 +100,14 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 			}
 		}
 		// マウス位置をゲーム座標タッチ位置に変換
-		var x0 = (this.stx - this.w * 0.5) / this.scale;
-		var y0 = (this.sty - this.h * 0.5) / (this.scale * this.sinh);
+		var x0 = (this.stx - this.centerx) / this.scale;
+		var y0 = (this.sty - this.centery) / (this.scale * this.sinh);
 		this.tx = (x0 *  this.cosv + y0 * this.sinv) + this.cx;
 		this.ty = (x0 * -this.sinv + y0 * this.cosv) + this.cy;
 	}
 
-	// タッチによる移動の計算
+	// ----------------------------------------------------------------
+	// 計算ステップ03 タッチによる移動の計算
 	function calcTouchMove() : void{
 		if(Ctrl.stdn && Ctrl.stmv){
 			var x1 = this.cxmax * this.cosv + this.cymax * -this.sinv;
@@ -119,14 +132,15 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 		}
 	}
 
-	// タッチによる回転の計算
+	// ----------------------------------------------------------------
+	// 計算ステップ03 タッチによる回転の計算
 	function calcTouchRotate() : void{
 		if(Ctrl.stdn && Ctrl.stmv){
-			var x0 = this.prevstx - this.w * 0.5;
-			var y0 = this.prevsty - this.h * 0.5;
+			var x0 = this.prevstx - this.centerx;
+			var y0 = this.prevsty - this.centery;
 			var r0 = Math.sqrt(x0 * x0 + y0 * y0);
-			var x1 = this.stx - this.w * 0.5;
-			var y1 = this.sty - this.h * 0.5;
+			var x1 = this.stx - this.centerx;
+			var y1 = this.sty - this.centery;
 			var r1 = Math.sqrt(x1 * x1 + y1 * y1);
 			if(r0 > 20 && r1 > 20){
 				var cos = (x0 * x1 + y0 * y1) / (r0 * r1);
@@ -136,7 +150,8 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 		}
 	}
 
-	// 垂直角度の減衰計算
+	// ----------------------------------------------------------------
+	// 計算ステップ04 垂直角度の減衰計算
 	function calcRotv(rotv : number, rate : number) : void{
 		var drv = this.rotv - rotv;
 		while(drv < -Math.PI){drv += Math.PI * 2;}
@@ -148,7 +163,8 @@ class Bb3dCanvasFullscreen extends Bb3dCanvas{
 		}
 	}
 
-	// 水平角度の減衰計算
+	// ----------------------------------------------------------------
+	// 計算ステップ05 水平角度の減衰計算
 	function calcRoth(roth : number, rate : number) : void{
 		var drh = this.roth - roth;
 		if(Math.abs(drh) > 0.01){

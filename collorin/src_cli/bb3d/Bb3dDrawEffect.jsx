@@ -81,8 +81,8 @@ class Bb3dDrawEffectHopImage extends Bb3dDrawEffect{
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
 		var ps = (this._size * 0.5 * this.drScale) as int;
-		var px = (this.drx - ps * 0.5 + bcvs.x + bcvs.w * 0.5) as int;
-		var py = (this.dry - ps * 0.5 + bcvs.y + bcvs.h * 0.5) as int;
+		var px = (this.drx - ps * 0.5 + bcvs.x + bcvs.centerx) as int;
+		var py = (this.dry - ps * 0.5 + bcvs.y + bcvs.centery) as int;
 		Ctrl.gctx.drawImage(this._img, this._u, this._v, this._size, this._size, px, py, ps, ps);
 	}
 }
@@ -153,8 +153,8 @@ class Bb3dDrawEffectHopNumber extends Bb3dDrawEffect{
 	override function draw(bcvs : Bb3dCanvas) : void{
 		var psx = (this._canvas.width * 0.5 * this.drScale) as int;
 		var psy = (this._canvas.height * 0.5 * this.drScale) as int;
-		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.w * 0.5) as int;
-		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.h * 0.5) as int;
+		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
+		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
 		Ctrl.gctx.drawImage(this._canvas, px, py, psx, psy);
 	}
 }
@@ -215,8 +215,8 @@ class Bb3dDrawEffectBeam extends Bb3dDrawEffect{
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
 		var ps = (16 * this.drScale) as int;
-		var cx = (this.drx + bcvs.x + bcvs.w * 0.5) as int;
-		var cy = (this.dry + bcvs.y + bcvs.h * 0.5) as int;
+		var cx = (this.drx + bcvs.x + bcvs.centerx) as int;
+		var cy = (this.dry + bcvs.y + bcvs.centery) as int;
 		var px = (cx - ps * 0.5) as int;
 		var py = (cy - ps * 0.5) as int;
 		Ctrl.gctx.save();

@@ -261,8 +261,8 @@ class Bb3dDrawCharacterParts extends Bb3dDrawUnit{
 	override function draw(bcvs : Bb3dCanvas) : void{
 		var s2 = (this._uvsize * 0.5 * this._character.drScale) as int;
 		var s1 = (s2 * 0.5) as int;
-		var xc = (this.drx + bcvs.x + bcvs.w * 0.5) as int;
-		var yc = (this.dry + bcvs.y + bcvs.h * 0.5) as int;
+		var xc = (this.drx + bcvs.x + bcvs.centerx) as int;
+		var yc = (this.dry + bcvs.y + bcvs.centery) as int;
 		var xm = xc - s1;
 		var ym = yc - s1;
 		var xp = xc + s1;
@@ -386,8 +386,8 @@ class Bb3dDrawCharacterWeapon extends Bb3dDrawUnit{
 	// 描画
 	override function draw(bcvs : Bb3dCanvas) : void{
 		var ps = this._canvas.height * 0.5 * this._character.drScale;
-		var px = this.drx + bcvs.x + bcvs.w * 0.5;
-		var py = this.dry + bcvs.y + bcvs.h * 0.5;
+		var px = this.drx + bcvs.x + bcvs.centerx;
+		var py = this.dry + bcvs.y + bcvs.centery;
 		Ctrl.gctx.save();
 		Ctrl.gctx.translate(px, py);
 		Ctrl.gctx.scale(1, bcvs.sinh);

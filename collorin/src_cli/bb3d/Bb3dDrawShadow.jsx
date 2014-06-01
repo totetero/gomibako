@@ -48,8 +48,8 @@ class Bb3dDrawShadow extends Bb3dDrawUnit{
 	override function draw(bcvs : Bb3dCanvas) : void{
 		var psx = (16 * this.drScale) as int;
 		var psy = (psx * bcvs.sinh) as int;
-		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.w * 0.5) as int;
-		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.h * 0.5) as int;
+		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
+		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
 		Ctrl.gctx.drawImage(Bb3dDrawShadow._canvas, px, py, psx, psy);
 	}
 }

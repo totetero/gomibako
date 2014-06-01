@@ -72,13 +72,10 @@ class Bb3dDice{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw(bcvs : Bb3dCanvas) : void{
-		var centerx = bcvs.x + bcvs.w * 0.5;
-		var centery = bcvs.y + bcvs.h * 0.5;
-
 		// 影描画
 		Ctrl.gctx.save();
 		Ctrl.gctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-		Ctrl.gctx.translate(centerx, centery);
+		Ctrl.gctx.translate(bcvs.centerx, bcvs.centery);
 		Ctrl.gctx.translate(this.x, this.y);
 		Ctrl.gctx.scale(1, bcvs.sinh);
 		Ctrl.gctx.beginPath();
@@ -145,8 +142,8 @@ class Bb3dDice{
 			}
 			this._ctx.restore();
 		}
-		var x = centerx + this.x - this._cvs.width * 0.5;
-		var y = centery + this.y - this._cvs.height * 0.5 - (this.h + this._size * 0.5) * bcvs.cosh;
+		var x = bcvs.centerx + this.x - this._cvs.width * 0.5;
+		var y = bcvs.centery + this.y - this._cvs.height * 0.5 - (this.h + this._size * 0.5) * bcvs.cosh;
 		Ctrl.gctx.drawImage(this._cvs, x, y);
 	}
 

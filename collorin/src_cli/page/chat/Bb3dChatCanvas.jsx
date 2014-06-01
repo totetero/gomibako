@@ -74,6 +74,7 @@ class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
 	// 計算
 	function calc() : void{
 		// キャンバス計算
+		this.calcBasicSize();
 		this.calcTouchCoordinate();
 		if(!this.cameraLock){this.calcTouchRotate();}
 		this.calcRotv(this.calcrotv, 0.2);

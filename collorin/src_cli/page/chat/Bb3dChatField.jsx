@@ -135,7 +135,7 @@ class Bb3dChatField{
 	function draw(bcvs : Bb3dChatCanvas, x : number, y : number, select : boolean) : void {
 		// 描画開始
 		Ctrl.gctx.save();
-		Ctrl.gctx.translate(Ctrl.screen.w * 0.5, Ctrl.screen.h * 0.5);
+		Ctrl.gctx.translate(bcvs.centerx, bcvs.centery);
 		Ctrl.gctx.scale(bcvs.scale, bcvs.scale * bcvs.sinh);
 		Ctrl.gctx.rotate(bcvs.rotv);
 		Ctrl.gctx.translate(-x, -y);

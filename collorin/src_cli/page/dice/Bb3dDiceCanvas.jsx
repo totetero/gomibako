@@ -88,6 +88,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
 	// 計算
 	function calc() : void{
 		// キャンバス計算
+		this.calcBasicSize();
 		this.calcTouchCoordinate();
 		if(this.isMapMode){
 			if(!this.cameraLock){this.calcTouchMove();}
