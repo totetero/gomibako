@@ -21,15 +21,19 @@ import "Bb3dJumpCharacter.jsx";
 // ----------------------------------------------------------------
 
 // キャンバス情報管理
-class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
+class Bb3dJumpCanvas extends Bb3dCanvas{
 	var player : Bb3dJumpCharacter;
 	var member = new Bb3dJumpCharacter[];
 	var clist = new Bb3dDrawUnit[];
-	var slist = new Bb3dDrawUnit[];
+//	var slist = new Bb3dDrawUnit[];
+
+	// ゲーム座標カメラ位置
+	var cx : number;
+	var cz : number;
+	var calcx : number;
+	var calcz : number;
 
 	// カメラ設定
-	var cz : number;
-	var calcz : number;
 	var cameraLock : boolean;
 	var cameraScale : number;
 	// キャラクタの押下
@@ -47,9 +51,8 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 		this.cameraScale = 2;
 
 		// 初期カメラ位置
-		this.cx = this.calcx = (this.cxmax + this.cxmin) * 0.5;
-		this.cy = this.calcy = (this.cymax + this.cymin) * 0.5;
-		this.cz = this.calcy = 0;
+		this.cx = this.calcx = 0;
+		this.cz = this.calcz = 0;
 
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
@@ -62,8 +65,6 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 				"motion": "human", 
 				"side": "player", 
 				"size": 1.2, 
-				"x": 0, 
-				"y": 0,
 			}));
 		}
 	}
@@ -72,11 +73,11 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 	// 計算
 	function calc() : void{
 		// キャンバス計算
-		this.calcBasicSize();
+		this.w = Ctrl.screen.w;
+		this.h = Ctrl.screen.h;
+		this.centerx = this.w * 0.5;
 		this.centery = this.h - 50;
-		this.calcTouchCoordinate();
 		this.cx -= (this.cx - this.calcx) * 0.2;
-		this.cy -= (this.cy - this.calcy) * 0.2;
 		this.cz -= (this.cz - this.calcz) * 0.2;
 		this.scale -= (this.scale - this.cameraScale) * 0.1;
 
@@ -89,7 +90,6 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 		if(this.player != null){
 			// カメラ位置をプレイヤーに
 			this.calcx = this.player.x;
-			this.calcy = this.player.y;
 			this.calcz = this.player.z;
 		}
 
@@ -122,7 +122,7 @@ class Bb3dJumpCanvas extends Bb3dCanvasFullscreen{
 		// 背景描画
 		this._drawBackground();
 		// 影描画
-		Bb3dDrawUnit.drawList(this, this.slist);
+//		Bb3dDrawUnit.drawList(this, this.slist);
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
 	}

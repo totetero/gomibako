@@ -25,12 +25,11 @@ import "Bb3dJumpCanvas.jsx";
 class Bb3dJumpCharacter extends DataChara{
 	var _character : Bb3dDrawCharacter;
 	var _nametag : Bb3dDrawText;
-	var _shadow : Bb3dDrawShadow;
 
 	var exist = true;
-	var x : number;
-	var y : number;
-	var z : number;
+	var x : number = 0;
+	var y : number = 0;
+	var z : number = 0;
 	var motion : string;
 	var action : int;
 
@@ -38,19 +37,14 @@ class Bb3dJumpCharacter extends DataChara{
 	// コンストラクタ
 	function constructor(bcvs : Bb3dJumpCanvas, response : variant){
 		super(response);
-		this.x = response["x"] as int;
-		this.y = response["y"] as int;
-		this.z = 0;
 
 		var img = Loader.imgs["img_chara_dot_" + this.code];
 		var mot = Loader.mots["mot_" + response["motion"] as string];
 		var size = response["size"] as number;
 		this._character = new Bb3dDrawCharacter(img, mot, size);
 		this._nametag = new Bb3dDrawText(this.name);
-		this._shadow = new Bb3dDrawShadow(size);
 		bcvs.clist.push(this._character);
 		bcvs.clist.push(this._nametag);
-		bcvs.slist.push(this._shadow);
 	}
 
 	// ----------------------------------------------------------------
@@ -80,14 +74,12 @@ class Bb3dJumpCharacter extends DataChara{
 	// 描画準備
 	function preDraw(bcvs : Bb3dJumpCanvas) : void{
 		var x = this.x - bcvs.cx;
-		var y = this.y - bcvs.cy;
 		var z = this.z - bcvs.cz;
 		var r = Math.PI * 0.5;
-		this._nametag.preDraw(bcvs, x, y, 40);
-		this._shadow.preDraw(bcvs, x, y, 0);
+		this._nametag.preDraw(bcvs, x, this.y, z + 40);
 		switch(this.motion){
-			case "walk": this._character.preDraw(bcvs, x, y, z, r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
-			default: this._character.preDraw(bcvs, x, y, z, r, "stand", 0); break;
+			case "walk": this._character.preDraw(bcvs, x, this.y, z, r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
+			default: this._character.preDraw(bcvs, x, this.y, z, r, "stand", 0); break;
 		}
 	}
 
@@ -97,7 +89,7 @@ class Bb3dJumpCharacter extends DataChara{
 		this.exist = false;
 		this._character.exist = false;
 		this._nametag.exist = false;
-		this._shadow.exist = false;	}
+	}
 }
 
 // ----------------------------------------------------------------

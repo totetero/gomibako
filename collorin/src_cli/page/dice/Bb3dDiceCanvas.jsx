@@ -24,7 +24,7 @@ import "Bb3dDiceCharacter.jsx";
 // ----------------------------------------------------------------
 
 // キャンバス情報管理
-class Bb3dDiceCanvas extends Bb3dCanvasFullscreen{
+class Bb3dDiceCanvas extends Bb3dCanvasHorizonFullscreen{
 	var field : Bb3dDiceField;
 	var member = {} : Map.<Bb3dDiceCharacter>;
 	var dices = new Bb3dDice[];

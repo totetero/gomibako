@@ -42,8 +42,8 @@ class Bb3dCanvas{
 	}
 }
 
-// キャンバス情報管理 スクリーン全面使用
-class Bb3dCanvasFullscreen extends Bb3dCanvas{
+// キャンバス情報管理 水平方向に展開 スクリーン全面使用
+class Bb3dCanvasHorizonFullscreen extends Bb3dCanvas{
 	// マウス状態 キャンバスとの相対位置
 	var stx : int = 0;
 	var sty : int = 0;

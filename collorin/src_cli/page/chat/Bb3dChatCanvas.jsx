@@ -22,7 +22,7 @@ import "Bb3dChatCharacter.jsx";
 // ----------------------------------------------------------------
 
 // キャンバス情報管理
-class Bb3dChatCanvas extends Bb3dCanvasFullscreen{
+class Bb3dChatCanvas extends Bb3dCanvasHorizonFullscreen{
 	var field : Bb3dChatField;
 	var player : Bb3dChatCharacter;
 	var member = new Bb3dChatCharacter[];
