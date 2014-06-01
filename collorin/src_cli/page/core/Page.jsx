@@ -25,6 +25,7 @@ import "../setting/PageSetting.jsx";
 import "../help/PageHelp.jsx";
 import "../dice/PageDice.jsx";
 import "../chat/PageChat.jsx";
+import "../jump/PageJump.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -91,6 +92,7 @@ abstract class Page extends EventPlayer{
 	static function _nextPage(hash : string) : Page{
 		if(hash.indexOf("dice") == 1){return new PageDice();}
 		if(hash.indexOf("chat") == 1){return new PageChat();}
+		if(hash.indexOf("jump") == 1){return new PageJump();}
 		if(hash.indexOf("world") == 1){return new PageWorld();}
 		if(hash.indexOf("quest") == 1){return new PageQuest();}
 		if(hash.indexOf("chara") == 1){return new PageChara();}

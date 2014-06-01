@@ -19,6 +19,7 @@ import "page/setting/SettingPage.jsx";
 import "page/help/HelpPage.jsx";
 import "page/dice/DicePage.jsx";
 import "page/chat/ChatPage.jsx";
+import "page/jump/JumpPage.jsx";
 
 import "models/User.jsx";
 
@@ -124,6 +125,7 @@ class _Main{
 		HelpPage.setPage(app);
 		DicePage.setPage(app, rcli);
 		ChatPage.setPage(app, rcli, io);
+		JumpPage.setPage(app);
 
 		// コンテンツサーバ
 		ContentsServer.setPage(app, "/contents", node.__dirname + "/content", "testContentsSecretKey");

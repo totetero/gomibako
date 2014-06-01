@@ -11,70 +11,44 @@ import "../../util/PartsButton.jsx";
 import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
-import "../core/popup/SECpopupMenu.jsx";
-import "PageWorld.jsx";
+import "PageJump.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
-// ワールドカートリッジ
-class SECworldMain implements SerialEventCartridge{
-	var _page : PageWorld;
+// ジャンプカートリッジ
+class SECjumpMain implements SerialEventCartridge{
+	var _page : PageJump;
 	var _btnList = {} : Map.<PartsButton>;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(page : PageWorld, response : variant){
+	function constructor(page : PageJump, response : variant){
 		this._page = page;
 
 		// ボタン作成
-		this._btnList["dice"] = new PartsButtonBasic("テストすごろく",  20, 70, 200, 40);
-		this._btnList["chat"] = new PartsButtonBasic("テストチャット",  20, 120, 200, 40);
-		this._btnList["jump"] = new PartsButtonBasic("テストジャンプ",  20, 170, 200, 40);
+		this._btnList["test"] = new PartsButtonBasic("ジャンプ",  10, 10, 200, 40);
 	}
 
 	// ----------------------------------------------------------------
 	// 初期化
 	override function init() : void{
+		// キャンバス設定
+		this._page.bcvs.cameraLock = false;
+		this._page.bcvs.isTapChara = true;
 		// クロス設定
 		this._page.ctrler.setLctrl(false);
 		this._page.ctrler.setRctrl("", "", "", "");
-		this._page.header.setActive(true);
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
-		this._page.header.lbtn.trigger = false;
-		this._page.header.rbtn.trigger = false;
+		this._page.bcvs.charaTrigger = null;
 	}
 
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		for(var name in this._btnList){this._btnList[name].calc(true);}
-
-		// ボタン押下処理
-		var list = ["dice", "chat", "jump"];
-		for(var i = 0; i < list.length; i++){
-			if(this._btnList[list[i]].trigger){
-				Sound.playSE("ok");
-				Page.transitionsPage(list[i]);
-				return true;
-			}
-		}
-
-		// 左ヘッダ戻るボタン押下処理
-		if(this._page.header.lbtn.trigger){
-			Sound.playSE("ng");
-			Page.transitionsPage("mypage");
-			return true;
-		}
-
-		// 右ヘッダメニューボタン押下処理
-		if(this._page.header.rbtn.trigger){
-			Sound.playSE("ok");
-			this._page.serialPush(new SECpopupMenu(this._page, this));
-			return false;
-		}
+		this._page.bcvs.calcButton(this._btnList);
 
 		return true;
 	}
@@ -82,15 +56,12 @@ class SECworldMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		// 画面クリア
-		Ctrl.sctx.fillStyle = "#cccccc";
-		Ctrl.sctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
+		this._page.drawBeforeCross();
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
 
-		// ヘッダ描画
-		this._page.header.draw();
+		this._page.drawAfterCross();
 	}
 
 	// ----------------------------------------------------------------
