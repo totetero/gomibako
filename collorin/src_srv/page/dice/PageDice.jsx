@@ -9,14 +9,14 @@ import "../../models/User.jsx";
 import "MockDice.jsx";
 
 // マイページ
-class DicePage{
+class PageDice{
 	static var _rcli : RedisClient;
 	static const _rhead = "dice:";
 
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication, rcli : RedisClient) : void{
-		DicePage._rcli = rcli;
+		PageDice._rcli = rcli;
 
 		// -------- expressページ --------
 		app.post("/dice", function(req : ExRequest, res : ExResponse, next : function():void) : void{

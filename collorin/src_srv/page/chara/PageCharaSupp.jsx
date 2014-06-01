@@ -5,7 +5,7 @@ import "../../models/User.jsx";
 import "../../models/Character.jsx";
 
 // キャラクター補給ページ
-class CharaPageSupp{
+class PageCharaSupp{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{

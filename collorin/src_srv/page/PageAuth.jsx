@@ -5,7 +5,7 @@ import "../require/passport.jsx";
 import "../models/User.jsx";
 
 // 認証ページ
-class AuthPage{
+class PageAuth{
 	// ----------------------------------------------------------------
 	// passportの設定
 	static function setPassport(strategies : variant) : void{
@@ -34,7 +34,7 @@ class AuthPage{
 					UserModel.findOne({domain: "local", name: name}, function(err : variant, user : UserModel){
 						if(err){done(err, null, null);}
 						else if(user){
-							if(AuthPage.getHash(pass, secretKey) == user.pass){
+							if(PageAuth._getHash(pass, secretKey) == user.pass){
 								// 認証成功 データベース更新
 								user.count++;
 								user.save(function(err : variant) : void{
@@ -50,7 +50,7 @@ class AuthPage{
 								UserModelUtil.createUser(function(model : UserModel) : void{
 									model.domain = "local";
 									model.name = name;
-									model.pass = AuthPage.getHash(pass, secretKey);
+									model.pass = PageAuth._getHash(pass, secretKey);
 									model.nickname = name;
 									model.imgurl = "";
 								}, function(err : variant, model : UserModel) : void{
@@ -99,7 +99,7 @@ class AuthPage{
 
 	// ----------------------------------------------------------------
 	// ハッシュ値
-	static function getHash(target : string, key : string) : string{
+	static function _getHash(target : string, key : string) : string{
 		var hmac = crypto.createHmac("sha256", key);
 		return hmac.update(target).digest("hex");
 	}

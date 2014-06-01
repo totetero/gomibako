@@ -6,20 +6,20 @@ import "require/passport.jsx";
 import "require/socket.io.jsx";
 
 import "util/ContentsServer.jsx";
-import "page/AuthPage.jsx";
-import "page/top/TopPage.jsx";
-import "page/mypage/MyPage.jsx";
-import "page/world/WorldPage.jsx";
-import "page/quest/QuestPage.jsx";
-import "page/chara/CharaPage.jsx";
-import "page/item/ItemPage.jsx";
-import "page/friend/FriendPage.jsx";
-import "page/refbook/RefbookPage.jsx";
-import "page/setting/SettingPage.jsx";
-import "page/help/HelpPage.jsx";
-import "page/dice/DicePage.jsx";
-import "page/chat/ChatPage.jsx";
-import "page/jump/JumpPage.jsx";
+import "page/PageAuth.jsx";
+import "page/PageTop.jsx";
+import "page/mypage/PageMypage.jsx";
+import "page/world/PageWorld.jsx";
+import "page/quest/PageQuest.jsx";
+import "page/chara/PageChara.jsx";
+import "page/item/PageItem.jsx";
+import "page/friend/PageFriend.jsx";
+import "page/refbook/PageRefbook.jsx";
+import "page/setting/PageSetting.jsx";
+import "page/help/PageHelp.jsx";
+import "page/dice/PageDice.jsx";
+import "page/chat/PageChat.jsx";
+import "page/jump/PageJump.jsx";
 
 import "models/User.jsx";
 
@@ -100,7 +100,7 @@ class _Main{
 		});
 
 		// passport認証設定
-		AuthPage.setPassport({
+		PageAuth.setPassport({
 			local: {
 				secretKey: app.get("secretKey") as string
 			}, twitter: {
@@ -111,21 +111,21 @@ class _Main{
 		});
 
 		// 各ページ設定
-		AuthPage.setPage(app);
-		TopPage.setPage(app);
+		PageAuth.setPage(app);
+		PageTop.setPage(app);
 		_Main.setMainPage(app);
-		MyPage.setPage(app);
-		WorldPage.setPage(app);
-		QuestPage.setPage(app);
-		CharaPage.setPage(app);
-		ItemPage.setPage(app);
-		FriendPage.setPage(app);
-		RefbookPage.setPage(app);
-		SettingPage.setPage(app);
-		HelpPage.setPage(app);
-		DicePage.setPage(app, rcli);
-		ChatPage.setPage(app, rcli, io);
-		JumpPage.setPage(app);
+		PageMypage.setPage(app);
+		PageWorld.setPage(app);
+		PageQuest.setPage(app);
+		PageChara.setPage(app);
+		PageItem.setPage(app);
+		PageFriend.setPage(app);
+		PageRefbook.setPage(app);
+		PageSetting.setPage(app);
+		PageHelp.setPage(app);
+		PageDice.setPage(app, rcli);
+		PageChat.setPage(app, rcli, io);
+		PageJump.setPage(app);
 
 		// コンテンツサーバ
 		ContentsServer.setPage(app, "/contents", node.__dirname + "/content", "testContentsSecretKey");

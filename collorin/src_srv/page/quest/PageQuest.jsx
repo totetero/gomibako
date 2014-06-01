@@ -2,7 +2,7 @@ import "../../require/nodejs.jsx";
 import "../../require/express.jsx";
 
 // クエストページ
-class QuestPage{
+class PageQuest{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{

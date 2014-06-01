@@ -2,7 +2,7 @@ import "../../require/nodejs.jsx";
 import "../../require/express.jsx";
 
 // 設定ページ
-class SettingPage{
+class PageSetting{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{

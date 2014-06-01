@@ -1,15 +1,15 @@
 import "../../require/express.jsx";
 
-import "CharaPageTeam.jsx";
-import "CharaPageSupp.jsx";
+import "PageCharaTeam.jsx";
+import "PageCharaSupp.jsx";
 
 // キャラクターページ
-class CharaPage{
+class PageChara{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
-		CharaPageTeam.setPage(app);
-		CharaPageSupp.setPage(app);
+		PageCharaTeam.setPage(app);
+		PageCharaSupp.setPage(app);
 
 		// -------- 休息 --------
 		app.get("/chara/rest", function(req : ExRequest, res : ExResponse, next : function():void) : void{

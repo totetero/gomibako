@@ -2,7 +2,7 @@ import "../../require/nodejs.jsx";
 import "../../require/express.jsx";
 
 // ワールドページ
-class WorldPage{
+class PageWorld{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{

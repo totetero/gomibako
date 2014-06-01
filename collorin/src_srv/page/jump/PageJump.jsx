@@ -4,7 +4,7 @@ import "../../require/express.jsx";
 import "../../util/ContentsServer.jsx";
 
 // ジャンプページ
-class JumpPage{
+class PageJump{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{

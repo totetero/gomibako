@@ -1,8 +1,8 @@
-import "../../require/nodejs.jsx";
-import "../../require/express.jsx";
+import "../require/nodejs.jsx";
+import "../require/express.jsx";
 
 // トップページ
-class TopPage{
+class PageTop{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication) : void{
