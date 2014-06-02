@@ -11,6 +11,10 @@ import "Sound.jsx";
 class Ctrl{
 	static var window = new Ctrl.Box(0, 0, 0, 0);
 	static var screen = new Ctrl.Box(0, 0, 0, 0);
+	static const swmin = 320;
+	static const swmax = 640;
+	static const shmin = 240;
+	static const shmax = 480;
 	// ピクセルレシオ
 	static var pixelRatio : number;
 	// メインキャンバス要素
@@ -251,8 +255,8 @@ class Ctrl{
 		if(Ctrl.window.w != ww || Ctrl.window.h != wh){
 			Ctrl.window.w = ww;
 			Ctrl.window.h = wh;
-			Ctrl.screen.w = Math.min(Math.max(Ctrl.window.w, 320), 640);
-			Ctrl.screen.h = Math.min(Math.max(Ctrl.window.h, 240), 480);
+			Ctrl.screen.w = Math.min(Math.max(Ctrl.window.w, Ctrl.swmin), Ctrl.swmax);
+			Ctrl.screen.h = Math.min(Math.max(Ctrl.window.h, Ctrl.shmin), Ctrl.shmax);
 			Ctrl.screen.x = Math.max(Math.floor((Ctrl.window.w - Ctrl.screen.w) * 0.5), 0);
 			Ctrl.screen.y = Math.max(Math.floor((Ctrl.window.h - Ctrl.screen.h) * 0.5), 0);
 			Ctrl.setCanvas();

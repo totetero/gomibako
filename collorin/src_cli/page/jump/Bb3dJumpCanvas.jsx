@@ -49,7 +49,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 	// コンストラクタ
 	function constructor(response : variant){
 		super(0, Math.PI / 180 * 30, 2);
-		this.cameraScale = 1;
+		this.cameraScale = 1.5;
 
 		// 初期カメラ位置
 		this.cx = this.calcx = 0;
@@ -80,7 +80,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		this.w = Ctrl.screen.w;
 		this.h = Ctrl.screen.h;
 		this.centerx = this.w * 0.5;
-		this.centery = this.h - 96;
+		this.centery = this.h - (6 + 66 * (Ctrl.screen.h - Ctrl.shmin) / (Ctrl.shmax - Ctrl.shmin));
 		this.cx -= (this.cx - this.calcx) * 0.2;
 		this.cy -= (this.cy - this.calcy) * 0.2;
 		this.scale -= (this.scale - this.cameraScale) * 0.1;

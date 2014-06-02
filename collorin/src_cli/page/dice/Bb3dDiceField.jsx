@@ -131,7 +131,7 @@ class Bb3dDiceField{
 			// タッチ位置描画
 			Ctrl.gctx.fillStyle = "rgba(0, 0, 0, 0.5)";
 			Ctrl.gctx.beginPath();
-			Ctrl.gctx.arc(bcvs.tx, bcvs.ty, 6, 0, Math.PI*2, false);
+			Ctrl.gctx.arc(bcvs.tx, bcvs.ty, 6, 0, Math.PI * 2, false);
 			Ctrl.gctx.fill();
 			// 座標をヘックス中心座に変換
 			var hex = this.getHexFromCoordinate(bcvs.tx, bcvs.ty);

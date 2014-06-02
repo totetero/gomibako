@@ -26,8 +26,8 @@ class Bb3dJumpCharacter extends DataChara{
 	var _nametag : Bb3dDrawText;
 
 	var exist = true;
-	var x : number = 100;
-	var y : number = 100;
+	var x : number = 0;
+	var y : number = 0;
 	var motion : string;
 	var action : int;
 
