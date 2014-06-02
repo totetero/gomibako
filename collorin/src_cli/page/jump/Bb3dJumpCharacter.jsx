@@ -26,9 +26,8 @@ class Bb3dJumpCharacter extends DataChara{
 	var _nametag : Bb3dDrawText;
 
 	var exist = true;
-	var x : number = 0;
-	var y : number = 0;
-	var z : number = 0;
+	var x : number = 100;
+	var y : number = 100;
 	var motion : string;
 	var action : int;
 
@@ -73,12 +72,12 @@ class Bb3dJumpCharacter extends DataChara{
 	// 描画準備
 	function preDraw(bcvs : Bb3dJumpCanvas) : void{
 		var x = this.x - bcvs.cx;
-		var z = this.z - bcvs.cz;
+		var z = this.y / bcvs.cosh - bcvs.cy;
 		var r = Math.PI * 0.5;
-		this._nametag.preDraw(bcvs, x, this.y, z + 40);
+		this._nametag.preDraw(bcvs, x, 0, z + 40);
 		switch(this.motion){
-			case "walk": this._character.preDraw(bcvs, x, this.y, z, r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
-			default: this._character.preDraw(bcvs, x, this.y, z, r, "stand", 0); break;
+			case "walk": this._character.preDraw(bcvs, x, 0, z, r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
+			default: this._character.preDraw(bcvs, x, 0, z, r, "stand", 0); break;
 		}
 	}
 

@@ -27,13 +27,12 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 	var foothold : Bb3dJumpFoothold;
 	var member = new Bb3dJumpCharacter[];
 	var clist = new Bb3dDrawUnit[];
-//	var slist = new Bb3dDrawUnit[];
 
 	// ゲーム座標カメラ位置
 	var cx : number;
-	var cz : number;
+	var cy : number;
 	var calcx : number;
-	var calcz : number;
+	var calcy : number;
 
 	// カメラ設定
 	var cameraLock : boolean;
@@ -50,11 +49,11 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 	// コンストラクタ
 	function constructor(response : variant){
 		super(0, Math.PI / 180 * 30, 2);
-		this.cameraScale = 2;
+		this.cameraScale = 1;
 
 		// 初期カメラ位置
 		this.cx = this.calcx = 0;
-		this.cz = this.calcz = 0;
+		this.cy = this.calcy = 0;
 
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
@@ -83,7 +82,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		this.centerx = this.w * 0.5;
 		this.centery = this.h - 96;
 		this.cx -= (this.cx - this.calcx) * 0.2;
-		this.cz -= (this.cz - this.calcz) * 0.2;
+		this.cy -= (this.cy - this.calcy) * 0.2;
 		this.scale -= (this.scale - this.cameraScale) * 0.1;
 
 		// キャラクター計算
@@ -95,11 +94,11 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		// 足場計算テスト
 		this.foothold.calc(this);
 
-		if(this.player != null){
-			// カメラ位置をプレイヤーに
-			this.calcx = this.player.x;
-			this.calcz = this.player.z;
-		}
+//		if(this.player != null){
+//			// カメラ位置をプレイヤーに
+//			this.calcx = this.player.x;
+//			this.calcz = this.player.z;
+//		}
 
 		// キャラクタータップ完了確認
 		if(!Ctrl.stdn && this._tappedChara != null){this.charaTrigger = this._tappedChara;}
@@ -107,11 +106,11 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		this._tappedChara = null;
 		if(Ctrl.stdn && !Ctrl.stmv && !this.cameraLock && this.isTapChara){
 			var depth0 = 0;
-			for(var id in this.member){
-				var depth1 = this.member[id].getDepth();
-				if((this._tappedChara == null || depth0 < depth1) && this.member[id].isOver(Ctrl.stx, Ctrl.sty)){
+			for(var i = 0; i < this.member.length; i++){
+				var depth1 = this.member[i].getDepth();
+				if((this._tappedChara == null || depth0 < depth1) && this.member[i].isOver(Ctrl.stx, Ctrl.sty)){
 					depth0 = depth1;
-					this._tappedChara = this.member[id];
+					this._tappedChara = this.member[i];
 				}
 			}
 		}
@@ -120,20 +119,16 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		for(var id in this.member){this.member[id].preDraw(this);}
-
-		// キャラクタータップ色設定
-		for(var id in this.member){
-			this.member[id].setColor((this._tappedChara == this.member[id]) ? "rgba(255, 255, 255, 0.5)" : "");
+		for(var i = 0; i < this.member.length; i++){
+			this.member[i].preDraw(this);
+			// キャラクタータップ色設定
+			this.member[i].setColor((this._tappedChara == this.member[i]) ? "rgba(255, 255, 255, 0.5)" : "");
 		}
 
 		// 背景描画
 		this._drawBackground();
 		// 足場描画テスト
-		this.foothold.preDraw(this);
 		this.foothold.draw(this);
-		// 影描画
-//		Bb3dDrawUnit.drawList(this, this.slist);
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
 	}
