@@ -101,11 +101,11 @@ class Bb3dChatCanvas extends Bb3dCanvasHorizonFullscreen{
 		this._tappedChara = null;
 		if(Ctrl.stdn && !Ctrl.stmv && !this.cameraLock && this.isTapChara){
 			var depth0 = 0;
-			for(var id in this.member){
-				var depth1 = this.member[id].getDepth();
-				if((this._tappedChara == null || depth0 < depth1) && this.member[id].isOver(Ctrl.stx, Ctrl.sty)){
+			for(var i = 0; i < this.member.length; i++){
+				var depth1 = this.member[i].getDepth();
+				if((this._tappedChara == null || depth0 < depth1) && this.member[i].isOver(Ctrl.stx, Ctrl.sty)){
 					depth0 = depth1;
-					this._tappedChara = this.member[id];
+					this._tappedChara = this.member[i];
 				}
 			}
 		}
@@ -119,12 +119,9 @@ class Bb3dChatCanvas extends Bb3dCanvasHorizonFullscreen{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		for(var id in this.member){this.member[id].preDraw(this);}
-
+		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
 		// キャラクタータップ色設定
-		for(var id in this.member){
-			this.member[id].setColor((this._tappedChara == this.member[id]) ? "rgba(255, 255, 255, 0.5)" : "");
-		}
+		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this._tappedChara == this.member[i]) ? "rgba(255, 255, 255, 0.5)" : "");}
 
 		// 背景描画
 		this._drawBackground();

@@ -119,11 +119,9 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 	// ----------------------------------------------------------------
 	// 描画
 	function draw() : void{
-		for(var i = 0; i < this.member.length; i++){
-			this.member[i].preDraw(this);
-			// キャラクタータップ色設定
-			this.member[i].setColor((this._tappedChara == this.member[i]) ? "rgba(255, 255, 255, 0.5)" : "");
-		}
+		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
+		// キャラクタータップ色設定
+		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this._tappedChara == this.member[i]) ? "rgba(255, 255, 255, 0.5)" : "");}
 
 		// 背景描画
 		this._drawBackground();
