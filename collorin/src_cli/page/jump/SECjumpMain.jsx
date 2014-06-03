@@ -65,8 +65,10 @@ class SECjumpMain implements SerialEventCartridge{
 				if(r < 50){this._grab = 10;}
 			}else{
 				if(r > 50 && this._grab > 0){
-					player.vx = x * -(this._grab / 1000);
-					player.vy = y * +(this._grab / 100);
+					// プレイヤーのジャンプ
+					var grabPower = (1 + this._grab * 0.1) * 0.5;
+					player.vx = 5.0 * -0.01 * Math.min(x, Ctrl.swmin * 0.5) * grabPower;
+					player.vy = 5.0 * +0.02 * Math.min(y, Ctrl.shmin * 1.0) * grabPower;
 					player.ground = false;
 				}
 				this._grab = 0;
@@ -82,11 +84,16 @@ class SECjumpMain implements SerialEventCartridge{
 	override function draw() : void{
 		this._page.drawBeforeCross();
 
+		/*
 		var bcvs = this._page.bcvs;
-		Ctrl.sctx.beginPath();
-		Ctrl.sctx.arc(bcvs.centerx, bcvs.centery, 50, 0, Math.PI * 2, true);
-		Ctrl.sctx.stroke();
-		if(this._grab > 0){Ctrl.sctx.fill();}
+		var player = bcvs.member[0];
+		if(player.ground){
+			Ctrl.sctx.beginPath();
+			Ctrl.sctx.arc(bcvs.centerx, bcvs.centery, 50, 0, Math.PI * 2, true);
+			Ctrl.sctx.stroke();
+			if(this._grab > 0){Ctrl.sctx.fill();}
+		}
+		*/
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}

@@ -62,7 +62,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		if(Loader.imgs["img_chara_dot_player1"] != null){
 			this.member.push(new Bb3dJumpCharacter(this, {
 				"code": "player1", 
-				"name": "レッドパピヨン",
+				"name": "プレイヤー",
 				"motion": "human", 
 				"side": "player", 
 				"size": 1.2, 
