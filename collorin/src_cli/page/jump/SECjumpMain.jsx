@@ -22,6 +22,9 @@ class SECjumpMain implements SerialEventCartridge{
 	var _page : PageJump;
 	var _btnList = {} : Map.<PartsButton>;
 
+	var _stdn : boolean;
+	var _grab : int;
+
 	// ----------------------------------------------------------------
 	// コンストラクタ
 	function constructor(page : PageJump, response : variant){
@@ -50,6 +53,27 @@ class SECjumpMain implements SerialEventCartridge{
 	override function calc() : boolean{
 		this._page.bcvs.calcButton(this._btnList);
 
+		var bcvs = this._page.bcvs;
+		var player = bcvs.member[0];
+		if(this._grab > 0){this._grab--;}
+		if(this._stdn != Ctrl.stdn){
+			this._stdn = Ctrl.stdn;
+			var x = bcvs.centerx - Ctrl.stx;
+			var y = bcvs.centery - Ctrl.sty;
+			var r = Math.sqrt(x * x + y * y);
+			if(this._stdn){
+				if(r < 50){this._grab = 10;}
+			}else{
+				if(r > 50 && this._grab > 0){
+					player.vx = x * -(this._grab / 1000);
+					player.vy = y * +(this._grab / 100);
+					player.ground = false;
+				}
+				this._grab = 0;
+			}
+		}
+		if(!player.ground){this._grab = 0;}
+
 		return true;
 	}
 
@@ -57,6 +81,12 @@ class SECjumpMain implements SerialEventCartridge{
 	// 描画
 	override function draw() : void{
 		this._page.drawBeforeCross();
+
+		var bcvs = this._page.bcvs;
+		Ctrl.sctx.beginPath();
+		Ctrl.sctx.arc(bcvs.centerx, bcvs.centery, 50, 0, Math.PI * 2, true);
+		Ctrl.sctx.stroke();
+		if(this._grab > 0){Ctrl.sctx.fill();}
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}

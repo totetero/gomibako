@@ -28,8 +28,11 @@ class Bb3dJumpCharacter extends DataChara{
 	var exist = true;
 	var x : number = 0;
 	var y : number = 0;
+	var vx : number = 0;
+	var vy : number = 0;
 	var motion : string;
 	var action : int;
+	var ground = true;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -66,6 +69,12 @@ class Bb3dJumpCharacter extends DataChara{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc(bcvs : Bb3dJumpCanvas) : void{
+		if(!this.ground){
+			this.vy -= 1;
+			this.x += this.vx;
+			this.y += this.vy;
+		}
+		if(this.y < -100){this.x = this.y = 0; this.ground = true;}
 	}
 
 	// ----------------------------------------------------------------
