@@ -120,6 +120,9 @@ class CrossDiceGauge{
 		this._lShow = (this.lChara != null);
 		this._lFrame = frame;
 
+		// 左右での重複を防ぐ
+		if(this._lShow && this.lChara == this.rChara){this.setRight(null, 0);}
+
 		// 演出スキップ確認
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
 			this._lAction = this._lShow ? 0 : CrossDiceGauge._actionMax;
@@ -137,6 +140,9 @@ class CrossDiceGauge{
 		}
 		this._rShow = (this.rChara != null);
 		this._rFrame = frame;
+
+		// 左右での重複を防ぐ
+		if(this._rShow && this.rChara == this.lChara){this.setLeft(null, 0);}
 
 		// 演出スキップ確認
 		if(dom.window.localStorage.getItem("setting_transition") == "off"){
