@@ -59,22 +59,6 @@ class PageJump extends Page{
 	}
 
 	// ----------------------------------------------------------------
-	// クロス要素の描画 最初に行うほう
-	function drawBeforeCross() : void{
-		// 画面クリア
-		Ctrl.sctx.clearRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
-	}
-
-	// ----------------------------------------------------------------
-	// クロス要素の描画 最後に行うほう
-	function drawAfterCross() : void{
-		// ヘッダ描画
-		this.header.draw();
-		// キャンバス描画
-		this.bcvs.draw();
-	}
-
-	// ----------------------------------------------------------------
 	// 破棄
 	override function dispose() : void{
 		super.dispose();

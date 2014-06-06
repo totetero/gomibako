@@ -20,9 +20,7 @@ class Ctrl{
 	// メインキャンバス要素
 	static var _mdiv : HTMLDivElement;
 	static var _scvs : HTMLCanvasElement;
-	static var _gcvs : HTMLCanvasElement;
 	static var sctx : CanvasRenderingContext2D;
-	static var gctx : CanvasRenderingContext2D;
 	// クロスキャンバス要素
 	static var lctx : CanvasRenderingContext2D;
 	static var rctx : CanvasRenderingContext2D;
@@ -217,33 +215,24 @@ class Ctrl{
 		if(quality == "high"){Ctrl.pixelRatio = dom.window.devicePixelRatio;}
 		if(quality == "low"){Ctrl.pixelRatio = 0.5;}
 		// キャンバスリセット
-		if(Ctrl._gcvs != null){Ctrl._mdiv.removeChild(Ctrl._gcvs);}
 		if(Ctrl._scvs != null){Ctrl._mdiv.removeChild(Ctrl._scvs);}
 		// スクリーンキャンバス作成
 		Ctrl._scvs = dom.document.createElement("canvas") as HTMLCanvasElement;
 		Ctrl.sctx = Ctrl._scvs.getContext("2d") as CanvasRenderingContext2D;
-		// ゲームキャンバス作成
-		Ctrl._gcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		Ctrl.gctx = Ctrl._gcvs.getContext("2d") as CanvasRenderingContext2D;
 		// キャンバス設定
-		var setting = function(cvs : HTMLCanvasElement, ctx : CanvasRenderingContext2D, pixelRatio : number) : void{
-			if(pixelRatio == 1){
-				cvs.width = Ctrl.screen.w;
-				cvs.height = Ctrl.screen.h;
-			}else{
-				cvs.width = Math.floor(Ctrl.screen.w * pixelRatio);
-				cvs.height = Math.floor(Ctrl.screen.h * pixelRatio);
-				ctx.scale(pixelRatio, pixelRatio);
-			}
-			cvs.style.left = Ctrl.screen.x + "px";
-			cvs.style.top = Ctrl.screen.y + "px";
-			cvs.style.width = Ctrl.screen.w + "px";
-			cvs.style.height = Ctrl.screen.h + "px";
-			Ctrl._mdiv.appendChild(cvs);
-		};
-		setting(Ctrl._gcvs, Ctrl.gctx, Ctrl.pixelRatio);
-		setting(Ctrl._scvs, Ctrl.sctx, Math.max(1, Ctrl.pixelRatio));
-
+		if(Ctrl.pixelRatio == 1){
+			Ctrl._scvs.width = Ctrl.screen.w;
+			Ctrl._scvs.height = Ctrl.screen.h;
+		}else{
+			Ctrl._scvs.width = Math.floor(Ctrl.screen.w * Ctrl.pixelRatio);
+			Ctrl._scvs.height = Math.floor(Ctrl.screen.h * Ctrl.pixelRatio);
+			Ctrl.sctx.scale(Ctrl.pixelRatio, Ctrl.pixelRatio);
+		}
+		Ctrl._scvs.style.left = Ctrl.screen.x + "px";
+		Ctrl._scvs.style.top = Ctrl.screen.y + "px";
+		Ctrl._scvs.style.width = Ctrl.screen.w + "px";
+		Ctrl._scvs.style.height = Ctrl.screen.h + "px";
+		Ctrl._mdiv.appendChild(Ctrl._scvs);
 	}
 
 	// ----------------------------------------------------------------

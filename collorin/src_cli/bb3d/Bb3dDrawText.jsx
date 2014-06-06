@@ -46,7 +46,7 @@ class Bb3dDrawText extends Bb3dDrawUnit{
 		var psy = (this._canvas.height * 0.5 * bcvs.scale) as int;
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
-		Ctrl.gctx.drawImage(this._canvas, px, py, psx, psy);
+		Ctrl.sctx.drawImage(this._canvas, px, py, psx, psy);
 	}
 }
 
@@ -142,7 +142,7 @@ class Bb3dDrawBalloon extends Bb3dDrawUnit{
 
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 1.0 + bcvs.y + bcvs.centery) as int;
-		Ctrl.gctx.drawImage(this._canvas, px, py, psx, psy);
+		Ctrl.sctx.drawImage(this._canvas, px, py, psx, psy);
 	}
 }
 

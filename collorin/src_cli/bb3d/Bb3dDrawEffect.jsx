@@ -95,7 +95,7 @@ class Bb3dDrawEffectHopImage extends Bb3dDrawEffect{
 		var ps = (this._size * 0.5 * bcvs.scale) as int;
 		var px = (this.drx - ps * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - ps * 0.5 + bcvs.y + bcvs.centery) as int;
-		Ctrl.gctx.drawImage(this._img, this._u, this._v, this._size, this._size, px, py, ps, ps);
+		Ctrl.sctx.drawImage(this._img, this._u, this._v, this._size, this._size, px, py, ps, ps);
 	}
 }
 
@@ -158,7 +158,7 @@ class Bb3dDrawEffectHopNumber extends Bb3dDrawEffect{
 		var psy = (this._canvas.height * 0.5 * bcvs.scale) as int;
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
-		Ctrl.gctx.drawImage(this._canvas, px, py, psx, psy);
+		Ctrl.sctx.drawImage(this._canvas, px, py, psx, psy);
 	}
 }
 
@@ -201,10 +201,10 @@ class Bb3dDrawEffectBeam extends Bb3dDrawEffectOnce{
 		var cy = (this.dry + bcvs.y + bcvs.centery) as int;
 		var px = (cx - ps * 0.5) as int;
 		var py = (cy - ps * 0.5) as int;
-		Ctrl.gctx.save();
-		Ctrl.gctx.globalCompositeOperation = "lighter";
-		Ctrl.gctx.drawImage(Bb3dDrawEffectBeam._canvas, px, py, ps, ps);
-		Ctrl.gctx.restore();
+		Ctrl.sctx.save();
+		Ctrl.sctx.globalCompositeOperation = "lighter";
+		Ctrl.sctx.drawImage(Bb3dDrawEffectBeam._canvas, px, py, ps, ps);
+		Ctrl.sctx.restore();
 	}
 }
 

@@ -62,23 +62,14 @@ class PageDice extends Page{
 	}
 
 	// ----------------------------------------------------------------
-	// クロス要素の描画 最初に行うほう
-	function drawBeforeCross() : void{
-		// 画面クリア
-		Ctrl.sctx.clearRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
+	// クロス要素の描画
+	function drawCross() : void{
+		// ヘッダ描画
+		this.header.draw();
 		// ゲージ描画
 		this.gauge.draw();
 		// メッセージ描画
 		this.message.draw();
-	}
-
-	// ----------------------------------------------------------------
-	// クロス要素の描画 最後に行うほう
-	function drawAfterCross() : void{
-		// ヘッダ描画
-		this.header.draw();
-		// キャンバス描画
-		this.bcvs.draw();
 	}
 
 	// ----------------------------------------------------------------

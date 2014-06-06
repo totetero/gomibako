@@ -160,12 +160,14 @@ class SECchatMain implements SerialEventCartridge{
 			if(btn.basey < 0){btn.y = Ctrl.screen.h + btn.basey;}
 		}
 
-		this._page.drawBeforeCross();
+		// キャンバス描画
+		this._page.bcvs.draw();
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
 
-		this._page.drawAfterCross();
+		// ヘッダ描画
+		this._page.header.draw();
 	}
 
 	// ----------------------------------------------------------------

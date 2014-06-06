@@ -112,31 +112,23 @@ class SECloadTransition implements SerialEventCartridge{
 				if(this._same){x0 = Ctrl.screen.w * (0 - num * num);}
 
 				setCtx(Ctrl.sctx, x0);
-				setCtx(Ctrl.gctx, x0);
 				this._prevPage.draw();
 				Ctrl.sctx.restore();
-				Ctrl.gctx.restore();
 
 				setCtx(Ctrl.sctx, x1);
-				setCtx(Ctrl.gctx, x1);
 				this._nextCartridge.draw();
 				Ctrl.sctx.restore();
-				Ctrl.gctx.restore();
 			}else{
 				x0 = Ctrl.screen.w * (num * num);
 				if(this._same){x1 = Ctrl.screen.w * (num * num - 1);}
 
 				setCtx(Ctrl.sctx, x1);
-				setCtx(Ctrl.gctx, x1);
 				this._nextCartridge.draw();
 				Ctrl.sctx.restore();
-				Ctrl.gctx.restore();
 
 				setCtx(Ctrl.sctx, x0);
-				setCtx(Ctrl.gctx, x0);
 				this._prevPage.draw();
 				Ctrl.sctx.restore();
-				Ctrl.gctx.restore();
 			}
 
 			// ポップアップ隠蔽フラグとりのぞき

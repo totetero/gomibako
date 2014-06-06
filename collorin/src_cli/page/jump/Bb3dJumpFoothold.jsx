@@ -42,7 +42,7 @@ class Bb3dJumpFoothold{
 		var ps = (64 * bcvs.scale) as int;
 		var px = ( this.x * bcvs.scale - ps * 0.50 + bcvs.x + bcvs.centerx) as int;
 		var py = (-this.y * bcvs.scale - ps * 0.25 + bcvs.y + bcvs.centery) as int;
-		Ctrl.gctx.drawImage(this._img, 256 * (Math.floor(this.action / 10) % 2), 0, 256, 256, px, py, ps, ps);
+		Ctrl.sctx.drawImage(this._img, 256 * (Math.floor(this.action / 10) % 2), 0, 256, 256, px, py, ps, ps);
 	}
 }
 

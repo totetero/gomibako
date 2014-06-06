@@ -44,7 +44,7 @@ class Bb3dDrawShadow extends Bb3dDrawUnit{
 		var psy = (psx * bcvs.sinh) as int;
 		var px = (this.drx - psx * 0.5 + bcvs.x + bcvs.centerx) as int;
 		var py = (this.dry - psy * 0.5 + bcvs.y + bcvs.centery) as int;
-		Ctrl.gctx.drawImage(Bb3dDrawShadow._canvas, px, py, psx, psy);
+		Ctrl.sctx.drawImage(Bb3dDrawShadow._canvas, px, py, psx, psy);
 	}
 }
 

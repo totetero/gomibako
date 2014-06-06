@@ -73,15 +73,15 @@ class Bb3dDice{
 	// 描画
 	function draw(bcvs : Bb3dCanvas) : void{
 		// 影描画
-		Ctrl.gctx.save();
-		Ctrl.gctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-		Ctrl.gctx.translate(bcvs.centerx, bcvs.centery);
-		Ctrl.gctx.translate(this.x, this.y);
-		Ctrl.gctx.scale(1, bcvs.sinh);
-		Ctrl.gctx.beginPath();
-		Ctrl.gctx.arc(0, 0, this._size * 0.65, 0, Math.PI * 2, false);
-		Ctrl.gctx.fill();
-		Ctrl.gctx.restore();
+		Ctrl.sctx.save();
+		Ctrl.sctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		Ctrl.sctx.translate(bcvs.centerx, bcvs.centery);
+		Ctrl.sctx.translate(this.x, this.y);
+		Ctrl.sctx.scale(1, bcvs.sinh);
+		Ctrl.sctx.beginPath();
+		Ctrl.sctx.arc(0, 0, this._size * 0.65, 0, Math.PI * 2, false);
+		Ctrl.sctx.fill();
+		Ctrl.sctx.restore();
 
 		// さいころ描画
 		if((this.skipCount++ % 3) == 0){
@@ -144,7 +144,7 @@ class Bb3dDice{
 		}
 		var x = bcvs.centerx + this.x - this._cvs.width * 0.5;
 		var y = bcvs.centery + this.y - this._cvs.height * 0.5 - (this.h + this._size * 0.5) * bcvs.cosh;
-		Ctrl.gctx.drawImage(this._cvs, x, y);
+		Ctrl.sctx.drawImage(this._cvs, x, y);
 	}
 
 	// 面を描画する関数

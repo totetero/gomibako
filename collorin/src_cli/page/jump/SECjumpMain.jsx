@@ -82,7 +82,8 @@ class SECjumpMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		this._page.drawBeforeCross();
+		// キャンバス描画
+		this._page.bcvs.draw();
 
 		/*
 		var bcvs = this._page.bcvs;
@@ -98,7 +99,8 @@ class SECjumpMain implements SerialEventCartridge{
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
 
-		this._page.drawAfterCross();
+		// ヘッダ描画
+		this._page.header.draw();
 	}
 
 	// ----------------------------------------------------------------

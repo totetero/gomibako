@@ -134,32 +134,32 @@ class Bb3dChatField{
 	// 描画
 	function draw(bcvs : Bb3dChatCanvas, x : number, y : number, select : boolean) : void {
 		// 描画開始
-		Ctrl.gctx.save();
-		Ctrl.gctx.translate(bcvs.centerx, bcvs.centery);
-		Ctrl.gctx.scale(bcvs.scale, bcvs.scale * bcvs.sinh);
-		Ctrl.gctx.rotate(bcvs.rotv);
-		Ctrl.gctx.translate(-x, -y);
+		Ctrl.sctx.save();
+		Ctrl.sctx.translate(bcvs.centerx, bcvs.centery);
+		Ctrl.sctx.scale(bcvs.scale, bcvs.scale * bcvs.sinh);
+		Ctrl.sctx.rotate(bcvs.rotv);
+		Ctrl.sctx.translate(-x, -y);
 
 		// 地形描画
-		Ctrl.gctx.drawImage(this._canvas, 0, 0);
+		Ctrl.sctx.drawImage(this._canvas, 0, 0);
 
 		// 選択テスト
 		if(select){
 			// タッチ位置描画
-			Ctrl.gctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-			Ctrl.gctx.beginPath();
-			Ctrl.gctx.arc(bcvs.tx, bcvs.ty, 6, 0, Math.PI*2, false);
-			Ctrl.gctx.fill();
+			Ctrl.sctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+			Ctrl.sctx.beginPath();
+			Ctrl.sctx.arc(bcvs.tx, bcvs.ty, 6, 0, Math.PI*2, false);
+			Ctrl.sctx.fill();
 			// 座標をグリッド中心座に変換
 			var cx = Math.floor(bcvs.tx / 16);
 			var cy = Math.floor(bcvs.ty / 16);
 			if(this.getGridFromIndex(cx, cy) > 0){
-				Ctrl.gctx.fillRect(cx * 16, cy * 16, 16, 16);
+				Ctrl.sctx.fillRect(cx * 16, cy * 16, 16, 16);
 			}
 		}
 
 		// 描画終了
-		Ctrl.gctx.restore();
+		Ctrl.sctx.restore();
 	}
 
 	// ----------------------------------------------------------------

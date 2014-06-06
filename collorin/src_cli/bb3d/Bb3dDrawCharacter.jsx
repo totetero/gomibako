@@ -157,8 +157,8 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 		this.maxx = bcvs.x;
 		this.maxy = bcvs.y;
 		Bb3dDrawUnit.drawList(bcvs, this._duList);
-		//Ctrl.gctx.strokeRect(this.minx, this.miny, this.maxx - this.minx, this.maxy - this.miny);
-		//Ctrl.gctx.beginPath(); for(var i = 0; i <= 20; i++){Ctrl.gctx.lineTo(((this.maxx + this.minx) + (this.maxx - this.minx) * Math.cos(Math.PI * (i / 10))) * 0.5, ((this.maxy + this.miny) + (this.maxy - this.miny) * Math.sin(Math.PI * (i / 10))) * 0.5);} Ctrl.gctx.stroke();
+		//Ctrl.sctx.strokeRect(this.minx, this.miny, this.maxx - this.minx, this.maxy - this.miny);
+		//Ctrl.sctx.beginPath(); for(var i = 0; i <= 20; i++){Ctrl.sctx.lineTo(((this.maxx + this.minx) + (this.maxx - this.minx) * Math.cos(Math.PI * (i / 10))) * 0.5, ((this.maxy + this.miny) + (this.maxy - this.miny) * Math.sin(Math.PI * (i / 10))) * 0.5);} Ctrl.sctx.stroke();
 	}
 }
 
@@ -276,14 +276,14 @@ class Bb3dDrawCharacterParts extends Bb3dDrawUnit{
 			if(this._character.maxy < yp){this._character.maxy = yp;}
 			// 描画
 			if(this._yswap || this._zswap){
-				Ctrl.gctx.save();
-				Ctrl.gctx.translate(xc, yc);
-				Ctrl.gctx.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
-				Ctrl.gctx.translate(-xc, -yc);
-				Ctrl.gctx.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
-				Ctrl.gctx.restore();
+				Ctrl.sctx.save();
+				Ctrl.sctx.translate(xc, yc);
+				Ctrl.sctx.scale(this._yswap ? -1 : 1, this._zswap ? -1 : 1);
+				Ctrl.sctx.translate(-xc, -yc);
+				Ctrl.sctx.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
+				Ctrl.sctx.restore();
 			}else{
-				Ctrl.gctx.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
+				Ctrl.sctx.drawImage(this._character.canvas, this._dru, this._drv, this._uvsize, this._uvsize, xm, ym, s2, s2);
 			}
 		}
 	}
@@ -389,13 +389,13 @@ class Bb3dDrawCharacterWeapon extends Bb3dDrawUnit{
 		var ps = this._canvas.height * 0.5 * this._character.drScale;
 		var px = this.drx + bcvs.x + bcvs.centerx;
 		var py = this.dry + bcvs.y + bcvs.centery;
-		Ctrl.gctx.save();
-		Ctrl.gctx.translate(px, py);
-		Ctrl.gctx.scale(1, bcvs.sinh);
-		Ctrl.gctx.rotate(this._drr);
-		Ctrl.gctx.translate(ps * -0.5, ps * -0.5);
-		Ctrl.gctx.drawImage(this._canvas, this._canvas.height * this._action, 0, this._canvas.height, this._canvas.height, 0, 0, ps, ps);
-		Ctrl.gctx.restore();
+		Ctrl.sctx.save();
+		Ctrl.sctx.translate(px, py);
+		Ctrl.sctx.scale(1, bcvs.sinh);
+		Ctrl.sctx.rotate(this._drr);
+		Ctrl.sctx.translate(ps * -0.5, ps * -0.5);
+		Ctrl.sctx.drawImage(this._canvas, this._canvas.height * this._action, 0, this._canvas.height, this._canvas.height, 0, 0, ps, ps);
+		Ctrl.sctx.restore();
 	}
 }
 

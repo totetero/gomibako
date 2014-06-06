@@ -176,8 +176,8 @@ class Bb3dDiceCanvas extends Bb3dCanvasHorizonFullscreen{
 		Bb3dDrawUnit.drawList(this, this.slist);
 		// 画面を暗くする
 		if(this._maskColor != ""){
-			Ctrl.gctx.fillStyle = this._maskColor;
-			Ctrl.gctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
+			Ctrl.sctx.fillStyle = this._maskColor;
+			Ctrl.sctx.fillRect(0, 0, Ctrl.screen.w, Ctrl.screen.h);
 		}
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
@@ -194,7 +194,7 @@ class Bb3dDiceCanvas extends Bb3dCanvasHorizonFullscreen{
 		var sh = this._bgimg.height * Ctrl.screen.h / 480;
 		var sy = (this._bgimg.height - sh) * 0.5;
 		while(dx < Ctrl.screen.w){
-			Ctrl.gctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.screen.h);
+			Ctrl.sctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.screen.h);
 			dx += dw;
 		}
 	}

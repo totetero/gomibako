@@ -198,8 +198,10 @@ class SECdiceDiceRoll implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		this._page.drawBeforeCross();
-		this._page.drawAfterCross();
+		// キャンバス描画
+		this._page.bcvs.draw();
+		// クロス要素の描画
+		this._page.drawCross();
 	}
 
 	// ----------------------------------------------------------------
@@ -382,8 +384,10 @@ class SECdiceDiceThrow implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		this._page.drawBeforeCross();
-		this._page.drawAfterCross();
+		// キャンバス描画
+		this._page.bcvs.draw();
+		// クロス要素の描画
+		this._page.drawCross();
 	}
 
 	// ----------------------------------------------------------------

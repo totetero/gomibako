@@ -139,12 +139,14 @@ class SECdiceCommand implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 描画
 	override function draw() : void{
-		this._page.drawBeforeCross();
+		// キャンバス描画
+		this._page.bcvs.draw();
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
 
-		this._page.drawAfterCross();
+		// クロス要素の描画
+		this._page.drawCross();
 	}
 
 	// ----------------------------------------------------------------

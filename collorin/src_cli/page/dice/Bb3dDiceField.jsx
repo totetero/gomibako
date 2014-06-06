@@ -117,35 +117,35 @@ class Bb3dDiceField{
 	// 描画
 	function draw(bcvs : Bb3dDiceCanvas, x : number, y : number, select : boolean) : void {
 		// 描画開始
-		Ctrl.gctx.save();
-		Ctrl.gctx.translate(bcvs.centerx, bcvs.centery);
-		Ctrl.gctx.scale(bcvs.scale, bcvs.scale * bcvs.sinh);
-		Ctrl.gctx.rotate(bcvs.rotv);
-		Ctrl.gctx.translate(-x, -y);
+		Ctrl.sctx.save();
+		Ctrl.sctx.translate(bcvs.centerx, bcvs.centery);
+		Ctrl.sctx.scale(bcvs.scale, bcvs.scale * bcvs.sinh);
+		Ctrl.sctx.rotate(bcvs.rotv);
+		Ctrl.sctx.translate(-x, -y);
 
 		// 地形描画
-		Ctrl.gctx.drawImage(this._canvas, 0, 0);
+		Ctrl.sctx.drawImage(this._canvas, 0, 0);
 
 		// 選択テスト
 		if(select){
 			// タッチ位置描画
-			Ctrl.gctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-			Ctrl.gctx.beginPath();
-			Ctrl.gctx.arc(bcvs.tx, bcvs.ty, 6, 0, Math.PI * 2, false);
-			Ctrl.gctx.fill();
+			Ctrl.sctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+			Ctrl.sctx.beginPath();
+			Ctrl.sctx.arc(bcvs.tx, bcvs.ty, 6, 0, Math.PI * 2, false);
+			Ctrl.sctx.fill();
 			// 座標をヘックス中心座に変換
 			var hex = this.getHexFromCoordinate(bcvs.tx, bcvs.ty);
 			if(hex.type > 0){
 				var cx = this.calcHexCoordx(hex.x, hex.y);
 				var cy = this.calcHexCoordy(hex.x, hex.y);
 				// タッチヘックス描画
-				this._hexPath(Ctrl.gctx, cx, cy);
-				Ctrl.gctx.fill();
+				this._hexPath(Ctrl.sctx, cx, cy);
+				Ctrl.sctx.fill();
 			}
 		}
 
 		// 描画終了
-		Ctrl.gctx.restore();
+		Ctrl.sctx.restore();
 	}
 
 	// ----------------------------------------------------------------

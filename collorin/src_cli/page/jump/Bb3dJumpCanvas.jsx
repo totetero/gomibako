@@ -140,7 +140,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		var sh = this._bgimg.height * Ctrl.screen.h / 480;
 		var sy = (this._bgimg.height - sh) * 0.5;
 		while(dx < Ctrl.screen.w){
-			Ctrl.gctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.screen.h);
+			Ctrl.sctx.drawImage(this._bgimg, 0, sy, this._bgimg.width, sh, dx, 0, dw, Ctrl.screen.h);
 			dx += dw;
 		}
 	}
