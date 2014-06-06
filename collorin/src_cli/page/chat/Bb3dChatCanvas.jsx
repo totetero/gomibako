@@ -67,7 +67,7 @@ class Bb3dChatCanvas extends Bb3dCanvasHorizonFullscreen{
 	// 設定
 	function setting() : void{
 		var quality = dom.window.localStorage.getItem("setting_quality");
-		this.cameraScale = (quality == "low") ? 2 : 1;
+		this.cameraScale = (quality == "poor") ? 2 : 1;
 	}
 
 	// ----------------------------------------------------------------

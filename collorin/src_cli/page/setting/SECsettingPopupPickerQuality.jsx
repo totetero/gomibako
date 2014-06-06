@@ -25,13 +25,14 @@ class SECsettingPopupPickerQuality extends SECpopupPicker{
 		super(page, cartridge, "ゲーム画質", [
 			new SECpopupPickerItem("high", "高画質"),
 			new SECpopupPickerItem("middle", "普通画質"),
-			new SECpopupPickerItem("low", "低画質")
+			new SECpopupPickerItem("low", "低画質"),
+			new SECpopupPickerItem("poor", "最低画質")
 		]);
 
 		if(dom.window.devicePixelRatio <= 1){this.getItem("high").inactive = true;}
 
 		var quality = dom.window.localStorage.getItem("setting_quality");
-		if(quality != "high" && quality != "low"){quality = "middle";}
+		if(quality != "high" && quality != "low" && quality != "poor"){quality = "middle";}
 		this.setSelectedItem(quality);
 	}
 

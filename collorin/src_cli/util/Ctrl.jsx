@@ -213,7 +213,8 @@ class Ctrl{
 		Ctrl.pixelRatio = 1;
 		var quality = dom.window.localStorage.getItem("setting_quality");
 		if(quality == "high"){Ctrl.pixelRatio = dom.window.devicePixelRatio;}
-		if(quality == "low"){Ctrl.pixelRatio = 0.5;}
+		if(quality == "low"){Ctrl.pixelRatio = 0.75;}
+		if(quality == "poor"){Ctrl.pixelRatio = 0.5;}
 		// キャンバスリセット
 		if(Ctrl._scvs != null){Ctrl._mdiv.removeChild(Ctrl._scvs);}
 		// スクリーンキャンバス作成
