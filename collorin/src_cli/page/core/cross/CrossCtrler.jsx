@@ -50,10 +50,10 @@ class CrossCtrler{
 	// コンストラクタ
 	function constructor(){
 		this._arrowBox = new Ctrl.Box(0, -144, 144, 144);
-		this._zBox = new Ctrl.Box(5 - 144, 30 * 0 - 2 +  3 - 144, 134, 30 + 2);
-		this._xBox = new Ctrl.Box(5 - 144, 30 * 1 - 2 +  9 - 144, 134, 30 + 2);
-		this._cBox = new Ctrl.Box(5 - 144, 30 * 2 - 2 + 15 - 144, 134, 30 + 2);
-		this._sBox = new Ctrl.Box(5 - 144, 30 * 3 - 2 + 21 - 144, 134, 30 + 2);
+		this._zBox = new Ctrl.Box(0 - 144, 36 * 0 - 144, 144, 36);
+		this._xBox = new Ctrl.Box(0 - 144, 36 * 1 - 144, 144, 36);
+		this._cBox = new Ctrl.Box(0 - 144, 36 * 2 - 144, 144, 36);
+		this._sBox = new Ctrl.Box(0 - 144, 36 * 3 - 144, 144, 36);
 	}
 
 	// ----------------------------------------------------------------
@@ -101,12 +101,12 @@ class CrossCtrler{
 						// ボタン枠の描画
 						var x = 144 + (box.x < 0 ? box.x : box.x - Ctrl.window.w) + mx;
 						var y = 144 + (box.y < 0 ? box.y : box.y - Ctrl.window.h);
-						Drawer.drawBox(Ctrl.rctx, active ? aimg : nimg, x, y, box.w, box.h);
+						Ctrl.rctx.drawImage(active ? aimg : nimg, x, y, box.w, box.h);
 						// ボタン文字列の描画
 						var tw = cvs.width / pixelRatio;
 						var th = cvs.height / pixelRatio;
 						var tx = x + (box.w - tw) * 0.5;
-						var ty = y + (box.h - th - 2) * 0.5 + (active ? 2 : 0);
+						var ty = y + (box.h - th - 4) * 0.5 + (active ? 2 : 0);
 						Ctrl.rctx.drawImage(cvs, tx, ty, tw, th);
 					}
 					return cvs;

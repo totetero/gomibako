@@ -85,6 +85,16 @@ class ContentsServer{
 						"/img/system/character/team3.png",
 					];
 					addrs = {
+						"css_system_button_ctrlArrow_up_normal": "/img/system/button/ctrlArrow/up/normal.png",
+						"css_system_button_ctrlArrow_up_active": "/img/system/button/ctrlArrow/up/active.png",
+						"css_system_button_ctrlArrow_dn_normal": "/img/system/button/ctrlArrow/dn/normal.png",
+						"css_system_button_ctrlArrow_dn_active": "/img/system/button/ctrlArrow/dn/active.png",
+						"css_system_button_ctrlArrow_rt_normal": "/img/system/button/ctrlArrow/rt/normal.png",
+						"css_system_button_ctrlArrow_rt_active": "/img/system/button/ctrlArrow/rt/active.png",
+						"css_system_button_ctrlArrow_lt_normal": "/img/system/button/ctrlArrow/lt/normal.png",
+						"css_system_button_ctrlArrow_lt_active": "/img/system/button/ctrlArrow/lt/active.png",
+						"css_system_button_ctrlButton_normal": "/img/system/button/ctrlButton/normal.png",
+						"css_system_button_ctrlButton_active": "/img/system/button/ctrlButton/active.png",
 						"mot_human": "/mot/human.json"
 					};
 					break;
