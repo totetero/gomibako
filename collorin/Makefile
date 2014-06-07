@@ -34,6 +34,8 @@ srvStart: build
 srvStop:
 	node_modules/forever/bin/forever stop game.js
 
+srvRestart: srvStop srvStart
+
 # --------------------------------
 
 put: build
