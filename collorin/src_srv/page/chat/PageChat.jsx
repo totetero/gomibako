@@ -28,7 +28,7 @@ class ChatUserInfo{
 	}
 }
 
-// マイページ
+// チャットページ
 class PageChat{
 	static var _sockets : SocketNamespace;
 	static var _rcli : RedisClient;
@@ -211,18 +211,19 @@ class PageChat{
 		step["getuid"] = function() : void{
 			PageChat._rcli.incr([PageChat._rhead + "nextUserId"], function(err : variant, result : Nullable.<string>) : void{
 				uid = result;
-				step["olduid"]();
-				step["setuinfo"]();
+				step["setuid"]();
 			});
 		};
-		// 古い情報があったら削除
-		step["olduid"] = function() : void{
+		// UIDの登録と同時に古い情報があったら削除
+		step["setuid"] = function() : void{
 			PageChat._rcli.getset([PageChat._rhead + "uid:" + sessionID, uid], function(err : variant, result : Nullable.<string>) : void{
-				if(result == null){return;}
-				PageChat._rcli.get([PageChat._rhead + "uinfo:" + result], function(err : variant, result : Nullable.<string>) : void{
-					if(result == null){return;}
-					PageChat._removeUinfo(new ChatUserInfo(JSON.parse(result)));
-				});
+				if(result != null){
+					PageChat._rcli.get([PageChat._rhead + "uinfo:" + result], function(err : variant, result : Nullable.<string>) : void{
+						if(result == null){return;}
+						PageChat._removeUinfo(new ChatUserInfo(JSON.parse(result)));
+					});
+				}
+				step["setuinfo"]();
 			});
 		};
 		// キャラクター情報登録

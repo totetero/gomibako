@@ -12,7 +12,6 @@ import "../../util/PartsScroll.jsx";
 import "../core/Page.jsx";
 
 import "../../util/Socket.jsx";
-
 import "Bb3dChatCanvas.jsx";
 import "Bb3dChatCharacter.jsx";
 
@@ -50,6 +49,7 @@ class SocketChat{
 					for(var i = 0; i < uinfoList.length; i++){
 						this._packet.push({type: "add", uid: uid, uinfo: uinfoList[i]});
 					}
+					Loading.hide();
 				});
 			});
 
@@ -127,10 +127,7 @@ class SocketChat{
 				log type + " " + uinfo["uid"] as string + " " + uinfo["serif"] as string;
 				var character = new Bb3dChatCharacter(bcvs, uinfo);
 				bcvs.member.push(character);
-				if(isPlayer){
-					bcvs.player = character;
-					Loading.hide();
-				}
+				if(isPlayer){bcvs.player = character;}
 			}else{
 				// 対象キャラ確認
 				var isUse = false;

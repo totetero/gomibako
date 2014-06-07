@@ -13,7 +13,7 @@ import "../core/Page.jsx";
 
 import "../core/load/SECloadTransition.jsx";
 import "Bb3dJumpCanvas.jsx";
-//import "SocketJump.jsx";
+import "SocketJump.jsx";
 import "SECjumpMain.jsx";
 
 // ----------------------------------------------------------------
@@ -23,7 +23,7 @@ import "SECjumpMain.jsx";
 // ジャンプページ
 class PageJump extends Page{
 	var bcvs : Bb3dJumpCanvas;
-//	var socket : SocketJump;
+	var socket : SocketJump;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -44,7 +44,7 @@ class PageJump extends Page{
 			this.bust.set(null);
 			// ソケット準備
 			this.bcvs = new Bb3dJumpCanvas(response);
-//			this.socket = new SocketJump();
+			this.socket = new SocketJump();
 			// カートリッジ装填
 			this.serialPush(new SECjumpMain(this, response));
 		}));
@@ -54,7 +54,7 @@ class PageJump extends Page{
 	// 計算
 	override function calc() : boolean{
 		if(this.bcvs != null){this.bcvs.calc();}
-//		if(this.socket != null){this.socket.calc(this.bcvs);}
+		if(this.socket != null){this.socket.calc(this.bcvs);}
 		return super.calc();
 	}
 
@@ -62,7 +62,7 @@ class PageJump extends Page{
 	// 破棄
 	override function dispose() : void{
 		super.dispose();
-//		this.socket.dispose();
+		this.socket.dispose();
 	}
 }
 

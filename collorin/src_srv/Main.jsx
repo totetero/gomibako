@@ -125,7 +125,7 @@ class _Main{
 		PageHelp.setPage(app);
 		PageDice.setPage(app, rcli);
 		PageChat.setPage(app, rcli, io);
-		PageJump.setPage(app);
+		PageJump.setPage(app, rcli, io);
 
 		// コンテンツサーバ
 		ContentsServer.setPage(app, "/contents", node.__dirname + "/content", "testContentsSecretKey");
