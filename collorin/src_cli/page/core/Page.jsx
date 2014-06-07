@@ -61,9 +61,9 @@ abstract class Page extends EventPlayer{
 					Ctrl.input.blur();
 					Ctrl.input.className = "";
 					// ページをまたぐ機能を継承
+					nextPage.bust = (Page.current == null) ? new CrossBust() : Page.current.bust;
 					nextPage.ctrler = (Page.current == null) ? new CrossCtrler() : Page.current.ctrler;
 					nextPage.header = (Page.current == null) ? new CrossHeader() : Page.current.header;
-					nextPage.bust = (Page.current == null) ? new CrossBust() : Page.current.bust;
 					// ページ遷移
 					nextPage.init();
 					Page.current = nextPage;
@@ -78,13 +78,9 @@ abstract class Page extends EventPlayer{
 			Page.current.header.calc();
 			Page.current.bust.calc();
 			// ページの描画
-			if(Ctrl.update_lctx){Ctrl.lctx.clearRect(0, 0, 160, 240);}
-			if(Ctrl.update_rctx){Ctrl.rctx.clearRect(0, 0, 144, 244);}
 			Page.current.draw();
 			Page.current.bust.draw();
 			Page.current.ctrler.draw();
-			Ctrl.update_lctx = false;
-			Ctrl.update_rctx = false;
 		}
 	}
 

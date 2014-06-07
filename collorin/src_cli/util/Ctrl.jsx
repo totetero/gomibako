@@ -17,15 +17,10 @@ class Ctrl{
 	static const shmax = 480;
 	// ピクセルレシオ
 	static var pixelRatio : number;
-	// メインキャンバス要素
-	static var _mdiv : HTMLDivElement;
+	// キャンバス要素
+	static var _sdiv : HTMLDivElement;
 	static var _scvs : HTMLCanvasElement;
 	static var sctx : CanvasRenderingContext2D;
-	// クロスキャンバス要素
-	static var lctx : CanvasRenderingContext2D;
-	static var rctx : CanvasRenderingContext2D;
-	static var update_lctx : boolean;
-	static var update_rctx : boolean;
 	// 入力要素
 	static var input : HTMLInputElement;
 	// タッチ状態
@@ -93,24 +88,24 @@ class Ctrl{
 				overflow: hidden;
 				background-color: gray;
 			}
-			#main canvas{
+			#screen canvas{
 				position: absolute;
-			}
-			#cross .lcvs{
-				position: absolute;
-				left: 0px;
-				bottom: 0px;
-			}
-			#cross .rcvs{
-				position: absolute;
-				right: 0px;
-				bottom: 0px;
 			}
 			#ctrl{
 				position: absolute;
 				width: 100%;
 				height: 100%;
 				overflow: hidden;
+			}
+			#ctrl input{display: none;}
+			#ctrl input.textarea{
+				position: absolute;
+				display: block;
+				font-size: 16px;
+				text-align: center;
+				box-sizing: border-box;
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
 			}
 			#loading{
 				position: absolute;
@@ -133,29 +128,18 @@ class Ctrl{
 				color: white;
 				background-color: black;
 			}
-			input{display: none;}
-			input.textarea{
-				position: absolute;
-				display: block;
-				font-size: 16px;
-				text-align: center;
-				box-sizing: border-box;
-				-webkit-box-sizing: border-box;
-				-moz-box-sizing: border-box;
-			}
 		""";
 		dom.document.head.appendChild(style);
 		// dom設定
 		dom.document.body.innerHTML = """
-			<div id="main"></div>
+			<div id="screen"></div>
 			<div id="cross"></div>
 			<div id="ctrl"><input></div>
 			<div id="loading" txt="loading"></div>
 		""";
 
-		Ctrl._mdiv = dom.document.getElementById("main") as HTMLDivElement;
+		Ctrl._sdiv = dom.document.getElementById("screen") as HTMLDivElement;
 		var ctrlDiv = dom.document.getElementById("ctrl") as HTMLDivElement;
-		var crossDiv = dom.document.getElementById("cross") as HTMLDivElement;
 		Ctrl.input = ctrlDiv.getElementsByTagName("input").item(0) as HTMLInputElement;
 
 		// リスナー追加
@@ -179,35 +163,10 @@ class Ctrl{
 		}
 		dom.document.addEventListener("keydown", Ctrl._kdnfn);
 		dom.document.addEventListener("keyup", Ctrl._kupfn);
-
-		var pixelRatio = dom.window.devicePixelRatio;
-		// 左クロスキャンバス作成
-		var lcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		Ctrl.lctx = lcvs.getContext("2d") as CanvasRenderingContext2D;
-		var pixelRatio = dom.window.devicePixelRatio;
-		lcvs.width = Math.floor(160 * pixelRatio);
-		lcvs.height = Math.floor(240 * pixelRatio);
-		Ctrl.lctx.scale(pixelRatio, pixelRatio);
-		lcvs.className = "lcvs";
-		lcvs.style.width = "160px";
-		lcvs.style.height = "240px";
-		crossDiv.appendChild(lcvs);
-		Ctrl.update_lctx = true;
-		// 右クロスキャンバス作成
-		var rcvs = dom.document.createElement("canvas") as HTMLCanvasElement;
-		Ctrl.rctx = rcvs.getContext("2d") as CanvasRenderingContext2D;
-		rcvs.width = Math.floor(144 * pixelRatio);
-		rcvs.height = Math.floor(144 * pixelRatio);
-		Ctrl.rctx.scale(pixelRatio, pixelRatio);
-		rcvs.className = "rcvs";
-		rcvs.style.width = "144px";
-		rcvs.style.height = "144px";
-		crossDiv.appendChild(rcvs);
-		Ctrl.update_rctx = true;
 	}
 
 	// ----------------------------------------------------------------
-	// メインキャンバス設定
+	// キャンバス設定
 	static function setCanvas() : void{
 		// ピクセルレシオ設定
 		Ctrl.pixelRatio = 1;
@@ -216,8 +175,7 @@ class Ctrl{
 		if(quality == "low"){Ctrl.pixelRatio = 0.75;}
 		if(quality == "poor"){Ctrl.pixelRatio = 0.5;}
 		// キャンバスリセット
-		if(Ctrl._scvs != null){Ctrl._mdiv.removeChild(Ctrl._scvs);}
-		// スクリーンキャンバス作成
+		if(Ctrl._scvs != null){Ctrl._sdiv.removeChild(Ctrl._scvs);}
 		Ctrl._scvs = dom.document.createElement("canvas") as HTMLCanvasElement;
 		Ctrl.sctx = Ctrl._scvs.getContext("2d") as CanvasRenderingContext2D;
 		// キャンバス設定
@@ -233,7 +191,7 @@ class Ctrl{
 		Ctrl._scvs.style.top = Ctrl.screen.y + "px";
 		Ctrl._scvs.style.width = Ctrl.screen.w + "px";
 		Ctrl._scvs.style.height = Ctrl.screen.h + "px";
-		Ctrl._mdiv.appendChild(Ctrl._scvs);
+		Ctrl._sdiv.appendChild(Ctrl._scvs);
 	}
 
 	// ----------------------------------------------------------------

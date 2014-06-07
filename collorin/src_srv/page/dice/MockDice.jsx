@@ -109,7 +109,8 @@ class MockDice{
 			cont["img_chara_dot_" + cinfo.code] = "/img/character/" + cinfo.code + "/dot.png";
 			cont["img_chara_icon_" + cinfo.code] = "/img/character/" + cinfo.code + "/icon.png";
 			cont["img_chara_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
-			cont["img_chara_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
+			cont["css_chara_bust_" + cinfo.code] = "/img/character/" + cinfo.code + "/bust.png";
+			cont["css_chara_damage_" + cinfo.code] = "/img/character/" + cinfo.code + "/damage.png";
 		}
 		jdat["charaInfo"] = jdatCharaInfo;
 
