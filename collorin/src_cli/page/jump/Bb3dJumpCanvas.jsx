@@ -104,6 +104,7 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 			for(var i = 0; i < this.member.length; i++){
 				if(!this.member[i].active){
 					this.player = this.member[i];
+					this.player.r = Math.PI * 0.5;
 					break;
 				}
 			}

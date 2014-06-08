@@ -33,7 +33,7 @@ class Bb3dJumpCharacter extends DataChara{
 	var y : number = 0;
 	var vx : number = 0;
 	var vy : number = 0;
-	var r : number = Math.PI * 0.5;
+	var r : number = 0;
 	var motion : string;
 	var action : int;
 	var active : boolean;
