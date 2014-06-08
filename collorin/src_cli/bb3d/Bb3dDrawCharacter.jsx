@@ -48,7 +48,8 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 	var maxy : int;
 
 	// 変更変数
-	var _color = "none";
+	var _color = "";
+	var _alpha = 1.0;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -60,7 +61,7 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 		this.canvas = dom.document.createElement("canvas") as HTMLCanvasElement;
 		this.canvas.width = this._img.width;
 		this.canvas.height = this._img.height;
-		this.setColor("");
+		this._setColor();
 
 		// パーツの登録
 		for(var i in motion.parts){
@@ -86,18 +87,20 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 
 	// ----------------------------------------------------------------
 	// 色設定
-	function setColor(color : string) : void{
-		if(this._color == color){return;}
-		this._color = color;
+	function _setColor() : void{
 		var context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+		context.clearRect(0, 0, this._img.width, this._img.height);
+		context.globalAlpha = this._alpha;
 		context.drawImage(this._img, 0, 0);
-		if(color == ""){return;}
+		if(this._color == ""){return;}
 		context.save();
 		context.globalCompositeOperation = "source-atop";
-		context.fillStyle = color;
+		context.fillStyle = this._color;
 		context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 		context.restore();
 	}
+	function setColor(color : string) : void{if(this._color != color){this._color = color; this._setColor();}}
+	function setAlpha(alpha : number) : void{if(this._alpha != alpha){this._alpha = alpha; this._setColor();}}
 
 	// ----------------------------------------------------------------
 	// モーションのフレーム数獲得
