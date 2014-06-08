@@ -15,6 +15,7 @@ import "../../bb3d/Bb3dDrawCharacter.jsx";
 import "../../bb3d/Bb3dDrawText.jsx";
 import "../core/data/chara/DataChara.jsx";
 import "Bb3dJumpCanvas.jsx";
+import "Bb3dJumpFoothold.jsx";
 
 // ----------------------------------------------------------------
 // ----------------------------------------------------------------
@@ -25,6 +26,8 @@ class Bb3dJumpCharacter extends DataChara{
 	var _character : Bb3dDrawCharacter;
 	var _nametag : Bb3dDrawText;
 
+	var _foothold : Bb3dJumpFoothold;
+
 	var exist = true;
 	var x : number = 0;
 	var y : number = 0;
@@ -32,12 +35,13 @@ class Bb3dJumpCharacter extends DataChara{
 	var vy : number = 0;
 	var motion : string;
 	var action : int;
-	var ground = true;
+	var active : boolean;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
-	function constructor(bcvs : Bb3dJumpCanvas, response : variant){
+	function constructor(bcvs : Bb3dJumpCanvas, response : variant, foothold : Bb3dJumpFoothold){
 		super(response);
+		this._foothold = foothold;
 
 		var img = Loader.imgs["img_chara_dot_" + this.code];
 		var mot = Loader.mots["mot_" + response["motion"] as string];
@@ -69,17 +73,30 @@ class Bb3dJumpCharacter extends DataChara{
 	// ----------------------------------------------------------------
 	// 計算
 	function calc(bcvs : Bb3dJumpCanvas) : void{
-		if(!this.ground){
+		if(!this.active && this != bcvs.player){return;}
+		this.action++;
+
+		if(this != bcvs.player){
+			// 普通の落下状態
 			this.vy -= 1;
 			this.x += this.vx;
 			this.y += this.vy;
+
+			if(this.y < this._foothold.y - 100){this.active = false;}
+		}else{
+			// 操作可能状態
+			this.x = this._foothold.x;
+			this.y = this._foothold.y;
 		}
-		if(this.y < -100){this.x = this.y = 0; this.ground = true;}
+
+		// ボーダーライン以下でのフェードアウト
+		this._character.setAlpha(1 + (this.y - this._foothold.y) / 100);
 	}
 
 	// ----------------------------------------------------------------
 	// 描画準備
 	function preDraw(bcvs : Bb3dJumpCanvas) : void{
+		if(!this.active && this != bcvs.player){return;}
 		var x = this.x - bcvs.cx;
 		var z = this.y / bcvs.cosh - bcvs.cy;
 		var r = Math.PI * 0.5;

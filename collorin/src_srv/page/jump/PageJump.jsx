@@ -46,6 +46,8 @@ class PageJump{
 
 			// test
 			cont["img_chara_dot_player1"] = "/img/character/player1/dot.png";
+			cont["img_chara_dot_player2"] = "/img/character/player2/dot.png";
+			cont["img_chara_dot_player3"] = "/img/character/player3/dot.png";
 			cont["img_foothold_test"] = "/img/foothold/test.png";
 
 			// 背景画像

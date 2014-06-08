@@ -23,9 +23,15 @@ import "Bb3dJumpFoothold.jsx";
 
 // キャンバス情報管理
 class Bb3dJumpCanvas extends Bb3dCanvas{
+	var time : int;
+	// キャラクター
 	var player : Bb3dJumpCharacter;
-	var foothold : Bb3dJumpFoothold;
 	var member = new Bb3dJumpCharacter[];
+	var friend = new Bb3dJumpCharacter[];
+	// 足場
+	var playerFoothold : Bb3dJumpFoothold;
+	var friendFoothold = new Bb3dJumpFoothold[];
+	// 描画用キャラクタリスト
 	var clist = new Bb3dDrawUnit[];
 
 	// ゲーム座標カメラ位置
@@ -58,19 +64,28 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		// 背景
 		this._bgimg = Loader.imgs["img_background_" + response["background"] as string];
 
-		// テストキャラクタ
-		if(Loader.imgs["img_chara_dot_player1"] != null){
-			this.member.push(new Bb3dJumpCharacter(this, {
-				"code": "player1", 
-				"name": "プレイヤー",
-				"motion": "human", 
-				"side": "player", 
-				"size": 1.2, 
-			}));
-		}
-
 		// テスト足場
-		this.foothold = new Bb3dJumpFoothold(this);
+		this.playerFoothold = new Bb3dJumpFoothold(this);
+
+		// テストキャラクタ
+		this.member.push(new Bb3dJumpCharacter(this, {
+			"code": "player1",
+			"name": "プレイヤー",
+			"motion": "human",
+			"size": 1.2,
+		}, this.playerFoothold));
+		this.member.push(new Bb3dJumpCharacter(this, {
+			"code": "player2",
+			"name": "テスト",
+			"motion": "human",
+			"size": 1.2,
+		}, this.playerFoothold));
+		this.member.push(new Bb3dJumpCharacter(this, {
+			"code": "player3",
+			"name": "ほげ",
+			"motion": "human",
+			"size": 1.2,
+		}, this.playerFoothold));
 	}
 
 	// ----------------------------------------------------------------
@@ -85,14 +100,22 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		this.cy -= (this.cy - this.calcy) * 0.2;
 		this.scale -= (this.scale - this.cameraScale) * 0.1;
 
-		// キャラクター計算
-		for(var i = 0; i < this.member.length; i++){
-			this.member[i].calc(this);
-			if(!this.member[i].exist){this.member.splice(i--,1);}
+		if(this.player == null){
+			for(var i = 0; i < this.member.length; i++){
+				if(!this.member[i].active){
+					this.player = this.member[i];
+					break;
+				}
+			}
 		}
 
-		// 足場計算テスト
-		this.foothold.calc(this);
+		// キャラクター計算
+		for(var i = 0; i < this.member.length; i++){this.member[i].calc(this); if(!this.member[i].exist){this.member.splice(i--,1);}}
+		for(var i = 0; i < this.friend.length; i++){this.friend[i].calc(this); if(!this.friend[i].exist){this.friend.splice(i--,1);}}
+
+		// 足場計算
+		for(var i = 0; i < this.friendFoothold.length; i++){this.friendFoothold[i].calc(this);}
+		this.playerFoothold.calc(this);
 
 //		if(this.player != null){
 //			// カメラ位置をプレイヤーに
@@ -106,13 +129,15 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 		this._tappedChara = null;
 		if(Ctrl.stdn && !Ctrl.stmv && !this.cameraLock && this.isTapChara){
 			var depth0 = 0;
-			for(var i = 0; i < this.member.length; i++){
-				var depth1 = this.member[i].getDepth();
-				if((this._tappedChara == null || depth0 < depth1) && this.member[i].isOver(Ctrl.stx, Ctrl.sty)){
+			var check = function(chara : Bb3dJumpCharacter) : void{
+				var depth1 = chara.getDepth();
+				if((this._tappedChara == null || depth0 < depth1) && chara.isOver(Ctrl.stx, Ctrl.sty)){
 					depth0 = depth1;
-					this._tappedChara = this.member[i];
+					this._tappedChara = chara;
 				}
-			}
+			};
+			for(var i = 0; i < this.member.length; i++){check(this.member[i]);}
+			for(var i = 0; i < this.friend.length; i++){check(this.friend[i]);}
 		}
 	}
 
@@ -120,13 +145,16 @@ class Bb3dJumpCanvas extends Bb3dCanvas{
 	// 描画
 	function draw() : void{
 		for(var i = 0; i < this.member.length; i++){this.member[i].preDraw(this);}
+		for(var i = 0; i < this.friend.length; i++){this.friend[i].preDraw(this);}
 		// キャラクタータップ色設定
 		for(var i = 0; i < this.member.length; i++){this.member[i].setColor((this._tappedChara == this.member[i]) ? "rgba(255, 255, 255, 0.5)" : "");}
+		for(var i = 0; i < this.friend.length; i++){this.friend[i].setColor((this._tappedChara == this.friend[i]) ? "rgba(255, 255, 255, 0.5)" : "");}
 
 		// 背景描画
 		this._drawBackground();
-		// 足場描画テスト
-		this.foothold.draw(this);
+		// 足場描画
+		for(var i = 0; i < this.friendFoothold.length; i++){this.friendFoothold[i].draw(this);}
+		this.playerFoothold.draw(this);
 		// キャラクター描画
 		Bb3dDrawUnit.drawList(this, this.clist);
 	}

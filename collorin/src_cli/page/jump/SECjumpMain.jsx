@@ -51,15 +51,14 @@ class SECjumpMain implements SerialEventCartridge{
 	// ----------------------------------------------------------------
 	// 計算
 	override function calc() : boolean{
-		this._page.bcvs.calcButton(this._btnList);
-
 		var bcvs = this._page.bcvs;
-		var player = bcvs.member[0];
+		bcvs.calcButton(this._btnList);
+
 		if(this._grab > 0){this._grab--;}
 		if(this._stdn != Ctrl.stdn){
 			this._stdn = Ctrl.stdn;
-			var x = bcvs.centerx - Ctrl.stx;
-			var y = bcvs.centery - Ctrl.sty;
+			var x = bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale - Ctrl.stx;
+			var y = bcvs.centery - bcvs.playerFoothold.y * bcvs.scale - Ctrl.sty;
 			var r = Math.sqrt(x * x + y * y);
 			if(this._stdn){
 				if(r < 50){this._grab = 10;}
@@ -67,14 +66,16 @@ class SECjumpMain implements SerialEventCartridge{
 				if(r > 50 && this._grab > 0){
 					// プレイヤーのジャンプ
 					var grabPower = (1 + this._grab * 0.1) * 0.5;
-					player.vx = 5.0 * -0.01 * Math.min(x, Ctrl.swmin * 0.5) * grabPower;
-					player.vy = 5.0 * +0.02 * Math.min(y, Ctrl.shmin * 1.0) * grabPower;
-					player.ground = false;
+					bcvs.player.vx = 5.0 * -0.01 * Math.min(x, Ctrl.swmin * 0.5) * grabPower;
+					bcvs.player.vy = 5.0 * +0.02 * Math.min(y, Ctrl.shmin * 1.0) * grabPower;
+					bcvs.player.action = 0;
+					bcvs.player.active = true;
+					bcvs.player = null;
 				}
 				this._grab = 0;
 			}
 		}
-		if(!player.ground){this._grab = 0;}
+		if(bcvs.player == null){this._grab = 0;}
 
 		return true;
 	}
@@ -87,10 +88,12 @@ class SECjumpMain implements SerialEventCartridge{
 
 		/*
 		var bcvs = this._page.bcvs;
-		var player = bcvs.member[0];
-		if(player.ground){
+		if(bcvs.player != null){
 			Ctrl.sctx.beginPath();
-			Ctrl.sctx.arc(bcvs.centerx, bcvs.centery, 50, 0, Math.PI * 2, true);
+			var x = bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale;
+			var y = bcvs.centery - bcvs.playerFoothold.y * bcvs.scale;
+			Ctrl.sctx.fillStyle = "rgba(0,0,0,0.3)";
+			Ctrl.sctx.arc(x, y, 50, 0, Math.PI * 2, true);
 			Ctrl.sctx.stroke();
 			if(this._grab > 0){Ctrl.sctx.fill();}
 		}
