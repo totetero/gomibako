@@ -39,7 +39,7 @@ srvRestart: srvStop srvStart
 # --------------------------------
 
 put: build
-	rsync -av * uni:/home/tote/nodeTest/collorin_new
+	rsync -av * uni:/home/tote/nodeTest/collorin
 
 db:
 	mongod &
