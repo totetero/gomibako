@@ -100,7 +100,7 @@ class Bb3dDrawCharacter extends Bb3dDrawUnit{
 		context.restore();
 	}
 	function setColor(color : string) : void{if(this._color != color){this._color = color; this._setColor();}}
-	function setAlpha(alpha : number) : void{if(this._alpha != alpha){this._alpha = alpha; this._setColor();}}
+	function setAlpha(alpha : number) : void{alpha = Math.max(Math.min(alpha, 1.0), 0.0); if(this._alpha != alpha){this._alpha = alpha; this._setColor();}}
 
 	// ----------------------------------------------------------------
 	// モーションのフレーム数獲得
