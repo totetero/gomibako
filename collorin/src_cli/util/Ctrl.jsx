@@ -91,6 +91,12 @@ class Ctrl{
 			#screen canvas{
 				position: absolute;
 			}
+			#cross{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
 			#ctrl{
 				position: absolute;
 				width: 100%;
