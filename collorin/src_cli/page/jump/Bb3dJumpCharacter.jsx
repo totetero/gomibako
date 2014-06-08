@@ -33,6 +33,7 @@ class Bb3dJumpCharacter extends DataChara{
 	var y : number = 0;
 	var vx : number = 0;
 	var vy : number = 0;
+	var r : number = Math.PI * 0.5;
 	var motion : string;
 	var action : int;
 	var active : boolean;
@@ -99,11 +100,13 @@ class Bb3dJumpCharacter extends DataChara{
 		if(!this.active && this != bcvs.player){return;}
 		var x = this.x - bcvs.cx;
 		var z = this.y / bcvs.cosh - bcvs.cy;
-		var r = Math.PI * 0.5;
 		this._nametag.preDraw(bcvs, x, 0, z + 40);
-		switch(this.motion){
-			case "walk": this._character.preDraw(bcvs, x, 0, z, r, "walk", ((this.action / 6) as int) % this._character.getLen("walk")); break;
-			default: this._character.preDraw(bcvs, x, 0, z, r, "stand", 0); break;
+		if(this != bcvs.player){
+			// 普通の落下状態
+			this._character.preDraw(bcvs, x, 0, z, this.r, this.vy > 0 ? "jump" : "fall", 0);
+		}else{
+			// 操作可能状態
+			this._character.preDraw(bcvs, x, 0, z, this.r, this.active ? "squat" : "stand", 0);
 		}
 	}
 

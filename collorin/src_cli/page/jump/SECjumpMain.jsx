@@ -46,6 +46,7 @@ class SECjumpMain implements SerialEventCartridge{
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
+		this._grab = 0;
 	}
 
 	// ----------------------------------------------------------------
@@ -54,16 +55,22 @@ class SECjumpMain implements SerialEventCartridge{
 		var bcvs = this._page.bcvs;
 		bcvs.calcButton(this._btnList);
 
+		var x = bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale - Ctrl.stx;
+		var y = bcvs.centery - bcvs.playerFoothold.y * bcvs.scale - Ctrl.sty;
 		if(this._grab > 0){this._grab--;}
+		if(bcvs.player != null){
+			var isSquat = (this._grab > 0);
+			// プレイヤーのしゃがみ
+			bcvs.player.active = isSquat;
+			// プレイヤーの角度
+			if(isSquat){bcvs.player.r = Math.PI * (0.5 + 0.5 * Math.max(Math.min(x / bcvs.w, 1), -1));}
+		}
 		if(this._stdn != Ctrl.stdn){
 			this._stdn = Ctrl.stdn;
-			var x = bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale - Ctrl.stx;
-			var y = bcvs.centery - bcvs.playerFoothold.y * bcvs.scale - Ctrl.sty;
 			var r = Math.sqrt(x * x + y * y);
-			if(this._stdn){
-				if(r < 50){this._grab = 10;}
-			}else{
-				if(r > 50 && this._grab > 0){
+			if(this._stdn){if(r < 50){this._grab = 10;}}
+			else{
+				if(r > 50 && this._grab > 0 && bcvs.player != null){
 					// プレイヤーのジャンプ
 					var grabPower = (1 + this._grab * 0.1) * 0.5;
 					bcvs.player.vx = 5.0 * -0.01 * Math.min(x, Ctrl.swmin * 0.5) * grabPower;
