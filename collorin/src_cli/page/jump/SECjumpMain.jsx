@@ -23,7 +23,9 @@ class SECjumpMain implements SerialEventCartridge{
 	var _btnList = {} : Map.<PartsButton>;
 
 	var _stdn : boolean;
-	var _grab : int;
+	var _grabx : int;
+	var _graby : int;
+	var _grabCount : int;
 
 	// ----------------------------------------------------------------
 	// コンストラクタ
@@ -46,7 +48,7 @@ class SECjumpMain implements SerialEventCartridge{
 		// トリガーリセット
 		for(var name in this._btnList){this._btnList[name].trigger = false;}
 		this._page.bcvs.charaTrigger = null;
-		this._grab = 0;
+		this._grabCount = 0;
 	}
 
 	// ----------------------------------------------------------------
@@ -55,34 +57,43 @@ class SECjumpMain implements SerialEventCartridge{
 		var bcvs = this._page.bcvs;
 		bcvs.calcButton(this._btnList);
 
-		var x = bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale - Ctrl.stx;
-		var y = bcvs.centery - bcvs.playerFoothold.y * bcvs.scale - Ctrl.sty;
-		if(this._grab > 0){this._grab--;}
+		if(this._grabCount > 0){this._grabCount--;}
 		if(bcvs.player != null){
-			var isSquat = (this._grab > 0);
 			// プレイヤーのしゃがみ
-			bcvs.player.active = isSquat;
+			bcvs.player.active = (this._grabCount > 0);
 			// プレイヤーの角度
-			if(isSquat){bcvs.player.r = Math.PI * (0.5 + 0.5 * Math.max(Math.min(x / bcvs.w, 1), -1));}
+			if(bcvs.player.active){
+				var ratio = (this._grabx - Ctrl.stx) / bcvs.w;
+				bcvs.player.r = Math.PI * (0.5 + 0.5 * Math.max(Math.min(ratio, 1), -1));
+			}
 		}
 		if(this._stdn != Ctrl.stdn){
 			this._stdn = Ctrl.stdn;
-			var r = Math.sqrt(x * x + y * y);
-			if(this._stdn){if(r < 50){this._grab = 10;}}
-			else{
-				if(r > 50 && this._grab > 0 && bcvs.player != null){
+			if(this._stdn){
+				var x = (bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale) - Ctrl.stx;
+				var y = (bcvs.centery - bcvs.playerFoothold.y * bcvs.scale) - Ctrl.sty;
+				if(x * x + y * y < 100 * 100){
+					// つかみ開始
+					this._grabx = Ctrl.stx;
+					this._graby = Ctrl.sty;
+					this._grabCount = 10;
+				}
+			}else{
+				var x = this._grabx - Ctrl.stx;
+				var y = this._graby - Ctrl.sty;
+				if(x * x + y * y > 30 * 30 && this._grabCount > 0 && bcvs.player != null){
 					// プレイヤーのジャンプ
-					var grabPower = (1 + this._grab * 0.1) * 0.5;
+					var grabPower = (1 + this._grabCount * 0.1) * 0.5;
 					bcvs.player.vx = 5.0 * -0.01 * Math.min(x, Ctrl.swmin * 0.5) * grabPower;
 					bcvs.player.vy = 5.0 * +0.02 * Math.min(y, Ctrl.shmin * 1.0) * grabPower;
 					bcvs.player.action = 0;
 					bcvs.player.active = true;
 					bcvs.player = null;
 				}
-				this._grab = 0;
+				this._grabCount = 0;
 			}
 		}
-		if(bcvs.player == null){this._grab = 0;}
+		if(bcvs.player == null){this._grabCount = 0;}
 
 		return true;
 	}
@@ -96,15 +107,16 @@ class SECjumpMain implements SerialEventCartridge{
 		/*
 		var bcvs = this._page.bcvs;
 		if(bcvs.player != null){
+			var isSquat = (this._grabCount > 0);
 			Ctrl.sctx.beginPath();
-			var x = bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale;
-			var y = bcvs.centery - bcvs.playerFoothold.y * bcvs.scale;
-			Ctrl.sctx.fillStyle = "rgba(0,0,0,0.3)";
-			Ctrl.sctx.arc(x, y, 50, 0, Math.PI * 2, true);
+			var x = isSquat ? this._grabx : bcvs.centerx + bcvs.playerFoothold.x * bcvs.scale;
+			var y = isSquat ? this._graby : bcvs.centery - bcvs.playerFoothold.y * bcvs.scale;
+			Ctrl.sctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+			Ctrl.sctx.arc(x, y, isSquat ? 30 : 100, 0, Math.PI * 2, true);
 			Ctrl.sctx.stroke();
-			if(this._grab > 0){Ctrl.sctx.fill();}
+			if(this._grabCount > 0){Ctrl.sctx.fill();}
 		}
-		*/
+		//*/
 
 		// ボタン描画
 		for(var name in this._btnList){this._btnList[name].draw();}
