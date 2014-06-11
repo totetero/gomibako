@@ -27,14 +27,14 @@ class ContentsServer{
 				}
 
 				// binaryコンテンツのリクエスト
-				new ContentsServer.BinLoader(path, addrs, function(data : Buffer) : void{
+				new ContentsServer._BinLoader(path, addrs, function(data : Buffer) : void{
 					res.setHeader("Content-Type", "application/octet-stream");
 					//res.setHeader("cache-control", "no-cache");
 					res.send(data);
 				});
 			}else{
 				// base64コンテンツのリクエスト
-				new ContentsServer.B64ImageLoader(path, addrs, function(data : string) : void{
+				new ContentsServer._B64Loader(path, addrs, function(data : string) : void{
 					res.setHeader("Content-Type", "application/json");
 					//res.setHeader("cache-control", "no-cache");
 					res.send(data);
@@ -102,6 +102,7 @@ class ContentsServer{
 						"sef_ng": "/snd/se/se_maoudamashii_system25"
 					};
 					break;
+				default: next(); return;
 			}
 
 			if(list != null){
@@ -158,8 +159,8 @@ class ContentsServer{
 	}
 
 	// ----------------------------------------------------------------
-	// base64形式での画像読み込みクラス
-	class B64ImageLoader{
+	// base64形式での読み込みクラス
+	class _B64Loader{
 		var _strs = {} : Map.<string>;
 
 		// コンストラクタ
@@ -232,7 +233,7 @@ class ContentsServer{
 
 	// ----------------------------------------------------------------
 	// binaryデータの読み込みクラス
-	class BinLoader{
+	class _BinLoader{
 		var _tags = {} : Map.<Buffer>;
 		var _bins = {} : Map.<Buffer>;
 		var _totalLength = 0;
