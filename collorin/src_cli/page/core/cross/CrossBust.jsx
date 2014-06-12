@@ -22,6 +22,7 @@ class CrossBust{
 	static const _actionMax = 10;
 
 	var _div : HTMLDivElement;
+	var _img : HTMLImageElement;
 	var _nextChara : DataChara;
 	var _show : boolean;
 	var _action = CrossBust._actionMax;
@@ -40,12 +41,16 @@ class CrossBust{
 				bottom: 0px;
 				width: 160px;
 				height: 240px;
-				background-size: 160px 240px;
+			}
+			#cross .bust img{
+				width: 100%;
+				height: 100%;
 			}
 		""";
 		dom.document.head.appendChild(style);
 		// dom設定
 		this._div = dom.document.createElement("div") as HTMLDivElement;
+		this._div.className = "bust";
 		(dom.document.getElementById("cross") as HTMLDivElement).appendChild(this._div);
 	}
 
@@ -86,7 +91,14 @@ class CrossBust{
 	// ----------------------------------------------------------------
 	// 切り替え
 	function _toggle() : void{
-		this._div.className = "bust" + (this._show ? (" cssimg_chara_bust_" + this._nextChara.code) : "");
+		if(this._img != null){
+			this._div.removeChild(this._img);
+			this._img = null;
+		}
+		if(this._show){
+			this._img = Loader.imgs["img_chara_bust_" + this._nextChara.code];
+			this._div.appendChild(this._img);
+		}
 	}
 }
 
