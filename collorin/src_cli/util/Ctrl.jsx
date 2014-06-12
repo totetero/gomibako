@@ -288,10 +288,8 @@ class Ctrl{
 	// ルート要素 タッチ開始
 	static function _ctdnfn(e : Event) : void{
 		// input要素フォーカス処理
-		if((e.target as Element).tagName.toLowerCase() == "input"){return;}
-		if(dom.document.activeElement != null && dom.document.activeElement.tagName.toLowerCase() == "input"){
-			(dom.document.activeElement as HTMLInputElement).blur();
-		}
+		if(e.target == Ctrl.input){return;}
+		if(dom.document.activeElement == Ctrl.input){Ctrl.input.blur();}
 
 		Ctrl._calcEvent(e, function(tx : int, ty : int, id : int) : boolean{
 			// タッチ範囲確認
