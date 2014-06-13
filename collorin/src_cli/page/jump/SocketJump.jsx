@@ -31,7 +31,7 @@ class SocketJump{
 		Loading.show();
 		SocketIOClient.connect(function(socket : SocketIOClientSocket) : void{
 			this._socket = socket;
-			this._socketof = this._socket.of("jump");
+			this._socketof = this._socket.of("old_jump");
 
 			// ゲーム情報獲得
 			this._socketof.on("entry", function(uid : variant, uinfoListData : variant, contents : variant):void{

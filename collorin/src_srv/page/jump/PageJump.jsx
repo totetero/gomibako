@@ -29,7 +29,7 @@ class PageJump{
 	// ----------------------------------------------------------------
 	// ページの設定
 	static function setPage(app : ExApplication, rcli : RedisClient, io : SocketManager) : void{
-		PageJump._sockets = io.of("jump");
+		PageJump._sockets = io.of("old_jump");
 		PageJump._rcli = rcli;
 
 		// -------- ソケットdbデータリセット --------
