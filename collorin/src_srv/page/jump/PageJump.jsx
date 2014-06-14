@@ -24,7 +24,7 @@ class JumpUserInfo{
 class PageJump{
 	static var _sockets : SocketNamespace;
 	static var _rcli : RedisClient;
-	static const _rhead = "old_jump:";
+	static const _rhead = "coll:jump:";
 
 	// ----------------------------------------------------------------
 	// ページの設定

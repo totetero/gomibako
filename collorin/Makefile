@@ -23,6 +23,12 @@ tool: toolImgCrypt.js toolMakeData.js toolMakeMotion.js
 clean:
 	rm game.js content/main.js tool*.js
 
+cleandb: toolMakeData.js
+	redis-cli keys "coll:*" | xargs redis-cli del
+	redis-cli keys "sess:*" | xargs redis-cli del
+	echo "db.dropDatabase()" | mongo totetest
+	node toolMakeData.js
+
 # --------------------------------
 
 start: build

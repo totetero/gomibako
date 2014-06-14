@@ -11,7 +11,7 @@ import "MockDice.jsx";
 // マイページ
 class PageDice{
 	static var _rcli : RedisClient;
-	static const _rhead = "dice:";
+	static const _rhead = "coll:dice:";
 
 	// ----------------------------------------------------------------
 	// ページの設定

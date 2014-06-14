@@ -32,7 +32,7 @@ class ChatUserInfo{
 class PageChat{
 	static var _sockets : SocketNamespace;
 	static var _rcli : RedisClient;
-	static const _rhead = "chat:";
+	static const _rhead = "coll:chat:";
 
 	// ----------------------------------------------------------------
 	// ページの設定
