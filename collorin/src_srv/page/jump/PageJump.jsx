@@ -144,19 +144,18 @@ class PageJump{
 	// ユーザー情報の登録
 	static function _setUinfo(sessionID : string, uinfo : JumpUserInfo, callback : function():void) : void{
 		// ソケット情報の作成
-		var uid = "";
 		var step = {} : Map.<function():void>;
 		step["start"] = function() : void{step["getuid"]();};
 		// UIDの発行
 		step["getuid"] = function() : void{
 			PageJump._rcli.incr([PageJump._rhead + "nextUserId"], function(err : variant, result : Nullable.<string>) : void{
-				uid = result;
+				uinfo.uid = result;
 				step["setuid"]();
 			});
 		};
 		// UIDの登録と同時に古い情報があったら削除
 		step["setuid"] = function() : void{
-			PageJump._rcli.getset([PageJump._rhead + "uid:" + sessionID, uid], function(err : variant, result : Nullable.<string>) : void{
+			PageJump._rcli.getset([PageJump._rhead + "uid:" + sessionID, uinfo.uid], function(err : variant, result : Nullable.<string>) : void{
 				if(result != null){
 					PageJump._rcli.get([PageJump._rhead + "uinfo:" + result], function(err : variant, result : Nullable.<string>) : void{
 						if(result == null){return;}
@@ -168,8 +167,7 @@ class PageJump{
 		};
 		// キャラクター情報登録
 		step["setuinfo"] = function() : void{
-			uinfo.uid = uid;
-			PageJump._rcli.set([PageJump._rhead + "uinfo:" + uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{
+			PageJump._rcli.set([PageJump._rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{
 				callback();
 			});
 		};

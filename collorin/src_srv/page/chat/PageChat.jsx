@@ -204,19 +204,18 @@ class PageChat{
 	// ユーザー情報の登録
 	static function _setUinfo(sessionID : string, uinfo : ChatUserInfo, callback : function():void) : void{
 		// ソケット情報の作成
-		var uid = "";
 		var step = {} : Map.<function():void>;
 		step["start"] = function() : void{step["getuid"]();};
 		// UIDの発行
 		step["getuid"] = function() : void{
 			PageChat._rcli.incr([PageChat._rhead + "nextUserId"], function(err : variant, result : Nullable.<string>) : void{
-				uid = result;
+				uinfo.uid = result;
 				step["setuid"]();
 			});
 		};
 		// UIDの登録と同時に古い情報があったら削除
 		step["setuid"] = function() : void{
-			PageChat._rcli.getset([PageChat._rhead + "uid:" + sessionID, uid], function(err : variant, result : Nullable.<string>) : void{
+			PageChat._rcli.getset([PageChat._rhead + "uid:" + sessionID, uinfo.uid], function(err : variant, result : Nullable.<string>) : void{
 				if(result != null){
 					PageChat._rcli.get([PageChat._rhead + "uinfo:" + result], function(err : variant, result : Nullable.<string>) : void{
 						if(result == null){return;}
@@ -228,8 +227,7 @@ class PageChat{
 		};
 		// キャラクター情報登録
 		step["setuinfo"] = function() : void{
-			uinfo.uid = uid;
-			PageChat._rcli.set([PageChat._rhead + "uinfo:" + uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{
+			PageChat._rcli.set([PageChat._rhead + "uinfo:" + uinfo.uid, JSON.stringify(uinfo)], function(err : variant, result : Nullable.<string>) : void{
 				callback();
 			});
 		};
