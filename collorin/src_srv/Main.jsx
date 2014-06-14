@@ -92,7 +92,6 @@ class _Main{
 					UserModel.findById(userID, function(err : variant, user : UserModel) : void{
 						if(err){callback("userが見つかりませんでした", false); return;}
 						handshakeData.session = session;
-						handshakeData.user = user;
 						callback(null, true);
 					});
 				});

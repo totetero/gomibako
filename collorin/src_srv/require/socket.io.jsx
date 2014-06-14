@@ -57,7 +57,6 @@ native class Socket{
 native class SocketHandshake{
 	var headers : variant;
 	var session : ExSession;
-	var user : UserModel;
 }
 
 native class SocketUtil{
