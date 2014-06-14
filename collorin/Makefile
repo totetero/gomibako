@@ -9,6 +9,8 @@ SRC_SRV_DIR = src_srv
 SRC_CLI_DIR = src_cli
 SRC_SRV_SRCS = $(shell find $(SRC_SRV_DIR) -name "*.jsx")
 SRC_CLI_SRCS = $(shell find $(SRC_CLI_DIR) -name "*.jsx")
+DEV_HOST = uni
+DEV_DIR = /home/tote/nodeTest/collorin
 
 test: build
 
@@ -45,7 +47,10 @@ srvRestart: srvStop srvStart
 # --------------------------------
 
 put: build
-	rsync -av * uni:/home/tote/nodeTest/collorin
+	rsync -av * $(DEV_HOST):$(DEV_DIR)
+
+putsrv: put
+	ssh $(DEV_HOST) "cd $(DEV_DIR) ; make srvRestart"
 
 db:
 	mongod &
