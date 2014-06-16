@@ -5,6 +5,8 @@ else
 endif
 JSX = $(DIR)/node_modules/jsx/bin/jsx
 MIN = $(DIR)/node_modules/uglify-js/bin/uglifyjs
+FOREVER = $(DIR)/node_modules/forever/bin/forever
+APPNAME = game_collorin.js
 SRC_SRV_DIR = src_srv
 SRC_CLI_DIR = src_cli
 SRC_SRV_SRCS = $(shell find $(SRC_SRV_DIR) -name "*.jsx")
@@ -16,14 +18,14 @@ test: build
 
 # --------------------------------
 
-build: game.js content/main.js
+build: $(APPNAME) content/main.js
 
 tool: toolImgCrypt.js toolMakeData.js toolMakeMotion.js
 
 # --------------------------------
 
 clean:
-	rm game.js content/main.js tool*.js
+	rm $(APPNAME) content/main.js tool*.js
 
 cleandb: toolMakeData.js
 	redis-cli keys "coll:*" | xargs redis-cli del
@@ -34,13 +36,13 @@ cleandb: toolMakeData.js
 # --------------------------------
 
 start: build
-	node game.js
+	node $(APPNAME)
 
 srvStart: build
-	node_modules/forever/bin/forever start game.js
+	$(FOREVER) start $(APPNAME)
 
 srvStop:
-	node_modules/forever/bin/forever stop game.js
+	-$(FOREVER) stop $(APPNAME)
 
 srvRestart: srvStop srvStart
 
@@ -61,7 +63,7 @@ db:
 content/main.js: $(SRC_CLI_DIR)/Main.jsx $(SRC_CLI_SRCS)
 	$(JSX) --executable web --output $@ $<
 
-game.js: $(SRC_SRV_DIR)/Main.jsx $(SRC_SRV_SRCS)
+$(APPNAME): $(SRC_SRV_DIR)/Main.jsx $(SRC_SRV_SRCS)
 	$(JSX) --executable node --output $@ $<
 
 tool%.js: $(SRC_SRV_DIR)/tool/Tool%.jsx $(SRC_SRV_SRCS)

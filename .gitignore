@@ -1,6 +1,6 @@
 /node_modules
 
-/game.js
+/game*.js
 /tool*.js
 
 /content/main.js
