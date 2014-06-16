@@ -12,6 +12,7 @@ native class express{
 	static function compress() : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function static_(path : string) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 	static function errorHandler(options : variant) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
+	static function basicAuth(callback:function(username:string,password:string):boolean) : function(req:ExRequest,res:ExResponse,next:function():void) : void;
 } = """{
 	create: require("express"),
 	logger: require("express").logger,
@@ -23,6 +24,7 @@ native class express{
 	compress: require("express").compress,
 	static_: require("express").static,
 	errorHandler: require("express").errorHandler,
+	basicAuth: require("express").basicAuth,
 }""";
 
 native class ExApplication{

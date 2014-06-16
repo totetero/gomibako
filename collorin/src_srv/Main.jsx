@@ -98,6 +98,11 @@ class _Main{
 			});
 		});
 
+		// basic認証
+		app.all('*', express.basicAuth(function(username : string, password : string) : boolean{
+			return (username == "mock" && password == "mock");
+		}));
+
 		// passport認証設定
 		PageAuth.setPassport({
 			local: {
