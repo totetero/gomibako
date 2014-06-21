@@ -19,6 +19,7 @@ class Drawer{
 	// ----------------------------------------------------------------
 	// 箱描画
 	static function drawBox(ctx : CanvasRenderingContext2D, img : HTMLImageElement, x : int, y : int, w : int, h : int) : void{
+		if(img == null || img.width == 0 || img.height == 0){return;}
 		var w10 = Math.floor(img.width * 0.5);
 		var h10 = Math.floor(img.height * 0.5);
 		var w05 = Math.floor(Math.min(w, w10) * 0.5);
