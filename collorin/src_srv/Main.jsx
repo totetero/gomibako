@@ -142,7 +142,8 @@ class _Main{
 	// メインページの設定
 	static function setMainPage(app : ExApplication) : void{
 		app.get("/main", function(req : ExRequest, res : ExResponse, next : function():void) : void{
-			res.render("main.ejs");
+			res.setHeader("cache-control", "no-cache");
+			res.render("main.ejs", {token: Math.random(),});
 		});
 	}
 }
