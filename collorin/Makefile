@@ -21,6 +21,9 @@ test: build
 build: $(APPNAME) content/main.js
 
 tool: toolImgCrypt.js toolMakeData.js toolMakeMotion.js
+	node toolImgCrypt.js
+	node toolMakeData.js
+	node toolMakeMotion.js
 
 # --------------------------------
 
