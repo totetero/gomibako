@@ -1,0 +1,181 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<title>ほげほげ</title>
+		<style type="text/css">
+			.div-root{display: flex; flex-direction: column; width: 100%; height: 100%;}
+			.div-root-head{display:flex; justify-content: center; align-items: center; height:40px;}
+			.div-root-disp{flex: 1; display:flex; justify-content: center; align-items: center;}
+			.div-root-ctrl{display:flex; justify-content: center; align-items: center; height:40px;}
+			.div-root-ctrl-page{width: 80px; text-align: center;}
+		</style>
+	</head>
+	<body style="margin:0px;">
+		<div id="root" class="div-root">
+			<div id="head" class="div-root-head">
+				<input type="button" id="buttonCheck" value="check"/>
+				<input type="button" id="buttonConnect" value="connect"/>
+				<input type="button" id="buttonState" value="state"/>
+				<input type="button" id="buttonClose" value="close"/>
+				<input type="button" id="buttonTerminate" value="terminate"/>
+			</div>
+			<div id="disp" class="div-root-disp">
+				<div id="dispComment"></div>
+			</div>
+			<div id="ctrl" class="div-root-ctrl">
+				<input type="button" id="buttonPrev" value="prev"/>
+				<span class="div-root-ctrl-page"><span id="ctrlPageCurr">0</span>/<span id="ctrlPageMax">0</span></span>
+				<input type="button" id="buttonNext" value="next"/>
+			</div>
+		</div>
+		<script type="text/javascript">
+(function(global){
+	"use strict";
+
+	// 読み込みが終わったら処理開始
+	document.addEventListener("DOMContentLoaded", function(e){
+
+		// ウェブページを2画面対応にするPresentation APIを使ってみる
+		// https://qiita.com/tomoyukilabs/items/f7b5971cf107d769bd39
+
+		// ----------------------------------------------------------------
+		// ----------------------------------------------------------------
+		// ----------------------------------------------------------------
+
+		const request = new PresentationRequest("viewer00.html");
+		const storageKey = "aaaaaaaaaaaaaaaa";
+
+		const localGlobal = {};
+		localGlobal.connection = null;
+		document.getElementById("buttonCheck").disabled = false;
+		document.getElementById("buttonConnect").disabled = false;
+		document.getElementById("buttonState").disabled = false;
+		document.getElementById("buttonClose").disabled = true;
+		document.getElementById("buttonTerminate").disabled = true;
+		document.getElementById("buttonPrev").disabled = true;
+		document.getElementById("buttonNext").disabled = true;
+
+		// 確認
+		document.getElementById("buttonCheck").addEventListener("click", () => {
+			if(localGlobal.connection !== null){return;}
+			request.getAvailability().then(availability => {
+				console.log("start", availability);
+				availability.addEventListener("change", () => {
+					console.log("change", availability);
+				});
+			});
+		});
+
+		// 接続
+		document.getElementById("buttonConnect").addEventListener("click", () => {
+			if(localGlobal.connection !== null){return;}
+			Promise.resolve().then(() => {
+				// 再接続もしくは接続を行う
+				const presentationId = window.localStorage.getItem(storageKey);
+				localStorage.removeItem(storageKey);
+				return (presentationId ? request.reconnect(presentationId) : request.start()).then(connection => {
+					localGlobal.connection = connection;
+					document.getElementById("buttonCheck").disabled = true;
+					document.getElementById("buttonConnect").disabled = true;
+					document.getElementById("buttonState").disabled = false;
+					document.getElementById("buttonClose").disabled = false;
+					document.getElementById("buttonTerminate").disabled = false;
+					document.getElementById("buttonPrev").disabled = false;
+					document.getElementById("buttonNext").disabled = false;
+				}).catch(error => {
+					throw error;
+				});
+			}).then(() => {
+				// 接続待ち
+				localGlobal.connection.addEventListener("connect", () => {
+					console.log("接続完了");
+				});
+				// データ受信待ち
+				localGlobal.connection.addEventListener("message", event => {
+					const data = JSON.parse(event.data);
+					// ページ情報受信
+					if(data.type === "info"){
+						document.getElementById("ctrlPageMax").innerHTML = data.page_num;
+						document.getElementById("ctrlPageCurr").innerHTML = data.page_index + 1;
+						document.getElementById("dispComment").innerHTML = data.comment;
+					}
+				});
+			}).catch(error => {
+				console.log("error", error);
+			});
+		});
+
+		// 状態
+		document.getElementById("buttonState").addEventListener("click", () => {
+			if(localGlobal.connection === null){
+				console.log("none");
+			}else{
+				console.log(localGlobal.connection.state);
+			}
+			// todo document.getElementById("dispComment").innerHTML = data.comment;
+		});
+
+		// 切断
+		document.getElementById("buttonClose").addEventListener("click", () => {
+			if(localGlobal.connection === null){return;}
+			window.localStorage.setItem(storageKey, localGlobal.connection.id);
+			localGlobal.connection.close();
+			localGlobal.connection = null;
+			document.getElementById("buttonCheck").disabled = false;
+			document.getElementById("buttonConnect").disabled = false;
+			document.getElementById("buttonState").disabled = false;
+			document.getElementById("buttonClose").disabled = true;
+			document.getElementById("buttonTerminate").disabled = true;
+			document.getElementById("buttonPrev").disabled = true;
+			document.getElementById("buttonNext").disabled = true;
+		});
+
+		// 停止
+		document.getElementById("buttonTerminate").addEventListener("click", () => {
+			if(localGlobal.connection === null){return;}
+			Promise.resolve().then(() => {
+				// 切断していたら停止するために接続し直す必要がある
+				if(localGlobal.connection.state === "closed"){
+					return new Promise(resolve => {
+						localGlobal.connection.addEventListener("connect", resolve);
+						localGlobal.connection.reconnect(localGlobal.connection.id);
+					});
+				}
+				return Promise.resolve();
+			}).then(() => {
+				localGlobal.connection.terminate();
+				localGlobal.connection = null;
+				document.getElementById("buttonCheck").disabled = false;
+				document.getElementById("buttonConnect").disabled = false;
+				document.getElementById("buttonState").disabled = false;
+				document.getElementById("buttonClose").disabled = true;
+				document.getElementById("buttonTerminate").disabled = true;
+				document.getElementById("buttonPrev").disabled = true;
+				document.getElementById("buttonNext").disabled = true;
+			});
+		});
+
+		// 戻る
+		document.getElementById("buttonPrev").addEventListener("click", () => {
+			if(localGlobal.connection === null){return;}
+			localGlobal.connection.send(JSON.stringify({type: "prev",}));
+		});
+
+		// 進む
+		document.getElementById("buttonNext").addEventListener("click", () => {
+			if(localGlobal.connection === null){return;}
+			localGlobal.connection.send(JSON.stringify({type: "next",}));
+		});
+
+		// ----------------------------------------------------------------
+		// ----------------------------------------------------------------
+		// ----------------------------------------------------------------
+	});
+})(this);
+		</script>
+	</body>
+</html>
+
