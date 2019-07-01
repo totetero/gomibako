@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
+<script type="text/javascript" src="Engine3d.js"></script>
+<script type="text/javascript" src="Controller.js"></script>
+<script type="text/javascript" src="Character.js"></script>
+<script type="text/javascript" src="Character_player.js"></script>
+<script type="text/javascript" src="Character_boss.js"></script>
+<script type="text/javascript" src="Effect.js"></script>
+<script type="text/javascript" src="Map.js"></script>
+<script type="text/javascript">
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// グローバル変数
+var e3d = new Engine3d();
+var map = new ScrollMap();
+var ctrl = new Controller();
+var effectManager = new EffectManager();
+var shadow = new Shadow();
+var player = new Player();
+var boss = new Boss();
+
+// テクスチャ
+var mapTexture;
+var ctrlTexture;
+var effectTexture;
+var playerTexture;
+var bossTexture;
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+window.onload = function(){
+	// 初期化
+	var canvas = document.getElementById("screen");
+	e3d.init(canvas);
+	e3d.initTemplate();
+	ctrl.init(e3d, canvas);
+	effectManager.init(e3d);
+	shadow.init(e3d);
+	player.init(e3d);
+	boss.init(e3d);
+	
+	mapTexture = e3d.loadTexture("mapchip.png");
+	ctrlTexture = e3d.loadTexture("ctrl.png");
+	effectTexture = e3d.loadTexture("effect.png");
+	playerTexture = e3d.loadTexture("player.png");
+	bossTexture = e3d.loadTexture("boss.png");
+	
+	map.init(e3d, [[
+		[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2,],
+		[ 4, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 4, 4, 4,],
+		[ 4, 2, 2, 2, 2, 4, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4,],
+		[ 2, 2, 2, 2, 2, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2,],
+		[ 2, 2, 2, 2, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 2, 2,],
+		[ 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 4, 4, 2, 2,],
+		[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2,],
+		[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 2,],
+		[ 2, 4, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 2, 2, 2,],
+		[ 4, 4, 4, 2, 2, 2, 2, 2, 4, 4, 4, 2, 2, 2, 2, 4,],
+		[ 4, 4, 4, 4, 4, 2, 2, 4, 4, 4, 2, 2, 2, 4, 4, 4,],
+		[ 4, 4, 4, 4, 2, 2, 2, 4, 4, 4, 2, 2, 2, 4, 4, 4,],
+		[ 4, 4, 4, 4, 2, 2, 2, 4, 4, 4, 4, 2, 2, 4, 4, 4,],
+		[ 4, 4, 4, 2, 2, 2, 2, 4, 4, 4, 2, 4, 4, 4, 4, 4,],
+	],[
+		[ 0, 0, 0, 0, 0, 0, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 13, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 10, 10, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 10, 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+	],[
+		[ 0, 0, 14, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 14, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 14, 13, 14, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,],
+	],[
+		[ 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 14, 13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 14, 13, 14, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,],
+	],[
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0,],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+	],], 26);
+	
+	ctrl.roth = Math.PI / 180 *  30;
+	ctrl.rotv = Math.PI / 180 *  90;
+	ctrl.distance = 10;
+	
+	// 描画処理を毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+// メインループ
+function redrawScene(){
+	// 計算
+	player.calc1(ctrl);
+	boss.calc1(player);
+	boss.hit(player);
+	player.calc2();
+	boss.calc2();
+	effectManager.calc();
+	if(player.y <  4){player.y =  4;}
+	if(player.y > 10){player.y = 10;}
+	if(boss.y <  4){boss.y =  4;}
+	if(boss.y > 10){boss.y = 10;}
+	if(player.health <= 0){
+		document.getElementById('message').innerHTML = "lose!!";
+	}else if(boss.health <= 0){
+		document.getElementById('message').innerHTML = "win!!";
+	}
+	
+	// ----------------------------------------------------------------
+	// 3D描画
+	e3d.clear();
+	e3d.setMode(0);
+	// カメラ
+	mat4.frustum(-0.05, 0.05, -0.05, 0.05, 0.1, 100, e3d.worldmat);
+	mat4.translate(e3d.worldmat, [0, 0, -ctrl.distance]);
+	mat4.rotateX(e3d.worldmat, ctrl.roth);
+	mat4.rotateY(e3d.worldmat, ctrl.rotv);
+	//mat4.translate(e3d.worldmat, [-player.x, -player.z, -player.y]);
+	mat4.translate(e3d.worldmat, [-player.x, -1, -7]);
+	// プレイヤー
+	e3d.bindTex(playerTexture, 0);
+	player.draw(e3d, e3d.worldmat, ctrl);
+	// ボス
+	e3d.bindTex(bossTexture, 0);
+	boss.draw(e3d, e3d.worldmat, ctrl);
+	// 影
+	e3d.bindTex(shadow.texture, 0);
+	shadow.draw(e3d, e3d.worldmat, player.x, player.y, player.z - player.altitude, player.hsize);
+	shadow.draw(e3d, e3d.worldmat, boss.x, boss.y, boss.z - boss.altitude, boss.hsize);
+	// エフェクト
+	e3d.bindTex(effectTexture, 0);
+	effectManager.draw(e3d, e3d.worldmat, ctrl);
+	
+	if(0){
+		// テスト あたり判定球
+		var p = player.p_body; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = player.p_swrd; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_head; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_body; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_tail; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_ftfr; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_ftfl; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_ftbr; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		var p = boss.p_ftbl; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);
+		if(boss.p_byte.r > 0){var p = boss.p_byte; e3d.drawSphere(e3d.worldmat, p.x, p.y, p.z , p.r);}
+	}
+	
+	// マップ
+	e3d.setMode(3);
+	e3d.bindTex(mapTexture, 1);
+	map.draw(e3d, e3d.worldmat, player.x + 6);
+	
+	// ----------------------------------------------------------------
+	// 2D描画
+	e3d.setMode(1);
+	mat4.ortho(0, ctrl.w, 0, ctrl.h, -1, 1, e3d.worldmat);
+	// コントローラ
+	e3d.bindTex(ctrlTexture, 0);
+	ctrl.draw(e3d, e3d.worldmat);
+	
+	// 体力ゲージ
+	var drawHealth = function(health, y){
+		mat4.set(e3d.worldmat, e3d.tmpmat1);
+		mat4.translate(e3d.tmpmat1, [10, ctrl.h - y, 0]);
+		mat4.scale(e3d.tmpmat1, [(ctrl.w - 20) * ((health > 0 ? health : 0) / 100), 8, 0]);
+		mat4.translate(e3d.tmpmat1, [0.5, -0.5, 0]);
+		e3d.setMatrix(e3d.tmpmat1);
+		e3d.bindTex(e3d.sphereTexture, 1);
+		e3d.bindVertBuf(e3d.tetraVertBuffer);
+		e3d.bindTexcBuf(e3d.tetraTexcBuffer);
+		e3d.drawTetra();
+	}
+	drawHealth(player.health, 6);
+	//drawHealth(boss.health, 20);
+	
+	// 負けたときの画面フェード
+	if(player.health <= 0){
+		if(typeof fadeAction == "undefined"){
+			fadeAction = 0;
+			var vert = new Array();
+			vert.push(ctrl.w, ctrl.h, 0.0);
+			vert.push(     0, ctrl.h, 0.0);
+			vert.push(     0,      0, 0.0);
+			vert.push(ctrl.w,      0, 0.0);
+			fadeVertBuffer = e3d.createVBO(vert);
+		}
+		if(fadeAction++ >= 30){
+			e3d.shader = e3d.shader04;
+			e3d.gl.depthMask(false);
+			e3d.gl.disable(e3d.gl.DEPTH_TEST);
+			e3d.gl.enable(e3d.gl.BLEND);
+			e3d.gl.blendFunc(e3d.gl.SRC_ALPHA, e3d.gl.ONE_MINUS_SRC_ALPHA); // 半透明アルファ合成
+			e3d.gl.useProgram(e3d.shader);
+			var clor = new Array();
+			var a = Math.min((fadeAction - 30), 54) / 64
+			clor.push(0, 0, 0, a);
+			clor.push(0, 0, 0, a);
+			clor.push(0, 0, 0, a);
+			clor.push(0, 0, 0, a);
+			e3d.bindClor4Buf(e3d.createVBO(clor));
+			e3d.bindVertBuf(fadeVertBuffer);
+			e3d.setMatrix(e3d.worldmat);
+			e3d.drawTetra();
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// ページに反映させる
+	e3d.flush();
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+</script>
+</head><body>
+<!-- キャンバス -->
+<canvas id='screen' width='320' height='320'></canvas><br>
+<div id='message'>
+</body></html>
+

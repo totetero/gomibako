@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="glMatrix.0.9.6.js"></script>
+<script type="text/javascript">
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// シェーダー (テクスチャ アルファテスト 乗算カラー)
+// 汎用
+
+// 頂点シェーダー
+var vshader01_src =
+	"precision lowp float;                                           \n" +
+	"attribute vec3 vs_attr_pos;                                     \n" +
+	"attribute vec2 vs_attr_uvc;                                     \n" +
+	"uniform mat4 vs_unif_mat;                                       \n" +
+	"varying vec2 texCoord;                                          \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    texCoord    = vs_attr_uvc;                                  \n" +
+	"    gl_Position = vs_unif_mat * vec4(vs_attr_pos, 1.0);         \n" +
+	"}                                                               \n" +
+"";
+
+// フラグメントシェーダー
+var fshader01_src =
+	"precision lowp float;                                           \n" +
+	"uniform sampler2D texture;                                      \n" +
+	"uniform vec3 fs_unif_col;                                       \n" +
+	"varying vec2 texCoord;                                          \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    vec4 fragColor = texture2D(texture, texCoord);              \n" +
+	"    if(fragColor.a > 0.8){                                      \n" +
+	"        gl_FragColor = fragColor * vec4(fs_unif_col, 1.0);      \n" +
+	"    }else{                                                      \n" +
+	"        discard;                                                \n" +
+	"    }                                                           \n" +
+	"}                                                               \n" +
+"";
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// シェーダー (テクスチャ アルファテスト クリック判定IDカラー)
+// クリック判定用
+
+// 頂点シェーダー
+var vshader02_src = vshader01_src;
+
+// フラグメントシェーダー
+var fshader02_src =
+	"precision lowp float;                                           \n" +
+	"uniform sampler2D texture;                                      \n" +
+	"uniform vec3 fs_unif_col;                                       \n" +
+	"varying vec2 texCoord;                                          \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    vec4 fragColor = texture2D(texture, texCoord);              \n" +
+	"    if(fragColor.a > 0.8){                                      \n" +
+	"        gl_FragColor = vec4(fs_unif_col, 1.0);                  \n" +
+	"    }else{                                                      \n" +
+	"        discard;                                                \n" +
+	"    }                                                           \n" +
+	"}                                                               \n" +
+"";
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// シェーダー (単色カラー)
+// 単色の直線描画用
+
+// 頂点シェーダー
+var vshader03_src =
+	"precision lowp float;                                           \n" +
+	"attribute vec3 vs_attr_pos;                                     \n" +
+	"uniform mat4 vs_unif_mat;                                       \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    gl_Position = vs_unif_mat * vec4(vs_attr_pos, 1.0);         \n" +
+	"}                                                               \n" +
+"";
+
+// フラグメントシェーダー
+var fshader03_src =
+	"precision lowp float;                                           \n" +
+	"uniform vec3 fs_unif_col;                                       \n" +
+	"                                                                \n" +
+	"void main() {                                                   \n" +
+	"    gl_FragColor = vec4(fs_unif_col, 1.0);                      \n" +
+	"}                                                               \n" +
+"";
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// 簡易3Dエンジンクラス
+
+function Engine3d(){
+	this.gl;
+	this.shader;
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	
+	// エンジン初期化
+	this.init = function(canvas){
+		// コンテキストの獲得
+		try{var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");}catch(e){}
+		if(!gl){
+			alert("WebGL がサポートされていません。");
+			//document.getElementById('canvas').innerHTML = "<img src='preview.png'>"
+			return -1;
+		}
+		this.width = canvas.width;
+		this.height = canvas.height;
+		
+		// シェーダープログラム作成
+		var e3dCreateProgram = function(vssrc, fssrc){
+			// シェーダーの作成
+			var e3dCreateShader = function(src, type){
+				var shader = gl.createShader(type);
+				gl.shaderSource(shader, src);
+				gl.compileShader(shader);
+				if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)){
+					alert(gl.getShaderInfoLog(shader));
+					return -1;
+				}
+				return shader;
+			}
+			// 頂点シェーダーとフラグメントシェーダーの作成
+			var vshader = e3dCreateShader(vssrc, gl.VERTEX_SHADER);
+			var fshader = e3dCreateShader(fssrc, gl.FRAGMENT_SHADER);
+			if(vshader < 0 || fshader < 0){return -1;}
+			
+			// プログラムオブジェクトを作成
+			var shader = gl.createProgram();
+			gl.attachShader(shader, vshader);
+			gl.attachShader(shader, fshader);
+			
+			// 頂点シェーダーとフラグメントシェーダーをリンクする
+			gl.linkProgram(shader);
+			if(!gl.getProgramParameter(shader, gl.LINK_STATUS)){
+				alert(gl.getProgramInfoLog(shader));
+				return -1;
+			}
+			
+			// シェーダーパラメータ取得
+			shader.s_pos = gl.getAttribLocation(shader, "vs_attr_pos");
+			shader.s_uvc = gl.getAttribLocation(shader, "vs_attr_uvc");
+			shader.s_col = gl.getUniformLocation(shader, "fs_unif_col");
+			shader.s_mat = gl.getUniformLocation(shader, "vs_unif_mat");
+			
+			return shader;
+		}
+		this.shader01 = e3dCreateProgram(vshader01_src, fshader01_src);
+		this.shader02 = e3dCreateProgram(vshader02_src, fshader02_src);
+		this.shader03 = e3dCreateProgram(vshader03_src, fshader03_src);
+		if(this.shader01 < 0 || this.shader02 < 0 || this.shader03 < 0){return -1;}
+		this.shader = this.shader01;
+		
+		// opengl描画設定
+		gl.clearColor(0, 0, 0, 0);
+		gl.clearDepth(1);
+		gl.enable(gl.DEPTH_TEST);
+		gl.enable(gl.TEXTURE_2D);
+		gl.enable(gl.CULL_FACE);
+		gl.cullFace(gl.BACK);
+		gl.useProgram(this.shader);
+		this.gl = gl;
+	}
+	
+	// ----------------------------------------------------------------
+	// モデル作成
+	
+	// VBO作成
+	this.createVBO = function(vertices){
+		var gl = this.gl;
+		var vertexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+		return vertexBuffer;
+	}
+	
+	// IBO作成
+	this.createIBO = function(indexes){
+		var gl = this.gl;
+		var indexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(indexes), gl.STATIC_DRAW);
+		return indexBuffer;
+	}
+	
+	// 画像からテクスチャ読込み
+	this.loadTexture = function(url){
+		var gl = this.gl;
+		var texture = this.gl.createTexture();
+		var image = new Image();
+		// 画像の読み込み 完了時テクスチャ作成
+		image.onload = function(){
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			gl.generateMipmap(gl.TEXTURE_2D);
+		}
+		image.src = url;
+		return texture;
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画処理
+	
+	// 描画のクリア
+	this.clear = function(){
+		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+	}
+	
+	// 描画モード設定
+	this.setMode = function(mode){
+		switch(mode){
+			case 0: this.shader = this.shader01; break;
+			case 1: this.shader = this.shader02; break;
+			case 2: this.shader = this.shader03; break;
+		}
+		this.gl.useProgram(this.shader);
+	}
+	
+	// 色の設定
+	this.setColor = function(r, g, b){
+		if(this.shader != this.shader02){
+			this.gl.uniform3fv(this.shader.s_col, new Float32Array([r, g, b]));
+		}
+	}
+	
+	// クリック判定IDの設定
+	this.setHitID = function(id){
+		if(this.shader == this.shader02){
+			var divide = 16;
+			var rid = (id % divide) / (divide - 1);
+			var gid = (Math.floor(id / divide) % divide) / (divide - 1);
+			var bid = Math.floor(id / (divide * divide)) / (divide - 1);
+			this.gl.uniform3fv(this.shader.s_col, new Float32Array([rid, gid, bid]));
+		}
+	}
+	
+	// クリック判定IDの取得
+	this.getHitID = function(x, y){
+		if(this.shader == this.shader02){
+			var divide = 16;
+			var cid = new Uint8Array(4);
+			this.gl.readPixels(x, this.height - y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, cid);
+			return ((cid[2] * divide + cid[1]) * divide + cid[0]) * (divide - 1) / 255;
+		}else{
+			return 0;
+		}
+	}
+	
+	// 行列の設定
+	this.setMatrix = function(matrix){
+		this.gl.uniformMatrix4fv(this.shader.s_mat, false, matrix);
+	}
+	
+	// テクスチャを指定
+	this.bindTex = function(texture){
+		var gl = this.gl;
+		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	}
+	
+	// VBO登録 頂点座標
+	this.bindVertBuf = function(vertVBO){
+		var gl = this.gl;
+		gl.enableVertexAttribArray(this.shader.s_pos);
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertVBO);
+		gl.vertexAttribPointer(this.shader.s_pos, 3, gl.FLOAT, false, 0, 0);
+	}
+	
+	// VBO登録 テクスチャ座標
+	this.bindTexcBuf = function(texcVBO){
+		var gl = this.gl;
+		gl.enableVertexAttribArray(this.shader.s_uvc);
+		gl.bindBuffer(gl.ARRAY_BUFFER, texcVBO);
+		gl.vertexAttribPointer(this.shader.s_uvc, 2, gl.FLOAT, false, 0, 0);
+	}
+	
+	// IBO登録 頂点インデックス
+	this.bindFaceBuf = function(faceIBO){
+		var gl = this.gl;
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, faceIBO);
+	}
+	
+	// 描画
+	this.draw = function(offset, count){
+		var gl = this.gl;
+		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, offset * Uint16Array.BYTES_PER_ELEMENT);
+	}
+	
+	// 直線の描画
+	this.drawLine = function(offset, count){
+		var gl = this.gl;
+		gl.drawElements(gl.LINES, count, gl.UNSIGNED_SHORT, offset * Uint16Array.BYTES_PER_ELEMENT);
+	}
+	
+	// 四角形の描画
+	this.drawTetra = function(){
+		var gl = this.gl;
+		gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+	}
+	
+	// 描画の反映
+	this.flush = function(){
+		this.gl.flush();
+	}
+	
+	// ----------------------------------------------------------------
+	// 良く使う部品をテンプレートとして用意する
+	
+	// テンプレート初期化
+	this.initTemplate = function(){
+		this.worldmat = mat4.create();
+		this.tmpmat1 = mat4.create();
+		this.tmpmat2 = mat4.create();
+		
+		var vert = new Array();
+		vert.push( 0.5,  0.5, 0.0);
+		vert.push(-0.5,  0.5, 0.0);
+		vert.push(-0.5, -0.5, 0.0);
+		vert.push( 0.5, -0.5, 0.0);
+		this.tetraVertBuffer = e3d.createVBO(vert);
+		
+		var vert = new Array();
+		vert.push(-0.5, -0.5, -0.5);
+		vert.push(-0.5, -0.5,  0.5);
+		vert.push(-0.5,  0.5, -0.5);
+		vert.push(-0.5,  0.5,  0.5);
+		vert.push( 0.5, -0.5, -0.5);
+		vert.push( 0.5, -0.5,  0.5);
+		vert.push( 0.5,  0.5, -0.5);
+		vert.push( 0.5,  0.5,  0.5);
+		vert.push(-0.25, -0.5, -0.5);
+		vert.push(-0.25, -0.5,  0.5);
+		vert.push( 0.0 , -0.5, -0.5);
+		vert.push( 0.0 , -0.5,  0.5);
+		vert.push( 0.25, -0.5, -0.5);
+		vert.push( 0.25, -0.5,  0.5);
+		vert.push(-0.5, -0.5, -0.25);
+		vert.push( 0.5, -0.5, -0.25);
+		vert.push(-0.5, -0.5,  0.0 );
+		vert.push( 0.5, -0.5,  0.0 );
+		vert.push(-0.5, -0.5,  0.25);
+		vert.push( 0.5, -0.5,  0.25);
+		this.cubeVertBuffer = e3d.createVBO(vert);
+		var face = new Array();
+		face.push(0, 1, 1, 5, 5, 4, 4, 0);
+		face.push(0, 1, 1, 3, 3, 2, 2, 0);
+		face.push(0, 4, 1, 5, 3, 7, 2, 6);
+		face.push(4, 5, 5, 7, 7, 6, 6, 4);
+		face.push( 8,  9, 10, 11, 12, 13);
+		face.push(14, 15, 16, 17, 18, 19);
+		this.cubeFaceBuffer = e3d.createIBO(face);
+	}
+	
+	// ----------------------------------------------------------------
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// キャラクタ描画クラス
+
+function Character(){
+	this.pTex = null;
+	this.eTex = null;
+	this.memList = new Array();
+	this.selectedField = "";
+	this.selectedParts1 = 0;
+	this.selectedParts2 = 0;
+	
+	// ----------------------------------------------------------------
+	// ユーティリティ
+	
+	// テクスチャバッファ構造体作成
+	this.createTexuv = function(e3d, u0, v0, uw, vh){
+		var texc = new Array();
+		var u1 = u0 + uw;
+		var v1 = v0 + vh;
+		texc.push(u1, v0);
+		texc.push(u0, v0);
+		texc.push(u0, v1);
+		texc.push(u1, v1);
+		// VBOを作成し構造体に保存
+		var texStruct = new Object();
+		texStruct.texcBuffer = e3d.createVBO(texc);
+		texStruct.getbuf = function(){return this.texcBuffer;}
+		return texStruct;
+	}
+	
+	// テクスチャバッファリスト構造体作成
+	this.createTexuvList = function(e3d, u0, v0, uw, vh, swap){
+		var texStruct = new Object();
+		texStruct.texcBufferList = new Array();
+		for(var i = 0; i < 12; i++){
+			var texc = new Array();
+			var iw = (i % 4);
+			var ih =  Math.floor(i / 4)
+			if(swap){iw = (4 - iw) % 4;}
+			var u1 = u0 + uw * iw;
+			var v1 = v0 + vh * ih;
+			var u2 = u1 + uw;
+			var v2 = v1 + vh;
+			if(swap){var tmp = u1; u1 = u2; u2 = tmp;}
+			texc.push(u2, v1);
+			texc.push(u1, v1);
+			texc.push(u1, v2);
+			texc.push(u2, v2);
+			// VBOを作成し構造体に保存
+			texStruct.texcBufferList[i] = e3d.createVBO(texc);
+		}
+		texStruct.getbuf = function(h, v){return this.texcBufferList[h * 4 + v];}
+		return texStruct;
+	}
+	
+	// 描画関数作成
+	this.createDrawFunc = function(e3d, mat, ctrl, rotate, x, y, z, size){
+		// 行列作成
+		mat4.set(mat, e3d.tmpmat1);
+		mat4.translate(e3d.tmpmat1, [x, z, y]);
+		mat4.rotateY(e3d.tmpmat1, -rotate);
+		mat4.scale(e3d.tmpmat1, [size, size, size]);
+		// 頂点バッファ
+		e3d.bindVertBuf(e3d.tetraVertBuffer);
+		
+		// テクスチャ水平軸角度フレーム
+		var angleh = 180 / Math.PI * ctrl.roth;
+		if(angleh < -30){angleh = 2;}else if(angleh < 30){angleh = 1;}else{angleh = 0;}
+		// テクスチャ垂直軸角度フレーム
+		var anglev = 45 + 180 / Math.PI * (ctrl.rotv - rotate);
+		while(anglev > 360){anglev -= 360;} while(anglev <= 0){anglev += 360;}
+		if(anglev < 90){anglev = 1;}else if(anglev <= 180){anglev = 2;}else if(anglev < 270){anglev = 3;}else{anglev = 0;}
+		
+		// 描画関数作成
+		return function(tuvList, size, x, y, z, rot, transposed){
+			mat4.set(e3d.tmpmat1, e3d.tmpmat2);
+			mat4.translate(e3d.tmpmat2, [x, z, y]);
+			mat4.rotateY(e3d.tmpmat2, -ctrl.rotv + rotate);
+			mat4.rotateX(e3d.tmpmat2, -ctrl.roth);
+			if(!transposed){
+				var temph = angleh;
+				var tempv = (anglev + rot) % 4;
+				mat4.scale(e3d.tmpmat2, [size, size, size]);
+			}else{
+				// 上下回転逆さ状態
+				var temph = 2 - angleh;
+				var tempv = (4 - anglev + rot) % 4;
+				mat4.scale(e3d.tmpmat2, [-size, -size, size]);
+			}
+			e3d.setMatrix(e3d.tmpmat2);
+			e3d.bindTexcBuf(tuvList.getbuf(temph, tempv));
+			e3d.drawTetra();
+		}
+	}
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(e3d){
+		// 各パーツのテクスチャバッファリスト
+		this.ptuvList = new Array();
+		this.ptuvList[0] = this.createTexuvList(e3d, 0.0, 0.000, 0.125, 0.125, 0);
+		this.ptuvList[1] = this.createTexuvList(e3d, 0.0, 0.375, 0.125, 0.125, 0);
+		this.ptuvList[2] = this.createTexuvList(e3d, 0.00, 0.75, 0.0625, 0.0625, 0);
+		this.ptuvList[3] = this.createTexuvList(e3d, 0.00, 0.75, 0.0625, 0.0625, 1);
+		this.ptuvList[4] = this.createTexuvList(e3d, 0.25, 0.75, 0.0625, 0.0625, 0);
+		this.ptuvList[5] = this.createTexuvList(e3d, 0.25, 0.75, 0.0625, 0.0625, 1);
+		this.ptuvList[6] = this.createTexuv(e3d, 0, 0.9375, 0.0625, 0.0625);
+		this.ptuvList[7] = this.createTexuvList(e3d, 0.5, 0.000, 0.125, 0.125, 0);
+		this.ptuvList[8] = this.createTexuvList(e3d, 0.5, 0.000, 0.125, 0.125, 1);
+		this.ptuvList[9] = this.createTexuvList(e3d, 0.5, 0.375, 0.125, 0.125, 0);
+		this.etuvList = new Array();
+		this.etuvList[0] = this.createTexuvList(e3d, 0.00, 0.000, 0.0625, 0.125, 0);
+		this.etuvList[1] = this.createTexuvList(e3d, 0.00, 0.375, 0.0625, 0.125, 0);
+		this.etuvList[2] = this.createTexuvList(e3d, 0.25, 0.000, 0.0625, 0.125, 0);
+		this.etuvList[3] = this.createTexuvList(e3d, 0.50, 0.000, 0.0625, 0.125, 0);
+		this.etuvList[4] = this.createTexuvList(e3d, 0.25, 0.375, 0.0625, 0.125, 0);
+		this.etuvList[5] = this.createTexuvList(e3d, 0.25, 0.375, 0.0625, 0.125, 1);
+		this.etuvList[6] = this.createTexuvList(e3d, 0.50, 0.375, 0.0625, 0.125, 0);
+		this.etuvList[7] = this.createTexuvList(e3d, 0.50, 0.375, 0.0625, 0.125, 1);
+		
+		// 剣のテクスチャ
+		var texc = new Array();
+		texc.push(0.625, 0.750);
+		texc.push(0.500, 0.750);
+		texc.push(0.500, 1.000);
+		texc.push(0.625, 1.000);
+		this.texcBuffer_sword = e3d.createVBO(texc);
+		// 剣のインデクス
+		var face = new Array();
+		face.push(0, 1, 2, 0, 2, 3);
+		face.push(0, 2, 1, 0, 3, 2);
+		this.faceBuffer_sword = e3d.createIBO(face);
+	}
+	
+	// ----------------------------------------------------------------
+	// 描画
+	var action = 0;
+	this.draw = function(e3d, mat, ctrl){
+		// 描画関数作成
+		var drawParts = this.createDrawFunc(e3d, mat, ctrl, 0, 0, 0, 0, 1);
+		var drawSword = function(size, x, y, z, roty1, rotz, roty2){
+			// 行列作成
+			mat4.set(e3d.tmpmat1, e3d.tmpmat2);
+			mat4.translate(e3d.tmpmat2, [x, z, y]);
+			mat4.rotateY(e3d.tmpmat2, Math.PI * roty2);
+			mat4.rotateZ(e3d.tmpmat2, Math.PI * rotz);
+			mat4.rotateY(e3d.tmpmat2, Math.PI * roty1);
+			mat4.scale(e3d.tmpmat2, [size, size * 2, size]);
+			mat4.translate(e3d.tmpmat2, [0, -0.25, 0]);
+			e3d.setMatrix(e3d.tmpmat2);
+			// 描画
+			e3d.bindTexcBuf(character.texcBuffer_sword);
+			e3d.bindFaceBuf(character.faceBuffer_sword);
+			e3d.draw(0, 12);
+		}
+		
+		// 	描画関数使用
+		var i = 0;
+		var cid = 1;
+		for(var i = 0; i < this.memList.length; i++){
+			// 選択されている番号のパーツをハイライト
+			if(this.selectedParts2 == cid){e3d.setColor(1.5, 1.5, 1.5);}
+			else{e3d.setColor(1.0, 1.0, 1.0);}
+			// パーツ番号設定
+			e3d.setHitID(cid++);
+			// メモリリストより描画
+			var m = this.memList[i];
+			switch(m.type){
+				case "pbody":
+					var buf = null;
+					switch(m.str){
+						case "this.texBufStruct_head" : buf = this.ptuvList[0]; break;
+						case "this.texBufStruct_body" : buf = this.ptuvList[1]; break;
+						case "this.texBufStruct_ftr1" : buf = this.ptuvList[2]; break;
+						case "this.texBufStruct_ftl1" : buf = this.ptuvList[3]; break;
+						case "this.texBufStruct_ftr2" : buf = this.ptuvList[4]; break;
+						case "this.texBufStruct_ftl2" : buf = this.ptuvList[5]; break;
+						case "this.texBufStruct_hand" : buf = this.ptuvList[6]; break;
+						case "this.texBufStruct_hair" : buf = this.ptuvList[7]; break;
+						case "this.texBufStruct_hail" : buf = this.ptuvList[8]; break;
+						case "this.texBufStruct_tail" : buf = this.ptuvList[9]; break;
+					}
+					if(buf == null){break;}
+					e3d.bindTex(character.pTex);
+					drawParts(buf, m.s, m.x, m.y, m.z, m.r, m.t);
+					break;
+				case "ebody":
+					var buf = null;
+					switch(m.str){
+						case "this.p_head" : buf = this.etuvList[0]; break;
+						case "this.p_body" : buf = this.etuvList[2]; break;
+						case "this.p_tail" : buf = this.etuvList[3]; break;
+						case "this.p_ftfr" : buf = this.etuvList[4]; break;
+						case "this.p_ftfl" : buf = this.etuvList[5]; break;
+						case "this.p_ftbr" : buf = this.etuvList[6]; break;
+						case "this.p_ftbl" : buf = this.etuvList[7]; break;
+					}
+					if(buf == null){break;}
+					e3d.bindTex(character.eTex);
+					drawParts(buf, 1.0, m.x, m.y, m.z, 0.0, 0.0);
+					break;
+				case "pswrd":
+					e3d.bindTex(character.pTex);
+					drawSword(m.s, m.x, m.y, m.z, m.r1, m.r2, m.r3);
+					break;
+			}
+		}
+	}
+	
+	// ----------------------------------------------------------------
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// マウス操作
+
+function Controller(){
+	this.mx = 0;
+	this.my = 0;
+	this.rotv = 0;
+	this.roth = 0;
+	this.rotm = mat4.create();
+	this.rotq = quat4.create();
+	// ユーティリティ
+	var that = this;
+	
+	// ----------------------------------------------------------------
+	// 初期化
+	this.init = function(canvas){
+		quat4.set([0, 0, 0, 1], this.rotq);
+		canvas.addEventListener("mousedown", mdnEvent, true);
+		canvas.addEventListener("mousemove", mmvEvent, true);
+		canvas.addEventListener("mouseup", mupEvent, true);
+		canvas.addEventListener("mouseout", mupEvent, true);
+	}
+	
+	// ----------------------------------------------------------------
+	var pressMode = 0;
+	var oldmx;
+	var oldmy;
+	
+	// 座標獲得
+	var getCoordinates = function(e){
+		var rect = e.target.getBoundingClientRect();
+		that.mx = e.clientX - rect.left;
+		that.my = e.clientY - rect.top;
+	}
+	
+	// マウスを押す
+	var mdnEvent = function(e){
+		if(character.selectedParts2 > 0){
+			pressMode = 2;
+		}else{
+			pressMode = 1;
+		}
+	}
+
+	// マウス移動
+	var mmvEvent = function(e){
+		oldmx = that.mx;
+		oldmy = that.my;
+		getCoordinates(e);
+		if(pressMode == 2){
+			// マウスで選択したパーツを移動させ、テキストを書き換える
+			var m = character.memList[character.selectedParts2 - 1];
+			// パーツの位置をマウス座標系に変換してz深度を調べる
+			var mat = mat4.create();
+			mat4.set(e3d.worldmat, mat);
+			var x = m.x, y = m.z, z = m.y;
+			var iw = 1 / (x * mat[3] + y * mat[7] + z * mat[11] + mat[15]);
+			var z0 = (x * mat[2] + y * mat[6] + z * mat[10] + mat[14]) * iw;
+			// マウス移動前の座標をワールド座標系に変換
+			mat4.inverse(e3d.worldmat, mat);
+			var x = oldmx / e3d.width * 2 - 1, y = 1 - oldmy / e3d.height * 2, z = z0;
+			var iw = 1 / (x * mat[3] + y * mat[7] + z * mat[11] + mat[15]);
+			var x1 = (x * mat[0] + y * mat[4] + z * mat[ 8] + mat[12]) * iw;
+			var y1 = (x * mat[1] + y * mat[5] + z * mat[ 9] + mat[13]) * iw;
+			var z1 = (x * mat[2] + y * mat[6] + z * mat[10] + mat[14]) * iw;
+			// マウス移動後の座標をワールド座標系に変換
+			var x = that.mx / e3d.width * 2 - 1, y = 1 - that.my / e3d.height * 2, z = z0;
+			var iw = 1 / (x * mat[3] + y * mat[7] + z * mat[11] + mat[15]);
+			var x2 = (x * mat[0] + y * mat[4] + z * mat[ 8] + mat[12]) * iw;
+			var y2 = (x * mat[1] + y * mat[5] + z * mat[ 9] + mat[13]) * iw;
+			var z2 = (x * mat[2] + y * mat[6] + z * mat[10] + mat[14]) * iw;
+			// マウスの移動前位置から移動後位置へパーツを動かす
+			if(!document.getElementById("xconst").checked){m.x += (x2 - x1);}
+			if(!document.getElementById("yconst").checked){m.y += (z2 - z1);}
+			if(!document.getElementById("zconst").checked){m.z += (y2 - y1);}
+			var newPos = (m.x < 0 ? " " : "  ") + m.x.toFixed(2) + ",";
+			newPos += (m.y < 0 ? " " : "  ") + m.y.toFixed(2) + ",";
+			newPos += (m.z < 0 ? " " : "  ") + m.z.toFixed(2);
+			// メモリテキストから座標部分を書き換える
+			var memtxt = document.getElementById(character.selectedField).value;
+			var newtxt = memtxt.substr(0, m.index1) + newPos + memtxt.substr(m.index2 - 1);
+			m.index2 = m.index1 + newPos.length + 1;
+			document.getElementById(character.selectedField).value = newtxt;
+		}else if(pressMode == 1){
+			// マウスの移動量を回転の四元数に掛け合わせる
+			var dx = (oldmx - that.mx) * 0.03;
+			var dy = (oldmy - that.my) * 0.03;
+			var a = Math.sqrt(dx * dx + dy * dy);
+			if(a != 0){
+				var ar = a * 0.5;
+				var as = Math.sin(ar) / a;
+				quat4.multiply(that.rotq, [dy * as, dx * as, 0, Math.cos(ar)]);
+			}
+		}else{
+			// マウスクリックしていない状態 ハイライトするパーツを更新
+			character.selectedParts2 = character.selectedParts1;
+		}
+	}
+
+	// マウスボタンを離す
+	var mupEvent = function(e){
+		pressMode = 0;
+	}
+	
+	// ----------------------------------------------------------------
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// グローバル変数
+
+var e3d = new Engine3d();
+var ctrl = new Controller();
+var character = new Character();
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// メイン
+
+window.onload = function(){
+	// 初期化
+	initMem();
+	var canvas = document.getElementById("screen");
+	e3d.init(canvas);
+	e3d.initTemplate();
+	ctrl.init(canvas);
+	character.init(e3d);
+	character.pTex = e3d.loadTexture("player.png");
+	character.eTex = e3d.loadTexture("boss.png");
+	
+	// 描画処理を毎秒 30 回呼び出す
+	setInterval(redrawScene, 1000 / 30);
+}
+
+// メインループ
+function redrawScene(){
+	// カメラ
+	quat4.toMat4(ctrl.rotq, ctrl.rotm);
+	ctrl.roth = Math.asin(ctrl.rotm[6]);
+	ctrl.rotv = -Math.atan2(ctrl.rotm[2], ctrl.rotm[10]);
+	mat4.perspective(30, e3d.width / e3d.height, 1, 100, e3d.worldmat);
+	mat4.translate(e3d.worldmat, [0, 0, -3.5]);
+	mat4.multiply(e3d.worldmat, ctrl.rotm);
+	mat4.translate(e3d.worldmat, [0, -0.5, 0]);
+	
+	// キャラクター
+	readMem(character.memList);
+	// キャラクタークリック確認
+	e3d.clear();
+	e3d.setMode(1);
+	character.draw(e3d, e3d.worldmat, ctrl);
+	character.selectedParts1 = e3d.getHitID(ctrl.mx, ctrl.my);
+	// キャラクター描画
+	e3d.clear();
+	e3d.setMode(0);
+	character.draw(e3d, e3d.worldmat, ctrl);
+	// 立方体描画
+	e3d.setMode(2);
+	mat4.set(e3d.worldmat, e3d.tmpmat1);
+	mat4.translate(e3d.tmpmat1, [0, 0.5, 0]);
+	e3d.setMatrix(e3d.tmpmat1);
+	e3d.bindVertBuf(e3d.cubeVertBuffer);
+	e3d.bindFaceBuf(e3d.cubeFaceBuffer);
+	e3d.setColor(0.0, 0.0, 0.0);
+	e3d.drawLine(0, 44);
+	
+	// ページに反映させる
+	e3d.flush();
+	
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// html操作
+
+// メモリー初期化
+function initMem(){
+	var fieldList = document.getElementsByName("field");
+	var radioList = "<table width='300'><tr><td>";
+	for(var i = 0; i < fieldList.length; i++){
+		// フィールドの設定
+		fieldList[i].cols = "72";
+		fieldList[i].rows = "11";
+		fieldList[i].id = "data" + i;
+		// フィールドに対応するラジオボタン作成
+		radioList += "<input type='radio' name='mem' value='" + fieldList[i].id;
+		radioList += "' onclick='changeMem()'" + (i == 0 ? " checked" : "") + ">";
+		radioList += (fieldList[i].title != "" ? fieldList[i].title : fieldList[i].id) + "<br>\n"
+		if((i + 1) % 15 == 0){radioList += "</td><td valign='top'>"}
+	}
+	radioList += "</td></tr></table>"
+	document.getElementById('radioList').innerHTML = radioList;
+	changeMem();
+}
+
+// メモリー選択時
+function changeMem(){
+	var radioList = document.getElementsByName("mem");
+	for(var i = 0; i < radioList.length; i++){
+		if (radioList[i].checked){
+			character.selectedField = radioList[i].value;
+			document.getElementById(radioList[i].value).style.display = "";
+		}else{
+			document.getElementById(radioList[i].value).style.display = "none";
+		}
+	}
+}
+
+// メモリー読出時
+function readMem(memList){
+	// 選択されたラジオボタンのメモリーを読み出す
+	var memtext = document.getElementById(character.selectedField).value;
+	memList.length = 0;
+	// 文字列を区切り文字で分割する 分割位置も記録しておく
+	var idx = 0;
+	var len = 0;
+	var idxList = new Array();
+	var strList = new Array();
+	while((len = memtext.substr(idx).search(/[,()]/g)) != -1){
+		idxList.push(idx);
+		strList.push(memtext.substr(idx, len).replace(/[ \r\n\t;]/g, ""));
+		idx += len + 1;
+	}
+	idxList.push(idx);
+	// 分割した文字列から描画情報を整理する
+	var j = 0;
+	while(j < strList.length){
+		switch(strList[j++]){
+			case "drawParts":
+				var mem = new Object();
+				mem.str = strList[j++];
+				mem.s = parseFloat(strList[j++]); if(isNaN(mem.s)){break;}
+				mem.index1 = idxList[j];
+				mem.x = parseFloat(strList[j++]); if(isNaN(mem.x)){break;}
+				mem.y = parseFloat(strList[j++]); if(isNaN(mem.y)){break;}
+				mem.z = parseFloat(strList[j++]); if(isNaN(mem.z)){break;}
+				mem.index2 = idxList[j];
+				mem.r = parseInt(strList[j++]); if(isNaN(mem.r)){break;}
+				mem.t = parseInt(strList[j++]); if(isNaN(mem.t)){break;}
+				mem.type = "pbody";
+				memList.push(mem);
+				break;
+			case "this.setParts":
+				var mem = new Object();
+				mem.str = strList[j++];
+				mem.index1 = idxList[j];
+				mem.x = parseFloat(strList[j++]); if(isNaN(mem.x)){break;}
+				mem.y = parseFloat(strList[j++]); if(isNaN(mem.y)){break;}
+				mem.z = parseFloat(strList[j++]); if(isNaN(mem.z)){break;}
+				mem.index2 = idxList[j];
+				mem.type = "ebody";
+				memList.push(mem);
+				break;
+			case "drawSword":
+				var mem = new Object();
+				mem.s = parseFloat(strList[j++]); if(isNaN(mem.s)){break;}
+				mem.index1 = idxList[j];
+				mem.x = parseFloat(strList[j++]); if(isNaN(mem.x)){break;}
+				mem.y = parseFloat(strList[j++]); if(isNaN(mem.y)){break;}
+				mem.z = parseFloat(strList[j++]); if(isNaN(mem.z)){break;}
+				mem.index2 = idxList[j];
+				mem.r1 = parseFloat(strList[j++]); if(isNaN(mem.r1)){break;}
+				mem.r2 = parseFloat(strList[j++]); if(isNaN(mem.r2)){break;}
+				mem.r3 = parseFloat(strList[j++]); if(isNaN(mem.r3)){break;}
+				mem.type = "pswrd";idxList.push(idx);
+				memList.push(mem);
+				break;
+		}
+	}
+}
+
+// 十字キーでメモリ選択
+document.onkeydown = function(e){
+	if(e.shiftKey){
+		var select = 0;
+		var getkey = true;
+		switch (e.keyCode){
+			case 37: select -= 15; break;
+			case 38: select -= 1; break;
+			case 39: select += 15; break;
+			case 40: select += 1; break;
+			default: getkey = false;
+		}
+		if(getkey){
+			var radioList = document.getElementsByName("mem");
+			for(var i = 0; i < radioList.length; i++){
+				if (radioList[i].checked){
+					select += i;
+					if(select < 0 || radioList.length <= select){break;}
+					radioList[i].checked = false;
+					radioList[select].checked = true;
+					changeMem();
+					break;
+				}
+			}
+			e.preventDefault();
+		}
+	}
+}
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+
+</script>
+</head><body>
+<!-- キャンバス -->
+<table bgcolor="#e3f0fb"><tr><td>
+	<table><tr><td bgcolor="#ffffff">
+	<div id="canvas"><canvas id="screen" width="320" height="320"></canvas><br></div>
+	</td></tr></table>
+	<input type="checkbox" id="xconst">x軸固定
+	<input type="checkbox" id="yconst">y軸固定
+	<input type="checkbox" id="zconst">z軸固定
+</td><td>
+	<div id="radioList">####</div>
+</td></tr></table>
+<textarea name="field" title="通常状態">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.52, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.00,  0.27, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.02,  0.10,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.02, -0.10,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02,  0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.02, -0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.50, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.50, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.37, 0, 0);
+</textarea>
+<textarea name="field" title="走る1">
+drawParts(this.texBufStruct_head, 0.50,  0.03,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48,  0.00,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.04,  0.08,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.04, -0.08,  0.13, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.03,  0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.03, -0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.02,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.02, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.14,  0.00,  0.36, 0, 0);
+</textarea>
+<textarea name="field" title="走る2">
+drawParts(this.texBufStruct_head, 0.50,  0.05,  0.00,  0.48, 0, 0);
+drawParts(this.texBufStruct_body, 0.48,  0.00,  0.00,  0.24, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.08,  0.08,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl2, 0.25, -0.08, -0.08,  0.15, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.06,  0.15,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.06, -0.15,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50,  0.00,  0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50,  0.00, -0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.13,  0.00,  0.34, 0, 0);
+</textarea>
+<textarea name="field" title="走る3">
+drawParts(this.texBufStruct_head, 0.50,  0.03,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48,  0.00,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.04,  0.08,  0.13, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.04, -0.08,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.03,  0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.03, -0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.02,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.02, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.14,  0.00,  0.36, 0, 0);
+</textarea>
+<textarea name="field" title="走る4">
+drawParts(this.texBufStruct_head, 0.50,  0.05,  0.00,  0.48, 0, 0);
+drawParts(this.texBufStruct_body, 0.48,  0.00,  0.00,  0.24, 0, 0);
+drawParts(this.texBufStruct_ftr2, 0.25, -0.08,  0.08,  0.15, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.08, -0.08,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.06,  0.15,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.06, -0.15,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50,  0.00,  0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50,  0.00, -0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.13,  0.00,  0.34, 0, 0);
+</textarea>
+<textarea name="field" title="ジャンプ">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.45, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.00,  0.20, 0, 0);
+drawParts(this.texBufStruct_ftr2, 0.25, -0.12,  0.10,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl2, 0.25, -0.12, -0.10,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.02,  0.20,  0.28, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.02, -0.20,  0.28, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.43, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.43, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.33, 0, 0);
+</textarea>
+<textarea name="field" title="落下">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.45, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.00,  0.20, 0, 0);
+drawParts(this.texBufStruct_ftr2, 0.25,  0.12,  0.10,  0.10, 2, 0);
+drawParts(this.texBufStruct_ftl2, 0.25,  0.12, -0.10,  0.10, 2, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.02,  0.20,  0.28, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.02, -0.20,  0.28, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.43, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.43, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.33, 0, 0);
+</textarea>
+<textarea name="field" title="かまえ中1">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.51, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.03, -0.01,  0.26, 3, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.04,  0.07,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.01, -0.06,  0.12, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.06,  0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.13,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.36, 0, 0);
+drawSword(0.3, -0.06,  0.20,  0.25, 0.0, 1.5, 1.8);
+</textarea>
+<textarea name="field" title="かまえ中2">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.51, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.03, -0.01,  0.26, 3, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.07,  0.06,  0.10, 3, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.03, -0.04,  0.12, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.04,  0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.10,  0.10,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.36, 0, 0);
+drawSword(0.4, -0.04,  0.20,  0.25, 1.9, 1.5, 1.9);
+</textarea>
+<textarea name="field" title="かまえる">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.03, -0.02,  0.25, 3, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.10,  0.05,  0.10, 3, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.05, -0.02,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02,  0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.08,  0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5, -0.02,  0.20,  0.25, 1.8, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="切る1">
+drawParts(this.texBufStruct_head, 0.50, -0.01,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.04, -0.02,  0.25, 3, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.10,  0.05,  0.13, 3, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.05, -0.02,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.03,  0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.07,  0.21,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.06,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.06, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.16,  0.00,  0.35, 0, 0);
+drawSword(0.5, -0.07,  0.18,  0.25, 1.9, 1.5, 1.9);
+</textarea>
+<textarea name="field" title="切る2">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.03, -0.01,  0.25, 3, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.08,  0.05,  0.13, 3, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.04, -0.03,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.00,  0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.07,  0.13,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5, -0.00,  0.18,  0.25, 1.8, 1.5, 0.2);
+</textarea>
+<textarea name="field" title="切る3">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02, -0.01,  0.25, 3, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.02,  0.05,  0.13, 3, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.01, -0.03,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.10,  0.14,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.10,  0.05,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5,  0.10,  0.14,  0.25, 1.7, 1.5, 0.5);
+</textarea>
+<textarea name="field" title="切る4">
+drawParts(this.texBufStruct_head, 0.50,  0.01,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.01,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.03,  0.04,  0.13, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.02, -0.04,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.21,  0.10,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.13,  0.05,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.04,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.04, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.14,  0.00,  0.35, 0, 0);
+drawSword(0.5,  0.20,  0.10,  0.25, 1.6, 1.5, 0.8);
+</textarea>
+<textarea name="field" title="切る5">
+drawParts(this.texBufStruct_head, 0.50,  0.01,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.01,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.05,  0.04,  0.13, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.06, -0.04,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.20,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.10,  0.04,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.04,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.04, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.14,  0.00,  0.35, 0, 0);
+drawSword(0.5,  0.20,  0.00,  0.25, 1.5, 1.5, 1.1);
+</textarea>
+<textarea name="field" title="切る6">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.01,  0.00,  0.25, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.08,  0.04,  0.12, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.10, -0.04,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.20, -0.15,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.17, -0.07,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5,  0.20, -0.15,  0.25, 1.6, 1.5, 1.4);
+</textarea>
+<textarea name="field" title="切る7">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.01,  0.25, 1, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.07,  0.03,  0.11, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.10, -0.05,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.10, -0.14,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.13, -0.05,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5,  0.10, -0.14,  0.25, 1.8, 1.5, 1.6);
+</textarea>
+<textarea name="field" title="切る8">
+drawParts(this.texBufStruct_head, 0.50, -0.01,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.04,  0.02,  0.25, 1, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.06,  0.03,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.10, -0.05,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.00, -0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.07, -0.13,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5,  0.00, -0.18,  0.25, 0.0, 1.5, 1.8);
+</textarea>
+<textarea name="field" title="左かまえ">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.50, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.03,  0.02,  0.25, 1, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.05,  0.02,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.10, -0.05,  0.10, 1, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02, -0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.08, -0.20,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.48, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.35, 0, 0);
+drawSword(0.5, -0.02, -0.20,  0.25, 0.2, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="かまえ歩き1">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.51, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.04,  0.00,  0.26, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.07,  0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.02, -0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02,  0.20,  0.26, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.08,  0.20,  0.26, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.36, 0, 0);
+drawSword(0.5, -0.02,  0.20,  0.26, 1.8, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="かまえ歩き2">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.48, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.05,  0.00,  0.23, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.11,  0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25,  0.06, -0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02,  0.20,  0.23, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.08,  0.20,  0.23, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.33, 0, 0);
+drawSword(0.5, -0.02,  0.20,  0.23, 1.8, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="かまえ歩き3">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.51, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.04,  0.00,  0.26, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.02,  0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.07, -0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02,  0.20,  0.26, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.08,  0.20,  0.26, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.49, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.36, 0, 0);
+drawSword(0.5, -0.02,  0.20,  0.26, 1.8, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="かまえ歩き4">
+drawParts(this.texBufStruct_head, 0.50,  0.00,  0.00,  0.48, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.05,  0.00,  0.23, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25,  0.06,  0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.11, -0.06,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.02,  0.20,  0.23, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.08,  0.20,  0.23, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.05,  0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.05, -0.20,  0.46, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.15,  0.00,  0.33, 0, 0);
+drawSword(0.5, -0.02,  0.20,  0.23, 1.8, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="しゃがみ">
+drawParts(this.texBufStruct_head, 0.50,  0.12,  0.00,  0.43, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.00,  0.22, 0, 0);
+drawParts(this.texBufStruct_ftr1, 0.25, -0.02,  0.10,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl1, 0.25, -0.02, -0.10,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.05,  0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.05, -0.18,  0.25, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50,  0.07,  0.20,  0.41, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50,  0.07, -0.20,  0.41, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.08,  0.00,  0.31, 0, 0);
+drawSword(0.5,  0.05,  0.18,  0.25, 1.9, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="飛び込み">
+drawParts(this.texBufStruct_head, 0.50,  0.12,  0.00,  0.30, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.00,  0.20, 0, 0);
+drawParts(this.texBufStruct_ftr2, 0.25, -0.18,  0.07,  0.10, 0, 0);
+drawParts(this.texBufStruct_ftl2, 0.25, -0.18, -0.07,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.20,  0.13,  0.17, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.20, -0.13,  0.17, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50,  0.07,  0.20,  0.28, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50,  0.07, -0.20,  0.28, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.06,  0.00,  0.30, 0, 0);
+drawSword(0.5,  0.20,  0.13,  0.17, 0.0, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="前転1">
+drawParts(this.texBufStruct_head, 0.50, -0.06,  0.00,  0.22, 2, 1);
+drawParts(this.texBufStruct_body, 0.48,  0.02,  0.00,  0.45, 2, 1);
+drawParts(this.texBufStruct_ftr2, 0.25, -0.14,  0.07,  0.50, 0, 1);
+drawParts(this.texBufStruct_ftl2, 0.25, -0.14, -0.07,  0.50, 0, 1);
+drawParts(this.texBufStruct_hand, 0.25, -0.12,  0.15,  0.50, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.12, -0.15,  0.50, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50,  0.01,  0.20,  0.24, 2, 1);
+drawParts(this.texBufStruct_hail, 0.50,  0.01, -0.20,  0.24, 2, 1);
+drawParts(this.texBufStruct_tail, 0.50,  0.12,  0.00,  0.34, 2, 1);
+drawSword(0.5, -0.12,  0.15,  0.50, 0.0, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="前転2">
+drawParts(this.texBufStruct_head, 0.50,  0.06,  0.00,  0.38, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.02,  0.00,  0.15, 0, 0);
+drawParts(this.texBufStruct_ftr2, 0.25,  0.14,  0.07,  0.10, 2, 0);
+drawParts(this.texBufStruct_ftl2, 0.25,  0.14, -0.07,  0.10, 2, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.12,  0.15,  0.10, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25,  0.12, -0.15,  0.10, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.01,  0.20,  0.36, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.01, -0.20,  0.36, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.12,  0.00,  0.26, 0, 0);
+drawSword(0.5,  0.12,  0.15,  0.10, 0.0, 1.5, 0.0);
+</textarea>
+<textarea name="field" title="竜通常状態">
+this.setParts(this.p_head,  0.30,  0.00,  0.95);
+this.setParts(this.p_body,  0.00,  0.00,  0.60);
+this.setParts(this.p_tail, -0.35,  0.00,  0.42);
+this.setParts(this.p_ftfr,  0.20,  0.38,  0.36);
+this.setParts(this.p_ftfl,  0.20, -0.38,  0.36);
+this.setParts(this.p_ftbr, -0.40,  0.28,  0.28);
+this.setParts(this.p_ftbl, -0.40, -0.28,  0.28);
+</textarea>
+<textarea name="field" title="竜歩き1">
+this.setParts(this.p_head,  0.45,  0.00,  0.85);
+this.setParts(this.p_body,  0.00,  0.00,  0.55);
+this.setParts(this.p_tail, -0.35,  0.00,  0.38);
+this.setParts(this.p_ftfr,  0.30,  0.30,  0.36);
+this.setParts(this.p_ftfl,  0.10, -0.30,  0.36);
+this.setParts(this.p_ftbr, -0.50,  0.22,  0.28);
+this.setParts(this.p_ftbl, -0.30, -0.22,  0.28);
+</textarea>
+<textarea name="field" title="竜歩き2">
+this.setParts(this.p_head,  0.45,  0.00,  0.88);
+this.setParts(this.p_body,  0.00,  0.00,  0.58);
+this.setParts(this.p_tail, -0.35,  0.00,  0.41);
+this.setParts(this.p_ftfr,  0.23,  0.33,  0.36);
+this.setParts(this.p_ftfl,  0.17, -0.33,  0.46);
+this.setParts(this.p_ftbr, -0.43,  0.24,  0.38);
+this.setParts(this.p_ftbl, -0.37, -0.24,  0.28);
+</textarea>
+<textarea name="field" title="竜歩き3">
+this.setParts(this.p_head,  0.45,  0.00,  0.90);
+this.setParts(this.p_body,  0.00,  0.00,  0.60);
+this.setParts(this.p_tail, -0.35,  0.00,  0.43);
+this.setParts(this.p_ftfr,  0.20,  0.35,  0.36);
+this.setParts(this.p_ftfl,  0.20, -0.35,  0.51);
+this.setParts(this.p_ftbr, -0.40,  0.25,  0.43);
+this.setParts(this.p_ftbl, -0.40, -0.25,  0.28);
+</textarea>
+<textarea name="field" title="竜歩き4">
+this.setParts(this.p_head,  0.45,  0.00,  0.88);
+this.setParts(this.p_body,  0.00,  0.00,  0.58);
+this.setParts(this.p_tail, -0.35,  0.00,  0.41);
+this.setParts(this.p_ftfr,  0.17,  0.33,  0.36);
+this.setParts(this.p_ftfl,  0.23, -0.33,  0.46);
+this.setParts(this.p_ftbr, -0.37,  0.24,  0.38);
+this.setParts(this.p_ftbl, -0.42, -0.24,  0.28);
+</textarea>
+<textarea name="field" title="竜歩き5">
+this.setParts(this.p_head,  0.45,  0.00,  0.85);
+this.setParts(this.p_body,  0.00,  0.00,  0.55);
+this.setParts(this.p_tail, -0.35,  0.00,  0.38);
+this.setParts(this.p_ftfr,  0.10,  0.30,  0.36);
+this.setParts(this.p_ftfl,  0.30, -0.30,  0.36);
+this.setParts(this.p_ftbr, -0.30,  0.22,  0.28);
+this.setParts(this.p_ftbl, -0.50, -0.22,  0.28);
+</textarea>
+<textarea name="field" title="竜歩き6">
+this.setParts(this.p_head,  0.45,  0.00,  0.88);
+this.setParts(this.p_body,  0.00,  0.00,  0.58);
+this.setParts(this.p_tail, -0.35,  0.00,  0.41);
+this.setParts(this.p_ftfr,  0.17,  0.33,  0.46);
+this.setParts(this.p_ftfl,  0.23, -0.33,  0.36);
+this.setParts(this.p_ftbr, -0.37,  0.24,  0.28);
+this.setParts(this.p_ftbl, -0.42, -0.24,  0.38);
+</textarea>
+<textarea name="field" title="竜歩き7">
+this.setParts(this.p_head,  0.45,  0.00,  0.90);
+this.setParts(this.p_body,  0.00,  0.00,  0.60);
+this.setParts(this.p_tail, -0.35,  0.00,  0.43);
+this.setParts(this.p_ftfr,  0.20,  0.35,  0.51);
+this.setParts(this.p_ftfl,  0.20, -0.35,  0.36);
+this.setParts(this.p_ftbr, -0.40,  0.25,  0.28);
+this.setParts(this.p_ftbl, -0.40, -0.25,  0.43);
+</textarea>
+<textarea name="field" title="竜歩き8">
+this.setParts(this.p_head,  0.45,  0.00,  0.88);
+this.setParts(this.p_body,  0.00,  0.00,  0.58);
+this.setParts(this.p_tail, -0.35,  0.00,  0.41);
+this.setParts(this.p_ftfr,  0.23,  0.33,  0.46);
+this.setParts(this.p_ftfl,  0.17, -0.33,  0.36);
+this.setParts(this.p_ftbr, -0.43,  0.24,  0.28);
+this.setParts(this.p_ftbl, -0.37, -0.24,  0.38);
+</textarea>
+<textarea name="field" title="竜ライダー">
+drawParts(this.texBufStruct_head, 0.50, -0.20,  0.00,  1.10, 0, 0);
+drawParts(this.texBufStruct_body, 0.48, -0.22,  0.00,  0.85, 0, 0);
+drawParts(this.texBufStruct_ftr2, 0.25, -0.08,  0.10,  0.80, 2, 0);
+drawParts(this.texBufStruct_ftl2, 0.25, -0.08, -0.10,  0.80, 2, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.10,  0.08,  0.93, 0, 0);
+drawParts(this.texBufStruct_hand, 0.25, -0.10, -0.08,  0.93, 0, 0);
+drawParts(this.texBufStruct_hair, 0.50, -0.25,  0.20,  1.08, 0, 0);
+drawParts(this.texBufStruct_hail, 0.50, -0.25, -0.20,  1.08, 0, 0);
+drawParts(this.texBufStruct_tail, 0.50, -0.35,  0.00,  0.98, 0, 0);
+this.setParts(this.p_head,  0.30,  0.00,  0.95);
+this.setParts(this.p_body,  0.00,  0.00,  0.60);
+this.setParts(this.p_tail, -0.35,  0.00,  0.42);
+this.setParts(this.p_ftfr,  0.20,  0.38,  0.36);
+this.setParts(this.p_ftfl,  0.20, -0.38,  0.36);
+this.setParts(this.p_ftbr, -0.40,  0.28,  0.28);
+this.setParts(this.p_ftbl, -0.40, -0.28,  0.28);
+</textarea>
+<br>
+体パーツ: drawParts(パーツ, サイズ, x座標, y座標, z座標, 回転(整数), 反転(真偽));<br>
+剣パーツ: drawSword(サイズ, x座標, y座標, z座標, 回転1, 回転2, 回転3);<br>
+竜パーツ: this.setParts(パーツ, x座標, y座標, z座標);<br>
+shiftキーを押しながら十字キーで項目移動
+</body></html>
+
+
