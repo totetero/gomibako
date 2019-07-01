@@ -1,0 +1,101 @@
+<html><head>
+<script type="text/javascript" src="3dengine.js"></script>
+<script type="text/javascript">
+
+function print(str){
+	var out = document.getElementById("debug");
+	if (!out) return;
+  	  out.value = str + out.value;
+}
+
+window.onload = function(){
+	var g = document.getElementById("canvas").getContext("2d");
+	g.fillStyle = "rgb(255, 0, 0)";
+	g.fillRect (0, 0, 240, 320);
+	
+	test3dStart(document.getElementById("canvas").getContext("2d"), 10, 10, 220, 300);
+}
+
+// 描画テスト用の関数
+function test3dStart(context, x, y, w, h){
+	var testObj = new Object();
+	
+	var vect00 = new Vertex(-4,  4,  4, 0  , 16);// 上
+	var vect01 = new Vertex( 4,  4,  4, 16 , 16);
+	var vect02 = new Vertex( 4,  4, -4, 16 , 32);
+	var vect03 = new Vertex(-4,  4, -4, 0  , 32);
+	
+	var vect10 = new Vertex(-4,  4, -4, 16 , 16);// 横1
+	var vect11 = new Vertex( 4,  4, -4, 32 , 16);
+	var vect12 = new Vertex( 4, -4, -4, 32 , 32);
+	var vect13 = new Vertex(-4, -4, -4, 16 , 32);
+	
+	var vect20 = new Vertex(-4,  4,  4, 32 , 16);// 横2
+	var vect21 = new Vertex(-4,  4, -4, 16 , 16);
+	var vect22 = new Vertex(-4, -4, -4, 16 , 32);
+	var vect23 = new Vertex(-4, -4,  4, 32 , 32);
+	
+	var vect30 = new Vertex( 4,  4, -4, 32 , 16);// 横3
+	var vect31 = new Vertex( 4,  4,  4, 16 , 16);
+	var vect32 = new Vertex( 4, -4,  4, 16 , 32);
+	var vect33 = new Vertex( 4, -4, -4, 32 , 32);
+	
+	var vect40 = new Vertex( 4,  4,  4, 16 , 16);// 横4
+	var vect41 = new Vertex(-4,  4,  4, 32 , 16);
+	var vect42 = new Vertex(-4, -4,  4, 32 , 32);
+	var vect43 = new Vertex( 4, -4,  4, 16 , 32);
+	
+	var rotation = 0;
+	
+	var tmpMat1 = new Object();
+	var tmpMat2 = new Object();
+	
+	var aspect = w / h;
+	mat44Perspective(tmpMat1, aspect, 1, 1, 100);
+	mat44Viewport(tmpMat2, x, y, x + w, y + h);
+	mulMat44(engineStruct.projectionMatrix, tmpMat2, tmpMat1);
+	
+	renderScene = function(){
+		mat44Translate(tmpMat1, 0, 0, -20);
+		mulMat44RotX(tmpMat2, tmpMat1, 0.7);
+		mulMat44RotY(tmpMat1, tmpMat2, rotation);
+		
+		rotation += 0.1;
+		
+		pushTexTriangle(textureImage, tmpMat1, vect00, vect01, vect03);
+		pushTexTriangle(textureImage, tmpMat1, vect01, vect02, vect03);
+		pushTexTriangle(textureImage, tmpMat1, vect10, vect11, vect13);
+		pushTexTriangle(textureImage, tmpMat1, vect11, vect12, vect13);
+		pushTexTriangle(textureImage, tmpMat1, vect20, vect21, vect23);
+		pushTexTriangle(textureImage, tmpMat1, vect21, vect22, vect23);
+		pushTexTriangle(textureImage, tmpMat1, vect30, vect31, vect33);
+		pushTexTriangle(textureImage, tmpMat1, vect31, vect32, vect33);
+		pushTexTriangle(textureImage, tmpMat1, vect40, vect41, vect43);
+		pushTexTriangle(textureImage, tmpMat1, vect41, vect42, vect43);
+		
+		context.beginPath();
+		context.rect(x, y, w, h);
+		context.clip();
+		context.fillStyle = "rgb(255, 255, 255)";
+		context.rect(x, y, w, h);
+		context.fill();
+		draw3d(context);
+		
+		setTimeout(renderScene, 40);
+	}
+	
+	textureImage = new Image();
+	textureImage.onload = function(){
+		renderScene();
+	}
+	textureImage.src = "img/mapchip.png";
+}
+
+</script>
+
+</head><body>
+<table border="1"><tr><td>
+<canvas id="canvas" width="240" height="320"></canvas>
+</td></tr></table>
+<textarea cols=100 rows=10 id="debug"></textarea>
+</body></html>
