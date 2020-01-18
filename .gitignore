@@ -1,0 +1,16 @@
+/node_modules
+
+/game*.js
+/tool*.js
+
+/content/main.js
+
+/dump.rdb
+
+/content/mot
+/content/imgCrypt
+
+.DS_Store
+*.swp
+*.min.js
+
