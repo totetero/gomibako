@@ -1,13 +1,30 @@
+<!DOCTYPE html>
 <html><head>
+	<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+	<title>ハコニワキック</title>
+	<style>
+		body { margin: 0; overflow: hidden; }
+		#root { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+		#root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 20px; overflow: scroll; }
+		#game { width: 100%; text-align: center; }
+	</style>
 </head><body>
-	<center>
-	<iframe
-		id="gameFrame"
-		src="index.html"
-		style="background-color:white; width:320px; height:320px;"
-		alt="test"
-		onload="document.getElementById('gameFrame').contentWindow.focus();"
-	></iframe><br>
-	<input type="button" value="フォーカス" onClick="document.getElementById('gameFrame').contentWindow.focus();">
-	</center>
+	<div id="root">
+		<div id="game">
+			<iframe
+				id="gameFrame"
+				src="index.html"
+				style="background-color:white; width:320px; height:320px;"
+				alt="test"
+				onload="document.getElementById('gameFrame').contentWindow.focus();"
+			>
+			</iframe>
+			<div><input type="button" value="フォーカス" onClick="document.getElementById('gameFrame').contentWindow.focus();"></div>
+		</div>
+		<h3>ハコニワキック</h3>
+		<div>制限時間1分の間で上から降ってきて襲いかかってくるボールをキックして画面の外へ追い出すゲーム。</div>
+		<div>時間経過やボールを蹴り出すことで加点となり、ボールからの体当たりで減点となる。また、自分が画面外へ落ちると得点が半分になる。</div>
+		<div>キーボードで操作できる。</div>
+		<a href="../../index.html">back</a>
+	</div>
 </body></html>

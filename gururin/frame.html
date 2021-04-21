@@ -1,12 +1,31 @@
+<!DOCTYPE html>
 <html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-</head><body><center>
-	<iframe
-		id="gameFrame"
-		src="index.html"
-		style="background-color:white; width:320px; height:320px;"
-		alt="test"
-		onload="document.getElementById('gameFrame').contentWindow.focus();"
-	></iframe><br>
-	<input type="button" value="フォーカス" onClick="document.getElementById('gameFrame').contentWindow.focus();">
-</center></body></html>
+	<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+	<title>グルリン</title>
+	<style>
+		body { margin: 0; overflow: hidden; }
+		#root { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+		#root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 20px; overflow: scroll; }
+		#game { width: 100%; text-align: center; }
+	</style>
+</head><body>
+	<div id="root">
+		<div id="game">
+			<iframe
+				id="gameFrame"
+				src="index.html"
+				style="background-color:white; width:320px; height:320px;"
+				alt="test"
+				onload="document.getElementById('gameFrame').contentWindow.focus();"
+			>
+			</iframe>
+			<div><input type="button" value="フォーカス" onClick="document.getElementById('gameFrame').contentWindow.focus();"></div>
+		</div>
+		<h3>グルリン</h3>
+		<div>画面を回転させることにより3x3x3の立体迷路を縦横無尽に駆け回る</div>
+		<div>キャラクターの移動はキーボードで操作できる。</div>
+		<div>秘密の情報: ソースコードでキャラクターの名前が明かされる。</div>
+		<div>秘密の情報: 最初の画面では画面の回転に制限がかかっているが、キャラクターが穴に落ちると画面の回転が解放される。うまくやれば空だって飛べちゃう。</div>
+		<a href="../../index.html">back</a>
+	</div>
+</body></html>

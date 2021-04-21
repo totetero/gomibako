@@ -1,14 +1,70 @@
 <!DOCTYPE html>
 <html><head>
-<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
-<script type="text/javascript" src="Engine3d.js"></script>
-<script type="text/javascript" src="Controller.js"></script>
-<script type="text/javascript" src="Character.js"></script>
-<script type="text/javascript" src="Map.js"></script>
-<script type="text/javascript" src="Menu.js"></script>
-<script type="text/javascript" src="game.js"></script>
+	<meta http-equiv='Content-Type' content="text/html; charset=UTF-8">
+	<title>ハコニワブロックス タクト</title>
+	<style>
+		body { margin: 0; overflow: hidden; }
+		#root { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+		#root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 20px; overflow: scroll; }
+	</style>
 </head><body>
-<script type="text/javascript">
+	<div id="root">
+		<table align="center">
+			<tr>
+				<td colspan="2">
+					<form id='mapinit'>
+						<span>マップサイズ:</span>
+						<select name='select'>
+							<option value='1'>8x8</option>
+							<option value='2' selected='selected'>16x16</option>
+							<option value='3'>32x32</option>
+							<option value='4'>48x48</option>
+							<option value='5'>64x4</option>
+						</select>
+						<button type='button' onClick='createMap(this.form.select.value)'>新規作成</button>
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<canvas id='screen' width='320' height='320'></canvas>
+				</td>
+				<td>
+					<div>プレイヤー位置:</div>
+					<div>x: <input type="text" id="xcoordinate" size="10"></div>
+					<div>y: <input type="text" id="ycoordinate" size="10"></div>
+					<div>z: <input type="text" id="zcoordinate" size="10"></div>
+					<div><button type='button' onClick='readPlayer()'>→読出</button></div>
+					<div><button type='button' onClick='writePlayer()'>←設定</button></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<form id='mapfield'>
+						<div>
+							<button type='button' onClick='writeMap()'>↓書き出し</button>
+							<button type='button' onClick='readMap()'>↑読み込み(仮)</button>
+						</div>
+						<textarea cols=56 rows=10 id='mapdata'></textarea>
+					</form>
+				</td>
+			</tr>
+		</table>
+		<h3>ハコニワブロックス タクト</h3>
+		<div>上部にあるツールから箱をドラッグ&ドロップして積み上げたり、バッテンをドラッグ&ドロップして箱を消したり。</div>
+		<a href="../../index.html">back</a>
+	</div>
+
+	<script type="text/javascript" src="Engine3d.js"></script>
+	<script type="text/javascript" src="Controller.js"></script>
+	<script type="text/javascript" src="Character.js"></script>
+	<script type="text/javascript" src="Map.js"></script>
+	<script type="text/javascript" src="Menu.js"></script>
+	<script type="text/javascript" src="game.js"></script>
+	<script type="text/javascript">
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
 
 function createMap(str){
 	var x = 4;
@@ -125,38 +181,9 @@ function writePlayer(){
 	if(isNaN(player.z)){player.z = 0;}
 }
 
-</script>
-
-<form id='mapinit'>
-	マップサイズ: 
-	<select name='select'>
-		<option value='1'>8x8</option>
-		<option value='2' selected='selected'>16x16</option>
-		<option value='3'>32x32</option>
-		<option value='4'>48x48</option>
-		<option value='5'>64x4</option>
-	</select>
-	<button type='button' onClick='createMap(this.form.select.value)'>新規作成</button>
-</form><br>
-
-<table><tr><td>
-<!-- キャンバス -->
-<canvas id='screen' width='320' height='320'></canvas><br>
-</td><td>
-プレイヤー位置:<br>
-x: <input type="text" id="xcoordinate" size="10"><br>
-y: <input type="text" id="ycoordinate" size="10"><br>
-z: <input type="text" id="zcoordinate" size="10"><br>
-<button type='button' onClick='readPlayer()'>→読出</button><br>
-<button type='button' onClick='writePlayer()'>←設定</button><br>
-</td><tr></table>
-
-<form id='mapfield'>
-	<button type='button' onClick='writeMap()'>↓書き出し</button>
-	<button type='button' onClick='readMap()'>↑読み込み(仮)</button>
-	<br>
-	<textarea cols=56 rows=10 id='mapdata'></textarea>
-</form>
-
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
+	</script>
 </body></html>
 
